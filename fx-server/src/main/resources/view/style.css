@@ -1,0 +1,9 @@
+.menu-label {
+    -fx-background-color:  #509077;
+    -fx-text-fill: #ffffff;
+}
+
+.menu-label-clicked {
+    -fx-background-color: #ffffff; /* 当 label 被点击时的背景色 */
+    -fx-text-fill: #000000;
+}

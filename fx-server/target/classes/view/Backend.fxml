@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.text.*?>
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<AnchorPane prefHeight="827.0" prefWidth="1280.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="competition.controller.Backend">
+   <children>
+      <VBox fx:id="menuBox" layoutY="99.0" prefHeight="728.0" prefWidth="180.0" style="-fx-background-color: #509077;">
+         <children>
+            <Label alignment="CENTER" prefHeight="60.0" prefWidth="180.0" text="环节设置" textFill="WHITE">
+               <font>
+                  <Font size="18.0" />
+               </font>
+            </Label>
+            <Label alignment="CENTER" prefHeight="60.0" prefWidth="180.0" text="界面设置" textFill="WHITE">
+               <font>
+                  <Font size="18.0" />
+               </font>
+            </Label>
+            <Label alignment="CENTER" prefHeight="60.0" prefWidth="180.0" text="团队设置" textFill="WHITE">
+               <font>
+                  <Font size="18.0" />
+               </font>
+            </Label>
+            <Label alignment="CENTER" prefHeight="60.0" prefWidth="180.0" text="抢答设置" textFill="WHITE">
+               <font>
+                  <Font size="18.0" />
+               </font>
+            </Label>
+            <Label alignment="CENTER" prefHeight="60.0" prefWidth="180.0" text="计分设置" textFill="WHITE">
+               <font>
+                  <Font size="18.0" />
+               </font>
+            </Label>
+            <Label alignment="CENTER" prefHeight="60.0" prefWidth="180.0" text="题库管理" textFill="WHITE">
+               <font>
+                  <Font size="18.0" />
+               </font>
+            </Label>
+            <Label alignment="CENTER" prefHeight="60.0" prefWidth="180.0" text="成绩管理" textFill="WHITE">
+               <font>
+                  <Font size="18.0" />
+               </font>
+            </Label>
+            <Label alignment="CENTER" prefHeight="60.0" prefWidth="180.0" text="终端设置" textFill="WHITE">
+               <font>
+                  <Font size="18.0" />
+               </font>
+            </Label>
+         </children>
+      </VBox>
+      <VBox prefHeight="99.0" prefWidth="180.0" style="-fx-background-color: #509077;">
+         <children>
+            <Label alignment="CENTER" prefHeight="30.0" prefWidth="180.0" textFill="WHITE">
+               <font>
+                  <Font name="System Bold" size="20.0" />
+               </font>
+            </Label>
+            <Label alignment="CENTER" prefHeight="46.0" prefWidth="180.0" style="-fx-background-color: #0e202c;" text="后台管理" textFill="WHITE">
+               <font>
+                  <Font name="System Bold" size="20.0" />
+               </font>
+            </Label>
+            <Label prefHeight="11.0" prefWidth="180.0" />
+         </children>
+      </VBox>
+      <Pane fx:id="contentPane" layoutX="180.0" prefHeight="827.0" prefWidth="1100.0" />
+   </children>
+</AnchorPane>

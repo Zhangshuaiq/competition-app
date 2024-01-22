@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.text.*?>
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+
+<AnchorPane prefHeight="827.0" prefWidth="1100.0" style="-fx-background-color: #e8e8e4;" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="competition.controller.backend.StageConfig">
+   <children>
+      <ScrollPane fx:id="stageAddress" layoutX="6.0" layoutY="46.0" prefHeight="774.0" prefWidth="515.0" />
+      <AnchorPane layoutX="550.0" layoutY="46.0" prefHeight="768.0" prefWidth="537.0" style="-fx-background-color: #ffffff;">
+         <children>
+            <Label layoutX="28.0" layoutY="24.0" text="环节名称" />
+            <TextField layoutX="105.0" layoutY="19.0" prefHeight="30.0" prefWidth="282.0" />
+            <CheckBox layoutX="417.0" layoutY="24.0" mnemonicParsing="false" text="随机乱序" />
+            <Label layoutX="28.0" layoutY="75.0" text="每题分值" />
+            <TextField layoutX="105.0" layoutY="70.0" prefHeight="30.0" prefWidth="42.0" />
+            <Label layoutX="164.0" layoutY="75.0" text="倒计时间" />
+            <TextField layoutX="234.0" layoutY="70.0" prefHeight="30.0" prefWidth="42.0" />
+            <CheckBox layoutX="300.0" layoutY="75.0" mnemonicParsing="false" text="显示题号" />
+            <CheckBox layoutX="417.0" layoutY="75.0" mnemonicParsing="false" text="选后变灰" />
+            <Label layoutX="28.0" layoutY="126.0" prefHeight="20.0" prefWidth="71.0" text="计时方式" />
+            <RadioButton layoutX="126.0" layoutY="126.0" mnemonicParsing="false" text="手工计时" />
+            <RadioButton layoutX="336.0" layoutY="126.0" mnemonicParsing="false" text="出示题目后自动计时" />
+            <CheckBox layoutX="28.0" layoutY="191.0" mnemonicParsing="false" text="环节显示" />
+            <Label layoutX="28.0" layoutY="250.0" prefHeight="20.0" prefWidth="71.0" text="出题方式" />
+            <RadioButton layoutX="45.0" layoutY="296.0" mnemonicParsing="false" text="连续出题" />
+            <RadioButton layoutX="170.0" layoutY="296.0" mnemonicParsing="false" text="自选题目" />
+            <RadioButton layoutX="284.0" layoutY="296.0" mnemonicParsing="false" text="自选题组" />
+            <RadioButton layoutX="396.0" layoutY="296.0" mnemonicParsing="false" text="滚动选题" />
+            <RadioButton layoutX="45.0" layoutY="347.0" mnemonicParsing="false" text="线索题" />
+            <RadioButton layoutX="170.0" layoutY="347.0" mnemonicParsing="false" text="答题模式" />
+            <RadioButton layoutX="284.0" layoutY="347.0" mnemonicParsing="false" text="竞技模式" />
+            <CheckBox layoutX="396.0" layoutY="347.0" mnemonicParsing="false" text="随机乱序" />
+            <Button layoutX="255.0" layoutY="724.0" mnemonicParsing="false" prefHeight="30.0" prefWidth="72.0" text="确认" />
+            <Label layoutX="28.0" layoutY="413.0" prefHeight="20.0" prefWidth="71.0" text="抢答方式" />
+            <ComboBox fx:id="answerAction" layoutX="105.0" layoutY="408.0" prefHeight="30.0" prefWidth="390.0" />
+            <Label layoutX="28.0" layoutY="494.0" prefHeight="20.0" prefWidth="71.0" text="环节规则" />
+            <AnchorPane layoutX="107.0" layoutY="548.0" prefHeight="158.0" prefWidth="390.0" style="-fx-border-width: 1; -fx-border-color: #000000;" />
+            <ComboBox layoutX="107.0" layoutY="489.0" prefHeight="30.0" prefWidth="390.0" />
+         </children>
+      </AnchorPane>
+   </children>
+</AnchorPane>
