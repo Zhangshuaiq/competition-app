@@ -9,4 +9,9 @@ public class ControlPane {
     public void toBackend(){
         Navigator.navigatorTo("/view/Backend.fxml", "后台设置", "/view/style.css");
     }
+    
+    @FXML
+    public void exitApp(){
+        System.exit(0);
+    }
 }
