@@ -1,4 +1,66 @@
 package competition.controller.backend;
 
+import competition.entity.Questions;
+import competition.util.ExcelParser;
+import javafx.collections.FXCollections;
+import javafx.fxml.FXML;
+import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableView;
+import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.stage.FileChooser;
+import org.springframework.stereotype.Component;
+
+import java.io.File;
+import java.util.List;
+
+@Component
 public class QuestionStock {
+
+
+    @FXML
+    private TableView<Questions> tableView;
+
+    @FXML
+    private TableColumn<Questions, String> stageNumberCol, stageNameCol, questionTypeCol, resourceTypeCol, resourceCol,
+            questionCol, choiceACol, choiceBCol, choiceCCol, choiceDCol,
+            choiceECol, choiceFCol, answerCol, remarkCol;
+
+
+    @FXML
+    public void initialize() {
+        stageNumberCol.setCellValueFactory(new PropertyValueFactory<>("stageNumber"));
+        stageNameCol.setCellValueFactory(new PropertyValueFactory<>("stageName"));
+        questionTypeCol.setCellValueFactory(new PropertyValueFactory<>("questionType"));
+        resourceTypeCol.setCellValueFactory(new PropertyValueFactory<>("resourceType"));
+        resourceCol.setCellValueFactory(new PropertyValueFactory<>("resource"));
+        questionCol.setCellValueFactory(new PropertyValueFactory<>("question"));
+        choiceACol.setCellValueFactory(new PropertyValueFactory<>("choiceA"));
+        choiceBCol.setCellValueFactory(new PropertyValueFactory<>("choiceB"));
+        choiceCCol.setCellValueFactory(new PropertyValueFactory<>("choiceC"));
+        choiceDCol.setCellValueFactory(new PropertyValueFactory<>("choiceD"));
+        choiceECol.setCellValueFactory(new PropertyValueFactory<>("choiceE"));
+        choiceFCol.setCellValueFactory(new PropertyValueFactory<>("choiceF"));
+        answerCol.setCellValueFactory(new PropertyValueFactory<>("answer"));
+        remarkCol.setCellValueFactory(new PropertyValueFactory<>("remark"));
+        showData();
+    }
+
+    public void showData() {
+        final List<Questions> questions = ExcelParser.parse(ExcelParser.Q_PATH, Questions.class);
+        tableView.setItems(FXCollections.observableList(questions));
+    }
+
+
+    @FXML
+    public void importData() {
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.getExtensionFilters().addAll(
+                new FileChooser.ExtensionFilter("Excel Files", "*.xlsx", "*.xls")
+        );
+        File selectedFile = fileChooser.showOpenDialog(null);
+        if (selectedFile != null) {
+            final List<Questions> questions = ExcelParser.parse(selectedFile.getAbsolutePath(), Questions.class);
+            tableView.setItems(FXCollections.observableList(questions));
+        }
+    }
 }

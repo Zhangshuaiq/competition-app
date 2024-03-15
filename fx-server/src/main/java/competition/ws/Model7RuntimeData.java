@@ -1,0 +1,150 @@
+package competition.ws;
+
+import competition.JavaFxApplication;
+import competition.controller.ControlPane;
+import competition.entity.Teams;
+import competition.util.CurrentQuestions;
+import competition.util.TeamRuntime;
+import javafx.application.Platform;
+import lombok.Data;
+import org.springframework.util.StringUtils;
+
+import java.util.ArrayList;
+import java.util.List;
+
+// 竞技模式实时更新数据,后端使用
+public class Model7RuntimeData {
+    // 实时回答状态
+    private static List<List<ModelData>> runtimeData = new ArrayList<>();
+
+    private static List<Teams> teams = new ArrayList<>();
+
+    private static List<String> times = new ArrayList<>();
+
+    private static List<Boolean> finished = new ArrayList<>();
+
+    public static List<Boolean> getFinished() {
+        return finished;
+    }
+
+    public static List<String> getTimes() {
+        return times;
+    }
+
+    public static List<Teams> getTeams() {
+        return teams;
+    }
+
+    public static void setTeams(List<Teams> teams) {
+        runtimeData.clear();
+        finished.clear();
+        times.clear();
+        Model7RuntimeData.teams = teams;
+        for (Teams team : teams) {
+            runtimeData.add(new ArrayList<>());
+            times.add("0分00秒");
+            finished.add(false);
+        }
+    }
+
+    public static void setRuntimeData(int i, ModelData data, String time) {
+        if (finished.get(i)) {
+            return;
+        }
+        ControlPane controlPane = JavaFxApplication.getApplicationContext().getBean(ControlPane.class);
+        times.set(i, time);
+        if (data == null) {
+            return;
+        }
+        List<ModelData> modelData = runtimeData.get(i);
+        boolean existed = false;
+        for (int j = 0; j < modelData.size(); j++) {
+            ModelData modelDatum = modelData.get(j);
+            if (modelDatum.getQuestionNumber().equals(data.getQuestionNumber())) {
+                existed = true;
+                if (modelDatum.getUserSelect() == null) {
+                    // 团队加分,同步到界面
+                    if (data.getAnswer().equals(data.getUserSelect())) {
+                        modelData.set(j, data);
+                        List<Teams> teams = TeamRuntime.getTeams();
+                        for (Teams team : teams) {
+                            if (team.getFullName().equals(data.getTeamName())) {
+                                team.setCurrentScore(team.getCurrentScore() + data.getScore());
+                                Platform.runLater(() -> {
+                                    controlPane.teamScore.setText(team.getCurrentScore().toString());
+                                });
+                               
+                            }
+                        }
+
+                    }
+                }
+                break;
+            }
+        }
+
+        if (!existed) {
+            modelData.add(data);
+        }
+        // 答题完成
+        if (modelData.size() == CurrentQuestions.getQuestionList().size()) {
+            finished.set(i, true);
+        }
+
+
+    }
+
+
+    public static List<List<ModelData>> getRuntimeData() {
+        return runtimeData;
+    }
+
+
+    @Data
+    public static class ModelData {
+
+        // 队伍信息
+        private String teamName;
+
+        // 题目分值
+        private Integer score;
+
+        // 阶段
+        private String stageNumber;
+
+        private String stageName;
+
+        private String questionType;
+
+        private String resourceType;
+
+        private String resource;
+
+        private String question;
+
+        private String choiceA;
+
+        private String choiceB;
+
+        private String choiceC;
+
+        private String choiceD;
+
+        private String choiceE;
+
+        private String choiceF;
+
+        private String answer;
+
+        private String remark;
+
+        private Integer questionNumber;
+
+        private Integer sort;
+
+        // 选手选项
+        private String userSelect;
+
+    }
+
+}

@@ -6,34 +6,21 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
+import org.mybatis.spring.annotation.MapperScan;
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
 
-public class Main extends Application {
+import javax.swing.*;
+
+@SpringBootApplication
+@MapperScan("competition.mapper")
+public class Main {
 
     public static void main(String[] args) {
-	    launch(args);
+        Application.launch(JavaFxApplication.class, args);
+        // 启动 springboot ，主要作为 ws 服务器接收数据
+        SpringApplication.run(Main.class, args);
+        //
     }
-
-    private double xOffset = 0;
-    private double yOffset = 0;
-    
-    
-    @Override
-    public void start(Stage primaryStage) throws Exception {
-        Parent load = FXMLLoader.load(getClass().getResource("/view/ControlPage.fxml"));
-        Scene scene = new Scene(load);
-        // 鼠标按下时记录初始坐标
-        load.setOnMousePressed(event -> {
-            xOffset = event.getSceneX();
-            yOffset = event.getSceneY();
-        });
-
-        // 拖动时更新窗口位置
-        load.setOnMouseDragged(event -> {
-            primaryStage.setX(event.getScreenX() - xOffset);
-            primaryStage.setY(event.getScreenY() - yOffset);
-        });
-        primaryStage.initStyle(StageStyle.TRANSPARENT);
-        primaryStage.setScene(scene);
-        primaryStage.show();
-    }
+   
 }

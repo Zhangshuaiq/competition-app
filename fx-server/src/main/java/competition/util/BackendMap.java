@@ -13,6 +13,9 @@ public class BackendMap {
         stageMap.put("团队设置", "/view/backend/TeamConfig.fxml");
         stageMap.put("抢答设置", "/view/backend/BuzzConfig.fxml");
         stageMap.put("计分设置", "/view/backend/ScoreConfig.fxml");
+        stageMap.put("题库管理", "/view/backend/QuestionStock.fxml");
+        stageMap.put("成绩管理", "/view/backend/GradeMng.fxml");
+        stageMap.put("终端设置", "/view/backend/TerminalConfig.fxml");
     }
     
     public static final String getBackendPath(String backendCfgName) {

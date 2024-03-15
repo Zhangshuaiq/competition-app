@@ -6,9 +6,12 @@ import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.control.Label;
+import javafx.scene.input.MouseButton;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
+import org.springframework.stereotype.Component;
 
+@Component
 public class Backend {
     
     @FXML
@@ -22,6 +25,9 @@ public class Backend {
         final ObservableList<Node> children = menuBox.getChildren();
         for (Node child : children) {
             child.setOnMouseClicked(event -> {
+                if (event.getButton() != MouseButton.PRIMARY) {
+                    return;
+                }
                 for (Node ch : children) {
                     ch.getStyleClass().remove("menu-label-clicked");
                 }

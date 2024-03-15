@@ -9,239 +9,241 @@
 
 <AnchorPane prefHeight="827.0" prefWidth="1100.0" style="-fx-background-color: #e8e8e4;" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="competition.controller.backend.PageConfig">
    <children>
-      <Label layoutX="25.0" layoutY="39.0" text="答题页" />
-      <Label layoutX="99.0" layoutY="39.0" text="题干" />
-      <ColorPicker layoutX="142.0" layoutY="34.0" prefHeight="30.0" prefWidth="30.0" />
-      <Label layoutX="186.0" layoutY="39.0" text="答案" />
-      <ColorPicker layoutX="227.0" layoutY="34.0" prefHeight="30.0" prefWidth="30.0" />
-      <Label layoutX="277.0" layoutY="39.0" text="默认字号" />
-      <TextField layoutX="350.0" layoutY="34.0" prefHeight="30.0" prefWidth="45.0" />
-      <Label layoutX="406.0" layoutY="39.0" text="行距" />
-      <TextField layoutX="442.0" layoutY="34.0" prefHeight="30.0" prefWidth="60.0" />
-      <Label layoutX="520.0" layoutY="39.0" text="答案前缀" />
-      <TextField layoutX="585.0" layoutY="34.0" prefHeight="30.0" prefWidth="86.0" />
-      <Label layoutX="690.0" layoutY="39.0" text="坐标" />
-      <Label layoutX="731.0" layoutY="39.0" prefHeight="20.0" prefWidth="8.0" text="x" />
-      <TextField layoutX="748.0" layoutY="34.0" prefHeight="30.0" prefWidth="60.0" />
-      <Label layoutX="818.0" layoutY="39.0" text="y" />
-      <TextField layoutX="833.0" layoutY="34.0" prefHeight="30.0" prefWidth="60.0" />
-      <Label layoutX="904.0" layoutY="39.0" text="宽" />
-      <TextField layoutX="927.0" layoutY="34.0" prefHeight="30.0" prefWidth="60.0" />
-      <TextField layoutX="1018.0" layoutY="34.0" prefHeight="30.0" prefWidth="60.0" />
-      <Label layoutX="997.0" layoutY="39.0" text="高" />
-      <Label layoutX="99.0" layoutY="90.0" text="题型" />
-      <RadioButton layoutX="143.0" layoutY="90.0" mnemonicParsing="false" text="题号前" />
-      <RadioButton layoutX="242.0" layoutY="90.0" mnemonicParsing="false" text="题号后" />
-      <RadioButton layoutX="336.0" layoutY="90.0" mnemonicParsing="false" text="题干后" />
-      <Label layoutX="481.0" layoutY="90.0" text="题型标注" />
-      <RadioButton layoutX="565.0" layoutY="90.0" mnemonicParsing="false" text="方括号" />
-      <RadioButton layoutX="663.0" layoutY="90.0" mnemonicParsing="false" text="圆括号" />
-      <RadioButton layoutX="765.0" layoutY="90.0" mnemonicParsing="false" text="空格" />
-      <RadioButton layoutX="848.0" layoutY="90.0" mnemonicParsing="false" text="无" />
-      <Label layoutX="97.0" layoutY="133.0" text="标题" />
-      <ColorPicker layoutX="142.0" layoutY="128.0" prefHeight="30.0" prefWidth="30.0" />
-      <CheckBox layoutX="228.0" layoutY="133.0" mnemonicParsing="false" text="显示标题" />
-      <Label layoutX="362.0" layoutY="133.0" text="字号" />
-      <TextField layoutX="406.0" layoutY="128.0" prefHeight="30.0" prefWidth="60.0" />
-      <Label layoutX="99.0" layoutY="172.0" text="记分牌" />
-      <RadioButton layoutX="177.0" layoutY="172.0" mnemonicParsing="false" text="横向排布" />
-      <RadioButton layoutX="299.0" layoutY="172.0" mnemonicParsing="false" text="左右对联" />
-      <RadioButton layoutX="410.0" layoutY="172.0" mnemonicParsing="false" text="禁用" />
-      <Label layoutX="99.0" layoutY="210.0" text="队名" />
-      <ColorPicker layoutX="142.0" layoutY="205.0" prefHeight="30.0" prefWidth="30.0" />
-      <Label layoutX="211.0" layoutY="210.0" text="队名背景" />
-      <ColorPicker layoutX="288.0" layoutY="205.0" prefHeight="30.0" prefWidth="30.0" />
-      <Label layoutX="342.0" layoutY="210.0" text="分数" />
-      <ColorPicker layoutX="391.0" layoutY="205.0" prefHeight="30.0" prefWidth="30.0" />
-      <Label layoutX="450.0" layoutY="210.0" text="分数背景" />
-      <ColorPicker layoutX="517.0" layoutY="205.0" prefHeight="30.0" prefWidth="30.0" />
-      <Label layoutX="690.0" layoutY="210.0" text="坐标" />
-      <TextField layoutX="746.0" layoutY="205.0" prefHeight="30.0" prefWidth="60.0" />
-      <Label layoutX="731.0" layoutY="210.0" prefHeight="20.0" prefWidth="8.0" text="x" />
-      <Label layoutX="818.0" layoutY="210.0" text="y" />
-      <TextField layoutX="833.0" layoutY="205.0" prefHeight="30.0" prefWidth="60.0" />
-      <TextField layoutX="927.0" layoutY="205.0" prefHeight="30.0" prefWidth="60.0" />
-      <TextField layoutX="1018.0" layoutY="205.0" prefHeight="30.0" prefWidth="60.0" />
-      <Label layoutX="904.0" layoutY="210.0" text="宽" />
-      <Label layoutX="997.0" layoutY="210.0" text="高" />
-      <Label layoutX="99.0" layoutY="251.0" text="倒计时" />
-      <ColorPicker layoutX="157.0" layoutY="246.0" prefHeight="30.0" prefWidth="30.0" />
-      <Label layoutX="212.0" layoutY="251.0" text="字号" />
-      <TextField layoutX="250.0" layoutY="246.0" prefHeight="30.0" prefWidth="57.0" />
-      <Label layoutX="349.0" layoutY="251.0" text="答题状态条" />
-      <Label layoutX="442.0" layoutY="251.0" text="等待" />
-      <ColorPicker layoutX="480.0" layoutY="246.0" prefHeight="30.0" prefWidth="30.0" />
-      <ColorPicker layoutX="565.0" layoutY="246.0" prefHeight="30.0" prefWidth="30.0" />
-      <ColorPicker layoutX="648.0" layoutY="246.0" prefHeight="30.0" prefWidth="30.0" />
-      <ColorPicker layoutX="743.0" layoutY="246.0" prefHeight="30.0" prefWidth="30.0" />
-      <Label layoutX="526.0" layoutY="251.0" text="已答" />
-      <Label layoutX="609.0" layoutY="251.0" text="答对" />
-      <Label layoutX="699.0" layoutY="251.0" text="答错" />
-      <Label layoutX="826.0" layoutY="251.0" text="坐标" />
-      <TextField layoutX="889.0" layoutY="246.0" prefHeight="30.0" prefWidth="60.0" />
-      <TextField layoutX="988.0" layoutY="246.0" prefHeight="30.0" prefWidth="60.0" />
-      <Label layoutX="967.0" layoutY="251.0" text="y" />
-      <Label layoutX="869.0" layoutY="251.0" prefHeight="20.0" prefWidth="8.0" text="x" />
-      <Separator layoutX="5.0" layoutY="284.0" prefHeight="3.0" prefWidth="1084.0" />
-      <Label layoutX="25.0" layoutY="296.0" text="环节页" />
-      <Label layoutX="107.0" layoutY="296.0" text="环节编号" />
-      <ColorPicker layoutX="172.0" layoutY="291.0" prefHeight="30.0" prefWidth="30.0" />
-      <Label layoutX="211.0" layoutY="296.0" text="编号背景" />
-      <ColorPicker layoutX="273.0" layoutY="291.0" prefHeight="30.0" prefWidth="30.0" />
-      <Label layoutX="332.0" layoutY="296.0" text="环节名称" />
-      <ColorPicker layoutX="395.0" layoutY="291.0" prefHeight="30.0" prefWidth="30.0" />
-      <Label layoutX="457.0" layoutY="296.0" text="名称背景" />
-      <ColorPicker layoutX="526.0" layoutY="291.0" prefHeight="30.0" prefWidth="30.0" />
-      <Label layoutX="690.0" layoutY="296.0" text="坐标" />
-      <Label layoutX="731.0" layoutY="296.0" prefHeight="20.0" prefWidth="8.0" text="x" />
-      <TextField layoutX="743.0" layoutY="291.0" prefHeight="30.0" prefWidth="60.0" />
-      <Label layoutX="814.0" layoutY="296.0" text="y" />
-      <TextField layoutX="833.0" layoutY="291.0" prefHeight="30.0" prefWidth="60.0" />
-      <Label layoutX="904.0" layoutY="296.0" text="宽" />
-      <TextField layoutX="927.0" layoutY="291.0" prefHeight="30.0" prefWidth="60.0" />
-      <Label layoutX="997.0" layoutY="296.0" text="高" />
-      <TextField layoutX="1018.0" layoutY="291.0" prefHeight="30.0" prefWidth="60.0" />
-      <CheckBox layoutX="108.0" layoutY="339.0" mnemonicParsing="false" text="显示抽奖按钮" />
-      <CheckBox layoutX="257.0" layoutY="339.0" mnemonicParsing="false" text="显示环节列表" />
-      <Separator layoutX="8.0" layoutY="368.0" prefHeight="3.0" prefWidth="1084.0" />
-      <Label layoutX="25.0" layoutY="467.0" text="选题页" />
-      <Label layoutX="99.0" layoutY="467.0" text="选题字色" />
-      <ColorPicker layoutX="172.0" layoutY="462.0" prefHeight="30.0" prefWidth="30.0" />
-      <Label layoutX="227.0" layoutY="467.0" text="选项背景" />
-      <ColorPicker layoutX="302.0" layoutY="462.0" prefHeight="30.0" prefWidth="30.0" />
-      <Label layoutX="349.0" layoutY="467.0" text="滚动选题" />
-      <ColorPicker layoutX="421.0" layoutY="462.0" prefHeight="30.0" prefWidth="30.0" />
-      <Label layoutX="699.0" layoutY="422.0" text="坐标" />
-      <Label layoutX="735.0" layoutY="422.0" prefHeight="20.0" prefWidth="8.0" text="x" />
-      <TextField layoutX="746.0" layoutY="417.0" prefHeight="30.0" prefWidth="60.0" />
-      <Label layoutX="818.0" layoutY="422.0" text="y" />
-      <TextField layoutX="833.0" layoutY="417.0" prefHeight="30.0" prefWidth="60.0" />
-      <Label layoutX="904.0" layoutY="422.0" text="宽" />
-      <TextField layoutX="927.0" layoutY="417.0" prefHeight="30.0" prefWidth="60.0" />
-      <Label layoutX="997.0" layoutY="422.0" text="高" />
-      <TextField layoutX="1018.0" layoutY="417.0" prefHeight="30.0" prefWidth="60.0" />
-      <Label layoutX="25.0" layoutY="518.0" text="规则页" />
-      <Label layoutX="99.0" layoutY="518.0" text="规则字色" />
-      <ColorPicker layoutX="172.0" layoutY="513.0" prefHeight="30.0" prefWidth="30.0" />
-      <Label layoutX="699.0" layoutY="467.0" text="坐标" />
-      <Label layoutX="735.0" layoutY="467.0" prefHeight="20.0" prefWidth="8.0" text="x" />
-      <TextField layoutX="748.0" layoutY="462.0" prefHeight="30.0" prefWidth="60.0" />
-      <Label layoutX="818.0" layoutY="467.0" text="y" />
-      <TextField layoutX="833.0" layoutY="462.0" prefHeight="30.0" prefWidth="60.0" />
-      <Label layoutX="904.0" layoutY="467.0" text="宽" />
-      <TextField layoutX="927.0" layoutY="462.0" prefHeight="30.0" prefWidth="60.0" />
-      <Label layoutX="997.0" layoutY="467.0" text="高" />
-      <TextField layoutX="1018.0" layoutY="462.0" prefHeight="30.0" prefWidth="60.0" />
-      <Separator layoutX="10.0" layoutY="453.0" prefHeight="3.0" prefWidth="1084.0" />
-      <Label layoutX="25.0" layoutY="380.0" text="排名页" />
-      <Label layoutX="92.0" layoutY="380.0" text="编号比例" />
-      <TextField layoutX="157.0" layoutY="375.0" prefHeight="30.0" prefWidth="51.0" />
-      <Label layoutX="227.0" layoutY="380.0" text="团队名称比例" />
-      <TextField layoutX="322.0" layoutY="375.0" prefHeight="30.0" prefWidth="57.0" />
-      <Label layoutX="402.0" layoutY="380.0" text="分数比例" />
-      <TextField layoutX="474.0" layoutY="375.0" prefHeight="30.0" prefWidth="57.0" />
-      <Label layoutX="92.0" layoutY="422.0" text="字色" />
-      <ColorPicker layoutX="137.0" layoutY="417.0" prefHeight="30.0" prefWidth="30.0" />
-      <Label layoutX="196.0" layoutY="422.0" text="背景" />
-      <ColorPicker layoutX="235.0" layoutY="417.0" prefHeight="30.0" prefWidth="30.0" />
-      <Label layoutX="277.0" layoutY="422.0" text="一名背景" />
-      <ColorPicker layoutX="342.0" layoutY="417.0" prefHeight="30.0" prefWidth="30.0" />
-      <Label layoutX="387.0" layoutY="422.0" text="二名背景" />
-      <ColorPicker layoutX="451.0" layoutY="417.0" prefHeight="30.0" prefWidth="30.0" />
-      <Label layoutX="502.0" layoutY="422.0" text="三名背景" />
-      <ColorPicker layoutX="570.0" layoutY="417.0" prefHeight="30.0" prefWidth="30.0" />
-      <Label layoutX="699.0" layoutY="518.0" text="坐标" />
-      <Label layoutX="735.0" layoutY="518.0" prefHeight="20.0" prefWidth="8.0" text="x" />
-      <TextField layoutX="748.0" layoutY="513.0" prefHeight="30.0" prefWidth="60.0" />
-      <Label layoutX="814.0" layoutY="518.0" text="y" />
-      <TextField layoutX="833.0" layoutY="513.0" prefHeight="30.0" prefWidth="60.0" />
-      <Label layoutX="904.0" layoutY="518.0" text="宽" />
-      <TextField layoutX="927.0" layoutY="513.0" prefHeight="30.0" prefWidth="60.0" />
-      <Label layoutX="997.0" layoutY="518.0" text="高" />
-      <TextField layoutX="1018.0" layoutY="513.0" prefHeight="30.0" prefWidth="60.0" />
-      <Separator layoutX="10.0" layoutY="502.0" prefHeight="3.0" prefWidth="1084.0" />
-      <Label layoutX="25.0" layoutY="577.0" text="抢答排名" />
-      <Label layoutX="107.0" layoutY="577.0" text="编号比例" />
-      <TextField layoutX="183.0" layoutY="572.0" prefHeight="30.0" prefWidth="51.0" />
-      <Label layoutX="250.0" layoutY="577.0" text="团队名称" />
-      <TextField layoutX="320.0" layoutY="572.0" prefHeight="30.0" prefWidth="57.0" />
-      <Label layoutX="393.0" layoutY="577.0" text="时间" />
-      <TextField layoutX="438.0" layoutY="572.0" prefHeight="30.0" prefWidth="57.0" />
-      <Label layoutX="107.0" layoutY="623.0" text="字色" />
-      <ColorPicker layoutX="152.0" layoutY="618.0" prefHeight="30.0" prefWidth="30.0" />
-      <Label layoutX="200.0" layoutY="623.0" text="背景" />
-      <ColorPicker layoutX="242.0" layoutY="618.0" prefHeight="30.0" prefWidth="30.0" />
-      <Label layoutX="287.0" layoutY="623.0" text="一名背景" />
-      <ColorPicker layoutX="357.0" layoutY="618.0" prefHeight="30.0" prefWidth="30.0" />
-      <Label layoutX="402.0" layoutY="623.0" text="二名背景" />
-      <ColorPicker layoutX="472.0" layoutY="618.0" prefHeight="30.0" prefWidth="30.0" />
-      <Label layoutX="517.0" layoutY="623.0" text="三名背景" />
-      <ColorPicker layoutX="585.0" layoutY="618.0" prefHeight="30.0" prefWidth="30.0" />
-      <Label layoutX="699.0" layoutY="623.0" text="坐标" />
-      <Label layoutX="735.0" layoutY="623.0" prefHeight="20.0" prefWidth="8.0" text="x" />
-      <TextField layoutX="748.0" layoutY="618.0" prefHeight="30.0" prefWidth="60.0" />
-      <Label layoutX="818.0" layoutY="623.0" text="y" />
-      <TextField layoutX="833.0" layoutY="618.0" prefHeight="30.0" prefWidth="60.0" />
-      <Label layoutX="904.0" layoutY="623.0" text="宽" />
-      <TextField layoutX="927.0" layoutY="618.0" prefHeight="30.0" prefWidth="60.0" />
-      <Label layoutX="997.0" layoutY="623.0" text="高" />
-      <TextField layoutX="1018.0" layoutY="618.0" prefHeight="30.0" prefWidth="60.0" />
-      <Label layoutX="25.0" layoutY="662.0" text="选手排名" />
-      <Label layoutX="107.0" layoutY="662.0" text="编号比例" />
-      <TextField layoutX="183.0" layoutY="657.0" prefHeight="30.0" prefWidth="51.0" />
-      <Label layoutX="250.0" layoutY="662.0" text="团队名称" />
-      <TextField layoutX="319.0" layoutY="657.0" prefHeight="30.0" prefWidth="57.0" />
-      <Label layoutX="391.0" layoutY="662.0" text="选手" />
-      <TextField layoutX="439.0" layoutY="657.0" prefHeight="30.0" prefWidth="57.0" />
-      <Label layoutX="511.0" layoutY="662.0" text="分数" />
-      <TextField layoutX="552.0" layoutY="657.0" prefHeight="30.0" prefWidth="57.0" />
-      <Label layoutX="107.0" layoutY="704.0" text="字色" />
-      <ColorPicker layoutX="152.0" layoutY="699.0" prefHeight="30.0" prefWidth="30.0" />
-      <Label layoutX="200.0" layoutY="704.0" text="背景" />
-      <Separator layoutX="10.0" layoutY="552.0" prefHeight="3.0" prefWidth="1084.0" />
-      <ColorPicker layoutX="242.0" layoutY="699.0" prefHeight="30.0" prefWidth="30.0" />
-      <Label layoutX="286.0" layoutY="704.0" text="一名背景" />
-      <ColorPicker layoutX="357.0" layoutY="699.0" prefHeight="30.0" prefWidth="30.0" />
-      <Label layoutX="402.0" layoutY="704.0" text="二名背景" />
-      <ColorPicker layoutX="472.0" layoutY="699.0" prefHeight="30.0" prefWidth="30.0" />
-      <Label layoutX="517.0" layoutY="704.0" text="三名背景" />
-      <ColorPicker layoutX="586.0" layoutY="699.0" prefHeight="30.0" prefWidth="30.0" />
-      <Label layoutX="699.0" layoutY="704.0" text="坐标" />
-      <Label layoutX="735.0" layoutY="704.0" prefHeight="20.0" prefWidth="8.0" text="x" />
-      <TextField layoutX="748.0" layoutY="699.0" prefHeight="30.0" prefWidth="60.0" />
-      <Label layoutX="818.0" layoutY="701.0" text="y" />
-      <TextField layoutX="833.0" layoutY="699.0" prefHeight="30.0" prefWidth="60.0" />
-      <Label layoutX="904.0" layoutY="704.0" text="宽" />
-      <TextField layoutX="927.0" layoutY="699.0" prefHeight="30.0" prefWidth="60.0" />
-      <Label layoutX="997.0" layoutY="701.0" text="高" />
-      <TextField layoutX="1018.0" layoutY="696.0" prefHeight="30.0" prefWidth="60.0" />
-      <Label layoutX="25.0" layoutY="742.0" text="竞技排名" />
-      <Label layoutX="107.0" layoutY="742.0" text="编号比例" />
-      <TextField layoutX="183.0" layoutY="737.0" prefHeight="30.0" prefWidth="51.0" />
-      <Label layoutX="250.0" layoutY="742.0" text="团队名称" />
-      <TextField layoutX="318.0" layoutY="737.0" prefHeight="30.0" prefWidth="57.0" />
-      <Label layoutX="391.0" layoutY="742.0" text="分数" />
-      <TextField layoutX="438.0" layoutY="737.0" prefHeight="30.0" prefWidth="57.0" />
-      <Label layoutX="511.0" layoutY="742.0" text="时间" />
-      <TextField layoutX="552.0" layoutY="737.0" prefHeight="30.0" prefWidth="57.0" />
-      <Label layoutX="107.0" layoutY="783.0" text="字色" />
-      <ColorPicker layoutX="152.0" layoutY="778.0" prefHeight="30.0" prefWidth="30.0" />
-      <Label layoutX="200.0" layoutY="783.0" text="背景" />
-      <ColorPicker layoutX="242.0" layoutY="778.0" prefHeight="30.0" prefWidth="30.0" />
-      <Label layoutX="286.0" layoutY="783.0" text="一名背景" />
-      <ColorPicker layoutX="357.0" layoutY="778.0" prefHeight="30.0" prefWidth="30.0" />
-      <Label layoutX="402.0" layoutY="783.0" text="二名背景" />
-      <ColorPicker layoutX="472.0" layoutY="778.0" prefHeight="30.0" prefWidth="30.0" />
-      <Label layoutX="517.0" layoutY="783.0" text="三名背景" />
-      <ColorPicker layoutX="586.0" layoutY="778.0" prefHeight="30.0" prefWidth="30.0" />
-      <Label layoutX="699.0" layoutY="783.0" text="坐标" />
-      <Label layoutX="735.0" layoutY="783.0" prefHeight="20.0" prefWidth="8.0" text="x" />
-      <TextField layoutX="748.0" layoutY="778.0" prefHeight="30.0" prefWidth="60.0" />
-      <Label layoutX="818.0" layoutY="783.0" text="y" />
-      <TextField layoutX="833.0" layoutY="778.0" prefHeight="30.0" prefWidth="60.0" />
-      <Label layoutX="904.0" layoutY="783.0" text="宽" />
-      <TextField layoutX="927.0" layoutY="778.0" prefHeight="30.0" prefWidth="60.0" />
-      <Label layoutX="997.0" layoutY="783.0" text="高" />
-      <TextField layoutX="1018.0" layoutY="778.0" prefHeight="30.0" prefWidth="60.0" />
+      <Label layoutX="26.0" layoutY="19.0" text="答题页" />
+      <Label layoutX="100.0" layoutY="19.0" text="题干" />
+      <ColorPicker fx:id="tg" layoutX="143.0" layoutY="14.0" prefHeight="30.0" prefWidth="30.0" />
+      <Label layoutX="187.0" layoutY="19.0" text="答案" />
+      <ColorPicker fx:id="da" layoutX="228.0" layoutY="14.0" prefHeight="30.0" prefWidth="30.0" />
+      <Label layoutX="278.0" layoutY="19.0" text="默认字号" />
+      <TextField fx:id="mrzh" layoutX="351.0" layoutY="14.0" prefHeight="30.0" prefWidth="45.0" />
+      <Label layoutX="407.0" layoutY="19.0" text="行距" />
+      <TextField fx:id="hj" layoutX="443.0" layoutY="14.0" prefHeight="30.0" prefWidth="60.0" />
+      <Label layoutX="521.0" layoutY="19.0" text="答案前缀" />
+      <TextField fx:id="daqz" layoutX="586.0" layoutY="14.0" prefHeight="30.0" prefWidth="86.0" />
+      <Label layoutX="691.0" layoutY="19.0" text="坐标" />
+      <Label layoutX="732.0" layoutY="19.0" prefHeight="20.0" prefWidth="8.0" text="x" />
+      <TextField fx:id="dtx" layoutX="749.0" layoutY="14.0" prefHeight="30.0" prefWidth="60.0" />
+      <Label layoutX="819.0" layoutY="19.0" text="y" />
+      <TextField fx:id="dty" layoutX="834.0" layoutY="14.0" prefHeight="30.0" prefWidth="60.0" />
+      <Label layoutX="905.0" layoutY="19.0" text="宽" />
+      <TextField fx:id="dtk" layoutX="928.0" layoutY="14.0" prefHeight="30.0" prefWidth="60.0" />
+      <TextField fx:id="dtg" layoutX="1019.0" layoutY="14.0" prefHeight="30.0" prefWidth="60.0" />
+      <Label layoutX="998.0" layoutY="19.0" text="高" />
+      <Label layoutX="100.0" layoutY="56.0" text="题型" />
+      <RadioButton fx:id="thq" userData="1" layoutX="142.0" layoutY="56.0" mnemonicParsing="false" text="题号前" />
+      <RadioButton fx:id="thh" userData="2" layoutX="244.0" layoutY="56.0" mnemonicParsing="false" text="题号后" />
+      <RadioButton fx:id="tgh" userData="3" layoutX="337.0" layoutY="56.0" mnemonicParsing="false" text="题干后" />
+      <Label layoutX="482.0" layoutY="56.0" text="题型标注" />
+      <RadioButton fx:id="fkh" userData="1" layoutX="565.0" layoutY="56.0" mnemonicParsing="false" text="方括号" />
+      <RadioButton fx:id="ykh" userData="2" layoutX="655.0" layoutY="56.0" mnemonicParsing="false" text="圆括号" />
+      <RadioButton fx:id="kg" userData="3" layoutX="759.0" layoutY="56.0" mnemonicParsing="false" text="空格" />
+      <RadioButton fx:id="wu" userData="4" layoutX="843.0" layoutY="56.0" mnemonicParsing="false" text="无" />
+      <Label layoutX="100.0" layoutY="88.0" text="标题" />
+      <ColorPicker fx:id="bt" layoutX="145.0" layoutY="83.0" prefHeight="30.0" prefWidth="30.0" />
+      <CheckBox layoutX="228.0" layoutY="88.0" mnemonicParsing="false" text="显示标题" fx:id="xsbt" />
+      <Label layoutX="363.0" layoutY="88.0" text="字号" />
+      <TextField fx:id="zh" layoutX="407.0" layoutY="84.0" prefHeight="30.0" prefWidth="60.0" />
+      <Label layoutX="100.0" layoutY="125.0" text="记分牌" />
+      <RadioButton fx:id="hxfb" userData="1" layoutX="184.0" layoutY="125.0" mnemonicParsing="false" text="横向排布" />
+      <RadioButton fx:id="zydl" userData="2" layoutX="304.0" layoutY="125.0" mnemonicParsing="false" text="左右对联" />
+      <RadioButton fx:id="jinyong" userData="3" layoutX="435.0" layoutY="125.0" mnemonicParsing="false" text="禁用" />
+      <Label layoutX="100.0" layoutY="165.0" text="队名" />
+      <ColorPicker fx:id="dm" layoutX="143.0" layoutY="160.0" prefHeight="30.0" prefWidth="30.0" />
+      <Label layoutX="212.0" layoutY="165.0" text="队名背景" />
+      <ColorPicker fx:id="dwbj" layoutX="288.0" layoutY="160.0" prefHeight="30.0" prefWidth="30.0" />
+      <Label layoutX="343.0" layoutY="165.0" text="分数" />
+      <ColorPicker fx:id="fs" layoutX="392.0" layoutY="160.0" prefHeight="30.0" prefWidth="30.0" />
+      <Label layoutX="451.0" layoutY="165.0" text="分数背景" />
+      <ColorPicker fx:id="fsbj" layoutX="518.0" layoutY="160.0" prefHeight="30.0" prefWidth="30.0" />
+      <Label layoutX="691.0" layoutY="165.0" text="坐标" />
+      <TextField fx:id="dwx" layoutX="744.0" layoutY="160.0" prefHeight="30.0" prefWidth="60.0" />
+      <Label layoutX="732.0" layoutY="165.0" prefHeight="20.0" prefWidth="8.0" text="x" />
+      <Label layoutX="819.0" layoutY="165.0" text="y" />
+      <TextField fx:id="dwy" layoutX="834.0" layoutY="160.0" prefHeight="30.0" prefWidth="60.0" />
+      <TextField fx:id="dwk" layoutX="928.0" layoutY="160.0" prefHeight="30.0" prefWidth="60.0" />
+      <TextField fx:id="dwg" layoutX="1019.0" layoutY="160.0" prefHeight="30.0" prefWidth="60.0" />
+      <Label layoutX="905.0" layoutY="165.0" text="宽" />
+      <Label layoutX="998.0" layoutY="165.0" text="高" />
+      <Label layoutX="100.0" layoutY="200.0" text="倒计时" />
+      <ColorPicker fx:id="djs" layoutX="160.0" layoutY="195.0" prefHeight="30.0" prefWidth="30.0" />
+      <Label layoutX="213.0" layoutY="200.0" text="字号" />
+      <TextField fx:id="djszh" layoutX="250.0" layoutY="195.0" prefHeight="30.0" prefWidth="57.0" />
+      <Label layoutX="336.0" layoutY="200.0" text="答题状态条" />
+      <Label layoutX="424.0" layoutY="200.0" text="等待" />
+      <ColorPicker fx:id="zttdd" layoutX="466.0" layoutY="195.0" prefHeight="30.0" prefWidth="30.0" />
+      <ColorPicker fx:id="zttyd" layoutX="566.0" layoutY="195.0" prefHeight="30.0" prefWidth="30.0" />
+      <ColorPicker fx:id="zttzq" layoutX="657.0" layoutY="195.0" prefHeight="30.0" prefWidth="30.0" />
+      <ColorPicker fx:id="zttcw" layoutX="749.0" layoutY="195.0" prefHeight="30.0" prefWidth="30.0" />
+      <Label layoutX="527.0" layoutY="200.0" text="已答" />
+      <Label layoutX="614.0" layoutY="200.0" text="答对" />
+      <Label layoutX="712.0" layoutY="200.0" text="答错" />
+      <Label layoutX="828.0" layoutY="200.0" text="坐标" />
+      <TextField fx:id="djsx" layoutX="890.0" layoutY="195.0" prefHeight="30.0" prefWidth="60.0" />
+      <TextField fx:id="djsy" layoutX="989.0" layoutY="195.0" prefHeight="30.0" prefWidth="60.0" />
+      <Label layoutX="969.0" layoutY="200.0" text="y" />
+      <Label layoutX="870.0" layoutY="200.0" prefHeight="20.0" prefWidth="8.0" text="x" />
+      <Separator layoutX="6.0" layoutY="233.0" prefHeight="3.0" prefWidth="1084.0" />
+      <Label layoutX="26.0" layoutY="250.0" text="环节页" />
+      <Label layoutX="108.0" layoutY="250.0" text="环节编号" />
+      <ColorPicker fx:id="hjbh" layoutX="173.0" layoutY="245.0" prefHeight="30.0" prefWidth="30.0" />
+      <Label layoutX="212.0" layoutY="250.0" text="编号背景" />
+      <ColorPicker fx:id="bhbj" layoutX="274.0" layoutY="245.0" prefHeight="30.0" prefWidth="30.0" />
+      <Label layoutX="333.0" layoutY="250.0" text="环节名称" />
+      <ColorPicker fx:id="hjmc" layoutX="396.0" layoutY="245.0" prefHeight="30.0" prefWidth="30.0" />
+      <Label layoutX="458.0" layoutY="250.0" text="名称背景" />
+      <ColorPicker fx:id="mcbj" layoutX="527.0" layoutY="245.0" prefHeight="30.0" prefWidth="30.0" />
+      <Label layoutX="691.0" layoutY="250.0" text="坐标" />
+      <Label layoutX="732.0" layoutY="250.0" prefHeight="20.0" prefWidth="8.0" text="x" />
+      <TextField fx:id="hjx" layoutX="744.0" layoutY="245.0" prefHeight="30.0" prefWidth="60.0" />
+      <Label layoutX="815.0" layoutY="250.0" text="y" />
+      <TextField fx:id="hjy" layoutX="834.0" layoutY="245.0" prefHeight="30.0" prefWidth="60.0" />
+      <Label layoutX="905.0" layoutY="250.0" text="宽" />
+      <TextField fx:id="hjk" layoutX="928.0" layoutY="245.0" prefHeight="30.0" prefWidth="60.0" />
+      <Label layoutX="998.0" layoutY="250.0" text="高" />
+      <TextField fx:id="hjg" layoutX="1019.0" layoutY="245.0" prefHeight="30.0" prefWidth="60.0" />
+      <CheckBox layoutX="109.0" layoutY="293.0" mnemonicParsing="false" text="显示抽奖按钮" fx:id="xscjan" />
+      <CheckBox layoutX="258.0" layoutY="293.0" mnemonicParsing="false" text="显示环节列表" fx:id="xshjlb" />
+      <Separator layoutX="9.0" layoutY="321.0" prefHeight="3.0" prefWidth="1084.0" />
+      <Label layoutX="26.0" layoutY="420.0" text="选题页" />
+      <Label layoutX="100.0" layoutY="420.0" text="选题字色" />
+      <ColorPicker layoutX="173.0" layoutY="415.0" prefHeight="30.0" prefWidth="30.0" fx:id="xtzs" />
+      <Label layoutX="228.0" layoutY="420.0" text="选项背景" />
+      <ColorPicker layoutX="303.0" layoutY="415.0" prefHeight="30.0" prefWidth="30.0" fx:id="xxbj" />
+      <Label layoutX="350.0" layoutY="420.0" text="滚动选题" />
+      <ColorPicker fx:id="gdxt" layoutX="422.0" layoutY="415.0" prefHeight="30.0" prefWidth="30.0" />
+      <Label layoutX="700.0" layoutY="375.0" text="坐标" />
+      <Label layoutX="736.0" layoutY="375.0" prefHeight="20.0" prefWidth="8.0" text="x" />
+      <TextField fx:id="pmx" layoutX="747.0" layoutY="370.0" prefHeight="30.0" prefWidth="60.0" />
+      <Label layoutX="819.0" layoutY="375.0" text="y" />
+      <TextField fx:id="pmy" layoutX="834.0" layoutY="370.0" prefHeight="30.0" prefWidth="60.0" />
+      <Label layoutX="905.0" layoutY="375.0" text="宽" />
+      <TextField fx:id="pmk" layoutX="928.0" layoutY="370.0" prefHeight="30.0" prefWidth="60.0" />
+      <Label layoutX="998.0" layoutY="375.0" text="高" />
+      <TextField fx:id="pmg" layoutX="1019.0" layoutY="370.0" prefHeight="30.0" prefWidth="60.0" />
+      <Label layoutX="26.0" layoutY="461.0" text="规则页" />
+      <Label  layoutX="100.0" layoutY="461.0" text="规则字色" />
+      <ColorPicker fx:id="gzzs" layoutX="173.0" layoutY="456.0" prefHeight="30.0" prefWidth="30.0" />
+      <Label layoutX="700.0" layoutY="422.0" text="坐标" />
+      <Label layoutX="736.0" layoutY="420.0" prefHeight="20.0" prefWidth="8.0" text="x" />
+      <TextField layoutX="749.0" layoutY="415.0" prefHeight="30.0" prefWidth="60.0" fx:id="xtx" />
+      <Label layoutX="819.0" layoutY="420.0" text="y" />
+      <TextField layoutX="834.0" layoutY="415.0" prefHeight="30.0" prefWidth="60.0" fx:id="xty" />
+      <Label layoutX="905.0" layoutY="420.0" text="宽" />
+      <TextField layoutX="928.0" layoutY="415.0" prefHeight="30.0" prefWidth="60.0" fx:id="xtk" />
+      <Label layoutX="998.0" layoutY="420.0" text="高" />
+      <TextField layoutX="1019.0" layoutY="415.0" prefHeight="30.0" prefWidth="60.0" fx:id="xtg" />
+      <Separator layoutX="11.0" layoutY="406.0" prefHeight="3.0" prefWidth="1084.0" />
+      <Label layoutX="26.0" layoutY="333.0" text="排名页" />
+      <Label layoutX="93.0" layoutY="333.0" text="编号比例" />
+      <TextField fx:id="bhbl" layoutX="158.0" layoutY="328.0" prefHeight="30.0" prefWidth="51.0" />
+      <Label layoutX="228.0" layoutY="333.0" text="团队名称比例" />
+      <TextField fx:id="tdmcbl" layoutX="323.0" layoutY="328.0" prefHeight="30.0" prefWidth="57.0" />
+      <Label layoutX="403.0" layoutY="333.0" text="分数比例" />
+      <TextField fx:id="fsbl" layoutX="475.0" layoutY="328.0" prefHeight="30.0" prefWidth="57.0" />
+      <Label layoutX="93.0" layoutY="375.0" text="字色" />
+      <ColorPicker fx:id="pmzs" layoutX="138.0" layoutY="370.0" prefHeight="30.0" prefWidth="30.0" />
+      <Label layoutX="197.0" layoutY="375.0" text="背景" />
+      <ColorPicker fx:id="pmbj" layoutX="236.0" layoutY="370.0" prefHeight="30.0" prefWidth="30.0" />
+      <Label layoutX="278.0" layoutY="375.0" text="一名背景" />
+      <ColorPicker fx:id="ymbj" layoutX="343.0" layoutY="370.0" prefHeight="30.0" prefWidth="30.0" />
+      <Label layoutX="388.0" layoutY="375.0" text="二名背景" />
+      <ColorPicker fx:id="embj" layoutX="452.0" layoutY="370.0" prefHeight="30.0" prefWidth="30.0" />
+      <Label layoutX="503.0" layoutY="375.0" text="三名背景" />
+      <ColorPicker fx:id="smbj" layoutX="571.0" layoutY="370.0" prefHeight="30.0" prefWidth="30.0" />
+      <Label layoutX="700.0" layoutY="461.0" text="坐标" />
+      <Label layoutX="736.0" layoutY="461.0" prefHeight="20.0" prefWidth="8.0" text="x" />
+      <TextField fx:id="gzx" layoutX="749.0" layoutY="456.0" prefHeight="30.0" prefWidth="60.0" />
+      <Label layoutX="819.0" layoutY="461.0" text="y" />
+      <TextField fx:id="gzy" layoutX="834.0" layoutY="456.0" prefHeight="30.0" prefWidth="60.0" />
+      <Label layoutX="905.0" layoutY="461.0" text="宽" />
+      <TextField fx:id="gzk" layoutX="928.0" layoutY="456.0" prefHeight="30.0" prefWidth="60.0" />
+      <Label layoutX="998.0" layoutY="461.0" text="高" />
+      <TextField fx:id="gzg" layoutX="1019.0" layoutY="456.0" prefHeight="30.0" prefWidth="60.0" />
+      <Separator layoutX="11.0" layoutY="449.0" prefHeight="3.0" prefWidth="1084.0" />
+      <Label layoutX="26.0" layoutY="503.0" text="抢答排名" />
+      <Label layoutX="108.0" layoutY="503.0" text="编号比例" />
+      <TextField fx:id="qdbhbl" layoutX="184.0" layoutY="498.0" prefHeight="30.0" prefWidth="51.0" />
+      <Label layoutX="251.0" layoutY="503.0" text="团队名称" />
+      <TextField fx:id="qdtdmc" layoutX="321.0" layoutY="498.0" prefHeight="30.0" prefWidth="57.0" />
+      <Label layoutX="394.0" layoutY="503.0" text="时间" />
+      <TextField fx:id="qdsj" layoutX="439.0" layoutY="498.0" prefHeight="30.0" prefWidth="57.0" />
+      <Label layoutX="108.0" layoutY="549.0" text="字色" />
+      <ColorPicker fx:id="qdzs" layoutX="153.0" layoutY="544.0" prefHeight="30.0" prefWidth="30.0" />
+      <Label layoutX="201.0" layoutY="549.0" text="背景" />
+      <ColorPicker fx:id="qdbj" layoutX="243.0" layoutY="544.0" prefHeight="30.0" prefWidth="30.0" />
+      <Label layoutX="288.0" layoutY="549.0" text="一名背景" />
+      <ColorPicker fx:id="qdymbj" layoutX="358.0" layoutY="544.0" prefHeight="30.0" prefWidth="30.0" />
+      <Label layoutX="403.0" layoutY="549.0" text="二名背景" />
+      <ColorPicker fx:id="qdembj" layoutX="473.0" layoutY="544.0" prefHeight="30.0" prefWidth="30.0" />
+      <Label layoutX="518.0" layoutY="549.0" text="三名背景" />
+      <ColorPicker fx:id="qdsmbj" layoutX="586.0" layoutY="544.0" prefHeight="30.0" prefWidth="30.0" />
+      <Label layoutX="700.0" layoutY="549.0" text="坐标" />
+      <Label layoutX="736.0" layoutY="549.0" prefHeight="20.0" prefWidth="8.0" text="x" />
+      <TextField fx:id="qdx" layoutX="749.0" layoutY="544.0" prefHeight="30.0" prefWidth="60.0" />
+      <Label layoutX="819.0" layoutY="549.0" text="y" />
+      <TextField fx:id="qdy" layoutX="834.0" layoutY="544.0" prefHeight="30.0" prefWidth="60.0" />
+      <Label layoutX="905.0" layoutY="549.0" text="宽" />
+      <TextField fx:id="qdk" layoutX="928.0" layoutY="544.0" prefHeight="30.0" prefWidth="60.0" />
+      <Label layoutX="998.0" layoutY="549.0" text="高" />
+      <TextField fx:id="qdg" layoutX="1019.0" layoutY="544.0" prefHeight="30.0" prefWidth="60.0" />
+      <Label layoutX="26.0" layoutY="586.0" text="选手排名" />
+      <Label layoutX="108.0" layoutY="586.0" text="编号比例" />
+      <TextField layoutX="184.0" layoutY="581.0" prefHeight="30.0" prefWidth="51.0" fx:id="xsbhbl" />
+      <Label layoutX="251.0" layoutY="586.0" text="团队名称" />
+      <TextField layoutX="320.0" layoutY="581.0" prefHeight="30.0" prefWidth="57.0" fx:id="xstdmc" />
+      <Label layoutX="392.0" layoutY="586.0" text="选手" />
+      <TextField layoutX="440.0" layoutY="581.0" prefHeight="30.0" prefWidth="57.0" fx:id="xsxs" />
+      <Label layoutX="512.0" layoutY="586.0" text="分数" />
+      <TextField layoutX="553.0" layoutY="581.0" prefHeight="30.0" prefWidth="57.0" fx:id="xsfs" />
+      <Label layoutX="108.0" layoutY="628.0" text="字色" />
+      <ColorPicker layoutX="153.0" layoutY="623.0" prefHeight="30.0" prefWidth="30.0" fx:id="xszs" />
+      <Label layoutX="201.0" layoutY="628.0" text="背景" />
+      <Separator layoutX="11.0" layoutY="491.0" prefHeight="3.0" prefWidth="1084.0" />
+      <ColorPicker layoutX="243.0" layoutY="623.0" prefHeight="30.0" prefWidth="30.0" fx:id="xsbj" />
+      <Label layoutX="287.0" layoutY="628.0" text="一名背景" />
+      <ColorPicker layoutX="358.0" layoutY="623.0" prefHeight="30.0" prefWidth="30.0" fx:id="xsymbj" />
+      <Label layoutX="403.0" layoutY="628.0" text="二名背景" />
+      <ColorPicker layoutX="473.0" layoutY="623.0" prefHeight="30.0" prefWidth="30.0" fx:id="xsembj" />
+      <Label layoutX="518.0" layoutY="628.0" text="三名背景" />
+      <ColorPicker layoutX="587.0" layoutY="623.0" prefHeight="30.0" prefWidth="30.0" fx:id="xssmbj" />
+      <Label layoutX="700.0" layoutY="628.0" text="坐标" />
+      <Label layoutX="736.0" layoutY="628.0" prefHeight="20.0" prefWidth="8.0" text="x" />
+      <TextField layoutX="749.0" layoutY="623.0" prefHeight="30.0" prefWidth="60.0" fx:id="xsx" />
+      <Label layoutX="819.0" layoutY="625.0" text="y" />
+      <TextField layoutX="834.0" layoutY="623.0" prefHeight="30.0" prefWidth="60.0" fx:id="xsy" />
+      <Label layoutX="905.0" layoutY="628.0" text="宽" />
+      <TextField layoutX="928.0" layoutY="623.0" prefHeight="30.0" prefWidth="60.0" fx:id="xsk" />
+      <Label layoutX="998.0" layoutY="625.0" text="高" />
+      <TextField layoutX="1019.0" layoutY="620.0" prefHeight="30.0" prefWidth="60.0" fx:id="xsg" />
+      <Label layoutX="26.0" layoutY="667.0" text="竞技排名" />
+      <Label layoutX="108.0" layoutY="667.0" text="编号比例" />
+      <TextField fx:id="jjbhbl" layoutX="184.0" layoutY="662.0" prefHeight="30.0" prefWidth="51.0" />
+      <Label layoutX="251.0" layoutY="667.0" text="团队名称" />
+      <TextField fx:id="jjtdmc" layoutX="319.0" layoutY="662.0" prefHeight="30.0" prefWidth="57.0" />
+      <Label layoutX="392.0" layoutY="667.0" text="分数" />
+      <TextField fx:id="jjfs" layoutX="439.0" layoutY="662.0" prefHeight="30.0" prefWidth="57.0" />
+      <Label layoutX="512.0" layoutY="667.0" text="时间" />
+      <TextField fx:id="jjsj" layoutX="553.0" layoutY="662.0" prefHeight="30.0" prefWidth="57.0" />
+      <Label layoutX="108.0" layoutY="708.0" text="字色" />
+      <ColorPicker fx:id="jjzs" layoutX="153.0" layoutY="703.0" prefHeight="30.0" prefWidth="30.0" />
+      <Label layoutX="201.0" layoutY="708.0" text="背景" />
+      <ColorPicker fx:id="jjbj" layoutX="243.0" layoutY="703.0" prefHeight="30.0" prefWidth="30.0" />
+      <Label layoutX="287.0" layoutY="708.0" text="一名背景" />
+      <ColorPicker fx:id="jjymbj" layoutX="358.0" layoutY="703.0" prefHeight="30.0" prefWidth="30.0" />
+      <Label layoutX="403.0" layoutY="708.0" text="二名背景" />
+      <ColorPicker fx:id="jjembj" layoutX="473.0" layoutY="703.0" prefHeight="30.0" prefWidth="30.0" />
+      <Label layoutX="518.0" layoutY="708.0" text="三名背景" />
+      <ColorPicker fx:id="jjsmbj" layoutX="587.0" layoutY="703.0" prefHeight="30.0" prefWidth="30.0" />
+      <Label layoutX="700.0" layoutY="708.0" text="坐标" />
+      <Label layoutX="736.0" layoutY="708.0" prefHeight="20.0" prefWidth="8.0" text="x" />
+      <TextField fx:id="jjx" layoutX="749.0" layoutY="703.0" prefHeight="30.0" prefWidth="60.0" />
+      <Label layoutX="819.0" layoutY="708.0" text="y" />
+      <TextField fx:id="jjy" layoutX="834.0" layoutY="703.0" prefHeight="30.0" prefWidth="60.0" />
+      <Label layoutX="905.0" layoutY="708.0" text="宽" />
+      <TextField fx:id="jjk" layoutX="928.0" layoutY="703.0" prefHeight="30.0" prefWidth="60.0" />
+      <Label layoutX="998.0" layoutY="707.0" text="高" />
+      <TextField fx:id="jjg" layoutX="1019.0" layoutY="703.0" prefHeight="30.0" prefWidth="60.0" />
+      <Separator layoutX="10.0" layoutY="739.0" prefHeight="3.0" prefWidth="1084.0" />
+      <Button layoutX="503.0" layoutY="769.0" mnemonicParsing="false" prefHeight="30.0" prefWidth="127.0" text="保存" onMouseClicked="#updateConfig"/>
    </children>
 </AnchorPane>

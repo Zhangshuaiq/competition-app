@@ -1,0 +1,219 @@
+package competition.controller.preview;
+
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import competition.controller.ControlPane;
+import competition.controller.match.*;
+import competition.entity.Configs;
+import competition.entity.Questions;
+import competition.entity.Stages;
+import competition.mapper.ConfigsMapper;
+import competition.mapper.StagesMapper;
+import competition.util.*;
+import javafx.event.EventHandler;
+import javafx.fxml.FXML;
+import javafx.geometry.Insets;
+import javafx.geometry.Pos;
+import javafx.scene.image.Image;
+import javafx.scene.input.MouseButton;
+import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.*;
+import javafx.scene.paint.Color;
+import javafx.scene.text.*;
+import javafx.scene.transform.Shear;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
+import org.springframework.util.CollectionUtils;
+import org.springframework.util.StringUtils;
+
+import javax.annotation.Resource;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.util.List;
+import java.util.stream.Collectors;
+
+@Component
+@Scope("prototype")
+public class StageNamePreviewPreview extends PreviewPane {
+
+    @Resource
+    private ControlPane controlPane;
+
+    @FXML
+    private AnchorPane container;
+
+    @Resource
+    private StagesMapper stagesMapper;
+
+    @Resource
+    private ConfigsMapper configsMapper;
+    
+    @Resource
+    private StageNamePreview stageNamePreview;
+
+    private static Integer stageId;
+    
+    private Integer innerStageId;
+
+    public static void setStageId(Integer stageId) {
+        StageNamePreviewPreview.stageId = stageId;
+    }
+
+
+    @Override
+    public AnchorPane getPane() {
+        return container;
+    }
+    
+    @FXML
+    public void initialize() {
+        innerStageId= stageId;
+        PreviewStack.addPreview(this);
+        container.setOnMouseClicked(new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent event) {
+                if (event.getButton() == MouseButton.SECONDARY) {
+                    StageNamePreviewAttr.setConfigId(innerStageId);
+                    StageNamePreviewAttr.setReloadPane(controlPane.getQuestionPreview());
+                    Navigator.navigatorTo("/view/match/StageNamePreviewAttr.fxml", "题号", "/view/style.css", false, false);
+                }
+            }
+        });
+        showView();
+    }
+
+    private void showView() {
+        if (ExtendedScreen.hasShow()) {
+            StageNamePreview.setStageId(innerStageId);
+            // 进入比赛
+            Object res = ExtendedScreen.showWithControl("/view/match/StageNamePreview.fxml");
+            if (res != null) {
+                controlPane.setQuestionPreview((StageNamePreview) res);
+            }
+        }
+
+        try {
+            container.setBackground(new Background(new BackgroundImage(
+                    new Image(new FileInputStream(ImageResource.环节名称背景)), BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT, BackgroundPosition.DEFAULT,
+                    new BackgroundSize(Navigator.getWidth(), Navigator.getHeight(), false, false, true, true)
+            )));
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+
+        container.getChildren().clear();
+        StackPane box = new StackPane();
+        container.getChildren().add(box);
+        //   hjbh.setValue(Color.valueOf(huanjieArr[0]));
+        //            bhbj.setValue(Color.valueOf(huanjieArr[1]));
+        //            hjmc.setValue(Color.valueOf(huanjieArr[2]));
+        //            mcbj.setValue(Color.valueOf(huanjieArr[3]));
+        //            hjx.setText(huanjieArr[4]);
+        //            hjy.setText(huanjieArr[5]);
+        //            hjk.setText(huanjieArr[6]);
+        //            hjg.setText(huanjieArr[7]);
+        //            xscjan.setSelected(Boolean.valueOf(huanjieArr[8]));
+        //            xshjlb.setSelected(Boolean.valueOf(huanjieArr[9]));
+        final Configs stageConfig = configsMapper.selectById(2);
+        final Stages stages = stagesMapper.selectById(innerStageId);
+        final String style = stages.getStyle();
+        final String config = stageConfig.getConfig();
+        final String[] huanjieArr = config.split(ConfigSpliter.SPLITER);
+        if (StringUtils.isEmpty(style)) {
+            box.setLayoutX(ConfigSpliter.DEFAULT_X);
+            box.setLayoutY(ConfigSpliter.DEFAULT_Y);
+            box.setPrefWidth(ConfigSpliter.DEFAULT_W);
+            box.setPrefHeight(ConfigSpliter.DEFAULT_H);
+            box.setBackground(new Background(new BackgroundFill(Color.valueOf(huanjieArr[3]), CornerRadii.EMPTY, Insets.EMPTY)));
+
+            Text title = new Text(stages.getName());
+            title.prefWidth(ConfigSpliter.DEFAULT_W);
+            title.prefHeight(ConfigSpliter.DEFAULT_H);
+            title.setTextAlignment(TextAlignment.CENTER);
+            title.setStyle("-fx-fill: " + huanjieArr[2].replace("0x", "#"));
+            box.getChildren().add(title);
+        } else {
+            String[] detailArr = style.split(ConfigSpliter.SPLITER);
+            box.setLayoutX(Integer.parseInt(detailArr[0]));
+            box.setLayoutY(Integer.parseInt(detailArr[1]));
+            box.setPrefWidth(Integer.parseInt(detailArr[2]));
+            box.setPrefHeight(Integer.parseInt(detailArr[3]));
+
+            box.setBackground(new Background(new BackgroundFill(Color.valueOf(huanjieArr[3]), CornerRadii.EMPTY, Insets.EMPTY)));
+            Text title = new Text(stages.getName());
+            title.setTextAlignment(AlignmentUtil.getTextAlign(detailArr[13]));
+            box.setAlignment(AlignmentUtil.getAlign(detailArr[13]));
+            title.prefWidth(Integer.parseInt(detailArr[2]));
+            title.prefHeight(Integer.parseInt(detailArr[3]));
+            title.setStyle("-fx-fill: " + huanjieArr[2].replace("0x", "#"));
+
+
+            Font font = Font.font(detailArr[7], FontWeight.NORMAL, FontPosture.REGULAR, Integer.parseInt(detailArr[8]));
+            title.setFont(font);
+            box.setOnMouseClicked(new EventHandler<MouseEvent>() {
+                @Override
+                public void handle(MouseEvent event) {
+
+                    if (event.getButton() != MouseButton.PRIMARY) {
+                        return;
+                    }
+                    List<Stages> childrenStage = stagesMapper.selectList(new LambdaQueryWrapper<Stages>()
+                            .eq(Stages::getParentId, stages.getId())
+                    );
+                    if (CollectionUtils.isEmpty(childrenStage)) {
+
+
+                        List<Questions> parse = ExcelParser.parse(ExcelParser.Q_PATH, Questions.class);
+                        if (!CollectionUtils.isEmpty(parse)) {
+                            for (int i = 0; i < parse.size(); i++) {
+                                parse.get(i).setSort(i);
+                            }
+                            parse = parse.stream().filter(x -> !StringUtils.isEmpty(x.getStageName()) && x.getStageName().equals(stages.getName())).collect(Collectors.toList());
+                            if (!CollectionUtils.isEmpty(parse)) {
+                                for (int i = 0; i < parse.size(); i++) {
+                                    parse.get(i).setQuestionNumber(i + 1);
+                                }
+                                CurrentQuestions.setQuestions(parse, stages.getId());
+                            }
+                        }
+
+//                        // 展示题目
+
+                        // 内屏展示对应的题目列表
+                        StageQuestionPreviewPreview.setCurrentStage(stages);
+                        controlPane.setPreviewPane(
+                                Navigator.preview("/view/preview/StageQuestionPreview.fxml", "", "/view/style.css", true, true)
+                        );
+                    } else {
+                        // 展示子环节
+                        StagePreview.setParentStageId(innerStageId);
+                        ExtendedScreen.show("/view/match/StagePreview.fxml");
+
+                        StagePreviewPreview.setParentStageId(innerStageId);
+                        controlPane.setPreviewPane(
+                                Navigator.preview("/view/preview/StagePreview.fxml", "", "/view/style.css", true, true)
+                        );
+                    }
+
+                }
+            });
+            if (Boolean.valueOf(detailArr[10])) {
+                title.setStroke(title.getFill());
+            } else {
+                title.setStroke(null);
+
+            }
+            title.getTransforms().clear();
+            if (Boolean.valueOf(detailArr[11])) {
+                title.getTransforms().add(new Shear(-0.3, 0));
+            }
+            title.setUnderline(Boolean.valueOf(detailArr[12]));
+            title.setStrikethrough(Boolean.valueOf(detailArr[9]));
+            box.getChildren().add(title);
+        }
+    }
+
+    @Override
+    public void reload() {
+        showView();
+    }
+}

@@ -10,7 +10,7 @@
 <AnchorPane prefHeight="827.0" prefWidth="1100.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="competition.controller.backend.BuzzConfig">
    <children>
       <Label layoutX="145.0" layoutY="92.0" text="抢答设置：" />
-      <ComboBox layoutX="251.0" layoutY="87.0" prefHeight="30.0" prefWidth="454.0" />
+      <ComboBox fx:id="buzzCombox" layoutX="251.0" layoutY="87.0" prefHeight="30.0" prefWidth="454.0" />
       <Label layoutX="145.0" layoutY="216.0" text="抢答限时：" />
       <TextField layoutX="251.0" layoutY="211.0" prefHeight="30.0" prefWidth="102.0" />
       <Label layoutX="369.0" layoutY="216.0" text="秒" />

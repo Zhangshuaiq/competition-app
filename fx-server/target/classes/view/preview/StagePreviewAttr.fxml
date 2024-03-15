@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.text.*?>
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<AnchorPane prefHeight="536.0" prefWidth="472.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="competition.controller.preview.StagePreviewAttrPreview">
+   <children>
+      <AnchorPane layoutX="40.0" layoutY="42.0" prefHeight="83.0" prefWidth="392.0">
+         <children>
+            <Label layoutX="26.0" layoutY="12.0" text="宽">
+               <font>
+                  <Font name="微软雅黑" size="15.0" />
+               </font></Label>
+            <Label layoutX="26.0" layoutY="55.0" text="高" />
+            <TextField fx:id="widthInput" layoutX="52.0" layoutY="8.0" prefHeight="20.0" prefWidth="96.0" />
+            <TextField fx:id="heightInput" layoutX="52.0" layoutY="49.0" prefHeight="20.0" prefWidth="96.0" />
+            <TextField layoutX="259.0" layoutY="8.0" prefHeight="20.0" prefWidth="96.0" fx:id="xInput" />
+            <TextField fx:id="yInput" layoutX="259.0" layoutY="49.0" prefHeight="20.0" prefWidth="96.0" />
+            <Label layoutX="226.0" layoutY="13.0" text="X">
+               <font>
+                  <Font name="YouYuan" size="15.0" />
+               </font></Label>
+            <Label layoutX="226.0" layoutY="54.0" text="Y" />
+         </children>
+      </AnchorPane>
+      <AnchorPane layoutX="40.0" layoutY="159.0" prefHeight="119.0" prefWidth="392.0">
+         <children>
+            <Label layoutX="255.0" layoutY="14.0" text="背景颜色" />
+            <ColorPicker fx:id="colorInput" layoutX="336.0" layoutY="9.0" prefHeight="30.0" prefWidth="32.0" />
+            <Label layoutX="27.0" layoutY="52.0" text="背景图片" />
+            <TextField fx:id="backgroundPath" layoutX="108.0" layoutY="47.0" prefHeight="30.0" prefWidth="275.0" />
+            <Button layoutX="106.0" layoutY="90.0" mnemonicParsing="false" text="选择图片" />
+            <Button layoutX="196.0" layoutY="90.0" mnemonicParsing="false" text="取消图片" />
+            <CheckBox fx:id="backgroundChoice" layoutX="86.0" layoutY="13.0" mnemonicParsing="false" text="填充背景" />
+         </children>
+      </AnchorPane>
+      <Label layoutX="69.0" layoutY="322.0" text="名称" />
+      <ComboBox fx:id="fontSelector" layoutX="111.0" layoutY="317.0" prefWidth="150.0" />
+      <Label layoutX="286.0" layoutY="322.0" text="大小" />
+      <TextField fx:id="fontSize" layoutX="327.0" layoutY="316.0" prefHeight="20.0" prefWidth="96.0" />
+      <CheckBox fx:id="deleteChoice" layoutX="53.0" layoutY="368.0" mnemonicParsing="false" text="删除线" />
+      <CheckBox fx:id="boldChoice" layoutX="139.0" layoutY="368.0" mnemonicParsing="false" text="加粗" />
+      <CheckBox fx:id="iticChoice" layoutX="232.0" layoutY="368.0" mnemonicParsing="false" text="斜体" />
+      <CheckBox fx:id="underlineChoice" layoutX="316.0" layoutY="368.0" mnemonicParsing="false" text="下划线" />
+      <Label layoutX="69.0" layoutY="435.0" text="水平" />
+      <ComboBox fx:id="textAlignSelector" layoutX="111.0" layoutY="430.0" prefWidth="150.0" />
+      <Label layoutX="288.0" layoutY="435.0" text="行间距" />
+      <TextField fx:id="spaceInput" layoutX="341.0" layoutY="430.0" prefHeight="20.0" prefWidth="96.0" />
+      <Label layoutX="16.0" layoutY="14.0" text="位置大小" textFill="#8a8686" />
+      <Label layoutX="16.0" layoutY="139.0" text="背景设置" textFill="#8a8686" />
+      <Label layoutX="16.0" layoutY="287.0" text="字体" textFill="#8a8686" />
+      <Label layoutX="16.0" layoutY="407.0" text="文字布局" textFill="#8a8686" />
+      <Separator layoutX="89.0" layoutY="26.0" prefHeight="3.0" prefWidth="304.0" />
+      <Separator layoutX="91.0" layoutY="149.0" prefHeight="3.0" prefWidth="304.0" />
+      <Separator layoutX="58.0" layoutY="298.0" prefHeight="3.0" prefWidth="337.0" />
+      <Separator layoutX="95.0" layoutY="417.0" prefHeight="3.0" prefWidth="304.0" />
+      <Button layoutX="111.0" layoutY="482.0" mnemonicParsing="false" onMouseClicked="#saveConfig" prefHeight="30.0" prefWidth="96.0" text="保存" />
+      <Button layoutX="268.0" layoutY="482.0" mnemonicParsing="false" onMouseClicked="#closeStage" prefHeight="30.0" prefWidth="96.0" text="关闭" />
+   </children>
+</AnchorPane>

@@ -7,3 +7,29 @@
     -fx-background-color: #ffffff; /* 当 label 被点击时的背景色 */
     -fx-text-fill: #000000;
 }
+
+.stage-label {
+    -fx-background-color: #3397CE;
+    -fx-text-fill: #ffffff;
+}
+
+.stage-title {
+    -fx-background-color: #ffffff;
+    -fx-text-fill: #000000;
+}
+
+.stage-title-clicked {
+    -fx-background-color: #CCFFFF;
+    -fx-text-fill: #000000;
+    -fx-font-family: "JetBrains Mono ExtraBold";
+}
+
+.stage-control {
+    -fx-background-color:  #CCFFFF;
+    -fx-text-fill: #000000;
+}
+
+.stage-control-clicked {
+    -fx-background-color: #3397CE; /* 当 label 被点击时的背景色 */
+    -fx-text-fill: #ffffff;
+}
