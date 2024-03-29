@@ -1,11 +1,12 @@
 package competition.controller.match;
 
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import competition.entity.Configs;
+import competition.entity.StagesStyle;
 import competition.mapper.ConfigsMapper;
-import competition.util.AlignmentUtil;
-import competition.util.ConfigSpliter;
-import competition.util.PreviewStack;
+import competition.mapper.StagesStyleMapper;
+import competition.util.*;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
@@ -13,6 +14,7 @@ import javafx.scene.control.*;
 import javafx.scene.control.TextField;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
+import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
@@ -20,6 +22,7 @@ import org.springframework.util.StringUtils;
 import javax.annotation.Resource;
 import javax.swing.*;
 import java.awt.*;
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 
@@ -69,12 +72,17 @@ public class StagePreviewAttr {
     private CheckBox backgroundChoice;
 
     @FXML
-    private TextField spaceInput;
+    private TextField spaceInput, wordInput, colNumber;
     
     @Resource
     private ConfigsMapper configsMapper;
     
+    @Resource
+    private StagesStyleMapper stagesStyleMapper;
+    
     private static int configId;
+    
+    private static Integer level;
     
     private static ReloadPane reloadPane;
 
@@ -86,11 +94,36 @@ public class StagePreviewAttr {
         StagePreviewAttr.configId = configId;
     }
 
+
+    public static void setLevel(Integer level) {
+        StagePreviewAttr.level = level;
+    }
+
     @FXML
     public void initialize(){
         textAlignSelector.setItems(FXCollections.observableList(AlignmentUtil.alignNames()));
         fontSelector.setItems(FXCollections.observableList(Arrays.asList(GraphicsEnvironment.getLocalGraphicsEnvironment().getAvailableFontFamilyNames())));
         previewData();
+    }
+    
+    
+    @FXML
+    public void selectImg(){
+        FileChooser chooser = new FileChooser();
+        chooser.setInitialDirectory(new File(BaseDir.IMAGE_DIR));
+        chooser.getExtensionFilters().addAll(
+                new FileChooser.ExtensionFilter("Image Files", "*.png", "*.jpg", "*.gif")
+        );
+        File file = chooser.showOpenDialog(null);
+        if (file!= null) {
+            backgroundPath.setText(file.getAbsolutePath());
+        }
+    }
+    
+    
+    @FXML
+    public void cancelImg(){
+        backgroundPath.setText("");
     }
     
     private void previewData(){
@@ -112,12 +145,24 @@ public class StagePreviewAttr {
             heightInput.setText(huanjieArr[7]);
             xInput.setText(huanjieArr[4]);
             yInput.setText(huanjieArr[5]);
+            colorInput.setValue(Color.valueOf(huanjieArr[3]));
             textAlignSelector.setValue(AlignmentUtil.alignNames().get(0));
             spaceInput.setText("0");
+            wordInput.setText("0");
+            colNumber.setText("1");
           //  fontSelector
         }
-        
-        final String details = configs.getDetails();
+
+        StagesStyle details ;
+        if (level == null) {
+            details = stagesStyleMapper.selectOne(new LambdaQueryWrapper<StagesStyle>()
+                    .isNull(StagesStyle::getParentId)
+            );
+        } else {
+            details = stagesStyleMapper.selectOne(new LambdaQueryWrapper<StagesStyle>()
+                    .eq(StagesStyle::getParentId, level)
+            );
+        }
         if (StringUtils.isEmpty(details)) {
             GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
             // 获取默认字体
@@ -128,7 +173,7 @@ public class StagePreviewAttr {
             deleteChoice.setSelected(false);
             spaceInput.setText("0");
         } else {
-            final String[] detailArr = details.split(ConfigSpliter.SPLITER);
+            final String[] detailArr = details.getStyle().split(ConfigSpliter.SPLITER);
             backgroundChoice.setSelected(Boolean.valueOf(detailArr[4]));
             colorInput.setValue(Color.valueOf(detailArr[5].replace("0x", "#")));
             backgroundPath.setText(detailArr[6]);
@@ -140,6 +185,12 @@ public class StagePreviewAttr {
             underlineChoice.setSelected(Boolean.valueOf(detailArr[12]));
             textAlignSelector.setValue(detailArr[13]);
             spaceInput.setText(detailArr[14]);
+            if (detailArr.length >= 16) {
+                wordInput.setText(detailArr[15]);
+            }
+            if (detailArr.length >= 17) {
+                colNumber.setText(detailArr[16]);
+            }
         }
 
     }
@@ -174,7 +225,7 @@ public class StagePreviewAttr {
         String huanjieVal = huanjieArr[0] + ConfigSpliter.SPLITER
                 + huanjieArr[1]  + ConfigSpliter.SPLITER
                 + huanjieArr[2]  + ConfigSpliter.SPLITER
-                + huanjieArr[3]  + ConfigSpliter.SPLITER
+                + colorInput.getValue()  + ConfigSpliter.SPLITER
                 + x + ConfigSpliter.SPLITER
                 + y + ConfigSpliter.SPLITER
                 + width + ConfigSpliter.SPLITER
@@ -196,9 +247,33 @@ public class StagePreviewAttr {
                 + itic + ConfigSpliter.SPLITER
                 + underlne + ConfigSpliter.SPLITER
                 + alignValue + ConfigSpliter.SPLITER
-                + rowSpace
+                + rowSpace + ConfigSpliter.SPLITER
+                + wordInput.getText() + ConfigSpliter.SPLITER
+                + colNumber.getText()
                 ;
         configs.setConfig(huanjieVal);
+        
+        
+        StagesStyle stagesStyle = new StagesStyle();
+        stagesStyle.setParentId(level);
+        stagesStyle.setStyle(detail);
+        StagesStyle stagesStyle1;
+        if (level == null) {
+            stagesStyle1 = stagesStyleMapper.selectOne(new LambdaQueryWrapper<StagesStyle>()
+                    .isNull(StagesStyle::getParentId)
+            );
+        } else {
+            stagesStyle1 = stagesStyleMapper.selectOne(new LambdaQueryWrapper<StagesStyle>()
+                    .eq(StagesStyle::getParentId, level)
+            );
+        }
+        if (stagesStyle1 == null) {
+            stagesStyleMapper.insert(stagesStyle);
+        } else {
+            stagesStyle.setId(stagesStyle1.getId());
+            stagesStyleMapper.updateById(stagesStyle);
+        }
+        
         configs.setDetails(detail);
         configsMapper.updateById(configs);
 

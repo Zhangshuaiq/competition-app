@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.text.*?>
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<AnchorPane prefHeight="243.0" prefWidth="472.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="competition.controller.board.match.ScorePreviewAttr">
+   <children>
+      <AnchorPane layoutX="40.0" layoutY="42.0" prefHeight="30.0" prefWidth="392.0">
+         <children>
+            <CheckBox fx:id="secondOpenBox" layoutY="4.0" mnemonicParsing="false" text="第二屏展示" />
+         </children>
+      </AnchorPane>
+      <AnchorPane layoutX="40.0" layoutY="159.0" prefHeight="119.0" prefWidth="392.0" />
+      <Label layoutX="69.0" layoutY="111.0" text="名称" />
+      <ComboBox fx:id="fontSelector" layoutX="111.0" layoutY="106.0" prefWidth="150.0" />
+      <Label layoutX="286.0" layoutY="111.0" text="大小" />
+      <TextField fx:id="fontSize" layoutX="327.0" layoutY="105.0" prefHeight="20.0" prefWidth="96.0" />
+      <CheckBox fx:id="deleteChoice" layoutX="53.0" layoutY="157.0" mnemonicParsing="false" text="删除线" />
+      <CheckBox fx:id="boldChoice" layoutX="139.0" layoutY="157.0" mnemonicParsing="false" text="加粗" />
+      <CheckBox fx:id="iticChoice" layoutX="232.0" layoutY="157.0" mnemonicParsing="false" text="斜体" />
+      <CheckBox fx:id="underlineChoice" layoutX="316.0" layoutY="157.0" mnemonicParsing="false" text="下划线" />
+      <Label layoutX="16.0" layoutY="14.0" text="外接屏控制" textFill="#8a8686" />
+      <Label layoutX="16.0" layoutY="76.0" text="字体" textFill="#8a8686" />
+      <Separator layoutX="89.0" layoutY="26.0" prefHeight="3.0" prefWidth="304.0" />
+      <Separator layoutX="58.0" layoutY="87.0" prefHeight="3.0" prefWidth="337.0" />
+      <Button layoutX="111.0" layoutY="207.0" mnemonicParsing="false" onMouseClicked="#saveConfig" prefHeight="30.0" prefWidth="96.0" text="保存" />
+      <Button layoutX="268.0" layoutY="209.0" mnemonicParsing="false" onMouseClicked="#closeStage" prefHeight="30.0" prefWidth="96.0" text="关闭" />
+   </children>
+</AnchorPane>

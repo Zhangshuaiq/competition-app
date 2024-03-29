@@ -1,5 +1,8 @@
 package competition;
 
+import competition.util.MusicPlayer;
+import competition.util.MusicResource;
+import competition.util.ScoreSaver;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.event.EventHandler;
@@ -48,12 +51,17 @@ public class JavaFxApplication extends Application {
 //        });
         
         primaryStage.setOnCloseRequest(event -> {
+            ScoreSaver.saveScore();
             System.exit(0);
         });
         primaryStage.setScene(scene);
         primaryStage.setAlwaysOnTop(true);
+        primaryStage.setTitle("答题竞赛系统");
         primaryStage.show();
+        MusicPlayer.prePlay(MusicResource.SECOND_0);
+
     }
+    
 
     @Override
     public void stop() throws Exception {

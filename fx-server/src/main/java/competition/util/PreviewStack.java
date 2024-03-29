@@ -10,18 +10,24 @@ public class PreviewStack {
     
     private static final Stack<PreviewPane> previewStack = new Stack<>();
     
+    private static final Stack<PreviewPane> returnedStack = new Stack<>();
+    
 
     public static final void addPreview (PreviewPane pane) {
         previewStack.add(pane);
     }
+    
+    public static final void addReturn (PreviewPane pane) {
+        returnedStack.add(pane);
+    }
 
     public static final PreviewPane removePreview() {
-        if (previewStack.isEmpty()) {
+        if (returnedStack.isEmpty()) {
             return null;
         }
-        PreviewPane pop = previewStack.pop();
-        if (previewStack.isEmpty()) {
-            previewStack.add(pop);
+        PreviewPane pop = returnedStack.pop();
+        if (returnedStack.isEmpty()) {
+            returnedStack.add(pop);
         }
         pop.reload();
         return pop; 

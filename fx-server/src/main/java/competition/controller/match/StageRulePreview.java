@@ -56,8 +56,8 @@ public class StageRulePreview implements ReloadPane{
 
         try {
             container.setBackground(new Background(new BackgroundImage(
-                    new Image(new FileInputStream(ImageResource.环节规则背景)), BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT, BackgroundPosition.DEFAULT,
-                    new BackgroundSize(ExtendedScreen.getWidth(), ExtendedScreen.getHeight(), false, false, true, true)
+                    new Image(new FileInputStream(ImageResource.环节规则背景())), BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT, BackgroundPosition.DEFAULT,
+                    new BackgroundSize(ExtendedScreen.getWidth(), ExtendedScreen.getHeight(), false, false, false, false)
             )));
         } catch (FileNotFoundException e) {
             e.printStackTrace();

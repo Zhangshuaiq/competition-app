@@ -5,9 +5,8 @@ import competition.controller.board.BoardPane;
 import competition.controller.match.Model60;
 import competition.controller.match.Model61;
 import competition.controller.match.ReloadPane;
-import competition.controller.preview.PreviewPane;
-import competition.controller.preview.QuestionPreviewPreview;
-import competition.controller.preview.StageRulePreviewPreview;
+import competition.controller.match.StageQuestionPreview;
+import competition.controller.preview.*;
 import competition.entity.Configs;
 import competition.entity.Questions;
 import competition.entity.Stages;
@@ -27,10 +26,7 @@ import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
-import javafx.scene.control.Button;
-import javafx.scene.control.ComboBox;
-import javafx.scene.control.Label;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
@@ -41,10 +37,7 @@ import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
 import javax.annotation.Resource;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Component
@@ -56,7 +49,9 @@ public class ControlPane {
 
     @FXML
     private VBox stageList, stageChildList;
-
+    
+    @FXML
+    private CheckBox teamSelector;
 
     @FXML
     private Button startAnswerBtn;
@@ -79,8 +74,14 @@ public class ControlPane {
     @FXML
     private Button timingBtn, controlBtn;
 
+    
+    // 时间输入
     @FXML
     private TextField timeSecondText;
+
+    // 分数输入
+    @FXML
+    private TextField scoreInput;
 
 
     @Resource
@@ -92,7 +93,7 @@ public class ControlPane {
     @Resource
     private TeamsMapper teamsMapper;
 
-    private Stages currentStage;
+    private Stages currentStage, controlStage;
 
 
     // 外接显示屏展示题目
@@ -114,9 +115,6 @@ public class ControlPane {
     // 计分控制
     @FXML
     private ComboBox<String> teamComBox, memberComBox;
-
-    @FXML
-    private TextField scoreInput;
 
     @FXML
     public Label teamScore, memberScore;
@@ -168,6 +166,9 @@ public class ControlPane {
             @Override
             public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
                 int selectedIndex = teamComBox.getSelectionModel().getSelectedIndex();
+                if (selectedIndex == -1) {
+                    return;
+                }
                 String members = TeamRuntime.getTeams().get(selectedIndex).getMembers();
                 if (!StringUtils.isEmpty(members)) {
                     memberComBox.setItems(FXCollections.observableList(Arrays.asList(members.split(","))));
@@ -193,6 +194,8 @@ public class ControlPane {
 
             }
         });
+
+        showScoreBoard();
     }
 
     private void showStage() {
@@ -406,26 +409,74 @@ public class ControlPane {
         } else {
             timeBoardPreview.shows();
         }
-        timeBoardPreview.startTiming(currentStage.getOrderVal() == 1, time);
-        timingBtn.setDisable(true);
+        if (timeBoardPreview != null) {
+            timeBoardPreview.startTiming(currentStage.getOrderVal() == 1, time);
+            timingBtn.setDisable(true);
+        }
+ 
     }
 
     @FXML
     public void backLast() {
-        PreviewPane p = PreviewStack.removePreview();
-        if (p != null) {
-            if (previewPane == p) {
-                p = PreviewStack.removePreview();
+        PreviewPane last = PreviewStack.getLast();
+        
+        if (last instanceof QuestionPreviewPreview) {
+            // 答题 返回 选题界面
+            QuestionPreviewPreview x = (QuestionPreviewPreview) previewPane;
+            Questions q = x.getInner();
+            Stages stages = stagesMapper.selectOne(new LambdaQueryWrapper<Stages>()
+                    .eq(Stages::getSortVal, q.getStageNumber())
+            );
+            StageQuestionPreviewPreview.setCurrentStage(stages);
+            previewPane = Navigator.preview("/view/preview/StageQuestionPreview.fxml", "", "/view/style.css", true, true);
+        } else if (last instanceof StageQuestionPreviewPreview) {
+            // 选题界面 返回 环节名称
+            StageQuestionPreviewPreview x = (StageQuestionPreviewPreview) previewPane;
+            StageNamePreviewPreview.setStageId(x.getInner().getId());
+            previewPane = Navigator.preview("/view/preview/StageNamePreview.fxml", "", "/view/style.css", true, true);
+        } else if (last instanceof StageNamePreviewPreview) {
+            // 环节名称 返回 环节列表
+            StageNamePreviewPreview x = (StageNamePreviewPreview) previewPane;
+            Integer stageId = x.getInnerStageId();
+            Stages stages = stagesMapper.selectById(stageId);
+            if (stages.getParentId() == null) {
+                StagePreviewPreview.setParentStageId(null);
+            } else {
+                StagePreviewPreview.setParentStageId(stages.getParentId());
             }
-            if (p != null) {
-                previewPane = p;
-                PreviewStack.addPreview(p);
-                Navigator.previewStage.setScene(previewPane.getScene());
+            previewPane = Navigator.preview("/view/preview/StagePreview.fxml", "", "/view/style.css", true, true);
+        } else if (last instanceof StagePreviewPreview) {
+            // 环节列表 返回 环节名称
+            StagePreviewPreview x = (StagePreviewPreview) previewPane;
+            if (x.getInnerStageID() == null) {
+                // 已经到了最上一层
+                return;
+            } else {
+                StageNamePreviewPreview.setStageId(x.getInnerStageID());
+                previewPane = Navigator.preview("/view/preview/StageNamePreview.fxml", "", "/view/style.css", true, true);
             }
         }
+//        PreviewPane p = PreviewStack.removePreview();
+//        if (p != null) {
+//            if (previewPane == p) {
+//                p = PreviewStack.removePreview();
+//            }
+//            if (p != null) {
+//                previewPane = p;
+//                PreviewStack.addPreview(p);
+//                Navigator.previewStage.setScene(previewPane.getScene());
+//            }
+//        }
         GlobalCache.showAnswer = false;
     }
 
+    
+    // 选择面板所有队伍
+    @FXML
+    public void selectAllTeam(){
+        scoreBoardPreview.selectAll(teamSelector.isSelected());
+    }
+    
 
     // 竞技排行
     @FXML
@@ -476,10 +527,58 @@ public class ControlPane {
 
         stageChildList.setVisible(true);
         final List<Stages> stages = stagesMapper.selectList(new LambdaQueryWrapper<Stages>()
-                .eq(Stages::getParentId, currentStage.getId())
+                .eq(Stages::getParentId, controlStage.getId())
                 .orderByAsc(Stages::getSortVal)
         );
         showStageData(stages, stageChildList);
+    }
+    
+    public void setCurrentStage(Stages stage){
+        currentStage = stage;
+        timeSecondText.setText(currentStage.getDescTime().toString());
+        scoreInput.setText(currentStage.getScorePerQ() + "");
+    }
+    
+    public void selectQuestion(String value){
+        questionCombox.setValue(value);
+    }
+    
+    public void showQuestions(){
+        boolean last = stagesMapper.selectList(new LambdaQueryWrapper<Stages>()
+                .eq(Stages::getParentId, currentStage.getId())).isEmpty();
+        if (last) {
+            // 显示题目
+            List<Questions> parse = ExcelParser.parse(ExcelParser.Q_PATH, Questions.class);
+            if (!CollectionUtils.isEmpty(parse)) {
+                for (int i = 0; i < parse.size(); i++) {
+                    parse.get(i).setSort(i);
+                }
+                // 环节名字索引
+                parse = parse.stream().filter(x -> !StringUtils.isEmpty(x.getStageName()) && x.getStageName().equals(currentStage.getName())).collect(Collectors.toList());
+                if (!CollectionUtils.isEmpty(parse)) {
+                    for (int i = 0; i < parse.size(); i++) {
+                        parse.get(i).setQuestionNumber(i + 1);
+                    }
+                    CurrentQuestions.setQuestions(parse, currentStage.getId());
+                    final List<String> questionKeys = parse.stream().map(x -> x.getQuestionNumber().toString()).collect(Collectors.toList());
+
+                    questionCombox.setItems(FXCollections.observableList(questionKeys));
+//                                // 扩展屏显示对应的题目列表
+//                                StageQuestionPreview.setCurrentStage(currentStage);
+//                                ExtendedScreen.show("/view/match/StageQuestionPreview.fxml");
+//                                
+//                                // 内屏展示对应的题目列表
+//                                StageQuestionPreviewPreview.setCurrentStage(currentStage);
+//                                previewPane.getChildren().clear();
+//                                previewPane.getChildren().add(Navigator.load("/view/preview/StageQuestionPreview.fxml"));
+                } else {
+                    questionCombox.setItems(FXCollections.emptyObservableList());
+                    questionCombox.setValue(null);
+                }
+
+            }
+            // ExtendedScreen.show("/view/match/StagePreview.fxml");
+        }
     }
 
     private void showStageData(List<Stages> stages, VBox stageBox) {
@@ -499,60 +598,57 @@ public class ControlPane {
                         return;
                     }
                     // 设置时间
-                    time = stage.getDescTime();
-                    timeSecondText.setText(time + "");
+//                    time = stage.getDescTime();
+//                    timeSecondText.setText(time + "");
 
                     // 设置分数
-                    scoreInput.setText(stage.getScorePerQ().toString());
+//                    scoreInput.setText(stage.getScorePerQ().toString());
 
                     for (Node child : stageBox.getChildren()) {
                         child.getStyleClass().remove("stage-control-clicked");
                     }
                     label.getStyleClass().add("stage-control-clicked");
                     stageText.setText(stage.getName());
-                    currentStage = stage;
-                    if (StringUtils.isEmpty(currentStage.getQuestionType()) || currentStage.getQuestionType().equals("0")) {
-                        startAnswerBtn.setDisable(true);
-                    } else {
-                        startAnswerBtn.setDisable(false);
-                    }
+                    controlStage = stage;
+//                    if (StringUtils.isEmpty(currentStage.getQuestionType()) || currentStage.getQuestionType().equals("0")) {
+//                        startAnswerBtn.setDisable(true);
+//                    } else {
+//                        startAnswerBtn.setDisable(false);
+//                    }
                     boolean last = stagesMapper.selectList(new LambdaQueryWrapper<Stages>()
                             .eq(Stages::getParentId, stage.getId())
                     ).isEmpty();
                     if (last) {
-                        // 显示题目
-                        List<Questions> parse = ExcelParser.parse(ExcelParser.Q_PATH, Questions.class);
-                        if (!CollectionUtils.isEmpty(parse)) {
-                            for (int i = 0; i < parse.size(); i++) {
-                                parse.get(i).setSort(i);
-                            }
-                            // 环节名字索引
-                            parse = parse.stream().filter(x -> !StringUtils.isEmpty(x.getStageName()) && x.getStageName().equals(stage.getName())).collect(Collectors.toList());
-                            if (!CollectionUtils.isEmpty(parse)) {
-                                for (int i = 0; i < parse.size(); i++) {
-                                    parse.get(i).setQuestionNumber(i + 1);
-                                }
-                                CurrentQuestions.setQuestions(parse, stage.getId());
-                                final List<String> questionKeys = parse.stream().map(x -> x.getQuestionNumber().toString()).collect(Collectors.toList());
-
-                                questionCombox.setItems(FXCollections.observableList(questionKeys));
-//                                // 扩展屏显示对应的题目列表
-//                                StageQuestionPreview.setCurrentStage(currentStage);
-//                                ExtendedScreen.show("/view/match/StageQuestionPreview.fxml");
-//                                
-//                                // 内屏展示对应的题目列表
-//                                StageQuestionPreviewPreview.setCurrentStage(currentStage);
-//                                previewPane.getChildren().clear();
-//                                previewPane.getChildren().add(Navigator.load("/view/preview/StageQuestionPreview.fxml"));
-                            } else {
-                                questionCombox.setItems(FXCollections.emptyObservableList());
-                                questionCombox.setValue(null);
-                            }
-
-                        } else {
-
-                        }
-
+//                        // 显示题目
+//                        List<Questions> parse = ExcelParser.parse(ExcelParser.Q_PATH, Questions.class);
+//                        if (!CollectionUtils.isEmpty(parse)) {
+//                            for (int i = 0; i < parse.size(); i++) {
+//                                parse.get(i).setSort(i);
+//                            }
+//                            // 环节名字索引
+//                            parse = parse.stream().filter(x -> !StringUtils.isEmpty(x.getStageName()) && x.getStageName().equals(stage.getName())).collect(Collectors.toList());
+//                            if (!CollectionUtils.isEmpty(parse)) {
+//                                for (int i = 0; i < parse.size(); i++) {
+//                                    parse.get(i).setQuestionNumber(i + 1);
+//                                }
+//                                CurrentQuestions.setQuestions(parse, stage.getId());
+//                                final List<String> questionKeys = parse.stream().map(x -> x.getQuestionNumber().toString()).collect(Collectors.toList());
+//
+//                                questionCombox.setItems(FXCollections.observableList(questionKeys));
+////                                // 扩展屏显示对应的题目列表
+////                                StageQuestionPreview.setCurrentStage(currentStage);
+////                                ExtendedScreen.show("/view/match/StageQuestionPreview.fxml");
+////                                
+////                                // 内屏展示对应的题目列表
+////                                StageQuestionPreviewPreview.setCurrentStage(currentStage);
+////                                previewPane.getChildren().clear();
+////                                previewPane.getChildren().add(Navigator.load("/view/preview/StageQuestionPreview.fxml"));
+//                            } else {
+//                                questionCombox.setItems(FXCollections.emptyObservableList());
+//                                questionCombox.setValue(null);
+//                            }
+//
+//                        }
                         // ExtendedScreen.show("/view/match/StagePreview.fxml");
                     } else {
                         showStageName();
@@ -577,6 +673,9 @@ public class ControlPane {
             if (previewPane != null) {
                 PreviewStack.reload();
             }
+            if (scoreBoardPreview != null) {
+                scoreBoardPreview.reload();
+            }
         }
 
     }
@@ -584,42 +683,73 @@ public class ControlPane {
     // 显示环节规则
     @FXML
     public void showStageRule() {
-        if (currentStage != null) {
-            if (!StringUtils.isEmpty(currentStage.getRuleContent())) {
-                StageRulePreviewPreview.setCurrentStage(currentStage);
+        if (controlStage != null) {
+            if (!StringUtils.isEmpty(controlStage.getRuleContent())) {
+                StageRulePreviewPreview.setCurrentStage(controlStage);
                 previewPane = Navigator.preview("/view/preview/StageRulePreview.fxml", "", "/view/style.css", true, true);
-                messageHandler.notifyEnterWait("7", currentStage.getRuleContent());
-            } else {
-                enterStage();
+                messageHandler.notifyEnterWait("7", controlStage.getRuleContent());
             }
-           
-            
         }
-
     }
 
+    
+    public void emptyTeam(){
+        teamComBox.setValue("");
+        memberComBox.setValue("");
+    }
 
+    @FXML
     // 进入环节
     public void enterStage() {
-        if (currentStage.getQuestionType() != null) {
-            int size = 0;
-            List<Teams> teams = teamsMapper.selectList(new LambdaQueryWrapper<>());
-            for (Teams t : teams) {
-                String members = t.getMembers();
-                if (!StringUtils.isEmpty(members)) {
-                    String[] split = members.split(",");
-                    size += split.length;
+        // 外屏和内屏进入对应的环节
+        if (controlStage != null) {
+            boolean last = stagesMapper.selectList(new LambdaQueryWrapper<Stages>()
+                    .eq(Stages::getParentId, controlStage.getId())
+            ).isEmpty();
+            // 底层环节，展示题目
+            if (last) {
+                List<Questions> parse = ExcelParser.parse(ExcelParser.Q_PATH, Questions.class);
+                if (!CollectionUtils.isEmpty(parse)) {
+                    for (int i = 0; i < parse.size(); i++) {
+                        parse.get(i).setSort(i);
+                    }
+                    parse = parse.stream().filter(x -> !StringUtils.isEmpty(x.getStageNumber()) && x.getStageNumber().equals(controlStage.getSortVal())).collect(Collectors.toList());
+                    if (!CollectionUtils.isEmpty(parse)) {
+                        for (int i = 0; i < parse.size(); i++) {
+                            parse.get(i).setQuestionNumber(i + 1);
+                        }
+                        CurrentQuestions.setQuestions(parse, controlStage.getId());
+                    }
                 }
-            }
-            if (currentStage.getQuestionType().equals(7)) {
-                // 团队竞技
-                messageHandler.notifyEnterWait("7", currentStage.getRuleContent());
+                StageQuestionPreviewPreview.setCurrentStage(controlStage);
+                previewPane = Navigator.preview("/view/preview/StageQuestionPreview.fxml", "", "/view/style.css", true, true);
+                previewPane.reload();
             } else {
-                // 个人答题模式 | 团队答题模式
-                messageHandler.notifyEnterWait("6" + currentStage.getM6().toString(), currentStage.getRuleContent());
+                StageNamePreviewPreview.setStageId(controlStage.getId());
+                // 展示环节名称
+                previewPane = Navigator.preview("/view/preview/StageNamePreview.fxml", "", "/view/style.css", true, true);
+                previewPane.reload();
             }
-
         }
+//        if (currentStage.getQuestionType() != null) {
+//            int size = 0;
+//            List<Teams> teams = teamsMapper.selectList(new LambdaQueryWrapper<>());
+//            for (Teams t : teams) {
+//                String members = t.getMembers();
+//                if (!StringUtils.isEmpty(members)) {
+//                    String[] split = members.split(",");
+//                    size += split.length;
+//                }
+//            }
+//            if (currentStage.getQuestionType().equals(7)) {
+//                // 团队竞技
+//                messageHandler.notifyEnterWait("7", currentStage.getRuleContent());
+//            } else {
+//                // 个人答题模式 | 团队答题模式
+//                messageHandler.notifyEnterWait("6" + currentStage.getM6().toString(), currentStage.getRuleContent());
+//            }
+//
+//        }
     }
 
 
@@ -705,6 +835,9 @@ public class ControlPane {
         if (previewPane != null) {
             previewPane.showAnswer();
         }
+        if (timeVisibleBtn.getText().equals("消失")) {
+            timeBoardPreview.close();
+        }
     }
 
 
@@ -765,18 +898,19 @@ public class ControlPane {
 
     @FXML
     public void exitApp() {
+        ScoreSaver.saveScore();
         System.exit(0);
     }
 
-
-    @FXML
-    public void enterMatch() {
-        showStage();
-        stageText.setVisible(true);
+    
+    public void showScoreBoard(){
         Configs configs = configsMapper.selectById(1);
         String config = configs.getConfig();
 
         List<Teams> teams = teamsMapper.selectList(new LambdaQueryWrapper<>());
+        // 排序队伍，按照编码排序
+        teams.sort(Comparator.comparingInt(o -> Integer.parseInt(o.getCode())));
+        
         for (Teams team : teams) {
             team.setCurrentScore(team.getTeamScore());
             team.setMemberScores(new ArrayList<>());
@@ -796,19 +930,81 @@ public class ControlPane {
                 if (scoreBoardPreview == null) {
                     scoreBoardPreview = (BoardPane) Navigator.scoreWithPos("/view/board/preview/ScoreBoardH.fxml", "", "/view/style.css", true);
                 }
-                scoreBoardPreview.shows();
+                if (scoreBoardPreview != null) {
+                    scoreBoardPreview.shows();
+                }
+               
             } else if (boardLayout.equals("2")) {
                 if (scoreBoardPreview == null) {
                     scoreBoardPreview = (BoardPane) Navigator.scoreWithPos("/view/board/preview/ScoreBoardV.fxml", "", "/view/style.css", true);
                 }
-                scoreBoardPreview.shows();
+                if (scoreBoardPreview != null) {
+                    scoreBoardPreview.shows();
+                }
             }
         }
+    }
+    
+    
+    public void updateScoreBoard(){
+        Configs configs = configsMapper.selectById(1);
+        String config = configs.getConfig();
+        if (!StringUtils.isEmpty(config)) {
+            String[] split = config.split(ConfigSpliter.SPLITER);
+            String boardLayout = split[14];
+            if (boardLayout.equals("1")) {
+                    scoreBoardPreview = (BoardPane) Navigator.scoreWithPos("/view/board/preview/ScoreBoardH.fxml", "", "/view/style.css", true);
+            } else if (boardLayout.equals("2")) {
+                    scoreBoardPreview = (BoardPane) Navigator.scoreWithPos("/view/board/preview/ScoreBoardV.fxml", "", "/view/style.css", true);
+            }
+        }
+    }
+
+    @FXML
+    public void enterMatch() {
+//        Configs configs = configsMapper.selectById(1);
+//        String config = configs.getConfig();
+//
+//        List<Teams> teams = teamsMapper.selectList(new LambdaQueryWrapper<>());
+//        for (Teams team : teams) {
+//            team.setCurrentScore(team.getTeamScore());
+//            team.setMemberScores(new ArrayList<>());
+//            if (!StringUtils.isEmpty(team.getMembers())) {
+//                String[] split = team.getMembers().split(",");
+//                for (String s : split) {
+//                    team.getMemberScores().add(team.getMemberScore());
+//                }
+//            }
+//        }
+//        TeamRuntime.setTeams(teams);
+//        teamComBox.setItems(FXCollections.observableList(teams.stream().map(x -> x.getShortName()).collect(Collectors.toList())));
+//        if (!StringUtils.isEmpty(config)) {
+//            String[] split = config.split(ConfigSpliter.SPLITER);
+//            String boardLayout = split[14];
+//            if (boardLayout.equals("1")) {
+//                if (scoreBoardPreview == null) {
+//                    scoreBoardPreview = (BoardPane) Navigator.scoreWithPos("/view/board/preview/ScoreBoardH.fxml", "", "/view/style.css", true);
+//                }
+//                scoreBoardPreview.shows();
+//            } else if (boardLayout.equals("2")) {
+//                if (scoreBoardPreview == null) {
+//                    scoreBoardPreview = (BoardPane) Navigator.scoreWithPos("/view/board/preview/ScoreBoardV.fxml", "", "/view/style.css", true);
+//                }
+//                scoreBoardPreview.shows();
+//            }
+//        }
 
         // 内屏展示
+        showStage();
+        stageText.setVisible(true);
+        StagePreviewPreview.setParentStageId(null);
         previewPane = Navigator.preview("/view/preview/StagePreview.fxml", "", "/view/style.css", false, true);
         previewPane.shows();
 
+    }
+
+    public BoardPane getScoreBoardPreview() {
+        return scoreBoardPreview;
     }
 
     public PreviewPane getPreviewPane() {

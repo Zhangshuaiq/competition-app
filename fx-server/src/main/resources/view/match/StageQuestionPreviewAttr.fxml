@@ -8,7 +8,9 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.Font?>
 
-<TabPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="570.0" prefWidth="473.0" tabClosingPolicy="UNAVAILABLE" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="competition.controller.match.StageQuestionPreviewAttr">
+<TabPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity"
+         prefHeight="633.0" prefWidth="473.0" tabClosingPolicy="UNAVAILABLE" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" 
+         fx:controller="competition.controller.match.StageQuestionPreviewAttr">
   <tabs>
     <Tab text="              环节名              ">
       <content>
@@ -37,9 +39,9 @@
                         <Label layoutX="255.0" layoutY="14.0" text="背景颜色" />
                         <ColorPicker fx:id="nameColorInput" layoutX="336.0" layoutY="9.0" prefHeight="30.0" prefWidth="32.0" />
                         <Label layoutX="27.0" layoutY="52.0" text="背景图片" />
-                        <TextField fx:id="nameBackgroundPath" layoutX="108.0" layoutY="47.0" prefHeight="30.0" prefWidth="275.0" />
-                        <Button layoutX="106.0" layoutY="90.0" mnemonicParsing="false" text="选择图片" />
-                        <Button layoutX="196.0" layoutY="90.0" mnemonicParsing="false" text="取消图片" />
+                        <TextField fx:id="nameBackgroundPath" disable="true" layoutX="108.0" layoutY="47.0" prefHeight="30.0" prefWidth="275.0" />
+                        <Button layoutX="106.0" layoutY="90.0" mnemonicParsing="false" onMouseClicked="#selectNameImg" text="选择图片" />
+                        <Button layoutX="196.0" layoutY="90.0" mnemonicParsing="false" onMouseClicked="#cancelNameImg" text="取消图片" />
                         <CheckBox fx:id="nameBackgroundChoice" layoutX="86.0" layoutY="13.0" mnemonicParsing="false" text="填充背景" />
                     </children>
                 </AnchorPane>
@@ -96,9 +98,9 @@
                         <Label layoutX="255.0" layoutY="14.0" text="背景颜色" />
                         <ColorPicker fx:id="numberColorInput" layoutX="336.0" layoutY="9.0" prefHeight="30.0" prefWidth="32.0" />
                         <Label layoutX="27.0" layoutY="52.0" text="背景图片" />
-                        <TextField fx:id="numberBackgroundPath" layoutX="108.0" layoutY="47.0" prefHeight="30.0" prefWidth="275.0" />
-                        <Button layoutX="106.0" layoutY="90.0" mnemonicParsing="false" text="选择图片" />
-                        <Button layoutX="196.0" layoutY="90.0" mnemonicParsing="false" text="取消图片" />
+                        <TextField fx:id="numberBackgroundPath" disable="true" layoutX="108.0" layoutY="47.0" prefHeight="30.0" prefWidth="275.0" />
+                        <Button layoutX="106.0" layoutY="90.0" mnemonicParsing="false" onMouseClicked="#selectCodeImg" text="选择图片" />
+                        <Button layoutX="196.0" layoutY="90.0" mnemonicParsing="false" onMouseClicked="#cancelCodeImg" text="取消图片" />
                         <CheckBox fx:id="numberBackgroundChoice" layoutX="86.0" layoutY="13.0" mnemonicParsing="false" text="填充背景" />
                     </children>
                 </AnchorPane>
@@ -122,8 +124,12 @@
                 <Separator layoutX="91.0" layoutY="149.0" prefHeight="3.0" prefWidth="304.0" />
                 <Separator layoutX="58.0" layoutY="298.0" prefHeight="3.0" prefWidth="337.0" />
                 <Separator layoutX="95.0" layoutY="417.0" prefHeight="3.0" prefWidth="304.0" />
-                <Button layoutX="111.0" layoutY="482.0" mnemonicParsing="false" onMouseClicked="#saveNumberConfig" prefHeight="30.0" prefWidth="96.0" text="保存" />
-                  <Button layoutX="263.0" layoutY="482.0" mnemonicParsing="false" onMouseClicked="#closeDialog" prefHeight="30.0" prefWidth="96.0" text="关闭" />
+                <Button layoutX="111.0" layoutY="536.0" mnemonicParsing="false" onMouseClicked="#saveNumberConfig" prefHeight="30.0" prefWidth="96.0" text="保存" />
+                  <Button layoutX="263.0" layoutY="536.0" mnemonicParsing="false" onMouseClicked="#closeDialog" prefHeight="30.0" prefWidth="96.0" text="关闭" />
+                  <Separator layoutX="94.0" layoutY="474.0" prefHeight="3.0" prefWidth="304.0" />
+                  <Label layoutX="15.0" layoutY="464.0" text="排列布局" textFill="#8a8686" />
+                  <Label layoutX="70.0" layoutY="495.0" text="列数" />
+                  <TextField fx:id="colNumber" layoutX="111.0" layoutY="490.0" prefHeight="30.0" prefWidth="154.0" />
             </children>
         </AnchorPane>
       </content>

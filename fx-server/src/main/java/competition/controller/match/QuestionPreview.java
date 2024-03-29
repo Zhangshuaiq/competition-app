@@ -39,6 +39,9 @@ public class QuestionPreview implements ReloadPane{
     
     
     @FXML
+    private StackPane backPane;
+    
+    @FXML
     private AnchorPane container;
     
     
@@ -89,11 +92,11 @@ public class QuestionPreview implements ReloadPane{
     
     
     private void showData(){
-        daanLabel.setVisible(GlobalCache.showAnswer);
+        backPane.setVisible(GlobalCache.showAnswer);
         try {
             container.setBackground(new Background(new BackgroundImage(
-                    new Image(new FileInputStream(ImageResource.答题背景)), BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT, BackgroundPosition.DEFAULT,
-                    new BackgroundSize(ExtendedScreen.getWidth(), ExtendedScreen.getHeight(), false, false, true, true)
+                    new Image(new FileInputStream(ImageResource.答题背景())), BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT, BackgroundPosition.CENTER,
+                    new BackgroundSize(ExtendedScreen.getWidth(), ExtendedScreen.getHeight(), false, false, false, false)
             )));
         } catch (FileNotFoundException e) {
             e.printStackTrace();
@@ -129,36 +132,42 @@ public class QuestionPreview implements ReloadPane{
             if (!StringUtils.isEmpty(current.getChoiceA())) {
                 Text chA = new Text("A." + current.getChoiceA());
                 chA.prefWidth(Integer.parseInt(split[7]));
+                chA.setFill(Color.valueOf(split[0]));
                 tiganBox.getChildren().add(chA);
             }
 
             if (!StringUtils.isEmpty(current.getChoiceB())) {
                 Text chB = new Text("B." + current.getChoiceB());
                 chB.prefWidth(Integer.parseInt(split[7]));
+                chB.setFill(Color.valueOf(split[0]));
                 tiganBox.getChildren().add(chB);
             }
 
             if (!StringUtils.isEmpty(current.getChoiceC())) {
                 Text chA = new Text("C." + current.getChoiceB());
                 chA.prefWidth(Integer.parseInt(split[7]));
+                chA.setFill(Color.valueOf(split[0]));
                 tiganBox.getChildren().add(chA);
             }
 
             if (!StringUtils.isEmpty(current.getChoiceD())) {
                 Text chA = new Text("D." + current.getChoiceD());
                 chA.prefWidth(Integer.parseInt(split[7]));
+                chA.setFill(Color.valueOf(split[0]));
                 tiganBox.getChildren().add(chA);
             }
 
             if (!StringUtils.isEmpty(current.getChoiceE())) {
                 Text chA = new Text("E." + current.getChoiceE());
                 chA.prefWidth(Integer.parseInt(split[7]));
+                chA.setFill(Color.valueOf(split[0]));
                 tiganBox.getChildren().add(chA);
             }
 
             if (!StringUtils.isEmpty(current.getChoiceF())) {
                 Text chA = new Text("F." + current.getChoiceF());
                 chA.prefWidth(Integer.parseInt(split[7]));
+                chA.setFill(Color.valueOf(split[0]));
                 tiganBox.getChildren().add(chA);
             }
 
@@ -170,40 +179,41 @@ public class QuestionPreview implements ReloadPane{
             
             // 无题型标注
             if (txbz.equals("4")) {
-                tiganLabel.setText(current.getQuestionNumber() + current.getQuestion());
+                tiganLabel.setText(current.getQuestionNumber() + "、" + current.getQuestion());
             } else if (txbz.equals("3")) {
                 if (tx.equals("3")) {
-                    tiganLabel.setText(current.getQuestionNumber()  + current.getQuestion() + " " + current.getQuestionType());
-                } else  if (tx.equals("2")) {
-                    tiganLabel.setText(current.getQuestionNumber() + " " + current.getQuestionType()  + current.getQuestion());
-                } else  if (tx.equals("1")) {
-                    tiganLabel.setText( current.getQuestionType()  + " " + current.getQuestionNumber() +  current.getQuestion());
+                    tiganLabel.setText(current.getQuestionNumber()  + "、"  + current.getQuestion() + " " + current.getQuestionType());
+                } else if (tx.equals("2")) {
+                    tiganLabel.setText(current.getQuestionNumber() + "、"  + " " + current.getQuestionType() + current.getQuestion());
+                } else if (tx.equals("1")) {
+                    tiganLabel.setText(current.getQuestionType()  + "、"  + " " + current.getQuestionNumber() + current.getQuestion());
                 }
-               
-            }else if (txbz.equals("2")) {
+
+            } else if (txbz.equals("2")) {
                 if (tx.equals("3")) {
-                    tiganLabel.setText(current.getQuestionNumber()  + current.getQuestion() + "(" + current.getQuestionType() + ")");
-                } else  if (tx.equals("2")) {
-                    tiganLabel.setText(current.getQuestionNumber() + "(" + current.getQuestionType() + ")" + current.getQuestion());
-                } else  if (tx.equals("1")) {
-                    tiganLabel.setText("(" + current.getQuestionType()  + ")" + current.getQuestionNumber() +  current.getQuestion());
+                    tiganLabel.setText(current.getQuestionNumber()  + "、"  + current.getQuestion() + "(" + current.getQuestionType() + ")");
+                } else if (tx.equals("2")) {
+                    tiganLabel.setText(current.getQuestionNumber()  + "、"  + "(" + current.getQuestionType() + ")" + current.getQuestion());
+                } else if (tx.equals("1")) {
+                    tiganLabel.setText("(" + current.getQuestionType() + ")" + current.getQuestionNumber()  + "、"  + current.getQuestion());
                 }
-            }else if (txbz.equals("1")) {
+            } else if (txbz.equals("1")) {
                 if (tx.equals("3")) {
-                    tiganLabel.setText(current.getQuestionNumber()  + current.getQuestion() + "[" + current.getQuestionType() + "]");
-                } else  if (tx.equals("2")) {
-                    tiganLabel.setText(current.getQuestionNumber() + "[" + current.getQuestionType() + "]" + current.getQuestion());
-                } else  if (tx.equals("1")) {
-                    tiganLabel.setText("[" + current.getQuestionType()  + "]" + current.getQuestionNumber() +  current.getQuestion());
+                    tiganLabel.setText(current.getQuestionNumber()  + "、"  + current.getQuestion() + "[" + current.getQuestionType() + "]");
+                } else if (tx.equals("2")) {
+                    tiganLabel.setText(current.getQuestionNumber()  + "、"  + "[" + current.getQuestionType() + "]" + current.getQuestion());
+                } else if (tx.equals("1")) {
+                    tiganLabel.setText("[" + current.getQuestionType() + "]" + current.getQuestionNumber()  + "、"  + current.getQuestion());
                 }
             }
             // 答案
             daanLabel.setText(split[4] + " " + current.getAnswer());
-            daanLabel.setLayoutX((int) tiganBox.getLayoutX());
-            daanLabel.setLayoutY((int) (tiganBox.getLayoutX() + tiganBox.getPrefHeight() + 10));
+            backPane.setLayoutX((int) tiganBox.getLayoutX());
+            backPane.setLayoutY((int) (tiganBox.getLayoutX() + tiganBox.getPrefHeight() + 10));
             // 答案颜色
             daanLabel.setFill(Color.valueOf(split[1]));
 
+            
             List<QuestionStyle> parse = ExcelParser.parse(ExcelParser.S_PATH,  QuestionStyle.class);
             if (!parse.isEmpty()) {
                 QuestionStyle questionStyle = parse.get(current.getSort());
@@ -217,6 +227,25 @@ public class QuestionPreview implements ReloadPane{
                         tiganBox.setLayoutY(Integer.parseInt(split1[1]));
                         tiganBox.setPrefWidth(Integer.parseInt(split1[2]));
                         tiganBox.setPrefHeight(Integer.parseInt(split1[3]));
+
+                        if (Boolean.valueOf(split1[4])) {
+                            // 填充背景图片
+                            if (!StringUtils.isEmpty(split1[6])) {
+                                try {
+                                    tiganBox.setBackground(new Background(new BackgroundImage(new Image(new FileInputStream(split1[6])),
+                                            BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT, BackgroundPosition.DEFAULT,
+                                            new BackgroundSize(Integer.parseInt(split1[2]), Integer.parseInt(split1[3]), false, false, false, false))));
+                                } catch (FileNotFoundException e) {
+                                    e.printStackTrace();
+                                }
+                            }
+                        } else {
+                            // 填充背景颜色
+                            tiganBox.setBackground(new Background(new BackgroundFill(Color.valueOf(split1[5]), CornerRadii.EMPTY, Insets.EMPTY)));
+                        }
+
+
+
                         tiganBox.setSpacing(Integer.parseInt(split1[14]));
                         Font font = Font.font(split1[7], FontWeight.NORMAL, FontPosture.REGULAR, Integer.parseInt(split1[8]));
                         tiganLabel.setFont(font);
@@ -263,10 +292,45 @@ public class QuestionPreview implements ReloadPane{
 
                         String[] split1 = style2.split(ConfigSpliter.SPLITER);
 
-                        daanLabel.setLayoutX(Integer.parseInt(split1[0]));
-                        daanLabel.setLayoutY(Integer.parseInt(split1[1]));
-                       // daanLabel.prefWidth(Integer.parseInt(split1[2]));
-                       // daanLabel.prefHeight(Integer.parseInt(split1[3]));
+                        backPane.setLayoutX(Integer.parseInt(split1[0]));
+                        backPane.setLayoutY(Integer.parseInt(split1[1]));
+                        backPane.prefWidth(Integer.parseInt(split1[2]));
+                        backPane.prefHeight(Integer.parseInt(split1[3]));
+                        daanLabel.setWrappingWidth(Integer.parseInt(split1[2]));
+
+
+                        if (Boolean.valueOf(split1[4])) {
+                            // 填充背景图片
+                            if (!StringUtils.isEmpty(split1[6])) {
+                                try {
+                                    backPane.setBackground(new Background(new BackgroundImage(new Image(new FileInputStream(split1[6])),
+                                            BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT, BackgroundPosition.DEFAULT,
+                                            new BackgroundSize(Integer.parseInt(split1[2]), Integer.parseInt(split1[3]), false, false, false, false))));
+                                } catch (FileNotFoundException e) {
+                                    e.printStackTrace();
+                                }
+                            }
+                        } else {
+                            // 填充背景颜色
+                            backPane.setBackground(new Background(new BackgroundFill(Color.valueOf(split1[5]), CornerRadii.EMPTY, Insets.EMPTY)));
+                        }
+
+//                        if (Boolean.valueOf(split1[4])) {
+//                            // 填充背景图片
+//                            if (!StringUtils.isEmpty(split1[6])) {
+//                                try {
+//                                    daanLabel.setBackground(new Background(new BackgroundImage(new Image(new FileInputStream(split1[6])),
+//                                            BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT, BackgroundPosition.DEFAULT,
+//                                            new BackgroundSize(Integer.parseInt(split1[2]), Integer.parseInt(split1[3]), false, false, true, true))));
+//                                } catch (FileNotFoundException e) {
+//                                    e.printStackTrace();
+//                                }
+//                            }
+//                        } else {
+//                            // 填充背景颜色
+//                            daanLabel.setBackground(new Background(new BackgroundFill(Color.valueOf(split1[5]), CornerRadii.EMPTY, Insets.EMPTY)));
+//                        }
+                        
                         daanLabel.setLineSpacing(Integer.parseInt(split1[14]));
                         Font font = Font.font(split1[7], FontWeight.NORMAL, FontPosture.REGULAR, Integer.parseInt(split1[8]));
                         daanLabel.setFont(font);
@@ -293,7 +357,7 @@ public class QuestionPreview implements ReloadPane{
     
     
     public void showAnswer(){
-        daanLabel.setVisible(GlobalCache.showAnswer);
+        backPane.setVisible(GlobalCache.showAnswer);
     }
     
     public void hideTiming(){

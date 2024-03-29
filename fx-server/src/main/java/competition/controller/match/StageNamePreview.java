@@ -69,8 +69,8 @@ public class StageNamePreview implements ReloadPane{
 
         try {
             container.setBackground(new Background(new BackgroundImage(
-                    new Image(new FileInputStream(ImageResource.环节名称背景)), BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT, BackgroundPosition.DEFAULT,
-                    new BackgroundSize(ExtendedScreen.getWidth(), ExtendedScreen.getHeight(), false, false, true, true)
+                    new Image(new FileInputStream(ImageResource.环节名称背景())), BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT, BackgroundPosition.DEFAULT,
+                    new BackgroundSize(ExtendedScreen.getWidth(), ExtendedScreen.getHeight(), false, false, false, false)
             )));
         } catch (FileNotFoundException e) {
             e.printStackTrace();
@@ -113,8 +113,21 @@ public class StageNamePreview implements ReloadPane{
             box.setLayoutY(Integer.parseInt(detailArr[1]));
             box.setPrefWidth(Integer.parseInt(detailArr[2]));
             box.setPrefHeight(Integer.parseInt(detailArr[3]));
-
-            box.setBackground(new Background(new BackgroundFill(Color.valueOf(huanjieArr[3]), CornerRadii.EMPTY, Insets.EMPTY)));
+            if (Boolean.valueOf(detailArr[4])) {
+                // 填充背景图片
+                if (!StringUtils.isEmpty(detailArr[6])) {
+                    try {
+                        box.setBackground(new Background(new BackgroundImage(new Image(new FileInputStream(detailArr[6])), 
+                                BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT, BackgroundPosition.DEFAULT, 
+                                new BackgroundSize(Integer.parseInt(detailArr[2]), Integer.parseInt(detailArr[3]), false, false, false, false))));
+                    } catch (FileNotFoundException e) {
+                        e.printStackTrace();
+                    }
+                }
+            } else {
+                // 填充背景颜色
+                box.setBackground(new Background(new BackgroundFill(Color.valueOf(detailArr[5]), CornerRadii.EMPTY, Insets.EMPTY)));
+            }
             Text title = new Text(stages.getName());
             title.setTextAlignment(AlignmentUtil.getTextAlign(detailArr[13]));
             box.setAlignment(AlignmentUtil.getAlign(detailArr[13]));

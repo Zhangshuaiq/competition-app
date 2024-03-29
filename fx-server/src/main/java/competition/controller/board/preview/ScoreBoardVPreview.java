@@ -2,28 +2,31 @@ package competition.controller.board.preview;
 
 import competition.controller.ControlPane;
 import competition.controller.board.BoardPane;
-import competition.controller.board.match.ScoreBoardH;
 import competition.controller.board.match.ScoreBoardV;
-import competition.controller.match.Model61;
-import competition.controller.match.ReloadPane;
 import competition.controller.preview.PreviewPane;
 import competition.entity.Configs;
+import competition.entity.ScoreStyle;
 import competition.entity.Teams;
 import competition.mapper.ConfigsMapper;
+import competition.mapper.ScoreStyleMapper;
 import competition.util.ConfigSpliter;
 import competition.util.ExtendedScreen;
+import competition.util.Navigator;
 import competition.util.TeamRuntime;
+import javafx.collections.ObservableList;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
+import javafx.scene.control.CheckBox;
 import javafx.scene.control.Label;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
-import javafx.scene.text.TextAlignment;
+import javafx.scene.text.*;
+import javafx.scene.transform.Shear;
 import javafx.stage.Stage;
 import org.springframework.stereotype.Component;
 
@@ -34,38 +37,50 @@ import java.util.Set;
 
 @Component
 public class ScoreBoardVPreview extends PreviewPane implements BoardPane {
-    
-    
+
+
     @FXML
     private HBox container;
 
     private Set<String> selected = new HashSet<>();
-    
-    
+
+
     @Resource
     private ConfigsMapper configsMapper;
-    
+
     @Resource
     private ControlPane controlPane;
 
 
+    @Resource
+    private ScoreStyleMapper scoreStyleMapper;
+
+    private VBox left;
+
+    private VBox right;
+
     @FXML
-    public void initialize(){
+    public void initialize() {
         show();
     }
 
-    private void show(){
-        if (ExtendedScreen.hasShow()) {
-            BoardPane scoreBoard = controlPane.getScoreBoard();
-            if (scoreBoard == null) {
-                scoreBoard = (ScoreBoardV) ExtendedScreen.scoreWithPos("/view/board/match/ScoreBoardV.fxml", "", "/view/style.css", false);
-                if (scoreBoard != null) {
-                    controlPane.setScoreBoard(scoreBoard);
-                    scoreBoard.reload();
-                }
-            }
+    private void show() {
+        BoardPane scoreBoard = controlPane.getScoreBoard();
+        if (scoreBoard == null || !(scoreBoard instanceof ScoreBoardV)) {
+            scoreBoard = (ScoreBoardV) ExtendedScreen.scoreWithPos("/view/board/match/ScoreBoardV.fxml", "", "/view/style.css", false);
+
         }
+        if (scoreBoard != null) {
+            controlPane.setScoreBoard(scoreBoard);
+            scoreBoard.reload();
+        }
+
+        ScoreStyle scoreStyle = scoreStyleMapper.selectById(1);
+        String[] split = scoreStyle.getStyles().split(ConfigSpliter.SPLITER);
+        Font font = Font.font(split[0], FontWeight.NORMAL, FontPosture.REGULAR, Integer.parseInt(split[1]));
         
+        left = new VBox();
+        right = new VBox();
         Configs configs = configsMapper.selectById(1);
         String config = configs.getConfig();
         String[] cfgArr = config.split(ConfigSpliter.SPLITER);
@@ -73,16 +88,18 @@ public class ScoreBoardVPreview extends PreviewPane implements BoardPane {
 
         container.getChildren().clear();
         container.setSpacing(10);
-        VBox left = new VBox();
+       
         left.setPrefWidth(100);
         left.setPrefHeight(1000);
         left.setSpacing(10);
 
-        VBox right = new VBox();
         right.setPrefWidth(100);
         right.setPrefHeight(1000);
         right.setSpacing(10);
 
+//        CheckBox selectAll = new CheckBox("全选");
+//        selectAll.setPrefWidth(100);
+//        selectAll.setFont(Font.font(24));
         container.getChildren().addAll(left, right);
         List<Teams> teams = TeamRuntime.getTeams();
         for (int i = 0; i < teams.size(); i++) {
@@ -93,25 +110,54 @@ public class ScoreBoardVPreview extends PreviewPane implements BoardPane {
             box.setSpacing(10);
 
 
-            Label teamName = new Label(team.getShortName());
+            StackPane stackPane = new StackPane();
+            stackPane.setPrefSize(Double.parseDouble(cfgArr[19]), Double.parseDouble(cfgArr[20]));
+            Text teamName = new Text(team.getShortName());
             teamName.setTextAlignment(TextAlignment.CENTER);
-            teamName.setAlignment(Pos.CENTER);
-            teamName.setPrefWidth(Double.parseDouble(cfgArr[19]));
-            teamName.setPrefHeight(Double.parseDouble(cfgArr[20]));
-            teamName.setTextFill(Color.valueOf(cfgArr[15]));
-            teamName.setBackground(new Background(new BackgroundFill(Color.valueOf(cfgArr[16]), CornerRadii.EMPTY, Insets.EMPTY)));
-            box.getChildren().add(teamName);
+            teamName.prefWidth(Double.parseDouble(cfgArr[19]));
+            teamName.prefHeight(Double.parseDouble(cfgArr[20]));
+            teamName.setFill(Color.valueOf(cfgArr[15]));
+            stackPane.setBackground(new Background(new BackgroundFill(Color.valueOf(cfgArr[16]), CornerRadii.EMPTY, Insets.EMPTY)));
+            teamName.setFont(font);
+            teamName.setUnderline(Boolean.valueOf(split[5]));
+            teamName.setStrikethrough(Boolean.valueOf(split[2]));
+            if (Boolean.valueOf(split[3])) {
+                teamName.setStroke(teamName.getFill());
+            } else {
+                teamName.setStroke(null);
 
-            Label teamScore = new Label(team.getCurrentScore() + "");
+            }
+            teamName.getTransforms().clear();
+            stackPane.getChildren().add(teamName);
+            if (Boolean.valueOf(split[4])) {
+                teamName.getTransforms().add(new Shear(-0.3, 0));
+            }
+            box.getChildren().add(stackPane);
+
+
+            Text teamScore = new Text(team.getCurrentScore() + "");
+            StackPane stackPane1 = new StackPane();
+            stackPane1.setPrefSize(Integer.parseInt(cfgArr[19]), Integer.parseInt(cfgArr[20]));
             teamScore.setTextAlignment(TextAlignment.CENTER);
-            teamScore.setAlignment(Pos.CENTER);
-            teamScore.setPrefWidth(Double.parseDouble(cfgArr[19]));
-            teamScore.setPrefHeight(Double.parseDouble(cfgArr[20]));
-            teamScore.setTextFill(Color.valueOf(cfgArr[21]));
-            teamScore.setBackground(new Background(new BackgroundFill(Color.valueOf(cfgArr[22]), new CornerRadii(10), Insets.EMPTY)));
-            box.getChildren().add(teamScore);
+            teamScore.prefWidth(Double.parseDouble(cfgArr[19]));
+            teamScore.prefHeight(Double.parseDouble(cfgArr[20]));
+            teamScore.setFill(Color.valueOf(cfgArr[21]));
+            stackPane1.setBackground(new Background(new BackgroundFill(Color.valueOf(cfgArr[22]), new CornerRadii(10), Insets.EMPTY)));
 
-            if (i <= teams.size() / 2) {
+            teamScore.setFont(font);
+            teamScore.setUnderline(Boolean.valueOf(split[5]));
+            teamScore.setStrikethrough(Boolean.valueOf(split[2]));
+            if (Boolean.valueOf(split[3])) {
+                teamScore.setStroke(teamScore.getFill());
+            } else {
+                teamScore.setStroke(null);
+
+            }
+            teamScore.getTransforms().clear();
+            stackPane1.getChildren().add(teamScore);
+            box.getChildren().add(stackPane1);
+
+            if (i % 2 == 0) {
                 left.getChildren().add(box);
             } else {
                 right.getChildren().add(box);
@@ -120,21 +166,68 @@ public class ScoreBoardVPreview extends PreviewPane implements BoardPane {
             box.setOnMouseClicked(new EventHandler<MouseEvent>() {
                 @Override
                 public void handle(MouseEvent event) {
-                    Border border = box.getBorder();
-                    if (border == null) {
-                        box.setBorder(new Border(new BorderStroke(Color.GREEN, BorderStrokeStyle.SOLID, CornerRadii.EMPTY, new BorderWidths(5))));
-                        selected.add(teamName.getText());
+                    if (event.getButton() == MouseButton.PRIMARY) {
+                        Border border = box.getBorder();
+                        if (border == null) {
+                            controlPane.emptyTeam();
+                            box.setBorder(new Border(new BorderStroke(Color.GREEN, BorderStrokeStyle.SOLID, CornerRadii.EMPTY, new BorderWidths(5))));
+                            selected.add(teamName.getText());
+                        } else {
+                            box.setBorder(null);
+                            selected.remove(teamName.getText());
+                        }
                     } else {
-                        box.setBorder(null);
-                        selected.remove(teamName.getText());
+                        Navigator.navigatorTo("/view/board/preview/ScorePreviewAttr.fxml", "分数面板设置", "/view/style.css", false, false);
                     }
+                    
                 }
             });
         }
+//        selectAll.setOnMouseClicked(new EventHandler<MouseEvent>() {
+//            @Override
+//            public void handle(MouseEvent event) {
+                
+//
+//            }
+//        });
+
         container.setLayoutX(Double.parseDouble(cfgArr[17]));
         container.setLayoutY(Double.parseDouble(cfgArr[18]));
-        container.setPrefWidth((Double.parseDouble(cfgArr[19]) + 20) * teams.size());
-        container.setPrefHeight(Double.parseDouble(cfgArr[20]) * 2 + 30);
+        container.setPrefWidth(1000);
+        container.setPrefHeight(1000);
+    }
+
+    @Override
+    public void selectAll(boolean selected) {
+        ObservableList<Node> lc = left.getChildren();
+        ObservableList<Node> rc = right.getChildren();
+        for (Node node : lc) {
+            VBox box = (VBox) node;
+            StackPane pane = (StackPane) box.getChildren().get(0);
+            Text teamName = (Text) pane.getChildren().get(0);
+            if (selected) {
+                controlPane.emptyTeam();
+                box.setBorder(new Border(new BorderStroke(Color.GREEN, BorderStrokeStyle.SOLID, CornerRadii.EMPTY, new BorderWidths(5))));
+                ScoreBoardVPreview.this.selected.add(teamName.getText());
+            } else {
+                box.setBorder(null);
+                ScoreBoardVPreview.this.selected.remove(teamName.getText());
+            }
+        }
+
+        for (Node node : rc) {
+            VBox box = (VBox) node;
+            StackPane pane = (StackPane) box.getChildren().get(0);
+            Text teamName = (Text) pane.getChildren().get(0);
+            if (selected) {
+                controlPane.emptyTeam();
+                box.setBorder(new Border(new BorderStroke(Color.GREEN, BorderStrokeStyle.SOLID, CornerRadii.EMPTY, new BorderWidths(5))));
+                ScoreBoardVPreview.this.selected.add(teamName.getText());
+            } else {
+                box.setBorder(null);
+                ScoreBoardVPreview.this.selected.remove(teamName.getText());
+            }
+        }
     }
 
     @Override
@@ -147,23 +240,22 @@ public class ScoreBoardVPreview extends PreviewPane implements BoardPane {
     public void shows() {
         Stage stage = (Stage) (container.getScene().getWindow());
         stage.show();
-        if (ExtendedScreen.hasShow()) {
-            BoardPane scoreBoard = controlPane.getScoreBoard();
-            if (scoreBoard == null) {
-                scoreBoard = (ScoreBoardV) ExtendedScreen.scoreWithPos("/view/board/match/ScoreBoardV.fxml", "", "/view/style.css", false);
-                if (scoreBoard != null) {
-                    controlPane.setScoreBoard(scoreBoard);
-                }
-            }
+        BoardPane scoreBoard = controlPane.getScoreBoard();
+        if (scoreBoard == null) {
+            scoreBoard = (ScoreBoardV) ExtendedScreen.scoreWithPos("/view/board/match/ScoreBoardV.fxml", "", "/view/style.css", false);
+        }
+        if (scoreBoard != null) {
+            controlPane.setScoreBoard(scoreBoard);
             scoreBoard.reload();
         }
+       
 
     }
-    
-    public Set<String> getSelected(){
+
+    public Set<String> getSelected() {
         return selected;
     }
-    
+
     @Override
     public void reload() {
         show();

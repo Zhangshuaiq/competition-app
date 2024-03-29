@@ -5,6 +5,7 @@ import competition.entity.Stages;
 import competition.mapper.ConfigsMapper;
 import competition.mapper.StagesMapper;
 import competition.util.AlignmentUtil;
+import competition.util.BaseDir;
 import competition.util.ConfigSpliter;
 import competition.util.PreviewStack;
 import javafx.collections.FXCollections;
@@ -17,6 +18,7 @@ import javafx.scene.control.ComboBox;
 import javafx.scene.control.TextField;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
+import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
@@ -24,10 +26,15 @@ import org.springframework.util.StringUtils;
 import javax.annotation.Resource;
 import javax.swing.*;
 import java.awt.*;
+import java.io.File;
 import java.util.Arrays;
 
 @Component
 public class StageQuestionPreviewAttr {
+    
+    @FXML
+    private TextField colNumber;
+    
     @FXML
     private TextField nameWidthInput;
 
@@ -135,6 +142,45 @@ public class StageQuestionPreviewAttr {
 
     public static void setCurrentStage(Stages currentStage) {
         StageQuestionPreviewAttr.currentStage = currentStage;
+    }
+
+
+    @FXML
+    public void selectNameImg(){
+        FileChooser chooser = new FileChooser();
+        chooser.setInitialDirectory(new File(BaseDir.IMAGE_DIR));
+        chooser.getExtensionFilters().addAll(
+                new FileChooser.ExtensionFilter("Image Files", "*.png", "*.jpg", "*.gif")
+        );
+        File file = chooser.showOpenDialog(null);
+        if (file!= null) {
+            nameBackgroundPath.setText(file.getAbsolutePath());
+        }
+    }
+
+
+    @FXML
+    public void cancelNameImg(){
+        nameBackgroundPath.setText("");
+    }
+
+    @FXML
+    public void selectCodeImg(){
+        FileChooser chooser = new FileChooser();
+        chooser.setInitialDirectory(new File(BaseDir.IMAGE_DIR));
+        chooser.getExtensionFilters().addAll(
+                new FileChooser.ExtensionFilter("Image Files", "*.png", "*.jpg", "*.gif")
+        );
+        File file = chooser.showOpenDialog(null);
+        if (file!= null) {
+            numberBackgroundPath.setText(file.getAbsolutePath());
+        }
+    }
+
+
+    @FXML
+    public void cancelCodeImg(){
+        numberBackgroundPath.setText("");
     }
 
 
@@ -274,7 +320,8 @@ public class StageQuestionPreviewAttr {
                     + itic + ConfigSpliter.SPLITER
                     + underlne + ConfigSpliter.SPLITER
                     + alignValue + ConfigSpliter.SPLITER
-                    + rowSpace;
+                    + rowSpace + ConfigSpliter.SPLITER
+                    + colNumber.getText();
             if (nameArr.length > 1) {
                 detail = nameArr[0] + ConfigSpliter.DIFFER + detail;
             } else {
@@ -314,7 +361,10 @@ public class StageQuestionPreviewAttr {
                     + itic + ConfigSpliter.SPLITER
                     + underlne + ConfigSpliter.SPLITER
                     + alignValue + ConfigSpliter.SPLITER
-                    + rowSpace;
+                    + rowSpace + ConfigSpliter.SPLITER
+                    + colNumber.getText()
+                    ;
+                    
 
             detail = ConfigSpliter.EMPTY + ConfigSpliter.DIFFER + detail;
             currentStage.setQuestionStyle(detail);
@@ -360,6 +410,7 @@ public class StageQuestionPreviewAttr {
         numberIticChoice.setSelected(false);
         numberDeleteChoice.setSelected(false);
         numberSpaceInput.setText("0");
+        colNumber.setText("1");
         if (!StringUtils.isEmpty(details)) {
             String[] split = details.split(ConfigSpliter.DIFFER);
             if (split.length > 1) {
@@ -377,6 +428,9 @@ public class StageQuestionPreviewAttr {
                     numberUnderlineChoice.setSelected(Boolean.valueOf(cfgArr[12]));
                     numberTextAlignSelector.setValue(cfgArr[13]);
                     numberSpaceInput.setText(cfgArr[14]);
+                    if (cfgArr.length >= 16) {
+                        colNumber.setText(cfgArr[15]);
+                    }
                 }
 
             }

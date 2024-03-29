@@ -68,6 +68,7 @@ public class StageNamePreviewPreview extends PreviewPane {
     public void initialize() {
         innerStageId= stageId;
         PreviewStack.addPreview(this);
+        PreviewStack.addReturn(this);
         container.setOnMouseClicked(new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent event) {
@@ -93,8 +94,8 @@ public class StageNamePreviewPreview extends PreviewPane {
 
         try {
             container.setBackground(new Background(new BackgroundImage(
-                    new Image(new FileInputStream(ImageResource.环节名称背景)), BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT, BackgroundPosition.DEFAULT,
-                    new BackgroundSize(Navigator.getWidth(), Navigator.getHeight(), false, false, true, true)
+                    new Image(new FileInputStream(ImageResource.环节名称背景())), BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT, BackgroundPosition.DEFAULT,
+                    new BackgroundSize(Navigator.getWidth(), Navigator.getHeight(), false, false, false, false)
             )));
         } catch (FileNotFoundException e) {
             e.printStackTrace();
@@ -138,7 +139,21 @@ public class StageNamePreviewPreview extends PreviewPane {
             box.setPrefWidth(Integer.parseInt(detailArr[2]));
             box.setPrefHeight(Integer.parseInt(detailArr[3]));
 
-            box.setBackground(new Background(new BackgroundFill(Color.valueOf(huanjieArr[3]), CornerRadii.EMPTY, Insets.EMPTY)));
+            if (Boolean.valueOf(detailArr[4])) {
+                // 填充背景图片
+                if (!StringUtils.isEmpty(detailArr[6])) {
+                    try {
+                        box.setBackground(new Background(new BackgroundImage(new Image(new FileInputStream(detailArr[6])),
+                                BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT, BackgroundPosition.DEFAULT,
+                                new BackgroundSize(Integer.parseInt(detailArr[2]), Integer.parseInt(detailArr[3]), false, false, false, false))));
+                    } catch (FileNotFoundException e) {
+                        e.printStackTrace();
+                    }
+                }
+            } else {
+                // 填充背景颜色
+                box.setBackground(new Background(new BackgroundFill(Color.valueOf(detailArr[5]), CornerRadii.EMPTY, Insets.EMPTY)));
+            }
             Text title = new Text(stages.getName());
             title.setTextAlignment(AlignmentUtil.getTextAlign(detailArr[13]));
             box.setAlignment(AlignmentUtil.getAlign(detailArr[13]));
@@ -149,53 +164,6 @@ public class StageNamePreviewPreview extends PreviewPane {
 
             Font font = Font.font(detailArr[7], FontWeight.NORMAL, FontPosture.REGULAR, Integer.parseInt(detailArr[8]));
             title.setFont(font);
-            box.setOnMouseClicked(new EventHandler<MouseEvent>() {
-                @Override
-                public void handle(MouseEvent event) {
-
-                    if (event.getButton() != MouseButton.PRIMARY) {
-                        return;
-                    }
-                    List<Stages> childrenStage = stagesMapper.selectList(new LambdaQueryWrapper<Stages>()
-                            .eq(Stages::getParentId, stages.getId())
-                    );
-                    if (CollectionUtils.isEmpty(childrenStage)) {
-
-
-                        List<Questions> parse = ExcelParser.parse(ExcelParser.Q_PATH, Questions.class);
-                        if (!CollectionUtils.isEmpty(parse)) {
-                            for (int i = 0; i < parse.size(); i++) {
-                                parse.get(i).setSort(i);
-                            }
-                            parse = parse.stream().filter(x -> !StringUtils.isEmpty(x.getStageName()) && x.getStageName().equals(stages.getName())).collect(Collectors.toList());
-                            if (!CollectionUtils.isEmpty(parse)) {
-                                for (int i = 0; i < parse.size(); i++) {
-                                    parse.get(i).setQuestionNumber(i + 1);
-                                }
-                                CurrentQuestions.setQuestions(parse, stages.getId());
-                            }
-                        }
-
-//                        // 展示题目
-
-                        // 内屏展示对应的题目列表
-                        StageQuestionPreviewPreview.setCurrentStage(stages);
-                        controlPane.setPreviewPane(
-                                Navigator.preview("/view/preview/StageQuestionPreview.fxml", "", "/view/style.css", true, true)
-                        );
-                    } else {
-                        // 展示子环节
-                        StagePreview.setParentStageId(innerStageId);
-                        ExtendedScreen.show("/view/match/StagePreview.fxml");
-
-                        StagePreviewPreview.setParentStageId(innerStageId);
-                        controlPane.setPreviewPane(
-                                Navigator.preview("/view/preview/StagePreview.fxml", "", "/view/style.css", true, true)
-                        );
-                    }
-
-                }
-            });
             if (Boolean.valueOf(detailArr[10])) {
                 title.setStroke(title.getFill());
             } else {
@@ -210,6 +178,54 @@ public class StageNamePreviewPreview extends PreviewPane {
             title.setStrikethrough(Boolean.valueOf(detailArr[9]));
             box.getChildren().add(title);
         }
+        box.setOnMouseClicked(new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent event) {
+
+                if (event.getButton() != MouseButton.PRIMARY) {
+                    return;
+                }
+                List<Stages> childrenStage = stagesMapper.selectList(new LambdaQueryWrapper<Stages>()
+                        .eq(Stages::getParentId, stages.getId())
+                );
+                if (CollectionUtils.isEmpty(childrenStage)) {
+                    List<Questions> parse = ExcelParser.parse(ExcelParser.Q_PATH, Questions.class);
+                    if (!CollectionUtils.isEmpty(parse)) {
+                        for (int i = 0; i < parse.size(); i++) {
+                            parse.get(i).setSort(i);
+                        }
+                        parse = parse.stream().filter(x -> !StringUtils.isEmpty(x.getStageNumber()) && x.getStageNumber().equals(stages.getSortVal())).collect(Collectors.toList());
+                        if (!CollectionUtils.isEmpty(parse)) {
+                            for (int i = 0; i < parse.size(); i++) {
+                                parse.get(i).setQuestionNumber(i + 1);
+                            }
+                            CurrentQuestions.setQuestions(parse, stages.getId());
+                        }
+                    }
+                    // 展示题目
+                    // 内屏展示对应的题目列表
+                    StageQuestionPreviewPreview.setCurrentStage(stages);
+                    controlPane.setPreviewPane(
+                            Navigator.preview("/view/preview/StageQuestionPreview.fxml", "", "/view/style.css", true, true)
+                    );
+                    controlPane.showQuestions();
+                } else {
+                    // 展示子环节
+                    StagePreview.setParentStageId(innerStageId);
+                    ExtendedScreen.show("/view/match/StagePreview.fxml");
+
+                    StagePreviewPreview.setParentStageId(innerStageId);
+                    controlPane.setPreviewPane(
+                            Navigator.preview("/view/preview/StagePreview.fxml", "", "/view/style.css", true, true)
+                    );
+                }
+
+            }
+        });
+    }
+
+    public Integer getInnerStageId() {
+        return innerStageId;
     }
 
     @Override

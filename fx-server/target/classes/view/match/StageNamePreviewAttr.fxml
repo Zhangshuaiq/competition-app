@@ -32,9 +32,9 @@
             <Label layoutX="255.0" layoutY="14.0" text="背景颜色" />
             <ColorPicker fx:id="colorInput" layoutX="336.0" layoutY="9.0" prefHeight="30.0" prefWidth="32.0" />
             <Label layoutX="27.0" layoutY="52.0" text="背景图片" />
-            <TextField fx:id="backgroundPath" layoutX="108.0" layoutY="47.0" prefHeight="30.0" prefWidth="275.0" />
-            <Button layoutX="106.0" layoutY="90.0" mnemonicParsing="false" text="选择图片" />
-            <Button layoutX="196.0" layoutY="90.0" mnemonicParsing="false" text="取消图片" />
+            <TextField fx:id="backgroundPath" disable="true" layoutX="108.0" layoutY="47.0" prefHeight="30.0" prefWidth="275.0" />
+            <Button layoutX="106.0" layoutY="90.0" mnemonicParsing="false" text="选择图片" onMouseClicked="#selectImg"/>
+            <Button layoutX="196.0" layoutY="90.0" mnemonicParsing="false" text="取消图片" onMouseClicked="#cancelImg"/>
             <CheckBox fx:id="backgroundChoice" layoutX="86.0" layoutY="13.0" mnemonicParsing="false" text="填充背景" />
          </children>
       </AnchorPane>

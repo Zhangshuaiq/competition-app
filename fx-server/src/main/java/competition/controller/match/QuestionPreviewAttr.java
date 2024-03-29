@@ -6,16 +6,14 @@ import competition.entity.Configs;
 import competition.entity.QuestionStyle;
 import competition.entity.Questions;
 import competition.mapper.ConfigsMapper;
-import competition.util.AlignmentUtil;
-import competition.util.ConfigSpliter;
-import competition.util.ExcelParser;
-import competition.util.PreviewStack;
+import competition.util.*;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.control.*;
 import javafx.scene.paint.Color;
+import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
@@ -23,6 +21,7 @@ import org.springframework.util.StringUtils;
 import javax.annotation.Resource;
 import javax.swing.*;
 import java.awt.*;
+import java.io.File;
 import java.util.Arrays;
 import java.util.List;
 
@@ -63,6 +62,9 @@ public class QuestionPreviewAttr {
 
     @FXML
     private CheckBox nameDeleteChoice;
+    
+    @FXML
+    private TextField wordSpaceInput;
 
     @FXML
     private CheckBox answerDeleteChoice;
@@ -162,6 +164,45 @@ public class QuestionPreviewAttr {
     }
 
 
+    @FXML
+    public void selectNameImg(){
+        FileChooser chooser = new FileChooser();
+        chooser.setInitialDirectory(new File(BaseDir.IMAGE_DIR));
+        chooser.getExtensionFilters().addAll(
+                new FileChooser.ExtensionFilter("Image Files", "*.png", "*.jpg", "*.gif")
+        );
+        File file = chooser.showOpenDialog(null);
+        if (file!= null) {
+            nameBackgroundPath.setText(file.getAbsolutePath());
+        }
+    }
+
+
+    @FXML
+    public void cancelNameImg(){
+        nameBackgroundPath.setText("");
+    }
+
+    @FXML
+    public void selectCodeImg(){
+        FileChooser chooser = new FileChooser();
+        chooser.setInitialDirectory(new File(BaseDir.IMAGE_DIR));
+        chooser.getExtensionFilters().addAll(
+                new FileChooser.ExtensionFilter("Image Files", "*.png", "*.jpg", "*.gif")
+        );
+        File file = chooser.showOpenDialog(null);
+        if (file!= null) {
+            answerBackgroundPath.setText(file.getAbsolutePath());
+        }
+    }
+
+
+    @FXML
+    public void cancelCodeImg(){
+        answerBackgroundPath.setText("");
+    }
+
+
     private void showConfigData() {
         Configs configs = configsMapper.selectById(1);
         showTiganConfig(configs);
@@ -170,6 +211,7 @@ public class QuestionPreviewAttr {
 
 
     private void showTiganConfig(Configs configs) {
+        nameText.setText("");
         String config = configs.getConfig();
         if (!StringUtils.isEmpty(config)) {
             String[] cfgArr = config.split(ConfigSpliter.SPLITER);
@@ -179,11 +221,31 @@ public class QuestionPreviewAttr {
             nameFontSize.setText(defaultFont.getSize() + "");
             // x y w h
             nameSpaceInput.setText("0");
+            wordSpaceInput.setText("0");
             nameXInput.setText(cfgArr[5]);
             nameYInput.setText(cfgArr[6]);
             nameWidthInput.setText(cfgArr[7]);
             nameHeightInput.setText(cfgArr[8]);
             nameText.setText(questions.getQuestion());
+            if (!StringUtils.isEmpty(questions.getChoiceA())) {
+                nameText.appendText(System.lineSeparator() + questions.getChoiceA());
+            }
+            if (!StringUtils.isEmpty(questions.getChoiceB())) {
+                nameText.appendText(System.lineSeparator() + questions.getChoiceB());
+            }
+            if (!StringUtils.isEmpty(questions.getChoiceC())) {
+                nameText.appendText(System.lineSeparator() + questions.getChoiceC());
+            }
+            if (!StringUtils.isEmpty(questions.getChoiceD())) {
+                nameText.appendText(System.lineSeparator() + questions.getChoiceD());
+            }
+            if (!StringUtils.isEmpty(questions.getChoiceE())) {
+                nameText.appendText(System.lineSeparator() + questions.getChoiceE());
+            }
+            if (!StringUtils.isEmpty(questions.getChoiceF())) {
+                nameText.appendText(System.lineSeparator() + questions.getChoiceF());
+            }
+            String nameText = this.nameText.getText();
             nameTextAlignSelector.setValue("左对齐");
             // 根据配置详情设置样式
             if (!questionStyleList.isEmpty()) {
@@ -204,6 +266,9 @@ public class QuestionPreviewAttr {
                         nameUnderlineChoice.setSelected(Boolean.valueOf(split[12]));
                         nameTextAlignSelector.setValue(split[13]);
                         nameSpaceInput.setText(split[14]);
+                        if (split.length >= 16) {
+                            wordSpaceInput.setText(split[15]);
+                        }
                     } 
                 }
             }
@@ -228,7 +293,9 @@ public class QuestionPreviewAttr {
                         nameIticChoice.isSelected() + ConfigSpliter.SPLITER +
                         nameUnderlineChoice.isSelected() + ConfigSpliter.SPLITER +
                         nameTextAlignSelector.getValue() + ConfigSpliter.SPLITER +
-                        (StringUtils.isEmpty(nameSpaceInput.getText())?"0":nameSpaceInput.getText());
+                        (StringUtils.isEmpty(nameSpaceInput.getText())?"0":nameSpaceInput.getText()) + ConfigSpliter.SPLITER +
+                        (StringUtils.isEmpty(wordSpaceInput.getText())?"0":wordSpaceInput.getText())
+                        ;
         for (QuestionStyle questionStyle : questionStyleList) {
             if (questionStyle.getStageNo().equals(questions.getStageNumber())) {
                 questionStyle.setStyle1(style1);
@@ -251,7 +318,26 @@ public class QuestionPreviewAttr {
 
         // 写入（更新）题干内容到 excel 里
         List<Questions> parse = ExcelParser.parse(ExcelParser.Q_PATH, Questions.class);
-        questions.setQuestion(nameText.getText());
+        String[] split = nameText.getText().split("\n");
+        questions.setQuestion(split[0]);
+        if (split.length >= 2) {
+            questions.setChoiceA(split[1]);
+        }
+        if (split.length >= 3) {
+            questions.setChoiceB(split[2]);
+        }
+        if (split.length >= 4) {
+            questions.setChoiceC(split[3]);
+        }
+        if (split.length >= 5) {
+            questions.setChoiceD(split[4]);
+        } 
+        if (split.length >= 6) {
+            questions.setChoiceE(split[5]);
+        }
+        if (split.length >= 7) {
+            questions.setChoiceF(split[6]);
+        }
         parse.set(questions.getSort(), questions);
         ExcelParser.write(ExcelParser.Q_PATH, parse, Questions.class);
         if (reloadPane != null) {
@@ -284,7 +370,9 @@ public class QuestionPreviewAttr {
                         nameIticChoice.isSelected() + ConfigSpliter.SPLITER +
                         nameUnderlineChoice.isSelected() + ConfigSpliter.SPLITER +
                         nameTextAlignSelector.getValue() + ConfigSpliter.SPLITER +
-                        (StringUtils.isEmpty(nameSpaceInput.getText())?"0":nameSpaceInput.getText());
+                        (StringUtils.isEmpty(nameSpaceInput.getText())?"0":nameSpaceInput.getText()) + ConfigSpliter.SPLITER +
+                        (StringUtils.isEmpty(wordSpaceInput.getText())?"0":wordSpaceInput.getText())
+                ;
         for (QuestionStyle questionStyle : questionStyleList) {
             questionStyle.setStyle1(style1);
         }
@@ -305,7 +393,26 @@ public class QuestionPreviewAttr {
 
         // 写入（更新）题干内容到 excel 里
         List<Questions> parse = ExcelParser.parse(ExcelParser.Q_PATH, Questions.class);
-        questions.setQuestion(nameText.getText());
+        String[] split = nameText.getText().split("\n");
+        questions.setQuestion(split[0]);
+        if (split.length >= 2) {
+            questions.setChoiceA(split[1]);
+        }
+        if (split.length >= 3) {
+            questions.setChoiceB(split[2]);
+        }
+        if (split.length >= 4) {
+            questions.setChoiceC(split[3]);
+        }
+        if (split.length >= 5) {
+            questions.setChoiceD(split[4]);
+        }
+        if (split.length >= 6) {
+            questions.setChoiceE(split[5]);
+        }
+        if (split.length >= 7) {
+            questions.setChoiceF(split[6]);
+        }
         parse.set(questions.getSort(), questions);
         ExcelParser.write(ExcelParser.Q_PATH, parse, Questions.class);
         if (reloadPane != null) {
@@ -332,7 +439,9 @@ public class QuestionPreviewAttr {
                         nameIticChoice.isSelected() + ConfigSpliter.SPLITER +
                         nameUnderlineChoice.isSelected() + ConfigSpliter.SPLITER +
                         nameTextAlignSelector.getValue() + ConfigSpliter.SPLITER +
-                        (StringUtils.isEmpty(nameSpaceInput.getText())?"0":nameSpaceInput.getText());
+                        (StringUtils.isEmpty(nameSpaceInput.getText())?"0":nameSpaceInput.getText()) + ConfigSpliter.SPLITER +
+                        (StringUtils.isEmpty(wordSpaceInput.getText())?"0":wordSpaceInput.getText())
+                ;
         questionStyleList.get(questions.getSort()).setStyle1(style1);
         ExcelParser.write(ExcelParser.S_PATH, questionStyleList, QuestionStyle.class);
         // 保存对应的 x y 等到数据库配置中
@@ -351,7 +460,26 @@ public class QuestionPreviewAttr {
 
         // 写入（更新）题干内容到 excel 里
         List<Questions> parse = ExcelParser.parse(ExcelParser.Q_PATH, Questions.class);
-        questions.setQuestion(nameText.getText());
+        String[] split = nameText.getText().split("\n");
+        questions.setQuestion(split[0]);
+        if (split.length >= 2) {
+            questions.setChoiceA(split[1]);
+        }
+        if (split.length >= 3) {
+            questions.setChoiceB(split[2]);
+        }
+        if (split.length >= 4) {
+            questions.setChoiceC(split[3]);
+        }
+        if (split.length >= 5) {
+            questions.setChoiceD(split[4]);
+        }
+        if (split.length >= 6) {
+            questions.setChoiceE(split[5]);
+        }
+        if (split.length >= 7) {
+            questions.setChoiceF(split[6]);
+        }
         parse.set(questions.getSort(), questions);
         ExcelParser.write(ExcelParser.Q_PATH, parse, Questions.class);
         if (reloadPane != null) {
@@ -480,11 +608,11 @@ public class QuestionPreviewAttr {
             // x y w h
             // 
             QuestionPreviewPreview preview =(QuestionPreviewPreview) PreviewStack.getLast();
-            answerXInput.setText((int) preview.tiganBox.getLayoutX() + "");
             answerSpaceInput.setText("0");
+            answerXInput.setText((int) preview.tiganBox.getLayoutX() + "");
             answerYInput.setText((int) (preview.tiganBox.getLayoutX() + preview.tiganBox.getPrefHeight() + 10) + "");
-//            answerWidthInput.setText(cfgArr[7]);
-//            answerHeightInput.setText(cfgArr[8]);
+            answerWidthInput.setText(cfgArr[7]);
+            answerHeightInput.setText(cfgArr[8]);
             answerText.setText(questions.getAnswer());
             answerTextAlignSelector.setValue("左对齐");
             // 根据配置详情设置样式
@@ -495,6 +623,10 @@ public class QuestionPreviewAttr {
                     if (!StringUtils.isEmpty(style1)) {
                         // 解析 excel 的样式
                         String[] split = style1.split(ConfigSpliter.SPLITER);
+                        answerXInput.setText(split[0]);
+                        answerYInput.setText(split[1]);
+                        answerWidthInput.setText(split[2]);
+                        answerHeightInput.setText(split[3]);
                         answerBackgroundChoice.setSelected(Boolean.valueOf(split[4]));
                         answerColorInput.setValue(Color.valueOf(split[5]));
                         answerBackgroundPath.setText(split[6]);

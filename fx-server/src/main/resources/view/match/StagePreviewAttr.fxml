@@ -7,7 +7,7 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<AnchorPane prefHeight="536.0" prefWidth="472.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="competition.controller.match.StagePreviewAttr">
+<AnchorPane prefHeight="590.0" prefWidth="472.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="competition.controller.match.StagePreviewAttr">
    <children>
       <AnchorPane layoutX="40.0" layoutY="42.0" prefHeight="83.0" prefWidth="392.0">
          <children>
@@ -32,9 +32,9 @@
             <Label layoutX="255.0" layoutY="14.0" text="背景颜色" />
             <ColorPicker fx:id="colorInput" layoutX="336.0" layoutY="9.0" prefHeight="30.0" prefWidth="32.0" />
             <Label layoutX="27.0" layoutY="52.0" text="背景图片" />
-            <TextField fx:id="backgroundPath" layoutX="108.0" layoutY="47.0" prefHeight="30.0" prefWidth="275.0" />
-            <Button layoutX="106.0" layoutY="90.0" mnemonicParsing="false" text="选择图片" />
-            <Button layoutX="196.0" layoutY="90.0" mnemonicParsing="false" text="取消图片" />
+            <TextField fx:id="backgroundPath" disable="true" layoutX="108.0" layoutY="47.0" prefHeight="30.0" prefWidth="275.0" />
+            <Button layoutX="106.0" layoutY="90.0" mnemonicParsing="false" onMouseClicked="#selectImg" text="选择图片" />
+            <Button layoutX="196.0" layoutY="90.0" mnemonicParsing="false" onMouseClicked="#cancelImg" text="取消图片" />
             <CheckBox fx:id="backgroundChoice" layoutX="86.0" layoutY="13.0" mnemonicParsing="false" text="填充背景" />
          </children>
       </AnchorPane>
@@ -46,10 +46,10 @@
       <CheckBox fx:id="boldChoice" layoutX="139.0" layoutY="368.0" mnemonicParsing="false" text="加粗" />
       <CheckBox fx:id="iticChoice" layoutX="232.0" layoutY="368.0" mnemonicParsing="false" text="斜体" />
       <CheckBox fx:id="underlineChoice" layoutX="316.0" layoutY="368.0" mnemonicParsing="false" text="下划线" />
-      <Label layoutX="69.0" layoutY="435.0" text="水平" />
-      <ComboBox fx:id="textAlignSelector" layoutX="111.0" layoutY="430.0" prefWidth="150.0" />
-      <Label layoutX="288.0" layoutY="435.0" text="行间距" />
-      <TextField fx:id="spaceInput" layoutX="341.0" layoutY="430.0" prefHeight="20.0" prefWidth="96.0" />
+      <Label layoutX="37.0" layoutY="435.0" text="水平" />
+      <ComboBox fx:id="textAlignSelector" layoutX="82.0" layoutY="430.0" prefHeight="30.0" prefWidth="103.0" />
+      <Label layoutX="197.0" layoutY="435.0" text="行间距" />
+      <TextField fx:id="spaceInput" layoutX="256.0" layoutY="430.0" prefHeight="30.0" prefWidth="60.0" />
       <Label layoutX="16.0" layoutY="14.0" text="位置大小" textFill="#8a8686" />
       <Label layoutX="16.0" layoutY="139.0" text="背景设置" textFill="#8a8686" />
       <Label layoutX="16.0" layoutY="287.0" text="字体" textFill="#8a8686" />
@@ -58,7 +58,15 @@
       <Separator layoutX="91.0" layoutY="149.0" prefHeight="3.0" prefWidth="304.0" />
       <Separator layoutX="58.0" layoutY="298.0" prefHeight="3.0" prefWidth="337.0" />
       <Separator layoutX="95.0" layoutY="417.0" prefHeight="3.0" prefWidth="304.0" />
-      <Button layoutX="111.0" layoutY="482.0" mnemonicParsing="false" onMouseClicked="#saveConfig" prefHeight="30.0" prefWidth="96.0" text="保存" />
-      <Button layoutX="268.0" layoutY="482.0" mnemonicParsing="false" onMouseClicked="#closeStage" prefHeight="30.0" prefWidth="96.0" text="关闭" />
+      <Button layoutX="111.0" layoutY="539.0" mnemonicParsing="false" onMouseClicked="#saveConfig" prefHeight="30.0" prefWidth="96.0" text="保存" />
+      <Button layoutX="268.0" layoutY="539.0" mnemonicParsing="false" onMouseClicked="#closeStage" prefHeight="30.0" prefWidth="96.0" text="关闭" />
+      <Label layoutX="16.0" layoutY="470.0" text="排列布局" textFill="#8a8686" />
+      <Separator layoutX="95.0" layoutY="478.0" prefHeight="3.0" prefWidth="304.0" />
+<!--      <Label layoutX="69.0" layoutY="499.0" text="行" />-->
+      <Label layoutX="46.0" layoutY="499.0" text="列" />
+      <TextField fx:id="colNumber" layoutX="86.0" layoutY="494.0" prefHeight="30.0" prefWidth="96.0" />
+<!--     // <TextField fx:id="rowNumber" layoutX="95.0" layoutY="494.0" prefHeight="30.0" prefWidth="96.0" />-->
+      <Label layoutX="330.0" layoutY="435.0" text="字间距" />
+      <TextField fx:id="wordInput" layoutX="394.0" layoutY="430.0" prefHeight="30.0" prefWidth="58.0" />
    </children>
 </AnchorPane>

@@ -1,9 +1,11 @@
 package competition.controller.backend;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import competition.controller.ControlPane;
 import competition.entity.Configs;
 import competition.mapper.ConfigsMapper;
 import competition.util.ConfigSpliter;
+import competition.util.PreviewStack;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.paint.Color;
@@ -17,6 +19,10 @@ import java.util.stream.Collectors;
 
 @Component
 public class PageConfig {
+    
+    
+    @Resource
+    private ControlPane controlPane;
     
     @FXML
     RadioButton thq, thh, tgh;
@@ -783,6 +789,8 @@ public class PageConfig {
         jingji.setConfig(jingjiVal);
         configsMapper.updateById(jingji);
 
+        controlPane.updateScoreBoard();
+        PreviewStack.reload();
     }
     
 }

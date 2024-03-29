@@ -71,8 +71,8 @@ public class TotalRulePreviewPreview extends PreviewPane {
         }
         try {
             container.setBackground(new Background(new BackgroundImage(
-                    new Image(new FileInputStream(ImageResource.总规则背景)), BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT, BackgroundPosition.DEFAULT, 
-                    new BackgroundSize(Navigator.getWidth(), Navigator.getHeight(), false, false, true, true)
+                    new Image(new FileInputStream(ImageResource.总规则背景())), BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT, BackgroundPosition.CENTER, 
+                    new BackgroundSize(Navigator.getWidth(), Navigator.getHeight(), false, false, false, false)
             )));
         } catch (FileNotFoundException e) {
             e.printStackTrace();

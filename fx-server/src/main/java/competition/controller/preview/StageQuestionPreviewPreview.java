@@ -14,6 +14,7 @@ import competition.ws.Model7RuntimeData;
 import competition.ws.WsMessageHandler;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
+import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.image.Image;
 import javafx.scene.input.MouseButton;
@@ -68,6 +69,7 @@ public class StageQuestionPreviewPreview extends PreviewPane {
     public void initialize() {
         inner = currentStage;
         PreviewStack.addPreview(this);
+        PreviewStack.addReturn(this);
         container.setOnMouseClicked(new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent event) {
@@ -93,8 +95,8 @@ public class StageQuestionPreviewPreview extends PreviewPane {
         }
         try {
             container.setBackground(new Background(new BackgroundImage(
-                    new Image(new FileInputStream(ImageResource.选题背景)), BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT, BackgroundPosition.DEFAULT,
-                    new BackgroundSize(Navigator.getWidth(), Navigator.getHeight(), false, false, true, true)
+                    new Image(new FileInputStream(ImageResource.选题背景())), BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT, BackgroundPosition.DEFAULT,
+                    new BackgroundSize(Navigator.getWidth(), Navigator.getHeight(), false, false, false, false)
             )));
         } catch (FileNotFoundException e) {
             e.printStackTrace();
@@ -130,13 +132,14 @@ public class StageQuestionPreviewPreview extends PreviewPane {
                 styleArr = questionStyle.split(ConfigSpliter.DIFFER);
             }
 
+
             // 标题名称
             StackPane title = new StackPane();
             Text stageName = new Text(currentStage.getName());
             title.getChildren().add(stageName);
             // 环节标题的字体颜色和背景色
             stageName.setFill(Color.valueOf(stageConfigAttrSplit[2]));
-            title.setStyle("-fx-background-color: " + stageConfigAttrSplit[3].replace("0x", "#"));
+            title.setBackground(new Background(new BackgroundFill(Color.valueOf(stageConfigAttrSplit[3]), CornerRadii.EMPTY, Insets.EMPTY)));
             title.setLayoutX(ConfigSpliter.DEFAULT_X);
             title.setLayoutY(ConfigSpliter.DEFAULT_Y);
             title.setPrefWidth(ConfigSpliter.DEFAULT_W);
@@ -146,12 +149,29 @@ public class StageQuestionPreviewPreview extends PreviewPane {
             stageName.prefWidth(ConfigSpliter.DEFAULT_W);
             stageName.prefHeight(ConfigSpliter.DEFAULT_H);
 
+
             if (styleArr.length > 1 && !ConfigSpliter.EMPTY.equals(styleArr[0])) {
                 String[] detailArr = styleArr[0].split(ConfigSpliter.SPLITER);
                 title.setLayoutX(Integer.parseInt(detailArr[0]));
                 title.setLayoutY(Integer.parseInt(detailArr[1]));
                 title.setPrefWidth(Integer.parseInt(detailArr[2]));
                 title.setPrefHeight(Integer.parseInt(detailArr[3]));
+
+                if (Boolean.valueOf(detailArr[4])) {
+                    // 填充背景图片
+                    if (!StringUtils.isEmpty(detailArr[6])) {
+                        try {
+                            title.setBackground(new Background(new BackgroundImage(new Image(new FileInputStream(detailArr[6])),
+                                    BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT, BackgroundPosition.DEFAULT,
+                                    new BackgroundSize(Integer.parseInt(detailArr[2]), Integer.parseInt(detailArr[3]), false, false, false, false))));
+                        } catch (FileNotFoundException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                } else {
+                    // 填充背景颜色
+                    title.setBackground(new Background(new BackgroundFill(Color.valueOf(detailArr[5]), CornerRadii.EMPTY, Insets.EMPTY)));
+                }
 
                 stageName.setLayoutX(Integer.parseInt(detailArr[0]));
                 stageName.setLayoutY(Integer.parseInt(detailArr[1]));
@@ -181,6 +201,20 @@ public class StageQuestionPreviewPreview extends PreviewPane {
 
             String[] cfgArr = config.split(ConfigSpliter.SPLITER);
 
+            int col = 1;
+            if (styleArr.length > 1 &&!ConfigSpliter.EMPTY.equals(styleArr[1])) {
+                String[] detailArr = styleArr[1].split(ConfigSpliter.SPLITER);
+                if (detailArr.length >= 16) {
+                    col = Integer.parseInt(detailArr[15]);
+                }
+            }
+
+            double itemSize = Integer.parseInt(cfgArr[5]) / col;
+            for (int i = 0; i < col; i++) {
+                ColumnConstraints columnConstraints = new ColumnConstraints(itemSize);
+                layout.getColumnConstraints().add(columnConstraints);
+            }
+
             layout.setHgap(20);
             layout.setVgap(20);
             layout.setLayoutX(Integer.parseInt(cfgArr[3]));
@@ -188,14 +222,11 @@ public class StageQuestionPreviewPreview extends PreviewPane {
             layout.setPrefWidth(Integer.parseInt(cfgArr[5]));
             layout.setPrefHeight(Integer.parseInt(cfgArr[6]));
 
-            double itemSize = Integer.parseInt(cfgArr[5]) / 6;
+         
 
-            for (int i = 0; i < 6; i++) {
-                ColumnConstraints columnConstraints = new ColumnConstraints(itemSize);
-                layout.getColumnConstraints().add(columnConstraints);
-            }
+            
 
-            int numRows = questionList.size() / 6 + ( questionList.size() % 6 == 0? 0 : 1);
+            int numRows = questionList.size() / col + ( questionList.size() % col == 0? 0 : 1);
 
             // 为每一行设置相同的高度
             for (int i = 0; i < numRows; i++) {
@@ -226,6 +257,24 @@ public class StageQuestionPreviewPreview extends PreviewPane {
                     item.setLayoutX(Integer.parseInt(detailArr[0]));
                     item.setLayoutY(Integer.parseInt(detailArr[1]));
                     item.setAlignment(AlignmentUtil.getAlign(detailArr[13]));
+
+                    if (Boolean.valueOf(detailArr[4])) {
+                        // 填充背景图片
+                        if (!StringUtils.isEmpty(detailArr[6])) {
+                            try {
+                                item.setBackground(new Background(new BackgroundImage(new Image(new FileInputStream(detailArr[6])),
+                                        BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT, BackgroundPosition.DEFAULT,
+                                        new BackgroundSize(Integer.parseInt(detailArr[2]), Integer.parseInt(detailArr[3]), false, false, false, false))));
+                            } catch (FileNotFoundException e) {
+                                e.printStackTrace();
+                            }
+                        }
+                    } else {
+                        // 填充背景颜色
+                        item.setBackground(new Background(new BackgroundFill(Color.valueOf(detailArr[5]), CornerRadii.EMPTY, Insets.EMPTY)));
+                    }
+                    
+                    
                     Font font = Font.font(detailArr[7], FontWeight.NORMAL, FontPosture.REGULAR, Integer.parseInt(detailArr[8]));
                     text.setFont(font);
                     if (Boolean.valueOf(detailArr[10])) {
@@ -242,9 +291,8 @@ public class StageQuestionPreviewPreview extends PreviewPane {
                     text.setStrikethrough(Boolean.valueOf(detailArr[9]));
                 }
                 text.setFill(Color.valueOf(cfgArr[0]));
-                item.setStyle("-fx-background-color: " + cfgArr[1].replace("0x", "#"));
                 item.getChildren().add(text);
-                layout.add(item, i % 6, i / 6);
+                layout.add(item, i % col, i / col);
                 item.setOnMouseClicked(new EventHandler<MouseEvent>() {
                     @Override
                     public void handle(MouseEvent event) {
@@ -318,6 +366,8 @@ public class StageQuestionPreviewPreview extends PreviewPane {
                             controlPane.setPreviewPane(
                                     Navigator.preview("/view/preview/QuestionPreview.fxml", "", "/view/style.css", true, true)
                             );
+                            // 控制面板选择题号
+                            controlPane.selectQuestion(tihao);
                         }
 
                     }
@@ -329,6 +379,10 @@ public class StageQuestionPreviewPreview extends PreviewPane {
         }
 
         container.getChildren().add(layout);
+    }
+
+    public Stages getInner() {
+        return inner;
     }
 
     @Override

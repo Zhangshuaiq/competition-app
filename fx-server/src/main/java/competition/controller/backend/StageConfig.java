@@ -655,20 +655,43 @@ public class StageConfig {
                         .isNull(Stages::getParentId)).size() + 1;
                 stages.setLevel(1);
                 stages.setSortVal((size) + "");
-        } else if (current != null) {
-            stages.setParentId(current.getId());
-            stages.setLevel(current.getLevel() + 1);
-            int size = stagesMapper.selectList(new LambdaQueryWrapper<Stages>()
-                    .eq(Stages::getParentId, current.getId())
-            ).size() + 1;
-            stages.setSortVal(current.getSortVal() + "." + (size));
-        } else {
-            int size = stagesMapper.selectList(new LambdaQueryWrapper<Stages>()
-                    .isNull(Stages::getParentId)).size() + 1;
-            stages.setLevel(1);
-            stages.setSortVal((size) + "");
+        } else  if (addLevel == 2) {
+            if (current.getLevel() == 1) {
+                stages.setParentId(current.getId());
+                stages.setLevel(current.getLevel() + 1);
+                int size = stagesMapper.selectList(new LambdaQueryWrapper<Stages>()
+                        .eq(Stages::getParentId, current.getId())
+                ).size() + 1;
+                stages.setSortVal(current.getSortVal() + "." + (size));
+            } else if (current.getLevel() == 2) {
+                Stages p = stagesMapper.selectById(current.getParentId());
+                stages.setParentId(p.getId());
+                stages.setLevel(p.getLevel() + 1);
+                int size = stagesMapper.selectList(new LambdaQueryWrapper<Stages>()
+                        .eq(Stages::getParentId, p.getId())
+                ).size() + 1;
+                stages.setSortVal(p.getSortVal() + "." + (size));
+            }
+           
+        } else  if (addLevel == 3) {
+            if (current.getLevel() == 2) {
+                stages.setParentId(current.getId());
+                stages.setLevel(current.getLevel() + 1);
+                int size = stagesMapper.selectList(new LambdaQueryWrapper<Stages>()
+                        .eq(Stages::getParentId, current.getId())
+                ).size() + 1;
+                stages.setSortVal(current.getSortVal() + "." + (size));
+            } else if (current.getLevel() == 3) {
+                Stages p = stagesMapper.selectById(current.getParentId());
+                stages.setParentId(p.getId());
+                stages.setLevel(p.getLevel() + 1);
+                int size = stagesMapper.selectList(new LambdaQueryWrapper<Stages>()
+                        .eq(Stages::getParentId, p.getId())
+                ).size() + 1;
+                stages.setSortVal(p.getSortVal() + "." + (size));
+            }
         }
-
+        
         stagesMapper.insert(stages);
         firstBox.getChildren().clear();
         secondBox.getChildren().clear();

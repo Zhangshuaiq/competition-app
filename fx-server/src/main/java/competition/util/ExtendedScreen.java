@@ -179,7 +179,9 @@ public class ExtendedScreen {
     public static Object scoreWithPos(String fxml, String title, String cssFile, boolean hiddenControl){
 
         try {
-
+            if (!ExtendedScreen.hasShow()) {
+                return null;
+            }
             AtomicReference<Double> xOffset = new AtomicReference<>((double) 0);
             AtomicReference<Double> yOffset = new AtomicReference<>((double) 0);
 

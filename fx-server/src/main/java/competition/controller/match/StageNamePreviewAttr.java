@@ -6,6 +6,7 @@ import competition.entity.Stages;
 import competition.mapper.ConfigsMapper;
 import competition.mapper.StagesMapper;
 import competition.util.AlignmentUtil;
+import competition.util.BaseDir;
 import competition.util.ConfigSpliter;
 import competition.util.PreviewStack;
 import javafx.collections.FXCollections;
@@ -17,6 +18,7 @@ import javafx.scene.control.ComboBox;
 import javafx.scene.control.TextField;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
+import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
@@ -24,6 +26,7 @@ import org.springframework.util.StringUtils;
 import javax.annotation.Resource;
 import javax.swing.*;
 import java.awt.*;
+import java.io.File;
 import java.util.Arrays;
 
 @Component
@@ -97,6 +100,26 @@ public class StageNamePreviewAttr {
         textAlignSelector.setItems(FXCollections.observableList(AlignmentUtil.alignNames()));
         fontSelector.setItems(FXCollections.observableList(Arrays.asList(GraphicsEnvironment.getLocalGraphicsEnvironment().getAvailableFontFamilyNames())));
         previewData();
+    }
+
+
+    @FXML
+    public void selectImg(){
+        FileChooser chooser = new FileChooser();
+        chooser.setInitialDirectory(new File(BaseDir.IMAGE_DIR));
+        chooser.getExtensionFilters().addAll(
+                new FileChooser.ExtensionFilter("Image Files", "*.png", "*.jpg", "*.gif")
+        );
+        File file = chooser.showOpenDialog(null);
+        if (file!= null) {
+            backgroundPath.setText(file.getAbsolutePath());
+        }
+    }
+
+
+    @FXML
+    public void cancelImg(){
+        backgroundPath.setText("");
     }
     
     private void previewData(){
