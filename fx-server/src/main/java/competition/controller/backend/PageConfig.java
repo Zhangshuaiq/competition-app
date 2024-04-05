@@ -2,6 +2,7 @@ package competition.controller.backend;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import competition.controller.ControlPane;
+import competition.controller.match.ReloadPane;
 import competition.entity.Configs;
 import competition.mapper.ConfigsMapper;
 import competition.util.ConfigSpliter;
@@ -790,6 +791,10 @@ public class PageConfig {
         configsMapper.updateById(jingji);
 
         controlPane.updateScoreBoard();
+        ReloadPane timeBoard = controlPane.getTimeBoardPreview();
+        if (timeBoard != null) {
+            timeBoard.reload();
+        }
         PreviewStack.reload();
     }
     

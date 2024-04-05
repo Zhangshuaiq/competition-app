@@ -13,12 +13,18 @@ public class MusicPlayer {
     private static Map<String, MediaPlayer> musicsMap = new HashMap<>();
 
     static {
-        load(MusicResource.SECOND_5);
-        load(MusicResource.SECOND_4);
-        load(MusicResource.SECOND_3);
-        load(MusicResource.SECOND_2);
-        load(MusicResource.SECOND_1);
-        load(MusicResource.SECOND_0);
+        String path = MusicResource.SECOND_PREFIX;
+        File musicDir = new File(path);
+        File[] files = musicDir.listFiles();
+        for (File file : files) {
+           load(file.getAbsolutePath());
+        }
+//        load(MusicResource.SECOND_5);
+//        load(MusicResource.SECOND_4);
+//        load(MusicResource.SECOND_3);
+//        load(MusicResource.SECOND_2);
+//        load(MusicResource.SECOND_1);
+//        load(MusicResource.SECOND_0);
         // 预加载播放，防止播放延迟
     }
 
@@ -49,12 +55,14 @@ public class MusicPlayer {
                 mediaPlayer.seek(Duration.ZERO);
             });
             musicsMap.put(path, mediaPlayer);
+            System.out.println("加载音乐:" + path);
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
     public static void play(String path) {
+        System.out.println(path);
         MediaPlayer player = musicsMap.get(path);
         player.play();
     }

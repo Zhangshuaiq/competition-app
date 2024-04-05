@@ -1,5 +1,6 @@
 package competition.controller.match;
 
+import competition.controller.preview.CluePreviewPreview;
 import competition.controller.preview.PreviewPane;
 import competition.controller.preview.QuestionPreviewPreview;
 import competition.entity.Configs;
@@ -12,6 +13,7 @@ import javafx.fxml.FXML;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.control.*;
+import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
@@ -28,6 +30,23 @@ import java.util.List;
 @Component
 
 public class QuestionPreviewAttr {
+    
+    
+    // 环节名称设置
+    @FXML
+    private TextField stageXInput, stageYInput, stageWidthInput, 
+            stageHeightInput, stageBackgroundPath, stageFontSize, stageSpaceInput;
+    
+    @FXML
+    private ColorPicker stageColorInput;
+    
+    
+    @FXML
+    private CheckBox stageBackgroundChoice, stageDeleteChoice, stageBoldChoice, 
+            stageIticChoice, stageUnderlineChoice;
+    
+    @FXML
+    private ComboBox<String> stageFontSelector, stageTextAlignSelector;
 
 
     @FXML
@@ -154,15 +173,36 @@ public class QuestionPreviewAttr {
     public void initialize() {
         // 读取问题的样式
         questionStyleList = ExcelParser.parse(ExcelParser.S_PATH, QuestionStyle.class);
+        
         // 初始化展示所有的字体和居中样式
+
+        stageFontSelector.setItems(FXCollections.observableList(FontMap.fontNames()));
+        stageTextAlignSelector.setItems(FXCollections.observableList(AlignmentUtil.alignNames()));
         nameTextAlignSelector.setItems(FXCollections.observableList(AlignmentUtil.alignNames()));
-        nameFontSelector.setItems(FXCollections.observableList(Arrays.asList(GraphicsEnvironment.getLocalGraphicsEnvironment().getAvailableFontFamilyNames())));
+        nameFontSelector.setItems(FXCollections.observableList(FontMap.fontNames()));
         answerTextAlignSelector.setItems(FXCollections.observableList(AlignmentUtil.alignNames()));
-        answerFontSelector.setItems(FXCollections.observableList(Arrays.asList(GraphicsEnvironment.getLocalGraphicsEnvironment().getAvailableFontFamilyNames())));
+        answerFontSelector.setItems(FXCollections.observableList(FontMap.fontNames()));
         // 回显数据
         showConfigData();
     }
+    
+    @FXML
+    public void selectStageImg(){
+        FileChooser chooser = new FileChooser();
+        chooser.setInitialDirectory(new File(BaseDir.IMAGE_DIR));
+        chooser.getExtensionFilters().addAll(
+                new FileChooser.ExtensionFilter("Image Files", "*.png", "*.jpg", "*.gif")
+        );
+        File file = chooser.showOpenDialog(null);
+        if (file!= null) {
+            stageBackgroundPath.setText(file.getAbsolutePath());
+        }
+    }
 
+    @FXML
+    public void cancelStageImg(){
+        stageBackgroundPath.setText("");
+    }
 
     @FXML
     public void selectNameImg(){
@@ -207,6 +247,49 @@ public class QuestionPreviewAttr {
         Configs configs = configsMapper.selectById(1);
         showTiganConfig(configs);
         showAnswerConfig(configs);
+        showStageConfig();
+    }
+    
+    
+    private void showStageConfig(){
+        stageXInput.setText("100");
+        stageYInput.setText("100");
+        stageWidthInput.setText("100");
+        stageHeightInput.setText("100");
+
+       
+        stageFontSelector.setValue(stageXInput.getFont().getName());
+        stageFontSize.setText((int)stageXInput.getFont().getSize() + "");
+        
+        
+        if (!questionStyleList.isEmpty()) {
+            QuestionStyle questionStyle = questionStyleList.get(questions.getSort());
+            if (questionStyle != null) {
+                String style1 = questionStyle.getStyle3();
+                if (!StringUtils.isEmpty(style1)) {
+                    // 解析 excel 的样式
+                    String[] split = style1.split(ConfigSpliter.SPLITER);
+                    stageXInput.setText(split[0]);
+                    stageYInput.setText(split[1]);
+                    stageWidthInput.setText(split[2]);
+                    stageHeightInput.setText(split[3]);
+                    stageBackgroundChoice.setSelected(Boolean.valueOf(split[4]));
+                    stageColorInput.setValue(Color.valueOf(split[5]));
+                    stageBackgroundPath.setText(split[6]);
+                    stageFontSelector.setValue(split[7]);
+                    stageFontSize.setText(Integer.parseInt(split[8]) + "");
+                    stageDeleteChoice.setSelected(Boolean.valueOf(split[9]));
+                    stageBoldChoice.setSelected(Boolean.valueOf(split[10]));
+                    stageIticChoice.setSelected(Boolean.valueOf(split[11]));
+                    stageUnderlineChoice.setSelected(Boolean.valueOf(split[12]));
+                    stageTextAlignSelector.setValue(split[13]);
+                    stageSpaceInput.setText(split[14]);
+//                    if (split.length >= 16) {
+//                        wordSpaceInput.setText(split[15]);
+//                    }
+                }
+            }
+        }
     }
 
 
@@ -245,7 +328,6 @@ public class QuestionPreviewAttr {
             if (!StringUtils.isEmpty(questions.getChoiceF())) {
                 nameText.appendText(System.lineSeparator() + questions.getChoiceF());
             }
-            String nameText = this.nameText.getText();
             nameTextAlignSelector.setValue("左对齐");
             // 根据配置详情设置样式
             if (!questionStyleList.isEmpty()) {
@@ -255,6 +337,10 @@ public class QuestionPreviewAttr {
                     if (!StringUtils.isEmpty(style1)) {
                         // 解析 excel 的样式
                         String[] split = style1.split(ConfigSpliter.SPLITER);
+                        nameXInput.setText(split[0]);
+                        nameYInput.setText(split[1]);
+                        nameWidthInput.setText(split[2]);
+                        nameHeightInput.setText(split[3]);
                         nameBackgroundChoice.setSelected(Boolean.valueOf(split[4]));
                         nameColorInput.setValue(Color.valueOf(split[5]));
                         nameBackgroundPath.setText(split[6]);
@@ -273,6 +359,103 @@ public class QuestionPreviewAttr {
                 }
             }
         }
+    }
+    
+    
+    
+    @FXML
+    public void saveCurrentConfig(){
+        String style1 =
+                stageXInput.getText() + ConfigSpliter.SPLITER +
+                        stageYInput.getText() + ConfigSpliter.SPLITER +
+                        stageWidthInput.getText() + ConfigSpliter.SPLITER +
+                        stageHeightInput.getText() + ConfigSpliter.SPLITER +
+                        stageBackgroundChoice.isSelected() + ConfigSpliter.SPLITER +
+                        stageColorInput.getValue() + ConfigSpliter.SPLITER +
+                        stageBackgroundPath.getText() + ConfigSpliter.SPLITER +
+                        stageFontSelector.getValue() + ConfigSpliter.SPLITER +
+                        stageFontSize.getText() + ConfigSpliter.SPLITER +
+                        stageDeleteChoice.isSelected() + ConfigSpliter.SPLITER +
+                        stageBoldChoice.isSelected() + ConfigSpliter.SPLITER +
+                        stageIticChoice.isSelected() + ConfigSpliter.SPLITER +
+                        stageUnderlineChoice.isSelected() + ConfigSpliter.SPLITER +
+                        stageTextAlignSelector.getValue()  + ConfigSpliter.SPLITER +
+                        stageSpaceInput.getText()
+                ;
+        questionStyleList.get(questions.getSort()).setStyle3(style1);
+        ExcelParser.write(ExcelParser.S_PATH, questionStyleList, QuestionStyle.class);
+        
+        if (reloadPane != null) {
+            reloadPane.reload();
+        }
+        PreviewStack.reload();
+        closeStage();
+    }
+
+    @FXML
+    public void saveCurrentSConfig(){
+        String style1 =
+                stageXInput.getText() + ConfigSpliter.SPLITER +
+                        stageYInput.getText() + ConfigSpliter.SPLITER +
+                        stageWidthInput.getText() + ConfigSpliter.SPLITER +
+                        stageHeightInput.getText() + ConfigSpliter.SPLITER +
+                        stageBackgroundChoice.isSelected() + ConfigSpliter.SPLITER +
+                        stageColorInput.getValue() + ConfigSpliter.SPLITER +
+                        stageBackgroundPath.getText() + ConfigSpliter.SPLITER +
+                        stageFontSelector.getValue() + ConfigSpliter.SPLITER +
+                        stageFontSize.getText() + ConfigSpliter.SPLITER +
+                        stageDeleteChoice.isSelected() + ConfigSpliter.SPLITER +
+                        stageBoldChoice.isSelected() + ConfigSpliter.SPLITER +
+                        stageIticChoice.isSelected() + ConfigSpliter.SPLITER +
+                        stageUnderlineChoice.isSelected() + ConfigSpliter.SPLITER +
+                        stageTextAlignSelector.getValue() + ConfigSpliter.SPLITER +
+                        stageSpaceInput.getText()
+                ;
+
+        for (QuestionStyle questionStyle : questionStyleList) {
+            if (questionStyle.getStageNo().equals(questions.getStageNumber())) {
+                questionStyle.setStyle3(style1);
+            }
+        }
+        ExcelParser.write(ExcelParser.S_PATH, questionStyleList, QuestionStyle.class);
+
+        if (reloadPane != null) {
+            reloadPane.reload();
+        }
+        PreviewStack.reload();
+        closeStage();
+    }
+
+
+    @FXML
+    public void saveAllSConfig(){
+        String style1 =
+                stageXInput.getText() + ConfigSpliter.SPLITER +
+                        stageYInput.getText() + ConfigSpliter.SPLITER +
+                        stageWidthInput.getText() + ConfigSpliter.SPLITER +
+                        stageHeightInput.getText() + ConfigSpliter.SPLITER +
+                        stageBackgroundChoice.isSelected() + ConfigSpliter.SPLITER +
+                        stageColorInput.getValue() + ConfigSpliter.SPLITER +
+                        stageBackgroundPath.getText() + ConfigSpliter.SPLITER +
+                        stageFontSelector.getValue() + ConfigSpliter.SPLITER +
+                        stageFontSize.getText() + ConfigSpliter.SPLITER +
+                        stageDeleteChoice.isSelected() + ConfigSpliter.SPLITER +
+                        stageBoldChoice.isSelected() + ConfigSpliter.SPLITER +
+                        stageIticChoice.isSelected() + ConfigSpliter.SPLITER +
+                        stageUnderlineChoice.isSelected() + ConfigSpliter.SPLITER +
+                        stageTextAlignSelector.getValue() + ConfigSpliter.SPLITER +
+                        stageSpaceInput.getText()
+                ;
+        for (QuestionStyle questionStyle : questionStyleList) {
+            questionStyle.setStyle3(style1);
+        }
+        ExcelParser.write(ExcelParser.S_PATH, questionStyleList, QuestionStyle.class);
+
+        if (reloadPane != null) {
+            reloadPane.reload();
+        }
+        PreviewStack.reload();
+        closeStage();
     }
 
 
@@ -317,26 +500,38 @@ public class QuestionPreviewAttr {
         }
 
         // 写入（更新）题干内容到 excel 里
-        List<Questions> parse = ExcelParser.parse(ExcelParser.Q_PATH, Questions.class);
+        List<Questions> parse = RuntimeQuestionStock.getQuestions();
         String[] split = nameText.getText().split("\n");
         questions.setQuestion(split[0]);
         if (split.length >= 2) {
             questions.setChoiceA(split[1]);
+        } else {
+            questions.setChoiceA("");
         }
         if (split.length >= 3) {
             questions.setChoiceB(split[2]);
+        } else {
+            questions.setChoiceB("");
         }
         if (split.length >= 4) {
             questions.setChoiceC(split[3]);
+        } else {
+            questions.setChoiceC("");
         }
         if (split.length >= 5) {
             questions.setChoiceD(split[4]);
-        } 
+        } else {
+            questions.setChoiceD("");
+        }
         if (split.length >= 6) {
             questions.setChoiceE(split[5]);
+        } else {
+            questions.setChoiceE("");
         }
         if (split.length >= 7) {
             questions.setChoiceF(split[6]);
+        } else {
+            questions.setChoiceF("");
         }
         parse.set(questions.getSort(), questions);
         ExcelParser.write(ExcelParser.Q_PATH, parse, Questions.class);
@@ -392,26 +587,38 @@ public class QuestionPreviewAttr {
         }
 
         // 写入（更新）题干内容到 excel 里
-        List<Questions> parse = ExcelParser.parse(ExcelParser.Q_PATH, Questions.class);
+        List<Questions> parse = RuntimeQuestionStock.getQuestions();
         String[] split = nameText.getText().split("\n");
         questions.setQuestion(split[0]);
         if (split.length >= 2) {
             questions.setChoiceA(split[1]);
+        } else {
+            questions.setChoiceA("");
         }
         if (split.length >= 3) {
             questions.setChoiceB(split[2]);
+        } else {
+            questions.setChoiceB("");
         }
         if (split.length >= 4) {
             questions.setChoiceC(split[3]);
+        } else {
+            questions.setChoiceC("");
         }
         if (split.length >= 5) {
             questions.setChoiceD(split[4]);
+        } else {
+            questions.setChoiceD("");
         }
         if (split.length >= 6) {
             questions.setChoiceE(split[5]);
+        } else {
+            questions.setChoiceE("");
         }
         if (split.length >= 7) {
             questions.setChoiceF(split[6]);
+        } else {
+            questions.setChoiceF("");
         }
         parse.set(questions.getSort(), questions);
         ExcelParser.write(ExcelParser.Q_PATH, parse, Questions.class);
@@ -459,26 +666,38 @@ public class QuestionPreviewAttr {
         }
 
         // 写入（更新）题干内容到 excel 里
-        List<Questions> parse = ExcelParser.parse(ExcelParser.Q_PATH, Questions.class);
+        List<Questions> parse = RuntimeQuestionStock.getQuestions();
         String[] split = nameText.getText().split("\n");
         questions.setQuestion(split[0]);
         if (split.length >= 2) {
             questions.setChoiceA(split[1]);
+        } else {
+            questions.setChoiceA("");
         }
         if (split.length >= 3) {
             questions.setChoiceB(split[2]);
+        } else {
+            questions.setChoiceB("");
         }
         if (split.length >= 4) {
             questions.setChoiceC(split[3]);
+        } else {
+            questions.setChoiceC("");
         }
         if (split.length >= 5) {
             questions.setChoiceD(split[4]);
+        } else {
+            questions.setChoiceD("");
         }
         if (split.length >= 6) {
             questions.setChoiceE(split[5]);
+        } else {
+            questions.setChoiceE("");
         }
         if (split.length >= 7) {
             questions.setChoiceF(split[6]);
+        } else {
+            questions.setChoiceF("");
         }
         parse.set(questions.getSort(), questions);
         ExcelParser.write(ExcelParser.Q_PATH, parse, Questions.class);
@@ -512,7 +731,7 @@ public class QuestionPreviewAttr {
         ExcelParser.write(ExcelParser.S_PATH, questionStyleList, QuestionStyle.class);
 
         // 写入（更新）题干内容到 excel 里
-        List<Questions> parse = ExcelParser.parse(ExcelParser.Q_PATH, Questions.class);
+        List<Questions> parse = RuntimeQuestionStock.getQuestions();
         questions.setAnswer(answerText.getText());
         parse.set(questions.getSort(), questions);
         ExcelParser.write(ExcelParser.Q_PATH, parse, Questions.class);
@@ -550,7 +769,7 @@ public class QuestionPreviewAttr {
         ExcelParser.write(ExcelParser.S_PATH, questionStyleList, QuestionStyle.class);
 
         // 写入（更新）题干内容到 excel 里
-        List<Questions> parse = ExcelParser.parse(ExcelParser.Q_PATH, Questions.class);
+        List<Questions> parse = RuntimeQuestionStock.getQuestions();
         questions.setAnswer(answerText.getText());
         parse.set(questions.getSort(), questions);
         ExcelParser.write(ExcelParser.Q_PATH, parse, Questions.class);
@@ -585,7 +804,7 @@ public class QuestionPreviewAttr {
         }
         ExcelParser.write(ExcelParser.S_PATH, questionStyleList, QuestionStyle.class);
         // 写入（更新）题干内容到 excel 里
-        List<Questions> parse = ExcelParser.parse(ExcelParser.Q_PATH, Questions.class);
+        List<Questions> parse = RuntimeQuestionStock.getQuestions();
         questions.setAnswer(answerText.getText());
         parse.set(questions.getSort(), questions);
         ExcelParser.write(ExcelParser.Q_PATH, parse, Questions.class);
@@ -607,10 +826,19 @@ public class QuestionPreviewAttr {
             answerFontSize.setText(defaultFont.getSize() + "");
             // x y w h
             // 
-            QuestionPreviewPreview preview =(QuestionPreviewPreview) PreviewStack.getLast();
+            PreviewPane previewPane = PreviewStack.getLast();
+            VBox tiganBox = null;
+            if (previewPane instanceof  QuestionPreviewPreview) {
+                QuestionPreviewPreview preview =(QuestionPreviewPreview)previewPane;
+                tiganBox = preview.tiganBox;
+            } else {
+                CluePreviewPreview preview =(CluePreviewPreview)previewPane;
+                tiganBox = preview.tiganBox;
+            }
+            
             answerSpaceInput.setText("0");
-            answerXInput.setText((int) preview.tiganBox.getLayoutX() + "");
-            answerYInput.setText((int) (preview.tiganBox.getLayoutX() + preview.tiganBox.getPrefHeight() + 10) + "");
+            answerXInput.setText((int) tiganBox.getLayoutX() + "");
+            answerYInput.setText((int) (tiganBox.getLayoutX() + tiganBox.getPrefHeight() + 10) + "");
             answerWidthInput.setText(cfgArr[7]);
             answerHeightInput.setText(cfgArr[8]);
             answerText.setText(questions.getAnswer());

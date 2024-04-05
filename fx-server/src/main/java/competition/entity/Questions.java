@@ -61,4 +61,7 @@ public class Questions {
     @ExcelIgnore
     private Integer score;
     
+    @ExcelIgnore
+    private boolean hasAnswer = false;
+    
 }

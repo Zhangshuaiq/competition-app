@@ -11,4 +11,12 @@ public class Information {
         alert.setContentText(msg);
         alert.show();
     }
+
+    public static void info(String msg) {
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle("提示！！");
+        alert.setHeaderText("");
+        alert.setContentText(msg);
+        alert.show();
+    }
 }

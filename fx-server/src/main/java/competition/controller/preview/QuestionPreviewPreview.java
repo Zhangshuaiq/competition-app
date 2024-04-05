@@ -13,7 +13,6 @@ import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.geometry.Insets;
 import javafx.scene.Node;
-import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
@@ -42,7 +41,10 @@ public class QuestionPreviewPreview extends PreviewPane {
 
 
     @FXML
-    private StackPane backPane;
+    private StackPane backPane, stagePane;
+
+    @FXML
+    private Text daanLabel, stageLabel;
 
     @Resource
     private ControlPane controlPane;
@@ -51,16 +53,11 @@ public class QuestionPreviewPreview extends PreviewPane {
     private AnchorPane container;
 
     @FXML
-    private Label timeLabel;
-
-
-    @FXML
     public VBox tiganBox;
 
     @FXML
     private Text tiganLabel;
-    @FXML
-    private Text daanLabel;
+
 
     @Resource
     private ConfigsMapper configsMapper;
@@ -198,29 +195,32 @@ public class QuestionPreviewPreview extends PreviewPane {
                 tiganLabel.setText(inner.getQuestionNumber() + "、" + inner.getQuestion());
             } else if (txbz.equals("3")) {
                 if (tx.equals("3")) {
-                    tiganLabel.setText(inner.getQuestionNumber()  + "、"  + inner.getQuestion() + " " + inner.getQuestionType());
+                    tiganLabel.setText(inner.getQuestionNumber() + "、" + inner.getQuestion() + " " + inner.getQuestionType());
                 } else if (tx.equals("2")) {
-                    tiganLabel.setText(inner.getQuestionNumber() + "、"  + " " + inner.getQuestionType() + inner.getQuestion());
+                    tiganLabel.setText(inner.getQuestionNumber() + "、" + " " + inner.getQuestionType() + inner.getQuestion());
                 } else if (tx.equals("1")) {
-                    tiganLabel.setText(inner.getQuestionType()  + "、"  + " " + inner.getQuestionNumber() + inner.getQuestion());
+                    tiganLabel.setText(inner.getQuestionType() + "、" + " " + inner.getQuestionNumber() + inner.getQuestion());
                 }
 
             } else if (txbz.equals("2")) {
                 if (tx.equals("3")) {
-                    tiganLabel.setText(inner.getQuestionNumber()  + "、"  + inner.getQuestion() + "(" + inner.getQuestionType() + ")");
+                    tiganLabel.setText(inner.getQuestionNumber() + "、" + inner.getQuestion() + "(" + inner.getQuestionType() + ")");
                 } else if (tx.equals("2")) {
-                    tiganLabel.setText(inner.getQuestionNumber()  + "、"  + "(" + inner.getQuestionType() + ")" + inner.getQuestion());
+                    tiganLabel.setText(inner.getQuestionNumber() + "、" + "(" + inner.getQuestionType() + ")" + inner.getQuestion());
                 } else if (tx.equals("1")) {
-                    tiganLabel.setText("(" + inner.getQuestionType() + ")" + inner.getQuestionNumber()  + "、"  + inner.getQuestion());
+                    tiganLabel.setText("(" + inner.getQuestionType() + ")" + inner.getQuestionNumber() + "、" + inner.getQuestion());
                 }
             } else if (txbz.equals("1")) {
                 if (tx.equals("3")) {
-                    tiganLabel.setText(inner.getQuestionNumber()  + "、"  + inner.getQuestion() + "[" + inner.getQuestionType() + "]");
+                    tiganLabel.setText(inner.getQuestionNumber() + "、" + inner.getQuestion() + "[" + inner.getQuestionType() + "]");
                 } else if (tx.equals("2")) {
-                    tiganLabel.setText(inner.getQuestionNumber()  + "、"  + "[" + inner.getQuestionType() + "]" + inner.getQuestion());
+                    tiganLabel.setText(inner.getQuestionNumber() + "、" + "[" + inner.getQuestionType() + "]" + inner.getQuestion());
                 } else if (tx.equals("1")) {
-                    tiganLabel.setText("[" + inner.getQuestionType() + "]" + inner.getQuestionNumber()  + "、"  + inner.getQuestion());
+                    tiganLabel.setText("[" + inner.getQuestionType() + "]" + inner.getQuestionNumber() + "、" + inner.getQuestion());
                 }
+            }
+            if (controlPane.getCurrentStage().getShowNumber() == 0) {
+                tiganLabel.setText(tiganLabel.getText().replace(inner.getQuestionNumber() + "、", ""));
             }
             // 答案
             daanLabel.setText(split[4] + " " + inner.getAnswer());
@@ -228,7 +228,7 @@ public class QuestionPreviewPreview extends PreviewPane {
             backPane.setLayoutY((int) (tiganBox.getLayoutX() + tiganBox.getPrefHeight() + 10));
             // 答案颜色
             daanLabel.setFill(Color.valueOf(split[1]));
-            
+
             List<QuestionStyle> parse = ExcelParser.parse(ExcelParser.S_PATH, QuestionStyle.class);
             if (!parse.isEmpty()) {
                 QuestionStyle questionStyle = parse.get(inner.getSort());
@@ -262,7 +262,7 @@ public class QuestionPreviewPreview extends PreviewPane {
                                     }
                                     text.setText(String.join(sli, cs1));
                                 }
-                                
+
                             }
                         }
 
@@ -283,7 +283,7 @@ public class QuestionPreviewPreview extends PreviewPane {
                         }
 
                         tiganBox.setSpacing(Integer.parseInt(split1[14]));
-                        Font font = Font.font(split1[7], FontWeight.NORMAL, FontPosture.REGULAR, Integer.parseInt(split1[8]));
+                        Font font = Font.font(FontMap.getFont(split1[7]), FontWeight.NORMAL, FontPosture.REGULAR, Integer.parseInt(split1[8]));
                         tiganLabel.setFont(font);
                         tiganLabel.setUnderline(Boolean.valueOf(split1[12]));
                         tiganLabel.setStrikethrough(Boolean.valueOf(split1[9]));
@@ -353,7 +353,7 @@ public class QuestionPreviewPreview extends PreviewPane {
 
                         daanLabel.setWrappingWidth(Integer.parseInt(split1[2]));
                         daanLabel.setLineSpacing(Integer.parseInt(split1[14]));
-                        Font font = Font.font(split1[7], FontWeight.NORMAL, FontPosture.REGULAR, Integer.parseInt(split1[8]));
+                        Font font = Font.font(FontMap.getFont(split1[7]), FontWeight.NORMAL, FontPosture.REGULAR, Integer.parseInt(split1[8]));
                         daanLabel.setFont(font);
                         daanLabel.setUnderline(Boolean.valueOf(split1[12]));
                         daanLabel.setStrikethrough(Boolean.valueOf(split1[9]));
@@ -369,14 +369,62 @@ public class QuestionPreviewPreview extends PreviewPane {
                         daanLabel.setTextAlignment(AlignmentUtil.getTextAlign(split1[13]));
                         daanLabel.setLineSpacing(Integer.parseInt(split1[14]));
                     }
+
+
+                    String style3 = questionStyle.getStyle3();
+                    // 标题展示
+                    stagePane.setVisible(Boolean.valueOf(split[12]));
+                    if (stagePane.isVisible()) {
+                        stageLabel.setText(controlPane.getCurrentStage().getName());
+                        stageLabel.setFill(Color.valueOf(split[11]));
+                        if (!StringUtils.isEmpty(style3)) {
+                            String[] split1 = style3.split(ConfigSpliter.SPLITER);
+
+                            stagePane.setLayoutX(Integer.parseInt(split1[0]));
+                            stagePane.setLayoutY(Integer.parseInt(split1[1]));
+                            stagePane.setPrefWidth(Integer.parseInt(split1[2]));
+                            stagePane.setPrefHeight(Integer.parseInt(split1[3]));
+
+
+                            if (Boolean.valueOf(split1[4])) {
+                                // 填充背景图片
+                                if (!StringUtils.isEmpty(split1[6])) {
+                                    try {
+                                        stagePane.setBackground(new Background(new BackgroundImage(new Image(new FileInputStream(split1[6])),
+                                                BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT, BackgroundPosition.DEFAULT,
+                                                new BackgroundSize(Integer.parseInt(split1[2]), Integer.parseInt(split1[3]), false, false, false, false))));
+                                    } catch (FileNotFoundException e) {
+                                        e.printStackTrace();
+                                    }
+                                }
+                            } else {
+                                // 填充背景颜色
+                                stagePane.setBackground(new Background(new BackgroundFill(Color.valueOf(split1[5]), CornerRadii.EMPTY, Insets.EMPTY)));
+                            }
+
+
+                            stageLabel.setWrappingWidth(Integer.parseInt(split1[2]));
+                            //stageLabel.setLineSpacing(Integer.parseInt(split1[14]));
+                            Font font = Font.font(FontMap.getFont(split1[7]), FontWeight.NORMAL, FontPosture.REGULAR, Integer.parseInt(split1[8]));
+                            stageLabel.setFont(font);
+                            stageLabel.setUnderline(Boolean.valueOf(split1[12]));
+                            stageLabel.setStrikethrough(Boolean.valueOf(split1[9]));
+                            if (Boolean.valueOf(split1[10])) {
+                                stageLabel.setStroke(Color.valueOf(split[0]));
+                            } else {
+                                stageLabel.setStroke(null);
+                            }
+                            stageLabel.getTransforms().clear();
+                            if (Boolean.valueOf(split1[11])) {
+                                stageLabel.getTransforms().add(new Shear(-0.3, 0));
+                            }
+                            stageLabel.setTextAlignment(AlignmentUtil.getTextAlign(split1[13]));
+                            //stageLabel.setLineSpacing(Integer.parseInt(split1[14]));
+                        }
+                    }
+                   
                 }
             }
-            // 倒计时
-            timeLabel.setTextFill(Color.valueOf(split[23]));
-            // TODO 字号可能有调整，因为字体可能需要在详情页发生变化 
-            timeLabel.setFont(Font.font(Integer.parseInt(split[24])));
-            timeLabel.setLayoutX(Integer.parseInt(split[29]));
-            timeLabel.setLayoutY(Integer.parseInt(split[30]));
         }
     }
 

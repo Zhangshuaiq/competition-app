@@ -1,6 +1,11 @@
 package competition.controller.board.match;
 
+import competition.JavaFxApplication;
+import competition.controller.ControlPane;
 import competition.controller.match.ReloadPane;
+import competition.entity.Configs;
+import competition.mapper.ConfigsMapper;
+import competition.util.ConfigSpliter;
 import competition.util.PreviewStack;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
@@ -27,17 +32,17 @@ public class TimeBoard implements ReloadPane {
     private int timeVal;
 
     private Label teamScore = new Label();
-    
-    
-    
+
+    private ConfigsMapper configsMapper;
+
+
     @FXML
     public void initialize(){
+        configsMapper = JavaFxApplication.getApplicationContext().getBean(ConfigsMapper.class);
         container.getChildren().add(teamScore);
-        teamScore.setTextAlignment(TextAlignment.CENTER);
-        teamScore.setAlignment(Pos.CENTER);
-        teamScore.setFont(Font.font(64));
-        teamScore.setTextFill(Color.RED);
+        reload();
     }
+    
 
 
     @Override
@@ -49,6 +54,14 @@ public class TimeBoard implements ReloadPane {
 
     @Override
     public void reload() {
+       
+        Configs configs = configsMapper.selectById(1);
+        String config = configs.getConfig();
+        String[] split = config.split(ConfigSpliter.SPLITER);
+        teamScore.setTextAlignment(TextAlignment.CENTER);
+        teamScore.setAlignment(Pos.CENTER);
+        teamScore.setFont(Font.font(Integer.parseInt(split[24])));
+        teamScore.setTextFill(Color.valueOf(split[23]));
         showData();
     }
     

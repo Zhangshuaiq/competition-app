@@ -44,7 +44,6 @@ public class TotalRulePreviewPreview extends PreviewPane {
 
     @FXML
     public void initialize() {
-        PreviewStack.addPreview(this);
         container.setOnMouseClicked(new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent event) {
@@ -99,7 +98,7 @@ public class TotalRulePreviewPreview extends PreviewPane {
             text.prefWidth(Integer.parseInt(cfgArr[2]));
             text.prefHeight(Integer.parseInt(cfgArr[3]));
             text.setFill(Color.valueOf(cfgArr[5]));
-            Font font = Font.font(cfgArr[7], FontWeight.NORMAL, FontPosture.REGULAR, Integer.parseInt(cfgArr[8]));
+            Font font = Font.font(FontMap.getFont(cfgArr[7]), FontWeight.NORMAL, FontPosture.REGULAR, Integer.parseInt(cfgArr[8]));
             text.setFont(font);
             if (Boolean.valueOf(cfgArr[10])) {
                 text.setStroke(text.getFill());

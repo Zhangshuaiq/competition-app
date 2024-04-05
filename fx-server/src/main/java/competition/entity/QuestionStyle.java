@@ -15,4 +15,8 @@ public class QuestionStyle {
     private String style1;
     @ExcelProperty(index = 2, value="答案样式")
     private String style2;
+    
+    
+    @ExcelProperty(index = 3, value = "标题样式")
+    private String style3;
 }

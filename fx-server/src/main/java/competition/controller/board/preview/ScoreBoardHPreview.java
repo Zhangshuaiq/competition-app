@@ -67,7 +67,7 @@ public class ScoreBoardHPreview extends PreviewPane implements BoardPane {
         }
         ScoreStyle scoreStyle = scoreStyleMapper.selectById(1);
         String[] split = scoreStyle.getStyles().split(ConfigSpliter.SPLITER);
-        Font font = Font.font(split[0], FontWeight.NORMAL, FontPosture.REGULAR, Integer.parseInt(split[1]));
+        Font font = Font.font(FontMap.getFont(split[0]), FontWeight.NORMAL, FontPosture.REGULAR, Integer.parseInt(split[1]));
         
         Configs configs = configsMapper.selectById(1);
         String config = configs.getConfig();
@@ -117,6 +117,7 @@ public class ScoreBoardHPreview extends PreviewPane implements BoardPane {
             teamScore.setFont(font);
             teamScore.setUnderline(Boolean.valueOf(split[5]));
             teamScore.setStrikethrough(Boolean.valueOf(split[2]));
+            container.setSpacing(Integer.parseInt(split[6]));
             if (Boolean.valueOf(split[3])) {
                 teamScore.setStroke(teamScore.getFill());
             } else {

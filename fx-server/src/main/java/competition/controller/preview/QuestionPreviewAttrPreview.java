@@ -7,6 +7,7 @@ import competition.mapper.ConfigsMapper;
 import competition.util.AlignmentUtil;
 import competition.util.ConfigSpliter;
 import competition.util.ExcelParser;
+import competition.util.FontMap;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.scene.control.TextArea;
@@ -148,9 +149,9 @@ public class QuestionPreviewAttrPreview {
         questionStyleList = ExcelParser.parse(ExcelParser.S_PATH, QuestionStyle.class);
         // 初始化展示所有的字体和居中样式
         nameTextAlignSelector.setItems(FXCollections.observableList(AlignmentUtil.alignNames()));
-        nameFontSelector.setItems(FXCollections.observableList(Arrays.asList(GraphicsEnvironment.getLocalGraphicsEnvironment().getAvailableFontFamilyNames())));
+        nameFontSelector.setItems(FXCollections.observableList(FontMap.fontNames()));
         answerTextAlignSelector.setItems(FXCollections.observableList(AlignmentUtil.alignNames()));
-        answerFontSelector.setItems(FXCollections.observableList(Arrays.asList(GraphicsEnvironment.getLocalGraphicsEnvironment().getAvailableFontFamilyNames())));
+        answerFontSelector.setItems(FXCollections.observableList(FontMap.fontNames()));
         // 回显数据
         showConfigData();
     }

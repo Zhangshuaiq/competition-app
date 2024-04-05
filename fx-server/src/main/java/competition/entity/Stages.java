@@ -51,7 +51,7 @@ public class Stages {
     private Integer orderVal;
     
     private Integer m6;
-
+    
 
     public void setSortVal(String sortVal) {
         this.sortVal = sortVal;

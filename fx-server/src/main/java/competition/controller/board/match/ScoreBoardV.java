@@ -8,6 +8,7 @@ import competition.mapper.ConfigsMapper;
 import competition.mapper.ScoreStyleMapper;
 import competition.util.ConfigSpliter;
 import competition.util.ExtendedScreen;
+import competition.util.FontMap;
 import competition.util.TeamRuntime;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
@@ -73,7 +74,7 @@ public class ScoreBoardV implements BoardPane {
 
         ScoreStyle scoreStyle = scoreStyleMapper.selectById(1);
         String[] split = scoreStyle.getStyles().split(ConfigSpliter.SPLITER);
-        Font font = Font.font(split[0], FontWeight.NORMAL, FontPosture.REGULAR, Integer.parseInt(split[1]));
+        Font font = Font.font(FontMap.getFont(split[0]), FontWeight.NORMAL, FontPosture.REGULAR, Integer.parseInt(split[1]));
         
         container.getChildren().addAll(left, right);
         List<Teams> teams = TeamRuntime.getTeams();
@@ -122,6 +123,7 @@ public class ScoreBoardV implements BoardPane {
             teamScore.setFont(font);
             teamScore.setUnderline(Boolean.valueOf(split[5]));
             teamScore.setStrikethrough(Boolean.valueOf(split[2]));
+            container.setSpacing(Integer.parseInt(split[6]));
             if (Boolean.valueOf(split[3])) {
                 teamScore.setStroke(teamScore.getFill());
             } else {

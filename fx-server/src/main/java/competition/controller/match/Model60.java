@@ -212,7 +212,7 @@ public class Model60 implements ReloadPane{
                         tiganBox.setPrefWidth(Integer.parseInt(split1[2]));
                         tiganBox.setPrefHeight(Integer.parseInt(split1[3]));
                         tiganBox.setSpacing(Integer.parseInt(split1[14]));
-                        Font font = Font.font(split1[7], FontWeight.NORMAL, FontPosture.REGULAR, Integer.parseInt(split1[8]));
+                        Font font = Font.font(FontMap.getFont(split1[7]), FontWeight.NORMAL, FontPosture.REGULAR, Integer.parseInt(split1[8]));
                         tiganLabel.setFont(font);
                         tiganLabel.setUnderline(Boolean.valueOf(split1[12]));
                         tiganLabel.setStrikethrough(Boolean.valueOf(split1[9]));
@@ -262,7 +262,7 @@ public class Model60 implements ReloadPane{
                         // daanLabel.prefWidth(Integer.parseInt(split1[2]));
                         // daanLabel.prefHeight(Integer.parseInt(split1[3]));
                         daanLabel.setLineSpacing(Integer.parseInt(split1[14]));
-                        Font font = Font.font(split1[7], FontWeight.NORMAL, FontPosture.REGULAR, Integer.parseInt(split1[8]));
+                        Font font = Font.font(FontMap.getFont(split1[7]), FontWeight.NORMAL, FontPosture.REGULAR, Integer.parseInt(split1[8]));
                         daanLabel.setFont(font);
                         daanLabel.setUnderline(Boolean.valueOf(split1[12]));
                         daanLabel.setStrikethrough(Boolean.valueOf(split1[9]));

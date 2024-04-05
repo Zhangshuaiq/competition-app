@@ -85,7 +85,7 @@ public class StagePreviewPreview extends PreviewPane {
                     StagePreviewAttr.setConfigId(2);
                     StagePreviewAttr.setLevel(innerStageID);
                     StagePreviewAttr.setReloadPane(controlPane.getQuestionPreview());
-                    Navigator.navigatorTo("/view/match/StagePreviewAttr.fxml", "环节设置", "/view/style.css", false, false);
+                    Navigator.navigatorTo("/view/match/StagePreviewAttr.fxml", "", "/view/style.css", false, false);
                 }
             }
         });
@@ -155,6 +155,9 @@ public class StagePreviewPreview extends PreviewPane {
                // stageContainer.height
 
                 if (detailArr.length > 0) {
+                    stageContainer.setLayoutX(Integer.parseInt(detailArr[0]));
+                    stageContainer.setLayoutY(Integer.parseInt(detailArr[1]));
+                    stageContainer.prefWidth(Integer.parseInt(detailArr[2]));
                     stageContainer.setVgap(Integer.parseInt(detailArr[14]));
                     stageContainer.setHgap(Integer.parseInt(detailArr[14]));
                     stageContainer.setAlignment(AlignmentUtil.getAlign(detailArr[13]));
@@ -224,7 +227,7 @@ public class StagePreviewPreview extends PreviewPane {
                     //stageNamePane.setStyle("-fx-background-color: " + split[3].replace("0x", "#"));
 
                     if (detailArr.length > 0) {
-                        Font font = Font.font(detailArr[7], FontWeight.NORMAL, FontPosture.REGULAR, Integer.parseInt(detailArr[8]));
+                        Font font = Font.font(FontMap.getFont(detailArr[7]), FontWeight.NORMAL, FontPosture.REGULAR, Integer.parseInt(detailArr[8]));
                         stageName.setFont(font);
                         if (Boolean.valueOf(detailArr[10])) {
                             stageName.setStroke(stageName.getFill());
@@ -272,6 +275,7 @@ public class StagePreviewPreview extends PreviewPane {
                             controlPane.setPreviewPane(
                                     Navigator.preview("/view/preview/StageNamePreview.fxml", "", "/view/style.css", true, true)
                             );
+                            GlobalCache.recordStage(stage.getId());
                             // 更新控制面板的分数和时间
                             controlPane.setCurrentStage(stage);
                         }
@@ -282,6 +286,20 @@ public class StagePreviewPreview extends PreviewPane {
                     }
                     int row = count / cols;
                     int col = count % cols;
+                    // 是否展示环节
+                    if (stage.getShow() == 1) {
+                        if (stage.getSelectGrey() == 1) {
+                            if (GlobalCache.isRecord(stage.getId())) {
+                                box.setVisible(false);
+                            } else {
+                                box.setVisible(true);
+                            }
+                        } else {
+                            box.setVisible(true);
+                        }
+                    } else {
+                        box.setVisible(false);
+                    }
                     stageContainer.add(box, col, row);
                     count ++;
 

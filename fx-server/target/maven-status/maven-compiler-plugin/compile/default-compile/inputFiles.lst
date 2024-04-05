@@ -1,6 +1,7 @@
 E:\Income\202401\competition-app\fx-server\src\main\java\competition\config\MvcConfig.java
 E:\Income\202401\competition-app\fx-server\src\main\java\competition\rest\FallbackController.java
 E:\Income\202401\competition-app\fx-server\src\main\java\competition\ws\Model61RuntimeData.java
+E:\Income\202401\competition-app\fx-server\src\main\java\competition\controller\match\RollPreview.java
 E:\Income\202401\competition-app\fx-server\src\main\java\competition\controller\board\match\TimeBoard.java
 E:\Income\202401\competition-app\fx-server\src\main\java\competition\controller\match\StageQuestionPreviewAttr.java
 E:\Income\202401\competition-app\fx-server\src\main\java\competition\mapper\ConfigsMapper.java
@@ -14,6 +15,7 @@ E:\Income\202401\competition-app\fx-server\src\main\java\competition\controller\
 E:\Income\202401\competition-app\fx-server\src\main\java\competition\controller\match\StageNamePreview.java
 E:\Income\202401\competition-app\fx-server\src\main\java\competition\FontSelector.java
 E:\Income\202401\competition-app\fx-server\src\main\java\competition\controller\board\BoardPane.java
+E:\Income\202401\competition-app\fx-server\src\main\java\competition\controller\match\CluePreview.java
 E:\Income\202401\competition-app\fx-server\src\main\java\competition\ws\Model7RuntimeData.java
 E:\Income\202401\competition-app\fx-server\src\main\java\competition\controller\preview\QuestionPreviewAttrPreview.java
 E:\Income\202401\competition-app\fx-server\src\main\java\competition\entity\Configs.java
@@ -27,6 +29,7 @@ E:\Income\202401\competition-app\fx-server\src\main\java\competition\entity\Ques
 E:\Income\202401\competition-app\fx-server\src\main\java\competition\controller\preview\Model60Preview.java
 E:\Income\202401\competition-app\fx-server\src\main\java\competition\controller\preview\Model61Preview.java
 E:\Income\202401\competition-app\fx-server\src\main\java\competition\controller\match\StageQuestionPreview.java
+E:\Income\202401\competition-app\fx-server\src\main\java\competition\controller\preview\CluePreviewPreview.java
 E:\Income\202401\competition-app\fx-server\src\main\java\competition\controller\preview\StageNamePreviewPreview.java
 E:\Income\202401\competition-app\fx-server\src\main\java\competition\controller\match\StagePreview.java
 E:\Income\202401\competition-app\fx-server\src\main\java\competition\entity\Font.java
@@ -51,12 +54,14 @@ E:\Income\202401\competition-app\fx-server\src\main\java\competition\controller\
 E:\Income\202401\competition-app\fx-server\src\main\java\competition\JavaFxApplication.java
 E:\Income\202401\competition-app\fx-server\src\main\java\competition\controller\match\StageNamePreviewAttr.java
 E:\Income\202401\competition-app\fx-server\src\main\java\competition\controller\match\ReloadPane.java
+E:\Income\202401\competition-app\fx-server\src\main\java\competition\util\RuntimeQuestionStock.java
 E:\Income\202401\competition-app\fx-server\src\main\java\competition\controller\preview\QuestionPreviewPreview.java
 E:\Income\202401\competition-app\fx-server\src\main\java\competition\controller\ControlPane.java
 E:\Income\202401\competition-app\fx-server\src\main\java\competition\controller\match\QuestionPreviewAttr.java
 E:\Income\202401\competition-app\fx-server\src\main\java\competition\controller\match\TotalRulePreview.java
 E:\Income\202401\competition-app\fx-server\src\main\java\competition\util\TextResource.java
 E:\Income\202401\competition-app\fx-server\src\main\java\competition\util\ConfigSpliter.java
+E:\Income\202401\competition-app\fx-server\src\main\java\competition\controller\preview\RollPreviewPreview.java
 E:\Income\202401\competition-app\fx-server\src\main\java\competition\util\MusicPlayer.java
 E:\Income\202401\competition-app\fx-server\src\main\java\competition\controller\match\StageRulePreview.java
 E:\Income\202401\competition-app\fx-server\src\main\java\competition\rest\TeamQuestions.java

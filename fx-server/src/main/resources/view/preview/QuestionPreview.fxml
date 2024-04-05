@@ -11,7 +11,12 @@
 <AnchorPane fx:id="container" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1"
             fx:controller="competition.controller.preview.QuestionPreviewPreview">
    <children>
-      <Label fx:id="timeLabel" layoutX="173.0" layoutY="56.0" text="time" visible="false" />
+
+
+       <StackPane visible="false"  fx:id="stagePane">
+           <Text fx:id="stageLabel" />
+       </StackPane>
+       
        <StackPane visible="false"  fx:id="backPane">
            <Text fx:id="daanLabel" />
        </StackPane>
@@ -20,6 +25,5 @@
              <Text fx:id="tiganLabel" text="AAA" visible="true" wrappingWidth="62.0" />
          </children>
       </VBox>
-      <HBox fx:id="scoreBoard" layoutX="83.0" layoutY="301.0" prefHeight="85.0" prefWidth="396.0" />
    </children>
 </AnchorPane>

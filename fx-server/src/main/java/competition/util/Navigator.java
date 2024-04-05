@@ -53,14 +53,14 @@ public class Navigator {
 
     public static double getWidth(){
         ObservableList<Screen> screens = Screen.getScreens();
-        Screen extendedScreen = screens.get(0); // 获取第二个屏幕
+        Screen extendedScreen = screens.get(0); // 获取第1个屏幕
         Rectangle2D bounds = extendedScreen.getBounds();
         return bounds.getWidth();
     }
 
     public static double getHeight(){
         ObservableList<Screen> screens = Screen.getScreens();
-        Screen extendedScreen = screens.get(0); // 获取第二个屏幕
+        Screen extendedScreen = screens.get(0); // 获取第1个屏幕
         Rectangle2D bounds = extendedScreen.getBounds();
         return bounds.getHeight();
     }
@@ -183,6 +183,9 @@ public class Navigator {
                 stage.setX(event.getScreenX() - xOffset.get());
                 stage.setY(event.getScreenY() - yOffset.get());
                 ObservableList<Screen> screens = Screen.getScreens();
+                if (screens.size() < 2) {
+                    return;
+                }
                 Screen extendedScreen = screens.get(1); // 获取第二个屏幕
                 Rectangle2D bounds = extendedScreen.getBounds();
                 ExtendedScreen.timeBoardStage.setX(bounds.getMinX() + event.getScreenX() - xOffset.get());
@@ -273,6 +276,9 @@ public class Navigator {
                 stage.setX(event.getScreenX() - xOffset.get());
                 stage.setY(event.getScreenY() - yOffset.get());
                 ObservableList<Screen> screens = Screen.getScreens();
+                if (screens.size() < 2) {
+                    return;
+                }
                 Screen extendedScreen = screens.get(1); // 获取第二个屏幕
                 Rectangle2D bounds = extendedScreen.getBounds();
                 ExtendedScreen.scoreBoardStage.setX(bounds.getMinX() + event.getScreenX() - xOffset.get());

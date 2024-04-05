@@ -69,16 +69,16 @@ public class StageRulePreviewPreview extends PreviewPane{
                     Navigator.navigatorTo("/view/match/StageRulePreviewAttr.fxml", "", "/view/style.css", false, false);
                 } else if (event.getButton() == MouseButton.PRIMARY) {
                     // 进入选题列表
-                    StageQuestionPreviewPreview.setCurrentStage(innerStage);
-                    controlPane.setPreviewPane(
-                            Navigator.preview("/view/preview/StageQuestionPreview.fxml", "", "/view/style.css", true, true)
-                    );
+//                    StageQuestionPreviewPreview.setCurrentStage(innerStage);
+//                    controlPane.setPreviewPane(
+//                            Navigator.preview("/view/preview/StageQuestionPreview.fxml", "", "/view/style.css", true, true)
+//                    );
                 }
             }
         });
         
       
-        PreviewStack.addPreview(this);
+        //PreviewStack.addPreview(this);
         showRuleContent();
     }
 
@@ -133,7 +133,7 @@ public class StageRulePreviewPreview extends PreviewPane{
             text.prefWidth(Integer.parseInt(cfgArr[2]));
             text.prefHeight(Integer.parseInt(cfgArr[3]));
             text.setFill(Color.valueOf(cfgArr[5]));
-            Font font = Font.font(cfgArr[7], FontWeight.NORMAL, FontPosture.REGULAR, Integer.parseInt(cfgArr[8]));
+            Font font = Font.font(FontMap.getFont(cfgArr[7]), FontWeight.NORMAL, FontPosture.REGULAR, Integer.parseInt(cfgArr[8]));
             text.setFont(font);
             if (Boolean.valueOf(cfgArr[10])) {
                 text.setStroke(text.getFill());

@@ -5,6 +5,25 @@ import java.io.File;
 public class ImageResource {
     
     
+    public static final String stageImg(String stageCode) {
+        String res = BaseDir.IMAGE_DIR + File.separator + stageCode + ".png";
+        if (new File(res).exists()) {
+            return res;
+        }
+
+        res = BaseDir.IMAGE_DIR + File.separator + stageCode + ".jpg";
+        if (new File(res).exists()) {
+            return res;
+        }
+
+        res = BaseDir.IMAGE_DIR + File.separator + stageCode + ".jpeg";
+        if (new File(res).exists()) {
+            return res;
+        }
+        return null;
+    }
+    
+    
     public static final String UP(){
         String res = BaseDir.IMAGE_DIR + File.separator + "up.png";
         if (new File(res).exists()) {

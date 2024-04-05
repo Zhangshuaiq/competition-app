@@ -80,6 +80,9 @@ public class ExtendedScreen {
     
     public static void show(Scene scene) {
         ObservableList<Screen> screens = Screen.getScreens();
+        if (screens.size() < 2) {
+            return ;
+        }
         Screen extendedScreen = screens.get(1); // 获取第二个屏幕
         Rectangle2D bounds = extendedScreen.getBounds();
 
@@ -103,6 +106,9 @@ public class ExtendedScreen {
             loader.setControllerFactory(JavaFxApplication.getApplicationContext()::getBean);
             load = loader.load();
             ObservableList<Screen> screens = Screen.getScreens();
+            if (screens.size() < 2) {
+                return;
+            }
             Screen extendedScreen = screens.get(1); // 获取第二个屏幕
             Rectangle2D bounds = extendedScreen.getBounds();
 
@@ -135,8 +141,11 @@ public class ExtendedScreen {
             loader.setControllerFactory(applicationContext::getBean);
             load = loader.load();
             Stage stage = timeBoardStage;
-
-
+            
+            // 没有扩展屏
+            if (Screen.getScreens().size() < 2) {
+                return null;
+            }
             Screen extendedScreen = Screen.getScreens().get(1); // 假设扩展屏是列表中的第二个
             Rectangle2D bounds = extendedScreen.getVisualBounds();
             String config = configs.getConfig();
@@ -227,6 +236,9 @@ public class ExtendedScreen {
             loader.setControllerFactory(applicationContext::getBean);
             Parent load = loader.load();
             Stage stage = scoreBoardStage;
+            if (Screen.getScreens().size() < 2) {
+                return null;
+            }
             Screen extendedScreen = Screen.getScreens().get(1); // 假设扩展屏是列表中的第二个
             Rectangle2D bounds = extendedScreen.getVisualBounds();
             String config = configs.getConfig();

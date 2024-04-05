@@ -1,14 +1,16 @@
 package competition.util;
 
+import java.io.File;
+
 public class BaseDir {
     
-    public static final String IMAGE_DIR = System.getProperty("user.dir") + "/资源/图片/";
+    public static final String IMAGE_DIR = System.getProperty("user.dir") +  File.separator + "资源" +  File.separator + "图片" +  File.separator;
 
-    public static final String VIDEO_DIR = System.getProperty("user.dir") + "/资源/视频/";
+    public static final String VIDEO_DIR = System.getProperty("user.dir") + File.separator + "资源" +  File.separator + "视频" +  File.separator;
 
-    public static final String MUSIC_DIR = System.getProperty("user.dir") + "/资源/音频/";
+    public static final String MUSIC_DIR = System.getProperty("user.dir") + File.separator + "资源" +  File.separator + "音频" +  File.separator;
 
-    public static final String TIKU_DIR = System.getProperty("user.dir") + "/资源/题库/";
+    public static final String TIKU_DIR = System.getProperty("user.dir") + File.separator + "资源" +  File.separator + "题库" +  File.separator;
 
-    public static final String TXT_DIR = System.getProperty("user.dir") + "/资源/文本/";
+    public static final String TXT_DIR = System.getProperty("user.dir") + File.separator + "资源" +  File.separator + "文本" +  File.separator;
 }

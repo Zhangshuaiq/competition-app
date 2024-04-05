@@ -4,10 +4,7 @@ import competition.entity.Configs;
 import competition.entity.Stages;
 import competition.mapper.ConfigsMapper;
 import competition.mapper.StagesMapper;
-import competition.util.AlignmentUtil;
-import competition.util.BaseDir;
-import competition.util.ConfigSpliter;
-import competition.util.PreviewStack;
+import competition.util.*;
 import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -189,10 +186,10 @@ public class StageQuestionPreviewAttr {
     public void initialize() {
         Configs configs = configsMapper.selectById(4);
         nameTextAlignSelector.setItems(FXCollections.observableList(AlignmentUtil.alignNames()));
-        nameFontSelector.setItems(FXCollections.observableList(Arrays.asList(GraphicsEnvironment.getLocalGraphicsEnvironment().getAvailableFontFamilyNames())));
+        nameFontSelector.setItems(FXCollections.observableList(FontMap.fontNames()));
 
         numberTextAlignSelector.setItems(FXCollections.observableList(AlignmentUtil.alignNames()));
-        numberFontSelector.setItems(FXCollections.observableList(Arrays.asList(GraphicsEnvironment.getLocalGraphicsEnvironment().getAvailableFontFamilyNames())));
+        numberFontSelector.setItems(FXCollections.observableList(FontMap.fontNames()));
 
         showNameConfig();
         showNumberConfig(configs);

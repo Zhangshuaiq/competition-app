@@ -58,7 +58,7 @@ public class JavaFxApplication extends Application {
         primaryStage.setAlwaysOnTop(true);
         primaryStage.setTitle("答题竞赛系统");
         primaryStage.show();
-        MusicPlayer.prePlay(MusicResource.SECOND_0);
+        MusicPlayer.prePlay(MusicResource.SECOND_5);
 
     }
     

@@ -1,5 +1,6 @@
 package competition.controller.match;
 
+import competition.controller.ControlPane;
 import competition.entity.Configs;
 import competition.entity.QuestionStyle;
 import competition.entity.Questions;
@@ -36,26 +37,27 @@ import java.util.List;
 @Component
 @Scope("prototype")
 public class QuestionPreview implements ReloadPane{
-    
-    
+
+
     @FXML
-    private StackPane backPane;
+    private StackPane backPane, stagePane;
+
+    @FXML
+    private Text daanLabel, stageLabel;
     
     @FXML
     private AnchorPane container;
     
-    
-    @FXML
-    private HBox scoreBoard;
-    
+
+    @Resource
+    private ControlPane controlPane;
     
     @FXML
     VBox tiganBox;
     
     @FXML
     private Text tiganLabel;
-    @FXML
-    private Text daanLabel;
+
     
     @Resource
     private ConfigsMapper configsMapper;
@@ -206,6 +208,12 @@ public class QuestionPreview implements ReloadPane{
                     tiganLabel.setText("[" + current.getQuestionType() + "]" + current.getQuestionNumber()  + "、"  + current.getQuestion());
                 }
             }
+
+            if (controlPane.getCurrentStage().getShowNumber() == 0) {
+                tiganLabel.setText(tiganLabel.getText().replace(current.getQuestionNumber() + "、", ""));
+            }
+            
+            
             // 答案
             daanLabel.setText(split[4] + " " + current.getAnswer());
             backPane.setLayoutX((int) tiganBox.getLayoutX());
@@ -247,7 +255,7 @@ public class QuestionPreview implements ReloadPane{
 
 
                         tiganBox.setSpacing(Integer.parseInt(split1[14]));
-                        Font font = Font.font(split1[7], FontWeight.NORMAL, FontPosture.REGULAR, Integer.parseInt(split1[8]));
+                        Font font = Font.font(FontMap.getFont(split1[7]), FontWeight.NORMAL, FontPosture.REGULAR, Integer.parseInt(split1[8]));
                         tiganLabel.setFont(font);
                         tiganLabel.setUnderline(Boolean.valueOf(split1[12]));
                         tiganLabel.setStrikethrough(Boolean.valueOf(split1[9]));
@@ -332,7 +340,7 @@ public class QuestionPreview implements ReloadPane{
 //                        }
                         
                         daanLabel.setLineSpacing(Integer.parseInt(split1[14]));
-                        Font font = Font.font(split1[7], FontWeight.NORMAL, FontPosture.REGULAR, Integer.parseInt(split1[8]));
+                        Font font = Font.font(FontMap.getFont(split1[7]), FontWeight.NORMAL, FontPosture.REGULAR, Integer.parseInt(split1[8]));
                         daanLabel.setFont(font);
                         daanLabel.setUnderline(Boolean.valueOf(split1[12]));
                         daanLabel.setStrikethrough(Boolean.valueOf(split1[9]));
@@ -349,6 +357,59 @@ public class QuestionPreview implements ReloadPane{
                         daanLabel.setTextAlignment(AlignmentUtil.getTextAlign(split1[13]));
                         daanLabel.setLineSpacing(Integer.parseInt(split1[14]));
                     }
+
+                    String style3 = questionStyle.getStyle3();
+                    // 标题展示
+                    stagePane.setVisible(Boolean.valueOf(split[12]));
+                    if (stagePane.isVisible()) {
+                        stageLabel.setText(controlPane.getCurrentStage().getName());
+                        stageLabel.setFill(Color.valueOf(split[11]));
+                        if (!StringUtils.isEmpty(style3)) {
+                            String[] split1 = style3.split(ConfigSpliter.SPLITER);
+
+                            stagePane.setLayoutX(Integer.parseInt(split1[0]));
+                            stagePane.setLayoutY(Integer.parseInt(split1[1]));
+                            stagePane.setPrefWidth(Integer.parseInt(split1[2]));
+                            stagePane.setPrefHeight(Integer.parseInt(split1[3]));
+
+
+                            if (Boolean.valueOf(split1[4])) {
+                                // 填充背景图片
+                                if (!StringUtils.isEmpty(split1[6])) {
+                                    try {
+                                        stagePane.setBackground(new Background(new BackgroundImage(new Image(new FileInputStream(split1[6])),
+                                                BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT, BackgroundPosition.DEFAULT,
+                                                new BackgroundSize(Integer.parseInt(split1[2]), Integer.parseInt(split1[3]), false, false, false, false))));
+                                    } catch (FileNotFoundException e) {
+                                        e.printStackTrace();
+                                    }
+                                }
+                            } else {
+                                // 填充背景颜色
+                                stagePane.setBackground(new Background(new BackgroundFill(Color.valueOf(split1[5]), CornerRadii.EMPTY, Insets.EMPTY)));
+                            }
+
+
+                            stageLabel.setWrappingWidth(Integer.parseInt(split1[2]));
+                            stageLabel.setLineSpacing(Integer.parseInt(split1[14]));
+                            Font font = Font.font(FontMap.getFont(split1[7]), FontWeight.NORMAL, FontPosture.REGULAR, Integer.parseInt(split1[8]));
+                            stageLabel.setFont(font);
+                            stageLabel.setUnderline(Boolean.valueOf(split1[12]));
+                            stageLabel.setStrikethrough(Boolean.valueOf(split1[9]));
+                            if (Boolean.valueOf(split1[10])) {
+                                stageLabel.setStroke(Color.valueOf(split[0]));
+                            } else {
+                                stageLabel.setStroke(null);
+                            }
+                            stageLabel.getTransforms().clear();
+                            if (Boolean.valueOf(split1[11])) {
+                                stageLabel.getTransforms().add(new Shear(-0.3, 0));
+                            }
+                            stageLabel.setTextAlignment(AlignmentUtil.getTextAlign(split1[13]));
+                            stageLabel.setLineSpacing(Integer.parseInt(split1[14]));
+                        }
+                    }
+
                 }
             }
         }

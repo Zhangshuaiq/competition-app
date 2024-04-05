@@ -88,7 +88,7 @@ public class TotalRulePreview implements ReloadPane {
             text.prefWidth(Integer.parseInt(cfgArr[2]));
             text.prefHeight(Integer.parseInt(cfgArr[3]));
             text.setFill(Color.valueOf(cfgArr[5]));
-            Font font = Font.font(cfgArr[7], FontWeight.NORMAL, FontPosture.REGULAR, Integer.parseInt(cfgArr[8]));
+            Font font = Font.font(FontMap.getFont(cfgArr[7]), FontWeight.NORMAL, FontPosture.REGULAR, Integer.parseInt(cfgArr[8]));
             text.setFont(font);
             if (Boolean.valueOf(cfgArr[10])) {
                 text.setStroke(text.getFill());

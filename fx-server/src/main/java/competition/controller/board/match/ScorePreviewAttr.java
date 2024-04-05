@@ -7,11 +7,13 @@ import competition.mapper.ScoreStyleMapper;
 import competition.util.AlignmentUtil;
 import competition.util.ConfigSpliter;
 import competition.util.ExtendedScreen;
+import competition.util.FontMap;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.TextField;
+import javafx.stage.Screen;
 import javafx.stage.Stage;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
@@ -52,13 +54,19 @@ public class ScorePreviewAttr {
     private ControlPane controlPane;
     
     
+    // 列间距控制
+    @FXML
+    private TextField colSpan;
+    
+    
     @FXML
     public void initialize(){
-        fontSelector.setItems(FXCollections.observableList(Arrays.asList(GraphicsEnvironment.getLocalGraphicsEnvironment().getAvailableFontFamilyNames())));
+        fontSelector.setItems(FXCollections.observableList(FontMap.fontNames()));
         ScoreStyle scoreStyle = scoreStyleMapper.selectById(1);
         Font defaultFont = new JLabel().getFont();
         fontSelector.setValue(defaultFont.getFamily());
         fontSize.setText(defaultFont.getSize() + "");
+        colSpan.setText("0");
         if (scoreStyle != null) {
             String styles = scoreStyle.getStyles();
             if (!StringUtils.isEmpty(styles)) {
@@ -70,6 +78,9 @@ public class ScorePreviewAttr {
                 boldChoice.setSelected(Boolean.valueOf(split[3]));
                 iticChoice.setSelected(Boolean.valueOf(split[4]));
                 underlineChoice.setSelected(Boolean.valueOf(split[5]));
+                if (split.length >= 7) {
+                    colSpan.setText(split[6]);
+                }
             }
         } 
     }
@@ -81,15 +92,19 @@ public class ScorePreviewAttr {
                 + deleteChoice.isSelected() + ConfigSpliter.SPLITER
                 + boldChoice.isSelected() + ConfigSpliter.SPLITER
                 + iticChoice.isSelected() + ConfigSpliter.SPLITER
-                + underlineChoice.isSelected();
+                + underlineChoice.isSelected()  + ConfigSpliter.SPLITER
+                + colSpan.getText();
         ScoreStyle scoreStyle = scoreStyleMapper.selectById(1);
         scoreStyle.setStyles(value);
         scoreStyleMapper.updateById(scoreStyle);
-        if (secondOpenBox.isSelected()) {
-            ExtendedScreen.scoreBoardStage.show();
-        } else {
-            ExtendedScreen.scoreBoardStage.hide();
+        if (Screen.getScreens().size() > 1) {
+            if (secondOpenBox.isSelected()) {
+                ExtendedScreen.scoreBoardStage.show();
+            } else {
+                ExtendedScreen.scoreBoardStage.hide();
+            }
         }
+        
         controlPane.getScoreBoardPreview().reload();
         closeStage();
     }

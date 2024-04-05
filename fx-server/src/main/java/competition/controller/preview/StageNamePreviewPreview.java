@@ -12,7 +12,6 @@ import competition.util.*;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.geometry.Insets;
-import javafx.geometry.Pos;
 import javafx.scene.image.Image;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
@@ -28,6 +27,7 @@ import org.springframework.util.StringUtils;
 import javax.annotation.Resource;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -53,6 +53,8 @@ public class StageNamePreviewPreview extends PreviewPane {
     private static Integer stageId;
     
     private Integer innerStageId;
+    
+    private Stages stages;
 
     public static void setStageId(Integer stageId) {
         StageNamePreviewPreview.stageId = stageId;
@@ -67,6 +69,7 @@ public class StageNamePreviewPreview extends PreviewPane {
     @FXML
     public void initialize() {
         innerStageId= stageId;
+        stages = stagesMapper.selectById(innerStageId);
         PreviewStack.addPreview(this);
         PreviewStack.addReturn(this);
         container.setOnMouseClicked(new EventHandler<MouseEvent>() {
@@ -75,7 +78,7 @@ public class StageNamePreviewPreview extends PreviewPane {
                 if (event.getButton() == MouseButton.SECONDARY) {
                     StageNamePreviewAttr.setConfigId(innerStageId);
                     StageNamePreviewAttr.setReloadPane(controlPane.getQuestionPreview());
-                    Navigator.navigatorTo("/view/match/StageNamePreviewAttr.fxml", "题号", "/view/style.css", false, false);
+                    Navigator.navigatorTo("/view/match/StageNamePreviewAttr.fxml", "", "/view/style.css", false, false);
                 }
             }
         });
@@ -93,10 +96,19 @@ public class StageNamePreviewPreview extends PreviewPane {
         }
 
         try {
-            container.setBackground(new Background(new BackgroundImage(
-                    new Image(new FileInputStream(ImageResource.环节名称背景())), BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT, BackgroundPosition.DEFAULT,
-                    new BackgroundSize(Navigator.getWidth(), Navigator.getHeight(), false, false, false, false)
-            )));
+            String img = ImageResource.stageImg(stages.getSortVal());
+            if (img != null) {
+                container.setBackground(new Background(new BackgroundImage(
+                        new Image(new FileInputStream(img)), BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT, BackgroundPosition.DEFAULT,
+                        new BackgroundSize(Navigator.getWidth(), Navigator.getHeight(), false, false, false, false)
+                )));
+            } else {
+                container.setBackground(new Background(new BackgroundImage(
+                        new Image(new FileInputStream(ImageResource.环节名称背景())), BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT, BackgroundPosition.DEFAULT,
+                        new BackgroundSize(Navigator.getWidth(), Navigator.getHeight(), false, false, false, false)
+                )));
+            }
+            
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
@@ -115,7 +127,6 @@ public class StageNamePreviewPreview extends PreviewPane {
         //            xscjan.setSelected(Boolean.valueOf(huanjieArr[8]));
         //            xshjlb.setSelected(Boolean.valueOf(huanjieArr[9]));
         final Configs stageConfig = configsMapper.selectById(2);
-        final Stages stages = stagesMapper.selectById(innerStageId);
         final String style = stages.getStyle();
         final String config = stageConfig.getConfig();
         final String[] huanjieArr = config.split(ConfigSpliter.SPLITER);
@@ -162,7 +173,7 @@ public class StageNamePreviewPreview extends PreviewPane {
             title.setStyle("-fx-fill: " + huanjieArr[2].replace("0x", "#"));
 
 
-            Font font = Font.font(detailArr[7], FontWeight.NORMAL, FontPosture.REGULAR, Integer.parseInt(detailArr[8]));
+            Font font = Font.font(FontMap.getFont(detailArr[7]), FontWeight.NORMAL, FontPosture.REGULAR, Integer.parseInt(detailArr[8]));
             title.setFont(font);
             if (Boolean.valueOf(detailArr[10])) {
                 title.setStroke(title.getFill());
@@ -189,26 +200,57 @@ public class StageNamePreviewPreview extends PreviewPane {
                         .eq(Stages::getParentId, stages.getId())
                 );
                 if (CollectionUtils.isEmpty(childrenStage)) {
-                    List<Questions> parse = ExcelParser.parse(ExcelParser.Q_PATH, Questions.class);
+                    List<Questions> parse = RuntimeQuestionStock.getQuestions();
                     if (!CollectionUtils.isEmpty(parse)) {
                         for (int i = 0; i < parse.size(); i++) {
                             parse.get(i).setSort(i);
                         }
                         parse = parse.stream().filter(x -> !StringUtils.isEmpty(x.getStageNumber()) && x.getStageNumber().equals(stages.getSortVal())).collect(Collectors.toList());
+                        if (stages.getRandomSort() == 1) {
+                            Collections.shuffle(parse);
+                        }
                         if (!CollectionUtils.isEmpty(parse)) {
                             for (int i = 0; i < parse.size(); i++) {
                                 parse.get(i).setQuestionNumber(i + 1);
                             }
-                            CurrentQuestions.setQuestions(parse, stages.getId());
                         }
                     }
-                    // 展示题目
-                    // 内屏展示对应的题目列表
-                    StageQuestionPreviewPreview.setCurrentStage(stages);
-                    controlPane.setPreviewPane(
-                            Navigator.preview("/view/preview/StageQuestionPreview.fxml", "", "/view/style.css", true, true)
-                    );
+                    CurrentQuestions.setQuestions(parse, stages.getId());
                     controlPane.showQuestions();
+                    // 判断环节出题的类型
+                    if (stages.getQuestionType() == 1) {
+                        // 连续答题
+                        List<Questions> questionList = CurrentQuestions.getQuestionList();
+                        QuestionPreviewPreview.setCurrent( questionList.get(0));
+                        controlPane.selectQuestion(questionList.get(0).getQuestionNumber().toString());
+                        controlPane.setPreviewPane(
+                                Navigator.preview("/view/preview/QuestionPreview.fxml", "", "/view/style.css", true, true)
+                        );
+                    } else if (stages.getQuestionType() == 2) {
+                        // 自选题目
+                        StageQuestionPreviewPreview.setCurrentStage(stages);
+                        controlPane.setPreviewPane(
+                                Navigator.preview("/view/preview/StageQuestionPreview.fxml", "", "/view/style.css", true, true)
+                        );
+                    } else if (stages.getQuestionType() == 3){
+                        // 风险题
+                    } else if (stages.getQuestionType() == 4){
+                        // 滚动选题
+                        RollPreviewPreview.setCurrentStage(stages);
+                        controlPane.setPreviewPane(
+                                Navigator.preview("/view/preview/RollPreview.fxml", "", "/view/style.css", true, true)
+                        );
+                    } else if (stages.getQuestionType() == 5){
+                        // 线索题
+                        StageQuestionPreviewPreview.setCurrentStage(stages);
+                        controlPane.setPreviewPane(
+                                Navigator.preview("/view/preview/StageQuestionPreview.fxml", "", "/view/style.css", true, true)
+                        );
+                    } else if (stages.getQuestionType() == 6){
+                        // 答题模式
+                    } else if (stages.getQuestionType() == 7){
+                        // 竞技模式
+                    }
                 } else {
                     // 展示子环节
                     StagePreview.setParentStageId(innerStageId);

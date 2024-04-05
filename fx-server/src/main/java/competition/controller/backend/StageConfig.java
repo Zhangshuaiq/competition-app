@@ -297,8 +297,8 @@ public class StageConfig {
             Label up = new Label();
             up.setPrefWidth(20);
             up.setPrefHeight(20);
-            up.setStyle("-fx-background-radius: 50%; -fx-background-color: #9b9be8");
-            up.setText("^");
+            up.setBackground(new Background(new BackgroundImage(new Image("file:" + ImageResource.UP()), BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT, BackgroundPosition.CENTER, 
+                    new BackgroundSize(20, 20, false, false, false, false))));
             up.setTextFill(Color.WHITE);
             up.setAlignment(Pos.CENTER);
             up.setOnMouseClicked(new EventHandler<MouseEvent>() {
@@ -310,8 +310,8 @@ public class StageConfig {
             Label down = new Label();
             down.setPrefWidth(20);
             down.setPrefHeight(20);
-            down.setStyle("-fx-background-radius: 50%; -fx-background-color: #9b9be8");
-            down.setText("v");
+            down.setBackground(new Background(new BackgroundImage(new Image("file:" + ImageResource.DOWN()), BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT, BackgroundPosition.CENTER,
+                    new BackgroundSize(20, 20, false, false, false, false))));
             down.setTextFill(Color.WHITE);
             down.setAlignment(Pos.CENTER);
             down.setOnMouseClicked(new EventHandler<MouseEvent>() {
@@ -326,8 +326,8 @@ public class StageConfig {
             Label delete = new Label();
             delete.setPrefWidth(20);
             delete.setPrefHeight(20);
-            delete.setStyle("-fx-background-radius: 50%; -fx-background-color: #e52d42");
-            delete.setText("x");
+            delete.setBackground(new Background(new BackgroundImage(new Image("file:" + ImageResource.DELETE()), BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT, BackgroundPosition.CENTER,
+                    new BackgroundSize(20, 20, false, false, false, false))));
             delete.setTextFill(Color.WHITE);
             delete.setAlignment(Pos.CENTER);
             delete.setOnMouseClicked(new EventHandler<MouseEvent>() {
@@ -426,6 +426,22 @@ public class StageConfig {
     
     private void deleteStage(Stages stages) {
         stagesMapper.deleteById(stages.getId());
+        List<Stages> waitForDelete = new ArrayList<>();
+        List<Stages> stagesList = stagesMapper.selectList(new LambdaQueryWrapper<Stages>()
+                .eq(Stages::getParentId, stages.getId())
+        );
+        while (!stagesList.isEmpty()) {
+            waitForDelete.addAll(stagesList);
+            List<Integer> parentId = stagesList.stream().map(x -> x.getId()).collect(Collectors.toList());
+            stagesList = stagesMapper.selectList(new LambdaQueryWrapper<Stages>()
+                    .in(Stages::getParentId, parentId)
+            );
+        }
+        if (!waitForDelete.isEmpty()) {
+            List<Integer> deleteIds = waitForDelete.stream().map(x -> x.getId()).collect(Collectors.toList());
+            stagesMapper.deleteBatchIds(deleteIds);
+        }
+       
         firstBox.getChildren().clear();
         secondBox.getChildren().clear();
         thirdBox.getChildren().clear();
@@ -465,9 +481,6 @@ public class StageConfig {
             ruleChoice.setValue(current.getRuleType());
             timeOrder.setSelected(current.getOrderVal() == 1);
             for (Toggle toggle : ccType.getToggles()) {
-                System.out.println(toggle.getUserData().toString());
-                System.out.println(current.getQuestionType().toString());
-                System.out.println(toggle.getUserData().toString().equals(current.getQuestionType().toString()));
                 if (toggle.getUserData().toString().equals(current.getQuestionType().toString())) {
                     toggle.setSelected(true);
                     ccType.selectToggle(toggle);

@@ -102,7 +102,7 @@ public class StagePreviewAttr {
     @FXML
     public void initialize(){
         textAlignSelector.setItems(FXCollections.observableList(AlignmentUtil.alignNames()));
-        fontSelector.setItems(FXCollections.observableList(Arrays.asList(GraphicsEnvironment.getLocalGraphicsEnvironment().getAvailableFontFamilyNames())));
+        fontSelector.setItems(FXCollections.observableList(FontMap.fontNames()));
         previewData();
     }
     
@@ -174,6 +174,10 @@ public class StagePreviewAttr {
             spaceInput.setText("0");
         } else {
             final String[] detailArr = details.getStyle().split(ConfigSpliter.SPLITER);
+            widthInput.setText(detailArr[2]);
+            heightInput.setText(detailArr[3]);
+            xInput.setText(detailArr[0]);
+            yInput.setText(detailArr[1]);
             backgroundChoice.setSelected(Boolean.valueOf(detailArr[4]));
             colorInput.setValue(Color.valueOf(detailArr[5].replace("0x", "#")));
             backgroundPath.setText(detailArr[6]);

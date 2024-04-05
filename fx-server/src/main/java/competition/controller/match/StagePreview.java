@@ -131,6 +131,9 @@ public class StagePreview implements ReloadPane {
                 //stageContainer.prefHeight(height);
 
                 if (detailArr.length > 0) {
+                    stageContainer.setLayoutX(Integer.parseInt(detailArr[0]));
+                    stageContainer.setLayoutY(Integer.parseInt(detailArr[1]));
+                    stageContainer.prefWidth(Integer.parseInt(detailArr[2]));
                     stageContainer.setVgap(Integer.parseInt(detailArr[14]));
                     stageContainer.setHgap(Integer.parseInt(detailArr[14]));
                     stageContainer.setAlignment(AlignmentUtil.getAlign(detailArr[13]));
@@ -184,7 +187,7 @@ public class StagePreview implements ReloadPane {
                             if (!StringUtils.isEmpty(detailArr[6])) {
                                 try {
                                     stageNamePane.setBackground(new Background(new BackgroundImage(new Image(new FileInputStream(detailArr[6])),
-                                            BackgroundRepeat.REPEAT, BackgroundRepeat.REPEAT, BackgroundPosition.DEFAULT,
+                                            BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT, BackgroundPosition.CENTER,
                                             new BackgroundSize(Integer.parseInt(detailArr[2]), Integer.parseInt(detailArr[3]), false, false, false, false))));
                                 } catch (FileNotFoundException e) {
                                     e.printStackTrace();
@@ -198,7 +201,7 @@ public class StagePreview implements ReloadPane {
                     //stageNamePane.setStyle("-fx-background-color: " + split[3].replace("0x", "#"));
 
                     if (detailArr.length > 0) {
-                        Font font = Font.font(detailArr[7], FontWeight.NORMAL, FontPosture.REGULAR, Integer.parseInt(detailArr[8]));
+                        Font font = Font.font(FontMap.getFont(detailArr[7]), FontWeight.NORMAL, FontPosture.REGULAR, Integer.parseInt(detailArr[8]));
                         stageName.setFont(font);
                         if (Boolean.valueOf(detailArr[10])) {
                             stageName.setStroke(stageName.getFill());
@@ -240,6 +243,20 @@ public class StagePreview implements ReloadPane {
                     }
                     int row = count / cols;
                     int col = count % cols;
+                    // 是否展示环节
+                    if (stage.getShow() == 1) {
+                        if (stage.getSelectGrey() == 1) {
+                            if (GlobalCache.isRecord(stage.getId())) {
+                                box.setVisible(false);
+                            } else {
+                                box.setVisible(true);
+                            }
+                        } else {
+                            box.setVisible(true);
+                        }
+                    } else {
+                        box.setVisible(false);
+                    }
                     stageContainer.add(box, col, row);
                     count ++;
                     //stageContainer.getChildren().add(box);

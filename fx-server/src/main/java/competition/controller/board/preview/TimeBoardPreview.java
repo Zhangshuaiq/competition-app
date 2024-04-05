@@ -4,10 +4,9 @@ import competition.JavaFxApplication;
 import competition.controller.ControlPane;
 import competition.controller.match.ReloadPane;
 import competition.controller.preview.PreviewPane;
-import competition.util.ExtendedScreen;
-import competition.util.MusicPlayer;
-import competition.util.MusicResource;
-import competition.util.PreviewStack;
+import competition.entity.Configs;
+import competition.mapper.ConfigsMapper;
+import competition.util.*;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.fxml.FXML;
@@ -20,6 +19,8 @@ import javafx.scene.text.TextAlignment;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 import org.springframework.stereotype.Component;
+
+import javax.annotation.Resource;
 
 @Component
 public class TimeBoardPreview extends PreviewPane {
@@ -36,17 +37,16 @@ public class TimeBoardPreview extends PreviewPane {
     private Label teamScore = new Label();
 
     private ControlPane controlPane;
-
+    
+    private ConfigsMapper configsMapper;
+    
+    private int endTime;
+    
 
     @FXML
     public void initialize() {
-        controlPane = JavaFxApplication.getApplicationContext().getBean(ControlPane.class);
         container.getChildren().add(teamScore);
-        teamScore.setTextAlignment(TextAlignment.CENTER);
-        teamScore.setAlignment(Pos.CENTER);
-        teamScore.setFont(Font.font(64));
-        teamScore.setTextFill(Color.RED);
-
+        showData();
     }
 
     @Override
@@ -55,6 +55,15 @@ public class TimeBoardPreview extends PreviewPane {
     }
 
     private void showData() {
+        controlPane = JavaFxApplication.getApplicationContext().getBean(ControlPane.class);
+        configsMapper = JavaFxApplication.getApplicationContext().getBean(ConfigsMapper.class);
+        Configs configs = configsMapper.selectById(1);
+        String config = configs.getConfig();
+        String[] split = config.split(ConfigSpliter.SPLITER);
+        teamScore.setTextAlignment(TextAlignment.CENTER);
+        teamScore.setAlignment(Pos.CENTER);
+        teamScore.setFont(Font.font(Integer.parseInt(split[24])));
+        teamScore.setTextFill(Color.valueOf(split[23]));
         teamScore.setText(timeValue);
         ReloadPane timeBoard = controlPane.getTimeBoard();
         if (timeBoard == null) {
@@ -85,27 +94,34 @@ public class TimeBoardPreview extends PreviewPane {
 
     @Override
     public void startTiming(boolean order, int time) {
-        this.timeVal = time;
-        this.timeValue = format(timeVal);
+        if (order) {
+            this.timeVal = 0;
+            this.timeValue = format(timeVal);
+            endTime = time;
+        } else {
+            this.timeVal = time;
+            this.timeValue = format(timeVal);
+        }
+       
         teamScore.setText(timeValue);
         timeline = new Timeline(new KeyFrame(Duration.seconds(1), e -> {
             if (order) {
                 timeVal++;
+                if (timeVal >= endTime) {
+                    close();
+                    controlPane.resetTimeBtn();
+                } 
             } else {
+                int alertValue = Integer.parseInt(controlPane.getAlertTime());
                 timeVal--;
-                if (timeVal == 5) {
-                    MusicPlayer.play(MusicResource.SECOND_5);
-                } else if (timeVal == 4) {
-                    MusicPlayer.play(MusicResource.SECOND_4);
-                } else if (timeVal == 3) {
-                    MusicPlayer.play(MusicResource.SECOND_3);
-                } else if (timeVal == 2) {
-                    MusicPlayer.play(MusicResource.SECOND_2);
-                } else if (timeVal == 1) {
-                    MusicPlayer.play(MusicResource.SECOND_1);
-                }  else if (timeVal == 0) {
+                if (timeVal == 0) {
                     MusicPlayer.play(MusicResource.SECOND_0);
                     close();
+                    controlPane.resetTimeBtn();
+                } else {
+                    if (timeVal <= alertValue) {
+                        MusicPlayer.play(MusicResource.SECOND_PREFIX + timeVal + ".mp3");
+                    }
                 }
             }
             this.timeValue = format(timeVal);
@@ -118,6 +134,7 @@ public class TimeBoardPreview extends PreviewPane {
         }
         if (timeBoard != null) {
             controlPane.setTimeBoard(timeBoard);
+            timeBoard.shows();
             timeBoard.reload(timeVal, timeValue);
         }
         timeline.setCycleCount(-1);

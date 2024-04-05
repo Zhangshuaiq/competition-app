@@ -136,7 +136,7 @@ public class StageNamePreview implements ReloadPane{
             title.setStyle("-fx-fill: " + huanjieArr[2].replace("0x", "#"));
 
 
-            Font font = Font.font(detailArr[7], FontWeight.NORMAL, FontPosture.REGULAR, Integer.parseInt(detailArr[8]));
+            Font font = Font.font(FontMap.getFont(detailArr[7]), FontWeight.NORMAL, FontPosture.REGULAR, Integer.parseInt(detailArr[8]));
             title.setFont(font);
             if (Boolean.valueOf(detailArr[10])) {
                 title.setStroke(title.getFill());

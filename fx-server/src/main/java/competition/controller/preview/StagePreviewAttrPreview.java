@@ -5,6 +5,7 @@ import competition.entity.Configs;
 import competition.mapper.ConfigsMapper;
 import competition.util.AlignmentUtil;
 import competition.util.ConfigSpliter;
+import competition.util.FontMap;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
@@ -89,7 +90,7 @@ public class StagePreviewAttrPreview {
     @FXML
     public void initialize(){
         textAlignSelector.setItems(FXCollections.observableList(AlignmentUtil.alignNames()));
-        fontSelector.setItems(FXCollections.observableList(Arrays.asList(GraphicsEnvironment.getLocalGraphicsEnvironment().getAvailableFontFamilyNames())));
+        fontSelector.setItems(FXCollections.observableList(FontMap.fontNames()));
         previewData();
     }
     

@@ -9,10 +9,7 @@ import competition.entity.ScoreStyle;
 import competition.entity.Teams;
 import competition.mapper.ConfigsMapper;
 import competition.mapper.ScoreStyleMapper;
-import competition.util.ConfigSpliter;
-import competition.util.ExtendedScreen;
-import competition.util.Navigator;
-import competition.util.TeamRuntime;
+import competition.util.*;
 import javafx.collections.ObservableList;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
@@ -77,7 +74,7 @@ public class ScoreBoardVPreview extends PreviewPane implements BoardPane {
 
         ScoreStyle scoreStyle = scoreStyleMapper.selectById(1);
         String[] split = scoreStyle.getStyles().split(ConfigSpliter.SPLITER);
-        Font font = Font.font(split[0], FontWeight.NORMAL, FontPosture.REGULAR, Integer.parseInt(split[1]));
+        Font font = Font.font(FontMap.getFont(split[0]), FontWeight.NORMAL, FontPosture.REGULAR, Integer.parseInt(split[1]));
         
         left = new VBox();
         right = new VBox();
@@ -115,6 +112,8 @@ public class ScoreBoardVPreview extends PreviewPane implements BoardPane {
             Text teamName = new Text(team.getShortName());
             teamName.setTextAlignment(TextAlignment.CENTER);
             teamName.prefWidth(Double.parseDouble(cfgArr[19]));
+            left.setPrefWidth(Double.parseDouble(cfgArr[19]));
+            right.setPrefWidth(Double.parseDouble(cfgArr[19]));
             teamName.prefHeight(Double.parseDouble(cfgArr[20]));
             teamName.setFill(Color.valueOf(cfgArr[15]));
             stackPane.setBackground(new Background(new BackgroundFill(Color.valueOf(cfgArr[16]), CornerRadii.EMPTY, Insets.EMPTY)));
@@ -147,6 +146,7 @@ public class ScoreBoardVPreview extends PreviewPane implements BoardPane {
             teamScore.setFont(font);
             teamScore.setUnderline(Boolean.valueOf(split[5]));
             teamScore.setStrikethrough(Boolean.valueOf(split[2]));
+            container.setSpacing(Integer.parseInt(split[6]));
             if (Boolean.valueOf(split[3])) {
                 teamScore.setStroke(teamScore.getFill());
             } else {

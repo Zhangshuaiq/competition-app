@@ -41,7 +41,7 @@
                </font>
             </Button>
 
-            <Button layoutX="82.0" layoutY="14.0" mnemonicParsing="false" text="规则" prefHeight="26.0" onMouseClicked="#showStageRule">
+            <Button layoutX="82.0" layoutY="14.0" mnemonicParsing="false" onMouseClicked="#showStageRule" prefHeight="26.0" text="规则">
                <font>
                   <Font size="10.0" />
                </font>
@@ -100,31 +100,36 @@
       </Label>
       <AnchorPane layoutY="377.0" prefHeight="50.0" prefWidth="338.0">
          <children>
-            <Button fx:id="timeVisibleBtn" layoutX="4.0" layoutY="10.0" mnemonicParsing="false" onMouseClicked="#clickVis" prefHeight="26.0" prefWidth="58.0" text="不消失">
+            <Button fx:id="timeVisibleBtn" layoutX="4.0" layoutY="10.0" mnemonicParsing="false" onMouseClicked="#clickVis" prefHeight="26.0" prefWidth="50.0" text="消失">
                <font>
                   <Font size="10.0" />
                </font>
             </Button>
-            <Button layoutX="67.0" layoutY="10.0" mnemonicParsing="false" onMouseClicked="#timeReset" prefHeight="26.0" prefWidth="58.0" text="计时复位">
+            <Button layoutX="56.0" layoutY="10.0" mnemonicParsing="false" onMouseClicked="#timeReset" prefHeight="26.0" prefWidth="58.0" text="计时复位">
                <font>
                   <Font size="10.0" />
                </font>
             </Button>
-            <Button fx:id="timingBtn" layoutX="210.0" layoutY="10.0" mnemonicParsing="false" onMouseClicked="#startTiming" prefHeight="25.0" prefWidth="49.0" text="计时">
+            <Button fx:id="timingBtn" layoutX="189.0" layoutY="10.0" mnemonicParsing="false" onMouseClicked="#startTiming" prefHeight="25.0" prefWidth="49.0" text="计时">
                <font>
                   <Font size="10.0" />
                </font>
             </Button>
-            <TextField fx:id="timeSecondText" layoutX="131.0" layoutY="10.0" prefHeight="25.0" prefWidth="73.0">
+            <TextField fx:id="timeSecondText" layoutX="120.0" layoutY="10.0" prefHeight="26.0" prefWidth="58.0">
                <font>
                   <Font size="10.0" />
                </font>
             </TextField>
-            <Button fx:id="controlBtn" layoutX="265.0" layoutY="10.0" mnemonicParsing="false" onMouseClicked="#timingControl" prefHeight="26.0" prefWidth="50.0" text="暂停">
+            <Button fx:id="controlBtn" layoutX="243.0" layoutY="10.0" mnemonicParsing="false" onMouseClicked="#timingControl" prefHeight="26.0" prefWidth="50.0" text="暂停">
                <font>
                   <Font size="10.0" />
                </font>
             </Button>
+            <TextField fx:id="alertTime" layoutX="299.0" layoutY="10.0" prefHeight="26.0" prefWidth="33.0" text="5">
+               <font>
+                  <Font size="10.0" />
+               </font>
+            </TextField>
          </children>
       </AnchorPane>
       <Label alignment="CENTER" layoutY="427.0" prefHeight="26.0" prefWidth="338.0" style="-fx-background-color: blue;" text="计分控制" textFill="WHITE">
