@@ -3,11 +3,16 @@ package competition.util;
 import competition.entity.QuestionStyle;
 import competition.entity.Questions;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 public class RuntimeQuestionStock {
     
     private static List<Questions> questions =  ExcelParser.parse(ExcelParser.Q_PATH, Questions.class);
+    
+    private static Map<String, List<Questions>> quesMap = new HashMap<>();
     
     static {
         // 修复样式和问题的数量不一致
@@ -28,10 +33,14 @@ public class RuntimeQuestionStock {
         }
 
         ExcelParser.write(ExcelParser.S_PATH, styleList, QuestionStyle.class);
-
+        quesMap = questions.stream().collect(Collectors.groupingBy(Questions::getStageNumber));
     }
 
     public static List<Questions> getQuestions() {
         return questions;
+    }
+
+    public static List<Questions> getStageQuestions(String stageNo) {
+        return quesMap.get(stageNo);
     }
 }

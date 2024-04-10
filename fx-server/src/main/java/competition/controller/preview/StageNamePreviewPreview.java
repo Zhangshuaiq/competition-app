@@ -199,6 +199,16 @@ public class StageNamePreviewPreview extends PreviewPane {
                 List<Stages> childrenStage = stagesMapper.selectList(new LambdaQueryWrapper<Stages>()
                         .eq(Stages::getParentId, stages.getId())
                 );
+                
+                if (stages.getQuestionType() == 3){
+                    // 风险题 优先级高
+                    Model3.setPassedId(stages.getId());
+                    controlPane.setPreviewPane(
+                            Navigator.preview("/view/preview/Model3.fxml", "", "/view/style.css", true, true)
+                    );
+                    return;
+                }
+
                 if (CollectionUtils.isEmpty(childrenStage)) {
                     List<Questions> parse = RuntimeQuestionStock.getQuestions();
                     if (!CollectionUtils.isEmpty(parse)) {
@@ -232,8 +242,6 @@ public class StageNamePreviewPreview extends PreviewPane {
                         controlPane.setPreviewPane(
                                 Navigator.preview("/view/preview/StageQuestionPreview.fxml", "", "/view/style.css", true, true)
                         );
-                    } else if (stages.getQuestionType() == 3){
-                        // 风险题
                     } else if (stages.getQuestionType() == 4){
                         // 滚动选题
                         RollPreviewPreview.setCurrentStage(stages);

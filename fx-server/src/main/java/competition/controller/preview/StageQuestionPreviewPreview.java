@@ -215,14 +215,6 @@ public class StageQuestionPreviewPreview extends PreviewPane {
             layout.setLayoutX(Integer.parseInt(cfgArr[3]));
             layout.setLayoutY(Integer.parseInt(cfgArr[4]));
 
-         
-
-            
-
-            int numRows = questionList.size() / col + ( questionList.size() % col == 0? 0 : 1);
-            
-
-
             for (int i = 0; i < questionList.size(); i++) {
                 StackPane item = new StackPane();
                 item.setPrefSize(Integer.parseInt(cfgArr[5]), Integer.parseInt(cfgArr[6]));
