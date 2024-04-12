@@ -112,10 +112,10 @@
                         <CheckBox fx:id="numberBoldChoice" layoutX="139.0" layoutY="368.0" mnemonicParsing="false" text="加粗" />
                         <CheckBox fx:id="numberIticChoice" layoutX="232.0" layoutY="368.0" mnemonicParsing="false" text="斜体" />
                         <CheckBox fx:id="numberUnderlineChoice" layoutX="316.0" layoutY="368.0" mnemonicParsing="false" text="下划线" />
-                        <Label layoutX="69.0" layoutY="435.0" text="水平" />
-                        <ComboBox fx:id="numberTextAlignSelector" layoutX="111.0" layoutY="430.0" prefWidth="150.0" />
-                        <Label layoutX="288.0" layoutY="435.0" text="行间距" />
-                        <TextField fx:id="numberSpaceInput" layoutX="341.0" layoutY="430.0" prefHeight="20.0" prefWidth="96.0" />
+                        <Label layoutX="30.0" layoutY="435.0" text="水平" />
+                        <ComboBox fx:id="numberTextAlignSelector" layoutX="76.0" layoutY="430.0" prefHeight="30.0" prefWidth="103.0" />
+                        <Label layoutX="197.0" layoutY="435.0" text="行间距" />
+                        <TextField fx:id="numberSpaceInput" layoutX="253.0" layoutY="430.0" prefHeight="30.0" prefWidth="74.0" />
                         <Label layoutX="16.0" layoutY="14.0" text="位置大小" textFill="#8a8686" />
                         <Label layoutX="16.0" layoutY="139.0" text="背景设置" textFill="#8a8686" />
                         <Label layoutX="16.0" layoutY="287.0" text="字体" textFill="#8a8686" />
@@ -130,6 +130,10 @@
                         <Label layoutX="15.0" layoutY="464.0" text="排列布局" textFill="#8a8686" />
                         <Label layoutX="70.0" layoutY="495.0" text="列数" />
                         <TextField fx:id="colNumber" layoutX="111.0" layoutY="490.0" prefHeight="30.0" prefWidth="154.0" />
+                          <Label layoutX="334.0" layoutY="435.0" text="列间距" />
+                          <TextField fx:id="numberColSpaceInput" layoutX="388.0" layoutY="430.0" prefHeight="30.0" prefWidth="70.0" />
+                          <Label layoutX="281.0" layoutY="495.0" text="字体颜色" />
+                          <ColorPicker fx:id="numberfColorInput" layoutX="359.0" layoutY="490.0" prefHeight="30.0" prefWidth="32.0" />
                     </children>
                 </AnchorPane>
             </content>

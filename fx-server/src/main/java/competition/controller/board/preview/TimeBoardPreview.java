@@ -7,6 +7,7 @@ import competition.controller.preview.PreviewPane;
 import competition.entity.Configs;
 import competition.mapper.ConfigsMapper;
 import competition.util.*;
+import competition.ws.WsMessageHandler;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.fxml.FXML;
@@ -42,6 +43,8 @@ public class TimeBoardPreview extends PreviewPane {
     
     private int endTime;
     
+    private WsMessageHandler messageHandler;
+    
 
     @FXML
     public void initialize() {
@@ -57,6 +60,7 @@ public class TimeBoardPreview extends PreviewPane {
     private void showData() {
         controlPane = JavaFxApplication.getApplicationContext().getBean(ControlPane.class);
         configsMapper = JavaFxApplication.getApplicationContext().getBean(ConfigsMapper.class);
+        messageHandler = JavaFxApplication.getApplicationContext().getBean(WsMessageHandler.class);
         Configs configs = configsMapper.selectById(1);
         String config = configs.getConfig();
         String[] split = config.split(ConfigSpliter.SPLITER);
@@ -98,9 +102,11 @@ public class TimeBoardPreview extends PreviewPane {
             this.timeVal = 0;
             this.timeValue = format(timeVal);
             endTime = time;
+            messageHandler.sendQuestionTime(this.timeValue);
         } else {
             this.timeVal = time;
             this.timeValue = format(timeVal);
+            messageHandler.sendQuestionTime(this.timeValue);
         }
        
         teamScore.setText(timeValue);
@@ -125,6 +131,8 @@ public class TimeBoardPreview extends PreviewPane {
                 }
             }
             this.timeValue = format(timeVal);
+            messageHandler.sendQuestionTime(timeVal + "");
+            messageHandler.sendModel7Time(timeVal + "");
             PreviewStack.reload(this.timeVal, this.timeValue);
             showData();
         }));

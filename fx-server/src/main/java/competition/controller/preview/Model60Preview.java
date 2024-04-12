@@ -44,11 +44,6 @@ public class Model60Preview extends PreviewPane {
     @FXML
     private AnchorPane container;
 
-    @FXML
-    private Label timeLabel;
-
-    @FXML
-    private HBox scoreBoard;
 
     @FXML
     VBox tiganBox;
@@ -61,19 +56,12 @@ public class Model60Preview extends PreviewPane {
     @Resource
     private ConfigsMapper configsMapper;
 
-
-    private int timeVal;
-
-    private String timeValue = "00秒";
-
-    @Resource
-    private WsMessageHandler messageHandler;
-
-
     @Resource
     private ControlPane controlPane;
 
     private static Questions current;
+    
+    private Questions inner;
 
     public static void setCurrent(Questions current) {
         Model60Preview.current = current;
@@ -87,7 +75,7 @@ public class Model60Preview extends PreviewPane {
     @FXML
     public void initialize(){
         PreviewStack.addPreview(this);
-
+        inner = current;
         container.setOnMouseClicked(new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent event) {
@@ -298,74 +286,9 @@ public class Model60Preview extends PreviewPane {
                     }
                 }
             }
-            // 倒计时
-            timeLabel.setTextFill(Color.valueOf(split[23]));
-            // TODO 字号可能有调整，因为字体可能需要在详情页发生变化 
-            timeLabel.setFont(Font.font(Integer.parseInt(split[24])));
-            timeLabel.setLayoutX(Integer.parseInt(split[29]));
-            timeLabel.setLayoutY(Integer.parseInt(split[30]));
         }
 
-        showScoreBoard();
-    }
-
-    private void showScoreBoard(){
-        Configs configs = configsMapper.selectById(1);
-        String config = configs.getConfig();
-        String[] cfgArr = config.split(ConfigSpliter.SPLITER);
-        scoreBoard.getChildren().clear();
-        scoreBoard.setSpacing(20);
-        List<Teams> teams = TeamRuntime.getTeams();
-        List<Model60RuntimeData.ModelData> runtimeData = Model60RuntimeData.getRuntimeData();
-        Map<String, Model60RuntimeData.ModelData> answerMap = runtimeData.stream().collect(Collectors.toMap(x -> x.getTeamName(), x -> x));
-        for (Teams team : teams) {
-            VBox box = new VBox();
-            box.setPrefWidth(Integer.parseInt(cfgArr[19]));
-            box.setPrefHeight(Integer.parseInt(cfgArr[20]) * 2 + 20);
-            box.setSpacing(10);
-            Label teamName = new Label(team.getShortName());
-            teamName.setTextAlignment(TextAlignment.CENTER);
-            teamName.setAlignment(Pos.CENTER);
-            teamName.setPrefWidth(Integer.parseInt(cfgArr[19]));
-            teamName.setPrefHeight(Integer.parseInt(cfgArr[20]));
-            teamName.setTextFill(Color.valueOf(cfgArr[15]));
-            teamName.setBackground(new Background(new BackgroundFill(Color.valueOf(cfgArr[16]), CornerRadii.EMPTY, Insets.EMPTY)));
-            box.getChildren().add(teamName);
-
-            Label teamScore = new Label(team.getCurrentScore() + "");
-            teamScore.setTextAlignment(TextAlignment.CENTER);
-            teamScore.setAlignment(Pos.CENTER);
-            teamScore.setPrefWidth(Integer.parseInt(cfgArr[19]));
-            teamScore.setPrefHeight(Integer.parseInt(cfgArr[20]));
-            teamScore.setTextFill(Color.valueOf(cfgArr[21]));
-            teamScore.setBackground(new Background(new BackgroundFill(Color.valueOf(cfgArr[22]), new CornerRadii(10), Insets.EMPTY)));
-            box.getChildren().add(teamScore);
-
-            Model60RuntimeData.ModelData userData = answerMap.get(team.getFullName());
-            Label userSelect = new Label(userData.getUserSelect());
-            userSelect.setTextAlignment(TextAlignment.CENTER);
-            userSelect.setAlignment(Pos.CENTER);
-            userSelect.setPrefWidth(Integer.parseInt(cfgArr[19]));
-            userSelect.setPrefHeight(Integer.parseInt(cfgArr[20]));
-            userSelect.setTextFill(Color.valueOf(cfgArr[21]));
-            if (StringUtils.isEmpty(userData.getUserSelect())) {
-                userSelect.setBackground(new Background(new BackgroundFill(Color.BLUE, new CornerRadii(10), Insets.EMPTY)));
-            } else {
-                if (userData.getAnswer().equals(userData.getUserSelect())) {
-                    userSelect.setBackground(new Background(new BackgroundFill(Color.GREEN, new CornerRadii(10), Insets.EMPTY)));
-                } else {
-                    userSelect.setBackground(new Background(new BackgroundFill(Color.RED, new CornerRadii(10), Insets.EMPTY)));
-                }
-            }
-            box.getChildren().add(userSelect);
-            scoreBoard.getChildren().add(box);
-        }
-
-
-        scoreBoard.setLayoutX(Integer.parseInt(cfgArr[17]));
-        scoreBoard.setLayoutY(Integer.parseInt(cfgArr[18]));
-        scoreBoard.setPrefWidth((Integer.parseInt(cfgArr[19]) + 20) * teams.size());
-        scoreBoard.setPrefHeight(Integer.parseInt(cfgArr[20]) * 2 + 30);
+        //showScoreBoard();
     }
 
 
@@ -373,36 +296,9 @@ public class Model60Preview extends PreviewPane {
         daanLabel.setVisible(!daanLabel.isVisible());
     }
 
-    public void hideTiming(){
-        timeLabel.setVisible(false);
-    }
-
-    public void startTiming(int value){
-        timeVal = value;
-        timeLabel.setText("答题剩余时间:" + timeVal + " 秒");
-        messageHandler.sendQuestionTime(timeVal + "");
-        timeLabel.setVisible(true);
-    }
-
-    public void stopTiming(){
-//        if (timeline != null) {
-//            timeline.stop();
-//        }
-    }
 
     @Override
     public void reload() {
         showData();
-    }
-
-    @Override
-    public void reload(int time, String timeTXT) {
-        this.timeValue = timeTXT;
-        showData();
-
-        ReloadPane questionPreview = controlPane.getQuestionPreview();
-        if (questionPreview != null) {
-            questionPreview.reload(time, timeTXT);
-        }
     }
 }

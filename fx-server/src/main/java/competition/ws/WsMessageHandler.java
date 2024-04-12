@@ -2,9 +2,15 @@ package competition.ws;
 
 import com.alibaba.fastjson2.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import competition.JavaFxApplication;
+import competition.controller.ControlPane;
 import competition.controller.match.Model60;
 import competition.controller.match.Model61;
 import competition.controller.match.Model7;
+import competition.controller.preview.Model60Preview;
+import competition.controller.preview.Model61Preview;
+import competition.controller.preview.Model7Preview;
+import competition.controller.preview.PreviewPane;
 import competition.entity.Questions;
 import competition.entity.Teams;
 import competition.mapper.TeamsMapper;
@@ -24,6 +30,9 @@ public class WsMessageHandler {
     
     // 发起连接，进入竞技模式答题主题
     public static final String ENTER_TOPIC = "/topic/enter";
+    
+    // 显示规则的主题
+    public static final String RULE_TOPIC = "/topic/rule";
     
     // 发起连接，进入答题模式-个人答题的主题
     public static final String MODEL_61_ENTER_TOPIC = "/topic/model61/enter";
@@ -56,14 +65,12 @@ public class WsMessageHandler {
     private TeamsMapper mapper;
     
     @Resource
-    private Model7 model7;
-
-    @Resource
-    private Model60 model60;
+    private Model7Preview model7Preview;
+    
 
 
     @Resource
-    private Model61 model61;
+    private Model61Preview model61Preview;
     
     
     @Resource
@@ -108,7 +115,7 @@ public class WsMessageHandler {
         Model61RuntimeData.setRuntimeData(data);
 
         Platform.runLater(() -> {
-            model61.reload();
+            model61Preview.reload();
         });
     }
 
@@ -120,7 +127,9 @@ public class WsMessageHandler {
         Model60RuntimeData.ModelData data = JSON.parseObject(parse.get("data").toString(), Model60RuntimeData.ModelData.class);
         Model60RuntimeData.setRuntimeData(data);
         Platform.runLater(() -> {
-            model60.reload();
+            ControlPane controlPane = JavaFxApplication.getApplicationContext().getBean(ControlPane.class);
+            controlPane.getPreviewPane().reload();
+            controlPane.getScoreBoardPreview().reload();
         });
     }
     
@@ -144,328 +153,6 @@ public class WsMessageHandler {
 //            }
 //        }
 //        if (size == WsTeamMemberWaiter.waitingMember.size()) {
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 //            Map<String, String> data = new HashMap<>();
 //            data.put("event", "enter");
 //            messagingTemplate.convertAndSend(ENTER_TOPIC, JSON.toJSONString(data));
@@ -502,6 +189,13 @@ public class WsMessageHandler {
         dataMap.put("data", time);
         messagingTemplate.convertAndSend(QUESTION_TOPIC, JSON.toJSONString(dataMap));
     }
+
+    public void notifyRule( String rule) {
+        Map<String, String> data = new HashMap<>();
+        data.put("type", "rule");
+        data.put("data", rule);
+        messagingTemplate.convertAndSend(QUESTION_TOPIC, JSON.toJSONString(data));
+    }
     
     public void sendQuestion(Questions questions){
         Map<String, Object> dataMap = new HashMap<>();
@@ -518,13 +212,14 @@ public class WsMessageHandler {
     }
     
     
-    public void notifyEnterWait(String type, String rule){
+    public void notifyEnterWait(String type){
         Map<String, String> data = new HashMap<>();
         data.put("event", "enter");
         data.put("type", type);
-        data.put("rule", rule);
         messagingTemplate.convertAndSend(ENTER_TOPIC, JSON.toJSONString(data));
     }
+    
+   
     
     public void notifyExit(){
         Map<String, String> data = new HashMap<>();

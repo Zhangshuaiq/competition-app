@@ -11,7 +11,12 @@ public class CurrentQuestions {
     
     private static Map<String, Questions> questionsMap = new HashMap<>();
 
+    // 普通题
     private static List<Questions> questions = new ArrayList<>();
+    
+    // 风险题，由于风险题展示的是多个子环节的题目，因此需要单独处理
+    private static List<List<Questions>> m3Questions = new ArrayList<>();
+    
     
     private static Integer stageId;
     
@@ -29,7 +34,20 @@ public class CurrentQuestions {
                 questionsMap.put(q.getQuestionNumber().toString(), q);
             }
         }
-        
+    }
+    
+    public static void setM3Questions(List<List<Questions>> questions, Integer stageId) {
+        CurrentQuestions.m3Questions = questions;
+        if (CurrentQuestions.stageId == null || !CurrentQuestions.stageId.equals(stageId)) {
+            CurrentQuestions.stageId = stageId;
+            questionsMap.clear();
+            for (List<Questions> question : questions) {
+                for (Questions q : question) {
+                    questionsMap.put(q.getStageNumber() + "-" + q.getQuestionNumber(), q);
+                }
+            }
+
+        }
     }
     
     public static Questions getQ(String key) {
@@ -40,8 +58,15 @@ public class CurrentQuestions {
         questionsMap.get(key).setHasAnswer(true);
     }
 
+    public static Integer getStageId() {
+        return stageId;
+    }
 
     public static boolean hasAnswer(String key) {
         return questionsMap.get(key).isHasAnswer();
+    }
+
+    public static List<List<Questions>> getM3Questions() {
+        return m3Questions;
     }
 }

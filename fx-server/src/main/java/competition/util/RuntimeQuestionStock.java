@@ -18,6 +18,7 @@ public class RuntimeQuestionStock {
         // 修复样式和问题的数量不一致
         List<QuestionStyle> styleList = ExcelParser.parse(ExcelParser.S_PATH, QuestionStyle.class);
         for (int i = 0; i < questions.size(); i++) {
+            questions.get(i).setSort(i);
             if (i < styleList.size()) {
                 styleList.get(i).setStageNo(questions.get(i).getStageNumber());
             }

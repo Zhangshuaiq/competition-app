@@ -19,6 +19,10 @@ public class ScoreSaver {
         FileUtil.writeBytes(scoreTexts.getBytes(StandardCharsets.UTF_8), TextResource.FS);
     }
     
+    public static void clear(){
+        FileUtil.writeBytes("".getBytes(StandardCharsets.UTF_8), TextResource.FS);
+    }
+    
     public static  List<Teams> loadScore(){
         List<Teams> teams = new ArrayList<>();
         byte[] bytes = FileUtil.readBytes(TextResource.FS);

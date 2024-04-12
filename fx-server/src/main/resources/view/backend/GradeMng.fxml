@@ -6,7 +6,7 @@
 <AnchorPane prefHeight="827.0" prefWidth="1100.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1"
             fx:controller="competition.controller.backend.GradeMng">
     <children>
-        <Button layoutX="411.0" layoutY="48.0" mnemonicParsing="false" text="清除数据"/>
+        <Button layoutX="411.0" layoutY="48.0" mnemonicParsing="false" text="清除数据" onMouseClicked="#clearData"/>
         <Button layoutX="605.0" layoutY="48.0" mnemonicParsing="false" text="导出 Excel"/>
         <TableView layoutX="59.0" layoutY="89.0" prefHeight="665.0" prefWidth="996.0">
             <columns>

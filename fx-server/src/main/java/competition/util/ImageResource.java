@@ -79,6 +79,24 @@ public class ImageResource {
         return null;
     }
 
+    public static final String 风险背景(){
+        String res = BaseDir.IMAGE_DIR + File.separator + "风险环节背景.png";
+        if (new File(res).exists()) {
+            return res;
+        }
+
+        res = BaseDir.IMAGE_DIR + File.separator + "风险环节背景.jpg";
+        if (new File(res).exists()) {
+            return res;
+        }
+
+        res = BaseDir.IMAGE_DIR + File.separator + "风险环节背景.jpeg";
+        if (new File(res).exists()) {
+            return res;
+        }
+        return null;
+    }
+
     public static final String 总规则背景(){
         String res = BaseDir.IMAGE_DIR + File.separator + "总规则背景.png";
         if (new File(res).exists()) {

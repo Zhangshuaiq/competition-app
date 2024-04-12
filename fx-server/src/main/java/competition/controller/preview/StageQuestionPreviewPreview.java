@@ -283,19 +283,16 @@ public class StageQuestionPreviewPreview extends PreviewPane {
                         for (Questions q : CurrentQuestions.getQuestionList()) {
                             q.setScore(currentStage.getScorePerQ());
                         }
-                        if (currentStage.getQuestionType().equals("7")) {
+                        if (currentStage.getQuestionType() == 7) {
                             Model7RuntimeData.setTeams(TeamRuntime.getTeams());
                             // 发送试题列表给前端
-                            Object o = ExtendedScreen.showWithControl("/view/match/Model7.fxml");
-                            if (o != null) {
-                                controlPane.setQuestionPreview((Model7) o);
-                            }
                             controlPane.setPreviewPane(
                                     Navigator.preview("/view/preview/Model7.fxml", "", "/view/style.css", true, true)
                             );
+                            controlPane.updateScoreBoard();
                             messageHandler.sendQuestionGroup(CurrentQuestions.getQuestionList());
                             // 扩展屏显示题目信息
-                        } else if (currentStage.getQuestionType().equals("6")) {
+                        } else if (currentStage.getQuestionType() == 6) {
                             Integer m6 = currentStage.getM6();
                             String tihao = questions.getQuestionNumber().toString();
                             Questions questions = CurrentQuestions.getQ(tihao);
@@ -307,31 +304,28 @@ public class StageQuestionPreviewPreview extends PreviewPane {
                                 // 答题模式 -- 团队模式
                                 CurrentQuestions.recordAnswer(tihao);
                                 // 设置当前需要显示的题目
-                                Model60.setCurrent(questions);
+                                QuestionPreviewPreview.setCurrent(questions);
                                 // 设置选手信息
                                 Model60RuntimeData.setTeams(TeamRuntime.getTeams());
-                                Object res = ExtendedScreen.showWithControl("/view/match/Model60.fxml");
-                                if (res != null) {
-                                    controlPane.setQuestionPreview((Model60) res);
-                                }
+
                                 controlPane.setPreviewPane(
-                                        Navigator.preview("/view/preview/Model60.fxml", "", "/view/style.css", true, true)
+                                        Navigator.preview("/view/preview/QuestionPreview.fxml", "", "/view/style.css", true, true)
                                 );
+                                //controlPane.setPreviewPane(Navigator.preview("/view/preview/Model60.fxml", "", "/view/style.css", true, true));
+                                controlPane.updateScoreBoard();
                                 messageHandler.sendQuestion(questions);
                             } else {
                                 // 答题模式 -- 个人模式
                                 CurrentQuestions.recordAnswer(tihao);
                                 // 设置当前需要显示的题目
-                                Model61.setCurrent(questions);
+                                QuestionPreviewPreview.setCurrent(questions);
                                 // 设置选手信息
                                 Model61RuntimeData.setTeams(TeamRuntime.getTeams());
-                                Object res = ExtendedScreen.showWithControl("/view/match/Model61.fxml");
-                                if (res != null) {
-                                    controlPane.setQuestionPreview((Model61) res);
-                                }
                                 controlPane.setPreviewPane(
-                                        Navigator.preview("/view/preview/Model61.fxml", "", "/view/style.css", true, true)
+                                        Navigator.preview("/view/preview/QuestionPreview.fxml", "", "/view/style.css", true, true)
                                 );
+                               // controlPane.setPreviewPane(Navigator.preview("/view/preview/Model61.fxml", "", "/view/style.css", true, true));
+                                controlPane.updateScoreBoard();
                                 messageHandler.sendQuestion(questions);
                             }
                             // 扩展屏显示题目信息

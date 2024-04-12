@@ -13,7 +13,6 @@
             fx:controller="competition.controller.preview.Model60Preview"
             prefHeight="400.0" prefWidth="600.0">
     <children>
-        <Label fx:id="timeLabel" layoutX="173.0" layoutY="56.0" text="time" visible="false" />
         <Text fx:id="daanLabel" visible="false" />
         <VBox fx:id="tiganBox" layoutX="118.0" layoutY="56.0" prefHeight="200.0" prefWidth="310.0">
             <children>

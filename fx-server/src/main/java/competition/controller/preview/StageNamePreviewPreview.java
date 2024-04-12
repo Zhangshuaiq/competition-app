@@ -2,6 +2,7 @@ package competition.controller.preview;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import competition.controller.ControlPane;
+import competition.controller.board.preview.TimeBoardPreview;
 import competition.controller.match.*;
 import competition.entity.Configs;
 import competition.entity.Questions;
@@ -9,6 +10,7 @@ import competition.entity.Stages;
 import competition.mapper.ConfigsMapper;
 import competition.mapper.StagesMapper;
 import competition.util.*;
+import competition.ws.WsMessageHandler;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.geometry.Insets;
@@ -49,6 +51,9 @@ public class StageNamePreviewPreview extends PreviewPane {
     
     @Resource
     private StageNamePreview stageNamePreview;
+
+    @Resource
+    private WsMessageHandler messageHandler;
 
     private static Integer stageId;
     
@@ -202,7 +207,7 @@ public class StageNamePreviewPreview extends PreviewPane {
                 
                 if (stages.getQuestionType() == 3){
                     // 风险题 优先级高
-                    Model3.setPassedId(stages.getId());
+                    Model3Preview.setPassedId(stages.getId());
                     controlPane.setPreviewPane(
                             Navigator.preview("/view/preview/Model3.fxml", "", "/view/style.css", true, true)
                     );
@@ -212,9 +217,6 @@ public class StageNamePreviewPreview extends PreviewPane {
                 if (CollectionUtils.isEmpty(childrenStage)) {
                     List<Questions> parse = RuntimeQuestionStock.getQuestions();
                     if (!CollectionUtils.isEmpty(parse)) {
-                        for (int i = 0; i < parse.size(); i++) {
-                            parse.get(i).setSort(i);
-                        }
                         parse = parse.stream().filter(x -> !StringUtils.isEmpty(x.getStageNumber()) && x.getStageNumber().equals(stages.getSortVal())).collect(Collectors.toList());
                         if (stages.getRandomSort() == 1) {
                             Collections.shuffle(parse);
@@ -256,8 +258,33 @@ public class StageNamePreviewPreview extends PreviewPane {
                         );
                     } else if (stages.getQuestionType() == 6){
                         // 答题模式
+                        StageQuestionPreviewPreview.setCurrentStage(stages);
+                        controlPane.setPreviewPane(
+                                Navigator.preview("/view/preview/StageQuestionPreview.fxml", "", "/view/style.css", true, true)
+                        );
+//                        List<Questions> questionList = CurrentQuestions.getQuestionList();
+//                        QuestionPreviewPreview.setCurrent( questionList.get(0));
+//                        controlPane.selectQuestion(questionList.get(0).getQuestionNumber().toString());
+                        if (stages.getM6() == 0) {
+//                            Model60Preview.setCurrent(questionList.get(0));
+//                            controlPane.setPreviewPane(
+//                                    Navigator.preview("/view/preview/Model60.fxml", "", "/view/style.css", true, true)
+//                            );
+                            messageHandler.notifyEnterWait("model60");
+                        } else {
+//                            Model61Preview.setCurrent(questionList.get(0));
+//                            controlPane.setPreviewPane(
+//                                    Navigator.preview("/view/preview/Model61.fxml", "", "/view/style.css", true, true)
+//                            );
+                            messageHandler.notifyEnterWait("model61");
+                        }
                     } else if (stages.getQuestionType() == 7){
                         // 竞技模式
+                        StageQuestionPreviewPreview.setCurrentStage(stages);
+                        controlPane.setPreviewPane(
+                                Navigator.preview("/view/preview/StageQuestionPreview.fxml", "", "/view/style.css", true, true)
+                        );
+                        messageHandler.notifyEnterWait("model7");
                     }
                 } else {
                     // 展示子环节

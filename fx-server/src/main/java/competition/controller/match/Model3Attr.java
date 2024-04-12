@@ -1,6 +1,6 @@
 package competition.controller.match;
 
-import competition.controller.preview.Model3;
+import competition.controller.preview.Model3Preview;
 import competition.entity.Configs;
 import competition.entity.Model3Style;
 import competition.entity.Stages;
@@ -28,7 +28,6 @@ import java.awt.*;
 import java.io.File;
 
 @Component
-
 public class Model3Attr {
 
     @FXML
@@ -123,10 +122,10 @@ public class Model3Attr {
 
     @FXML
     private CheckBox nameBackgroundChoice;
-    
+
     @FXML
     private TextField numberColSpaceInput;
-    
+
     @FXML
     private ColorPicker numberfColorInput;
 
@@ -301,11 +300,12 @@ public class Model3Attr {
                 + alignValue + ConfigSpliter.SPLITER
                 + rowSpace + ConfigSpliter.SPLITER
                 + colNumber.getText() + ConfigSpliter.SPLITER
-                + nfColorInput.getValue();
+                + numberColSpaceInput.getText() + ConfigSpliter.SPLITER
+                + numberfColorInput.getValue();
 
 
         Model3Style model3Style = mapper.selectById(1);
-        model3Style.setTitleStyle(detail);
+        model3Style.setQStyle(detail);
         mapper.updateById(model3Style);
 
         if (reloadPane != null) {
@@ -322,41 +322,46 @@ public class Model3Attr {
         numberFontSize.setText(defaultFont.getSize() + "");
         numberIticChoice.setSelected(false);
         numberDeleteChoice.setSelected(false);
-        numberSpaceInput.setText("0");
         colNumber.setText("1");
 
-        nameXInput.setText(Model3.DEFAULT_X + "");
-        nameYInput.setText(Model3.DEFAULT_Y + "");
-        nameWidthInput.setText(Model3.DEFAULT_W + "");
-        nameHeightInput.setText(Model3.DEFAULT_H + "");
-        nameColorInput.setValue(Color.YELLOW);
-        nfColorInput.setValue(Color.BLACK);
-        nameTextAlignSelector.setValue("居中对齐");
-        
-        
-        
-        
-        
+        numberXInput.setText(Model3Preview.DEFAULT_X + Model3Preview.DEFAULT_W + 50 + "");
+        numberYInput.setText(Model3Preview.DEFAULT_Y + "");
+        numberWidthInput.setText(50 + "");
+        numberHeightInput.setText(50 + "");
+        numberColorInput.setValue(Color.YELLOW);
+        numberfColorInput.setValue(Color.BLACK);
+        numberTextAlignSelector.setValue("居中对齐");
+        numberColSpaceInput.setText("10");
+        numberSpaceInput.setText("0");
+
+
         if (!StringUtils.isEmpty(config)) {
-            String[] split = config.split(ConfigSpliter.DIFFER);
-            if (split.length > 1) {
-                String numberCfg = split[1];
-                if (!ConfigSpliter.EMPTY.equals(numberCfg)) {
-                    String[] cfgArr = numberCfg.split(ConfigSpliter.SPLITER);
-                    numberBackgroundChoice.setSelected(Boolean.valueOf(cfgArr[4]));
-                    numberColorInput.setValue(Color.valueOf(cfgArr[5].replace("0x", "#")));
-                    numberBackgroundPath.setText(cfgArr[6]);
-                    numberFontSelector.setValue(cfgArr[7]);
-                    numberFontSize.setText(Integer.parseInt(cfgArr[8]) + "");
-                    numberDeleteChoice.setSelected(Boolean.valueOf(cfgArr[9]));
-                    numberBoldChoice.setSelected(Boolean.valueOf(cfgArr[10]));
-                    numberIticChoice.setSelected(Boolean.valueOf(cfgArr[11]));
-                    numberUnderlineChoice.setSelected(Boolean.valueOf(cfgArr[12]));
-                    numberTextAlignSelector.setValue(cfgArr[13]);
-                    numberSpaceInput.setText(cfgArr[14]);
-                    if (cfgArr.length >= 16) {
-                        colNumber.setText(cfgArr[15]);
-                    }
+            String[] split = config.split(ConfigSpliter.SPLITER);
+            if (split.length > 0) {
+                String[] cfgArr = split;
+                numberXInput.setText(cfgArr[0]);
+                numberYInput.setText(cfgArr[1]);
+                numberWidthInput.setText(cfgArr[2]);
+                numberHeightInput.setText(cfgArr[3]);
+                numberBackgroundChoice.setSelected(Boolean.valueOf(cfgArr[4]));
+                numberColorInput.setValue(Color.valueOf(cfgArr[5].replace("0x", "#")));
+                numberBackgroundPath.setText(cfgArr[6]);
+                numberFontSelector.setValue(cfgArr[7]);
+                numberFontSize.setText(Integer.parseInt(cfgArr[8]) + "");
+                numberDeleteChoice.setSelected(Boolean.valueOf(cfgArr[9]));
+                numberBoldChoice.setSelected(Boolean.valueOf(cfgArr[10]));
+                numberIticChoice.setSelected(Boolean.valueOf(cfgArr[11]));
+                numberUnderlineChoice.setSelected(Boolean.valueOf(cfgArr[12]));
+                numberTextAlignSelector.setValue(cfgArr[13]);
+                numberSpaceInput.setText(cfgArr[14]);
+                if (cfgArr.length >= 16) {
+                    colNumber.setText(cfgArr[15]);
+                }
+                if (cfgArr.length >= 17) {
+                    numberColSpaceInput.setText(cfgArr[16]);
+                }
+                if (cfgArr.length >= 18) {
+                    numberfColorInput.setValue(Color.valueOf(cfgArr[17]));
                 }
 
             } else {
@@ -375,10 +380,10 @@ public class Model3Attr {
         nameIticChoice.setSelected(false);
         nameDeleteChoice.setSelected(false);
         nameSpaceInput.setText("0");
-        nameXInput.setText(Model3.DEFAULT_X + "");
-        nameYInput.setText(Model3.DEFAULT_Y + "");
-        nameWidthInput.setText(Model3.DEFAULT_W + "");
-        nameHeightInput.setText(Model3.DEFAULT_H + "");
+        nameXInput.setText(Model3Preview.DEFAULT_X + "");
+        nameYInput.setText(Model3Preview.DEFAULT_Y + "");
+        nameWidthInput.setText(Model3Preview.DEFAULT_W + "");
+        nameHeightInput.setText(Model3Preview.DEFAULT_H + "");
         nameColorInput.setValue(Color.YELLOW);
         nfColorInput.setValue(Color.BLACK);
         nameTextAlignSelector.setValue("居中对齐");

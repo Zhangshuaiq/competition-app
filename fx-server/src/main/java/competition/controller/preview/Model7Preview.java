@@ -1,5 +1,6 @@
 package competition.controller.preview;
 
+import com.sun.javafx.runtime.async.BackgroundExecutor;
 import competition.controller.ControlPane;
 import competition.controller.match.Model7;
 import competition.controller.match.QuestionPreview;
@@ -89,7 +90,8 @@ public class Model7Preview extends PreviewPane {
         List<Teams> teams = TeamRuntime.getTeams();
         for (int i = 0; i < runtimeData.size(); i++) {
             AnchorPane anchorPane = new AnchorPane();
-            anchorPane.setPrefWidth(ExtendedScreen.getWidth() / 4);
+            anchorPane.setPadding(new Insets(0, 10, 0, 10));
+            anchorPane.setPrefWidth((ExtendedScreen.getWidth() - 40) / 4);
             anchorPane.setMinWidth(0);
             anchorPane.setMaxWidth(Double.MAX_VALUE); // 允许AnchorPane扩展以填充可用空间
             container.add(anchorPane, i % 4, i / 4);
@@ -147,6 +149,9 @@ public class Model7Preview extends PreviewPane {
             scoreL.setPrefWidth(anchorPane.getPrefWidth() / 4);
             scoreL.setTextFill(Color.WHITE);
             Label timeL = new Label("完成" + finish + "题|用时" + timeValue);
+            if (Model7RuntimeData.getFinished().get(i)) {
+                timeL.setText((Model7RuntimeData.getTimes().get(i)));
+            }
             timeL.setPrefWidth(anchorPane.getPrefWidth() / 2);
             timeL.setTextFill(Color.WHITE);
 
@@ -187,7 +192,7 @@ public class Model7Preview extends PreviewPane {
                     scoreLab.setTextAlignment(TextAlignment.CENTER);
                     scoreLab.setAlignment(Pos.CENTER);
 
-                    Label timeLab = new Label(timeValue);
+                    Label timeLab = new Label(Model7RuntimeData.getTimes().get(i));
                     timeLab.setPrefWidth(downArea.getPrefWidth());
                     timeLab.setPrefHeight(downArea.getPrefHeight() / 5);
                     timeLab.setLayoutY(downArea.getPrefHeight() * 0.6);

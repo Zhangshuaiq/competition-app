@@ -5,6 +5,9 @@ import java.util.Map;
 
 public class GlobalCache {
     
+    // 是否显示抢答排行
+    public static boolean qdRank = false;
+    
     // 后台设置是否打开
     public static boolean backendOpen = false;
     

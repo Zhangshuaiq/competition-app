@@ -76,6 +76,7 @@ public class Model7RuntimeData {
                                
                             }
                         }
+                        controlPane.getScoreBoardPreview().reload();
 
                     }
                 }
