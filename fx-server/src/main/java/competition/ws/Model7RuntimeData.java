@@ -21,6 +21,8 @@ public class Model7RuntimeData {
 
     private static List<String> times = new ArrayList<>();
 
+    private static List<Integer> seconds = new ArrayList<>();
+
     private static List<Boolean> finished = new ArrayList<>();
 
     public static List<Boolean> getFinished() {
@@ -31,6 +33,10 @@ public class Model7RuntimeData {
         return times;
     }
 
+    public static List<Integer> getSeconds() {
+        return seconds;
+    }
+
     public static List<Teams> getTeams() {
         return teams;
     }
@@ -39,20 +45,23 @@ public class Model7RuntimeData {
         runtimeData.clear();
         finished.clear();
         times.clear();
+        seconds.clear();
         Model7RuntimeData.teams = teams;
         for (Teams team : teams) {
             runtimeData.add(new ArrayList<>());
             times.add("0分00秒");
+            seconds.add(0);
             finished.add(false);
         }
     }
 
-    public static void setRuntimeData(int i, ModelData data, String time) {
+    public static void setRuntimeData(int i, ModelData data, String time, String second) {
         if (finished.get(i)) {
             return;
         }
         ControlPane controlPane = JavaFxApplication.getApplicationContext().getBean(ControlPane.class);
         times.set(i, time);
+        seconds.set(i, Integer.parseInt(second));
         if (data == null) {
             return;
         }
@@ -76,8 +85,6 @@ public class Model7RuntimeData {
                                
                             }
                         }
-                        controlPane.getScoreBoardPreview().reload();
-
                     }
                 }
                 break;
@@ -86,13 +93,23 @@ public class Model7RuntimeData {
 
         if (!existed) {
             modelData.add(data);
+            if (data.getAnswer().equals(data.getUserSelect())) {
+                List<Teams> teams = TeamRuntime.getTeams();
+                for (Teams team : teams) {
+                    if (team.getFullName().equals(data.getTeamName())) {
+                        team.setCurrentScore(team.getCurrentScore() + data.getScore());
+                        Platform.runLater(() -> {
+                            controlPane.teamScore.setText(team.getCurrentScore().toString());
+                        });
+
+                    }
+                }
+            }
         }
         // 答题完成
         if (modelData.size() == CurrentQuestions.getQuestionList().size()) {
             finished.set(i, true);
         }
-
-
     }
 
 

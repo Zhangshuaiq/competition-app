@@ -1,14 +1,153 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import java.lang.*?>
-<?import java.util.*?>
-<?import javafx.scene.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<AnchorPane xmlns="http://javafx.com/javafx"
-            xmlns:fx="http://javafx.com/fxml"
-            fx:controller="competition.controller.match.AnswerAttr"
-            prefHeight="400.0" prefWidth="600.0">
+<AnchorPane prefHeight="931.0" prefWidth="613.0" xmlns="http://javafx.com/javafx/11.0.14-internal" xmlns:fx="http://javafx.com/fxml/1" fx:controller="competition.controller.match.AnswerAttr">
+   <children>
+      <Label layoutX="32.0" layoutY="23.0" text="布局" />
+      <Label layoutX="32.0" layoutY="64.0" text="列" />
+      <Label layoutX="156.0" layoutY="64.0" text="行距" />
+      <Label layoutX="289.0" layoutY="64.0" text="列距" />
+      <TextField fx:id="colInput" layoutX="62.0" layoutY="59.0" prefHeight="30.0" prefWidth="81.0" />
+      <TextField fx:id="rowsInput" layoutX="187.0" layoutY="59.0" prefHeight="30.0" prefWidth="81.0" />
+      <TextField fx:id="colsInput" layoutX="330.0" layoutY="59.0" prefHeight="30.0" prefWidth="81.0" />
+      <Separator layoutX="79.0" layoutY="32.0" prefWidth="200.0" />
+      <Label layoutX="32.0" layoutY="111.0" text="X" />
+      <TextField layoutX="62.0" layoutY="106.0" prefHeight="30.0" prefWidth="81.0" fx:id="xInput" />
+      <TextField fx:id="yInput" layoutX="179.0" layoutY="106.0" prefHeight="30.0" prefWidth="81.0" />
+      <TextField fx:id="widthInput" layoutX="303.0" layoutY="106.0" prefHeight="30.0" prefWidth="81.0" />
+      <TextField fx:id="heightInput" layoutX="431.0" layoutY="106.0" prefHeight="30.0" prefWidth="81.0" />
+      <Label layoutX="159.0" layoutY="111.0" text="Y" />
+      <Label layoutX="278.0" layoutY="111.0" text="宽" />
+      <Label layoutX="400.0" layoutY="111.0" text="高" />
+      <Label layoutX="32.0" layoutY="151.0" text="答案" />
+      <Separator layoutX="79.0" layoutY="160.0" prefWidth="200.0" />
+      <AnchorPane layoutX="20.0" layoutY="183.0" prefHeight="120.0" prefWidth="572.0">
+         <children>
+            <Label layoutX="14.0" layoutY="14.0" text="字体" />
+            <ComboBox fx:id="f1Selector" layoutX="51.0" layoutY="9.0" prefWidth="150.0" />
+            <Label layoutX="275.0" layoutY="14.0" text="布局" />
+            <ComboBox fx:id="l1Selector" layoutX="320.0" layoutY="9.0" prefWidth="100.0" />
+            <Label layoutX="440.0" layoutY="14.0" text="大小" />
+            <TextField fx:id="f1Size" layoutX="480.0" layoutY="9.0" prefHeight="30.0" prefWidth="100.0" />
+            
+            <ColorPicker fx:id="f1Color" layoutX="229.0" layoutY="9.0" prefHeight="30.0" prefWidth="30.0" />
+            <CheckBox fx:id="f1DL" layoutX="51.0" layoutY="50.0" mnemonicParsing="false" text="删除线" />
+            <CheckBox fx:id="f1IT" layoutX="154.0" layoutY="50.0" mnemonicParsing="false" text="斜体" />
+            <CheckBox fx:id="f1BD" layoutX="244.0" layoutY="50.0" mnemonicParsing="false" text="加粗" />
+            <CheckBox fx:id="f1UD" layoutX="326.0" layoutY="50.0" mnemonicParsing="false" text="下划线" />
+            <Label layoutX="14.0" layoutY="87.0" text="背景" />
+            <ColorPicker fx:id="f1BackColor" layoutX="158.0" layoutY="82.0" prefHeight="30.0" prefWidth="30.0" />
+            <TextField fx:id="f1Path" layoutX="196.0" layoutY="82.0" prefHeight="30.0" prefWidth="181.0" />
+            <Button layoutX="389.0" layoutY="82.0" mnemonicParsing="false" text="选择文件" />
+            <Button layoutX="478.0" layoutY="82.0" mnemonicParsing="false" text="取消文件" />
+            <CheckBox fx:id="f1Fill" layoutX="64.0" layoutY="87.0" mnemonicParsing="false" text="填充背景" />
+            
+         </children>
+      </AnchorPane>
+      <Label layoutX="32.0" layoutY="320.0" text="作答情况" />
+      <Separator layoutX="101.0" layoutY="329.0" prefWidth="200.0" />
+      <AnchorPane layoutX="17.0" layoutY="350.0" prefHeight="120.0" prefWidth="572.0">
+         <children>
+            <Label layoutX="14.0" layoutY="14.0" text="字体" />
+            <ComboBox fx:id="f2Selector" layoutX="51.0" layoutY="9.0" prefWidth="150.0" />
 
+            <Label layoutX="275.0" layoutY="14.0" text="布局" />
+            <ComboBox fx:id="l2Selector" layoutX="320.0" layoutY="9.0" prefWidth="100.0" />
+            <Label layoutX="440.0" layoutY="14.0" text="大小" />
+            <TextField fx:id="f2Size" layoutX="480.0" layoutY="9.0" prefHeight="30.0" prefWidth="100.0" />
+            
+            <ColorPicker fx:id="f2Color" layoutX="229.0" layoutY="9.0" prefHeight="30.0" prefWidth="30.0" />
+            <CheckBox fx:id="f2DL" layoutX="51.0" layoutY="50.0" mnemonicParsing="false" text="删除线" />
+            <CheckBox fx:id="f2IT" layoutX="154.0" layoutY="50.0" mnemonicParsing="false" text="斜体" />
+            <CheckBox fx:id="f2BD" layoutX="244.0" layoutY="50.0" mnemonicParsing="false" text="加粗" />
+            <CheckBox fx:id="f2UD" layoutX="326.0" layoutY="50.0" mnemonicParsing="false" text="下划线" />
+            <Label layoutX="14.0" layoutY="87.0" text="背景" />
+            <ColorPicker fx:id="f2BackColor" layoutX="158.0" layoutY="82.0" prefHeight="30.0" prefWidth="30.0" />
+            <TextField fx:id="f2Path" layoutX="196.0" layoutY="82.0" prefHeight="30.0" prefWidth="181.0" />
+            <Button layoutX="389.0" layoutY="82.0" mnemonicParsing="false" text="选择文件" />
+            <Button layoutX="478.0" layoutY="82.0" mnemonicParsing="false" text="取消文件" />
+            <CheckBox fx:id="f2Fill" layoutX="64.0" layoutY="87.0" mnemonicParsing="false" text="填充背景" />
+         </children>
+      </AnchorPane>
+      <AnchorPane layoutX="15.0" layoutY="492.0" prefHeight="120.0" prefWidth="572.0">
+         <children>
+            <Label layoutX="14.0" layoutY="14.0" text="字体" />
+            <ComboBox fx:id="f3Selector" layoutX="51.0" layoutY="9.0" prefWidth="150.0" />
+
+            <Label layoutX="275.0" layoutY="14.0" text="布局" />
+            <ComboBox fx:id="l3Selector" layoutX="320.0" layoutY="9.0" prefWidth="100.0" />
+            <Label layoutX="440.0" layoutY="14.0" text="大小" />
+            <TextField fx:id="f3Size" layoutX="480.0" layoutY="9.0" prefHeight="30.0" prefWidth="100.0" />
+            
+            <ColorPicker fx:id="f3Color" layoutX="229.0" layoutY="9.0" prefHeight="30.0" prefWidth="30.0" />
+            <CheckBox fx:id="f3DL" layoutX="51.0" layoutY="50.0" mnemonicParsing="false" text="删除线" />
+            <CheckBox fx:id="f3IT" layoutX="154.0" layoutY="50.0" mnemonicParsing="false" text="斜体" />
+            <CheckBox fx:id="f3BD" layoutX="244.0" layoutY="50.0" mnemonicParsing="false" text="加粗" />
+            <CheckBox fx:id="f3UD" layoutX="326.0" layoutY="50.0" mnemonicParsing="false" text="下划线" />
+            <Label layoutX="14.0" layoutY="87.0" text="背景" />
+            <ColorPicker fx:id="f3BackColor" layoutX="158.0" layoutY="82.0" prefHeight="30.0" prefWidth="30.0" />
+            <TextField fx:id="f3Path" layoutX="196.0" layoutY="82.0" prefHeight="30.0" prefWidth="181.0" />
+            <Button layoutX="389.0" layoutY="82.0" mnemonicParsing="false" text="选择文件" />
+            <Button layoutX="478.0" layoutY="82.0" mnemonicParsing="false" text="取消文件" />
+            <CheckBox fx:id="f3Fill" layoutX="64.0" layoutY="87.0" mnemonicParsing="false" text="填充背景" />
+         </children>
+      </AnchorPane>
+      <AnchorPane layoutX="12.0" layoutY="625.0" prefHeight="120.0" prefWidth="572.0">
+         <children>
+            <Label layoutX="14.0" layoutY="14.0" text="字体" />
+            <ComboBox fx:id="f4Selector" layoutX="51.0" layoutY="9.0" prefWidth="150.0" />
+
+            <Label layoutX="275.0" layoutY="14.0" text="布局" />
+            <ComboBox fx:id="l4Selector" layoutX="320.0" layoutY="9.0" prefWidth="100.0" />
+            <Label layoutX="440.0" layoutY="14.0" text="大小" />
+            <TextField fx:id="f4Size" layoutX="480.0" layoutY="9.0" prefHeight="30.0" prefWidth="100.0" />
+            
+            <ColorPicker fx:id="f4Color" layoutX="229.0" layoutY="9.0" prefHeight="30.0" prefWidth="30.0" />
+            <CheckBox fx:id="f4DL" layoutX="51.0" layoutY="50.0" mnemonicParsing="false" text="删除线" />
+            <CheckBox fx:id="f4IT" layoutX="154.0" layoutY="50.0" mnemonicParsing="false" text="斜体" />
+            <CheckBox fx:id="f4BD" layoutX="244.0" layoutY="50.0" mnemonicParsing="false" text="加粗" />
+            <CheckBox fx:id="f4UD" layoutX="326.0" layoutY="50.0" mnemonicParsing="false" text="下划线" />
+            <Label layoutX="14.0" layoutY="87.0" text="背景" />
+            <ColorPicker fx:id="f4BackColor" layoutX="158.0" layoutY="82.0" prefHeight="30.0" prefWidth="30.0" />
+            <TextField fx:id="f4Path" layoutX="196.0" layoutY="82.0" prefHeight="30.0" prefWidth="181.0" />
+            <Button layoutX="389.0" layoutY="82.0" mnemonicParsing="false" text="选择文件" />
+            <Button layoutX="478.0" layoutY="82.0" mnemonicParsing="false" text="取消文件" />
+            <CheckBox fx:id="f4Fill" layoutX="64.0" layoutY="87.0" mnemonicParsing="false" text="填充背景" />
+         </children>
+      </AnchorPane>
+      <AnchorPane layoutX="15.0" layoutY="767.0" prefHeight="120.0" prefWidth="572.0">
+         <children>
+            <Label layoutX="14.0" layoutY="14.0" text="字体" />
+            <ComboBox fx:id="f5Selector" layoutX="51.0" layoutY="9.0" prefWidth="150.0" />
+
+            <Label layoutX="275.0" layoutY="14.0" text="布局" />
+            <ComboBox fx:id="l5Selector" layoutX="320.0" layoutY="9.0" prefWidth="100.0" />
+            <Label layoutX="440.0" layoutY="14.0" text="大小" />
+            <TextField fx:id="f5Size" layoutX="480.0" layoutY="9.0" prefHeight="30.0" prefWidth="100.0" />
+            
+            
+            <ColorPicker fx:id="f5Color" layoutX="229.0" layoutY="9.0" prefHeight="30.0" prefWidth="30.0" />
+            <CheckBox fx:id="f5DL" layoutX="51.0" layoutY="50.0" mnemonicParsing="false" text="删除线" />
+            <CheckBox fx:id="f5IT" layoutX="154.0" layoutY="50.0" mnemonicParsing="false" text="斜体" />
+            <CheckBox fx:id="f5BD" layoutX="244.0" layoutY="50.0" mnemonicParsing="false" text="加粗" />
+            <CheckBox fx:id="f5UD" layoutX="326.0" layoutY="50.0" mnemonicParsing="false" text="下划线" />
+            <Label layoutX="14.0" layoutY="87.0" text="背景" />
+            <ColorPicker fx:id="f5BackColor" layoutX="158.0" layoutY="82.0" prefHeight="30.0" prefWidth="30.0" />
+            <TextField fx:id="f5Path" layoutX="196.0" layoutY="82.0" prefHeight="30.0" prefWidth="181.0" />
+            <Button layoutX="389.0" layoutY="82.0" mnemonicParsing="false" text="选择文件" />
+            <Button layoutX="478.0" layoutY="82.0" mnemonicParsing="false" text="取消文件" />
+            <CheckBox fx:id="f5Fill" layoutX="64.0" layoutY="87.0" mnemonicParsing="false" text="填充背景" />
+         </children>
+      </AnchorPane>
+      <Label layoutX="29.0" layoutY="470.0" text="加分" />
+      <Label layoutX="27.0" layoutY="612.0" text="减分" />
+      <Label layoutX="29.0" layoutY="745.0" text="不加不减" />
+      <Separator layoutX="79.0" layoutY="479.0" prefWidth="200.0" />
+      <Separator layoutX="79.0" layoutY="619.0" prefWidth="200.0" />
+      <Separator layoutX="107.0" layoutY="754.0" prefWidth="200.0" />
+      <Button layoutX="173.0" layoutY="895.0" mnemonicParsing="false" onMouseClicked="#saveAttr" prefHeight="30.0" prefWidth="81.0" text="确定" />
+      <Button layoutX="303.0" layoutY="894.0" mnemonicParsing="false" onMouseClicked="#closeDialog" prefHeight="30.0" prefWidth="81.0" text="关闭" />
+   </children>
 </AnchorPane>

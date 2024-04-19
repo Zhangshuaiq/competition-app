@@ -1,30 +1,32 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.text.*?>
-<?import java.lang.*?>
-<?import java.util.*?>
-<?import javafx.scene.*?>
-<?import javafx.scene.control.*?>
-<?import javafx.scene.layout.*?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Text?>
+<AnchorPane fx:id="container" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8"
+            xmlns:fx="http://javafx.com/fxml/1" fx:controller="competition.controller.preview.QuestionPreviewPreview">
+    <children>
+        <ImageView fx:id="imageQ" fitHeight="300.0" fitWidth="517.0" pickOnBounds="true" preserveRatio="true"
+                   visible="false"/>
 
-<AnchorPane fx:id="container" prefHeight="400.0" prefWidth="600.0" 
-            xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1"
-            fx:controller="competition.controller.preview.QuestionPreviewPreview">
-   <children>
 
+        <StackPane fx:id="stagePane" visible="false">
+            <children>
+                <Text fx:id="stageLabel"/>
+            </children>
+        </StackPane>
 
-       <StackPane visible="false"  fx:id="stagePane">
-           <Text fx:id="stageLabel" />
-       </StackPane>
-       
-       <StackPane visible="false"  fx:id="backPane">
-           <Text fx:id="daanLabel" />
-       </StackPane>
-      <VBox fx:id="tiganBox" layoutX="118.0" layoutY="56.0" prefHeight="200.0" prefWidth="310.0">
-         <children>
-             <Text fx:id="tiganLabel" text="AAA" visible="true" wrappingWidth="62.0" />
-         </children>
-      </VBox>
-   </children>
+        <StackPane fx:id="backPane" visible="false">
+            <children>
+                <Text fx:id="daanLabel"/>
+            </children>
+        </StackPane>
+        <VBox fx:id="tiganBox" layoutX="118.0" layoutY="56.0" prefHeight="200.0" prefWidth="310.0">
+            <children>
+                <Text fx:id="tiganLabel" text="" visible="false" wrappingWidth="62.0"/>
+            </children>
+        </VBox>
+    </children>
 </AnchorPane>

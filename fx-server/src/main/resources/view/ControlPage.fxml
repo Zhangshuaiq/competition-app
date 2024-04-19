@@ -79,7 +79,13 @@
                   <Font size="10.0" />
                </font>
             </Button>
-            <Button layoutX="14.0" layoutY="83.0" mnemonicParsing="false" onMouseClicked="#backLast" prefHeight="25.0" prefWidth="80.0" text="返回">
+            <Button layoutX="14.0" layoutY="83.0" mnemonicParsing="false" onMouseClicked="#backLast" prefHeight="25.0" prefWidth="60.0" text="返回">
+               <font>
+                  <Font size="10.0" />
+               </font>
+            </Button>
+
+            <Button layoutX="80.0" layoutY="83.0" mnemonicParsing="false" onMouseClicked="#showResource" prefHeight="25.0" prefWidth="60.0" text="显示资源">
                <font>
                   <Font size="10.0" />
                </font>

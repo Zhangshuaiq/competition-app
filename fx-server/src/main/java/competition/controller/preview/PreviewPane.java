@@ -20,4 +20,6 @@ public abstract class PreviewPane implements ReloadPane {
     public Node getPane() {
         return null;
     }
+    
+    public void hideTime(){}
 }

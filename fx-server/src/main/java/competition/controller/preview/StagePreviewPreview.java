@@ -13,6 +13,7 @@ import competition.mapper.ConfigsMapper;
 import competition.mapper.StagesMapper;
 import competition.mapper.StagesStyleMapper;
 import competition.util.*;
+import competition.ws.WsMessageHandler;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.geometry.Insets;
@@ -62,6 +63,9 @@ public class StagePreviewPreview extends PreviewPane {
     private static Integer parentStageId;
 
     private Integer innerStageID;
+    
+    @Resource
+    private WsMessageHandler messageHandler;
 
     public static void setParentStageId(Integer parentStageId) {
         StagePreviewPreview.parentStageId = parentStageId;
@@ -78,6 +82,7 @@ public class StagePreviewPreview extends PreviewPane {
         innerStageID = parentStageId;
         PreviewStack.addPreview(this);
         PreviewStack.addReturn(this);
+        
         container.setOnMouseClicked(new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent event) {
@@ -139,6 +144,10 @@ public class StagePreviewPreview extends PreviewPane {
                             .eq(StagesStyle::getParentId, innerStageID)
                     );
                 }
+                messageHandler.notifyPage("stages", stages);
+              
+                
+                
                 String[] detailArr = {};
                 if (stagesStyle != null) {
                     detailArr = stagesStyle.getStyle().split(ConfigSpliter.SPLITER);

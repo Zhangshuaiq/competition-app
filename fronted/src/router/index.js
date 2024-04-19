@@ -5,6 +5,11 @@ import WaitStart from "@/components/WaitStart";
 import Model7 from "@/components/Model7";
 import Model60 from "@/components/Model60";
 import Model61 from "@/components/Model61";
+import StageList from "@/components/StageList";
+import StageName from "@/components/StageName";
+import StageQuestion from "@/components/StageQuestion";
+import Question from "@/components/Question";
+import Model3 from "@/components/Model3";
 Vue.use(Router);
 
 export default new Router({
@@ -39,5 +44,36 @@ export default new Router({
             name: 'model61',
             component: Model61,
         },
+
+        {
+            path: '/stages',
+            name: 'stages',
+            component: StageList,
+        },
+
+        {
+            path: '/stageName',
+            name: 'stageName',
+            component: StageName,
+        },
+
+        {
+            path: '/stageQuestion',
+            name: 'stageQuestion',
+            component: StageQuestion,
+        },
+
+
+        {
+            path: '/question',
+            name: 'question',
+            component: Question,
+        },
+
+        {
+            path: '/model3',
+            name: 'model3',
+            component: Model3
+        }
     ],
 });

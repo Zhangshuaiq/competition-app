@@ -5,6 +5,9 @@ import java.util.Map;
 
 public class GlobalCache {
     
+    // 视频是否正在播放
+    public static boolean videoPlay = false;
+    
     // 是否显示抢答排行
     public static boolean qdRank = false;
     

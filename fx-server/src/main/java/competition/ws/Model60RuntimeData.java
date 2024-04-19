@@ -2,6 +2,7 @@ package competition.ws;
 
 import competition.JavaFxApplication;
 import competition.controller.ControlPane;
+import competition.entity.Questions;
 import competition.entity.Teams;
 import competition.util.TeamRuntime;
 import javafx.application.Platform;
@@ -30,6 +31,29 @@ public class Model60RuntimeData {
             ModelData md = new ModelData();
             md.setTeamName(team.getFullName());
             runtimeData.add(md);
+        }
+    }
+
+    public static void setRuntimeData(Questions data) {
+        for (Model60RuntimeData.ModelData datum : runtimeData) {
+            datum.setAnswer(data.getAnswer());
+            datum.setChoiceA(data.getChoiceA());
+            datum.setChoiceB(data.getChoiceB());
+            datum.setChoiceC(data.getChoiceC());
+            datum.setChoiceD(data.getChoiceD());
+            datum.setChoiceE(data.getChoiceE());
+            datum.setChoiceF(data.getChoiceF());
+            datum.setQuestion(data.getQuestion());
+            datum.setQuestionNumber(data.getQuestionNumber());
+            datum.setQuestionType(data.getQuestionType());
+            datum.setResourceType(data.getResourceType());
+            datum.setResource(data.getResource());
+            datum.setRemark(data.getRemark());
+            datum.setScore(data.getScore());
+            datum.setSort(data.getSort());
+            datum.setStageName(data.getStageName());
+            datum.setStageNumber(data.getStageNumber());
+            datum.setUserSelect("");
         }
     }
     

@@ -60,17 +60,13 @@ public class WsMessageHandler {
     // 返回等待答题页面
     public static final String ENTER_WAIT_TOPIC = "/topic/wait";
     
+    // 界面跳转主题
+    public static final String PAGE_TOPIC = "/topic/page";
+    
     
     @Resource
     private TeamsMapper mapper;
     
-    @Resource
-    private Model7Preview model7Preview;
-    
-
-
-    @Resource
-    private Model61Preview model61Preview;
     
     
     @Resource
@@ -91,18 +87,20 @@ public class WsMessageHandler {
         String jsonText = new String(msg);
         Map parse = JSON.parseObject(jsonText, Map.class);
         Model7RuntimeData.ModelData data = JSON.parseObject(parse.get("data").toString(), Model7RuntimeData.ModelData.class);
-        String second = parse.get("time").toString();
+        String time = parse.get("time").toString();
         String teamName = data.getTeamName();
+        String second =  parse.get("second").toString();
         List<Teams> teams = Model7RuntimeData.getTeams();
         
 
         for (int i = 0; i < teams.size(); i++) {
             if (teams.get(i).getFullName().equals(teamName)) {
-                Model7RuntimeData.setRuntimeData(i, data, second);
+                Model7RuntimeData.setRuntimeData(i, data, time, second);
             }
         }
         Platform.runLater(() -> {
-            //model7.reload(second);
+            ControlPane controlPane = JavaFxApplication.getApplicationContext().getBean(ControlPane.class);
+            controlPane.getPreviewPane().reload();
         });
     }
     
@@ -113,9 +111,13 @@ public class WsMessageHandler {
         Map parse = JSON.parseObject(jsonText, Map.class);
         Model61RuntimeData.ModelData data = JSON.parseObject(parse.get("data").toString(), Model61RuntimeData.ModelData.class);
         Model61RuntimeData.setRuntimeData(data);
-
+        
+        
+        
         Platform.runLater(() -> {
-            model61Preview.reload();
+            ControlPane controlPane = JavaFxApplication.getApplicationContext().getBean(ControlPane.class);
+            //controlPane.getPreviewPane().reload();
+            controlPane.getScoreBoardPreview().reload();
         });
     }
 
@@ -128,12 +130,20 @@ public class WsMessageHandler {
         Model60RuntimeData.setRuntimeData(data);
         Platform.runLater(() -> {
             ControlPane controlPane = JavaFxApplication.getApplicationContext().getBean(ControlPane.class);
-            controlPane.getPreviewPane().reload();
+            //controlPane.getPreviewPane().reload();
             controlPane.getScoreBoardPreview().reload();
         });
     }
     
     
+    
+    
+    public void notifyPage(String route, Object data){
+        Map<String, Object> dataMap = new HashMap<>();
+        dataMap.put("route", route);
+        dataMap.put("data", data);
+        messagingTemplate.convertAndSend(PAGE_TOPIC, JSON.toJSONString(dataMap));
+    }
     
     
 //    // 答题模式-个人
@@ -180,6 +190,13 @@ public class WsMessageHandler {
     public void sendModel7Start() {
         Map<String, String> data = new HashMap<>();
         messagingTemplate.convertAndSend(MODEL_7_START_TOPIC, JSON.toJSONString(data));
+    }
+    
+    
+    public void sendShowAnswer() {
+        Map<String, String> dataMap = new HashMap<>();
+        dataMap.put("type", "answer");
+        messagingTemplate.convertAndSend(QUESTION_TOPIC, JSON.toJSONString(dataMap));
     }
     
     

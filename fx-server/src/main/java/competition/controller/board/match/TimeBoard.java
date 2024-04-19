@@ -42,8 +42,11 @@ public class TimeBoard implements ReloadPane {
         container.getChildren().add(teamScore);
         reload();
     }
-    
 
+    @Override
+    public void hideTime() {
+        teamScore.setVisible(false);
+    }
 
     @Override
     public void reload(int time, String timeTxt) {
@@ -88,6 +91,7 @@ public class TimeBoard implements ReloadPane {
 
     @Override
     public void startTiming(boolean order,int time) {
+        teamScore.setVisible(true);
         this.timeVal = time;
         this.timeValue = format(timeVal);
         teamScore.setText(timeValue);

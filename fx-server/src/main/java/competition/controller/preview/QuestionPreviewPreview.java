@@ -7,13 +7,16 @@ import competition.controller.match.ReloadPane;
 import competition.entity.Configs;
 import competition.entity.QuestionStyle;
 import competition.entity.Questions;
+import competition.entity.Stages;
 import competition.mapper.ConfigsMapper;
 import competition.util.*;
+import competition.ws.WsMessageHandler;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.geometry.Insets;
 import javafx.scene.Node;
 import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
@@ -28,13 +31,14 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
 import javax.annotation.Resource;
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
 
 
-// 试题显示大屏内容
+// 试题显示主控屏幕
 @Component
 @Scope("prototype")
 public class QuestionPreviewPreview extends PreviewPane {
@@ -57,7 +61,13 @@ public class QuestionPreviewPreview extends PreviewPane {
 
     @FXML
     private Text tiganLabel;
+    
+    @FXML
+    private ImageView imageQ;
 
+    
+    @Resource
+    private WsMessageHandler messageHandler;
 
     @Resource
     private ConfigsMapper configsMapper;
@@ -99,6 +109,18 @@ public class QuestionPreviewPreview extends PreviewPane {
 
     private void showData() {
         inner = current;
+
+        Stages currentStage = controlPane.getCurrentStage();
+        if (currentStage.getQuestionType() == 6) {
+          if (currentStage.getM6() == 0) {
+              messageHandler.notifyPage("model60", inner);
+          }  else {
+              messageHandler.notifyPage("model61", inner);
+          }
+        } else {
+            messageHandler.notifyPage("question", inner);
+        }
+        
         if (ExtendedScreen.hasShow()) {
             QuestionPreview.setCurrent(inner);
             // 进入比赛
@@ -133,56 +155,59 @@ public class QuestionPreviewPreview extends PreviewPane {
             tiganLabel.prefWidth(Integer.parseInt(split[7]));
 
 
-            tiganBox.getChildren().add(tiganLabel);
 
-            tiganBox.setLayoutY(Integer.parseInt(split[5]));
+            tiganBox.setLayoutX(Integer.parseInt(split[5]));
             tiganBox.setLayoutY(Integer.parseInt(split[6]));
             tiganBox.setPrefWidth(Integer.parseInt(split[7]));
             tiganBox.setPrefHeight(Integer.parseInt(split[8]));
             tiganBox.setSpacing(Integer.parseInt(split[3]));
 
-            // 选项
-            if (!StringUtils.isEmpty(inner.getChoiceA())) {
-                Text chA = new Text("A." + inner.getChoiceA());
-                chA.prefWidth(Integer.parseInt(split[7]));
-                chA.setFill(Color.valueOf(split[0]));
-                tiganBox.getChildren().add(chA);
+            
+            // 根据题型展示不同的内容
+            String questionType = inner.getQuestionType();
+            String resourceType = inner.getResourceType();
+            
+            if (resourceType.equals("音频")) {
+                tiganLabel.setVisible(true);
+                tiganBox.setVisible(true);
+                imageQ.setVisible(false);
+            } else if (resourceType.equals("视频")) {
+                tiganLabel.setVisible(true);
+                tiganBox.setVisible(true);
+                imageQ.setVisible(false);
+            } else if (resourceType.equals("图片")) {
+                // 展示图片题目
+                tiganLabel.setVisible(false);
+                tiganBox.setVisible(false);
+                imageQ.setVisible(true);
+                imageQ.setLayoutX(Integer.parseInt(split[5]));
+                imageQ.setLayoutY(Integer.parseInt(split[6]));
+                imageQ.setFitHeight(Integer.parseInt(split[8]));
+                imageQ.setFitWidth(Integer.parseInt(split[7]));
+                try {
+                    imageQ.setImage(new Image(new FileInputStream(new File( BaseDir.IMAGE_DIR +  inner.getQuestion())),
+                            Integer.parseInt(split[7]), Integer.parseInt(split[8]), false, true));
+                } catch (FileNotFoundException e) {
+                    e.printStackTrace();
+                }
+               
+            } else if (resourceType.equals("文字")) {
+                tiganLabel.setVisible(true);
+                tiganBox.setVisible(true);
+                imageQ.setVisible(false);
             }
 
-            if (!StringUtils.isEmpty(inner.getChoiceB())) {
-                Text chB = new Text("B." + inner.getChoiceB());
-                chB.prefWidth(Integer.parseInt(split[7]));
-                chB.setFill(Color.valueOf(split[0]));
-                tiganBox.getChildren().add(chB);
-            }
-
-            if (!StringUtils.isEmpty(inner.getChoiceC())) {
-                Text chA = new Text("C." + inner.getChoiceC());
-                chA.prefWidth(Integer.parseInt(split[7]));
-                chA.setFill(Color.valueOf(split[0]));
-                tiganBox.getChildren().add(chA);
-            }
-
-            if (!StringUtils.isEmpty(inner.getChoiceD())) {
-                Text chA = new Text("D." + inner.getChoiceD());
-                chA.prefWidth(Integer.parseInt(split[7]));
-                chA.setFill(Color.valueOf(split[0]));
-                tiganBox.getChildren().add(chA);
-            }
-
-            if (!StringUtils.isEmpty(inner.getChoiceE())) {
-                Text chA = new Text("E." + inner.getChoiceE());
-                chA.prefWidth(Integer.parseInt(split[7]));
-                chA.setFill(Color.valueOf(split[0]));
-                tiganBox.getChildren().add(chA);
-            }
-
-            if (!StringUtils.isEmpty(inner.getChoiceF())) {
-                Text chA = new Text("F." + inner.getChoiceF());
-                chA.prefWidth(Integer.parseInt(split[7]));
-                chA.setFill(Color.valueOf(split[0]));
-                tiganBox.getChildren().add(chA);
-            }
+//            if (questionType.equals("单选题")) {
+//                
+//            } else if (questionType.equals("多选题")) {
+//                
+//            }  else if (questionType.equals("填空题")) {
+//
+//            }  else if (questionType.equals("简答题")) {
+//
+//            }  else if (questionType.equals("判断题")) {
+//
+//            }
 
 
             // 题型
@@ -219,9 +244,103 @@ public class QuestionPreviewPreview extends PreviewPane {
                     tiganLabel.setText("[" + inner.getQuestionType() + "]" + inner.getQuestionNumber() + "、" + inner.getQuestion());
                 }
             }
+
             if (controlPane.getCurrentStage().getShowNumber() == 0) {
                 tiganLabel.setText(tiganLabel.getText().replace(inner.getQuestionNumber() + "、", ""));
             }
+            
+            // 只有选择题展示选项
+            tiganBox.getChildren().add(tiganLabel);
+            if (questionType.equals("单选题") || questionType.equals("多选题")) {
+                if (!StringUtils.isEmpty(inner.getChoiceA())) {
+                    Text chA = new Text("A." + inner.getChoiceA());
+                    chA.prefWidth(Integer.parseInt(split[7]));
+                    chA.setFill(Color.valueOf(split[0]));
+                    tiganBox.getChildren().add(chA);
+                }
+
+                if (!StringUtils.isEmpty(inner.getChoiceB())) {
+                    Text chB = new Text("B." + inner.getChoiceB());
+                    chB.prefWidth(Integer.parseInt(split[7]));
+                    chB.setFill(Color.valueOf(split[0]));
+                    tiganBox.getChildren().add(chB);
+                }
+
+                if (!StringUtils.isEmpty(inner.getChoiceC())) {
+                    Text chA = new Text("C." + inner.getChoiceC());
+                    chA.prefWidth(Integer.parseInt(split[7]));
+                    chA.setFill(Color.valueOf(split[0]));
+                    tiganBox.getChildren().add(chA);
+                }
+
+                if (!StringUtils.isEmpty(inner.getChoiceD())) {
+                    Text chA = new Text("D." + inner.getChoiceD());
+                    chA.prefWidth(Integer.parseInt(split[7]));
+                    chA.setFill(Color.valueOf(split[0]));
+                    tiganBox.getChildren().add(chA);
+                }
+
+                if (!StringUtils.isEmpty(inner.getChoiceE())) {
+                    Text chA = new Text("E." + inner.getChoiceE());
+                    chA.prefWidth(Integer.parseInt(split[7]));
+                    chA.setFill(Color.valueOf(split[0]));
+                    tiganBox.getChildren().add(chA);
+                }
+
+                if (!StringUtils.isEmpty(inner.getChoiceF())) {
+                    Text chA = new Text("F." + inner.getChoiceF());
+                    chA.prefWidth(Integer.parseInt(split[7]));
+                    chA.setFill(Color.valueOf(split[0]));
+                    tiganBox.getChildren().add(chA);
+                }
+
+            } 
+            else {
+                // 不显示题号
+                if (!StringUtils.isEmpty(inner.getChoiceA())) {
+                    Text chA = new Text(inner.getChoiceA());
+                    chA.prefWidth(Integer.parseInt(split[7]));
+                    chA.setFill(Color.valueOf(split[0]));
+                    tiganBox.getChildren().add(chA);
+                }
+
+                if (!StringUtils.isEmpty(inner.getChoiceB())) {
+                    Text chB = new Text(inner.getChoiceB());
+                    chB.prefWidth(Integer.parseInt(split[7]));
+                    chB.setFill(Color.valueOf(split[0]));
+                    tiganBox.getChildren().add(chB);
+                }
+
+                if (!StringUtils.isEmpty(inner.getChoiceC())) {
+                    Text chA = new Text(inner.getChoiceC());
+                    chA.prefWidth(Integer.parseInt(split[7]));
+                    chA.setFill(Color.valueOf(split[0]));
+                    tiganBox.getChildren().add(chA);
+                }
+
+                if (!StringUtils.isEmpty(inner.getChoiceD())) {
+                    Text chA = new Text(inner.getChoiceD());
+                    chA.prefWidth(Integer.parseInt(split[7]));
+                    chA.setFill(Color.valueOf(split[0]));
+                    tiganBox.getChildren().add(chA);
+                }
+
+                if (!StringUtils.isEmpty(inner.getChoiceE())) {
+                    Text chA = new Text(inner.getChoiceE());
+                    chA.prefWidth(Integer.parseInt(split[7]));
+                    chA.setFill(Color.valueOf(split[0]));
+                    tiganBox.getChildren().add(chA);
+                }
+
+                if (!StringUtils.isEmpty(inner.getChoiceF())) {
+                    Text chA = new Text(inner.getChoiceF());
+                    chA.prefWidth(Integer.parseInt(split[7]));
+                    chA.setFill(Color.valueOf(split[0]));
+                    tiganBox.getChildren().add(chA);
+                }
+            }
+
+            
             // 答案
             daanLabel.setText(split[4] + " " + inner.getAnswer());
             backPane.setLayoutX((int) tiganBox.getLayoutX());
@@ -262,7 +381,6 @@ public class QuestionPreviewPreview extends PreviewPane {
                                     }
                                     text.setText(String.join(sli, cs1));
                                 }
-
                             }
                         }
 
@@ -330,8 +448,8 @@ public class QuestionPreviewPreview extends PreviewPane {
 
                         backPane.setLayoutX(Integer.parseInt(split1[0]));
                         backPane.setLayoutY(Integer.parseInt(split1[1]));
-                        backPane.prefWidth(Integer.parseInt(split1[2]));
-                        backPane.prefHeight(Integer.parseInt(split1[3]));
+                        backPane.setPrefWidth(Integer.parseInt(split1[2]));
+                        backPane.setPrefHeight(Integer.parseInt(split1[3]));
 
 
                         if (Boolean.valueOf(split1[4])) {
@@ -431,7 +549,22 @@ public class QuestionPreviewPreview extends PreviewPane {
 
     public void showAnswer() {
         GlobalCache.showAnswer = !GlobalCache.showAnswer;
-        backPane.setVisible(GlobalCache.showAnswer);
+        if (inner.getResourceType().equals("图片")) {
+            imageQ.setVisible(true);
+            imageQ.setLayoutX(backPane.getLayoutX());
+            imageQ.setLayoutY(backPane.getLayoutY());
+            imageQ.setFitHeight(backPane.getPrefHeight());
+            imageQ.setFitWidth(backPane.getPrefWidth());
+            try {
+                imageQ.setImage(new Image(new FileInputStream(new File( BaseDir.IMAGE_DIR +  inner.getAnswer())),
+                        backPane.getPrefWidth(), backPane.getPrefHeight(), false, true));
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            }
+            backPane.setVisible(false);
+        } else {
+            backPane.setVisible(GlobalCache.showAnswer);
+        }
         ReloadPane questionPreview = controlPane.getQuestionPreview();
         if (ExtendedScreen.hasShow()) {
             if (questionPreview != null) {
@@ -464,7 +597,33 @@ public class QuestionPreviewPreview extends PreviewPane {
 
     @Override
     public void reload() {
-        backPane.setVisible(GlobalCache.showAnswer);
         showData();
+        if (GlobalCache.showAnswer) {
+            if (inner.getResourceType().equals("图片")) {
+                imageQ.setVisible(true);
+                imageQ.setLayoutX(backPane.getLayoutX());
+                imageQ.setLayoutY(backPane.getLayoutY());
+                imageQ.setFitHeight(backPane.getPrefHeight());
+                imageQ.setFitWidth(backPane.getPrefWidth());
+                try {
+                    imageQ.setImage(new Image(new FileInputStream(new File( BaseDir.IMAGE_DIR +  inner.getAnswer())),
+                            backPane.getPrefWidth(), backPane.getPrefHeight(), false, true));
+                } catch (FileNotFoundException e) {
+                    e.printStackTrace();
+                }
+                backPane.setVisible(false);
+            } else {
+                backPane.setVisible(true);
+                imageQ.setVisible(false);
+            }
+            ReloadPane questionPreview = controlPane.getQuestionPreview();
+            if (ExtendedScreen.hasShow()) {
+                if (questionPreview != null) {
+                    questionPreview.showAnswer();
+                }
+            }
+        } else {
+            backPane.setVisible(false);
+        }
     }
 }

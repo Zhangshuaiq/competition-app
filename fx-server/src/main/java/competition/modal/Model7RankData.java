@@ -15,4 +15,7 @@ public class Model7RankData {
     // 时间
     private String time;
     
+    // 秒数
+    private Integer second;
+    
 }

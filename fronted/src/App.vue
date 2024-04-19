@@ -8,31 +8,33 @@
 
 export default {
   name: 'App',
-  
+
+
   mounted() {
+    this.$websocket.subscribe('/topic/page', (message) => {
+      console.log(message.route);
+      //const currentRouteName = this.$router.currentRoute.name;
+      const targetRouteName = message.route;
 
-    this.$websocket.connect(() => {
-          console.log("success")
-          this.$websocket.subscribe('/topic/wait', (message) => {
-            console.log(message)
-            this.$router.push({name: "wait"});
-          })
-        },
-        () => console.log("error")
-    )
+      // 如果消息包含数据和路由，更新 Vuex 状态
+      this.$store.commit('setCurrentRoute', targetRouteName);
+      this.$store.commit('setAdditionalData', message.data); // 假设 message.data 包含需要的额外数据
 
-
-    // const intervalID = setInterval(() => {
-    //   axios.get('http://localhost:8080/rest/heartbeat').then(() => {
-    //
-    //   }).catch(err => {
-    //     console.log(err)
-    //     sessionStorage.clear()
-    //     location.reload()
-    //     clearInterval(intervalID)
-    //   })
-    // }, 1000);
+      // 检查当前路由名称与目标路由名称是否相同
+      //if (targetRouteName !== currentRouteName) {
+        this.$router.push(
+            {
+              name: targetRouteName,
+              query: {t: Date.now()}
+            }
+        );
+      //} 
+      //else {
+      //  console.log('Attempted to navigate to the same route:', targetRouteName);
+      //}
+    });
   }
+
 
 }
 </script>

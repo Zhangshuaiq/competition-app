@@ -31,6 +31,8 @@ public class ExtendedScreen {
 
     public static final Stage scoreBoardStage = new Stage();
     
+    public static final Stage videoStage = new Stage();
+    
     private static boolean extendShow = false;
 
     static {

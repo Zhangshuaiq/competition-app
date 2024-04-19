@@ -14,18 +14,11 @@ export default {
       this.$router.push({name: "contestant"})
       return
     }
-
-    const subscription = this.$websocket.subscribe('/topic/enter', (message) => {
-      if (message.type === 'model7') {
-        this.$router.push({name: 'model7'})
-      } else if (message.type === 'model61') {
-        this.$router.push({name: 'model61'})
-      } else if (message.type === 'model60') {
-        this.$router.push({name: 'model60'})
-      }
-      this.$websocket.unsubscribe(subscription)
-    })
+    const member = sessionStorage.getItem("member");
     
+    sessionStorage.clear()
+    sessionStorage.setItem("member", member)
+    sessionStorage.setItem("user", item)
     const teamInfo = JSON.parse(item)
     this.$websocket.send('/app/enter', {team: teamInfo.fullName + "-" + sessionStorage.getItem("member")})
   },

@@ -25,8 +25,6 @@ public class QuestionStock {
     @FXML
     private TableView<Questions> tableView;
     
-    @FXML
-    private Label statusLabel;
 
     @FXML
     private TableColumn<Questions, String> stageNumberCol, stageNameCol, questionTypeCol, resourceTypeCol, resourceCol,
@@ -55,30 +53,22 @@ public class QuestionStock {
 
     public void showData() {
         final List<Questions> questions = ExcelParser.parse(ExcelParser.Q_PATH, Questions.class);
-        final List<QuestionStyle> parse = ExcelParser.parse(ExcelParser.S_PATH,  QuestionStyle.class);
-        if (questions.size() == parse.size()) {
-            statusLabel.setText("正常");
-            statusLabel.setTextFill(Color.GREEN);
-        } else {
-            statusLabel.setText("样式和题目数量不一致，请修改");
-            statusLabel.setTextFill(Color.RED);
-        }
         tableView.setItems(FXCollections.observableList(questions));
     }
     
     
-    @FXML
-    public void openStyleData(){
-        String filePath = ExcelParser.S_PATH;
-        File file = new File(filePath);
-        if (Desktop.isDesktopSupported()) {
-            try {
-                Desktop.getDesktop().open(file);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-    }
+//    @FXML
+//    public void openStyleData(){
+//        String filePath = ExcelParser.S_PATH;
+//        File file = new File(filePath);
+//        if (Desktop.isDesktopSupported()) {
+//            try {
+//                Desktop.getDesktop().open(file);
+//            } catch (IOException e) {
+//                e.printStackTrace();
+//            }
+//        }
+//    }
 
 
     @FXML

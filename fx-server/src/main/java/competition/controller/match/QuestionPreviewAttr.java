@@ -283,7 +283,10 @@ public class QuestionPreviewAttr {
                     stageIticChoice.setSelected(Boolean.valueOf(split[11]));
                     stageUnderlineChoice.setSelected(Boolean.valueOf(split[12]));
                     stageTextAlignSelector.setValue(split[13]);
-                    stageSpaceInput.setText(split[14]);
+                    if (split.length > 15) {
+                        stageSpaceInput.setText(split[14]);
+                    }
+                   
 //                    if (split.length >= 16) {
 //                        wordSpaceInput.setText(split[15]);
 //                    }

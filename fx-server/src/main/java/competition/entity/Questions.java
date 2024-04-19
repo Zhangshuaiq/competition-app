@@ -13,9 +13,11 @@ public class Questions {
     @ExcelProperty(index = 1, value="阶段名称")
     private String stageName;
 
+    // 判断题 简答题 填空题 单选题 多选题
     @ExcelProperty(index = 2, value="问题类型")
     private String questionType;
 
+    // 文字  图片 音频  视频
     @ExcelProperty(index = 3, value="资源类型")
     private String resourceType;
 

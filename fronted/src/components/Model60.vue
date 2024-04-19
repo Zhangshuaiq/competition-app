@@ -77,19 +77,6 @@
             <el-button :disabled="second <= 0 || showResult" style="width: 200px; height: 50px; font-size: x-large" type="primary" @click="submitAnswer"> 确 认 </el-button>
           </div>
         </div>
-  
-        <div v-if="showWait" style="text-align: center; padding: 0 100px">
-          <div class="result-info">
-  
-          </div>
-          <div class="result-info">
-            等待答题
-          </div>
-  
-          <div class="result-info">
-  
-          </div>
-        </div>
       </div>
     </div>
   </div>
@@ -119,12 +106,12 @@ export default {
       console.log(this.activeDiv)
       this.showResult = true;
       const submited = JSON.parse(JSON.stringify(this.questionItem))
-      this.saveData()
       // 队伍名称, 题目分值
       submited.teamName =  this.teamInfo.fullName
       submited.userSelect = this.activeDiv
+      this.questionItem = submited
+      this.saveData()
       // 题目列表
-      console.log(submited)
       //  提交答案
       this.$websocket.send('/app/model60/submit', {
         data: JSON.stringify(submited),
@@ -161,8 +148,9 @@ export default {
       const item = sessionStorage.getItem("questionItem");
       if (item && item !== 'null') {
         this.questionItem = JSON.parse(item)
+        console.log(this.questionItem)
+        this.activeDiv = this.questionItem.userSelect
       }
-      console.log(this.questionItem)
     },
 
 
@@ -178,33 +166,33 @@ export default {
           return
         }
         if (message.type === 'time') {
-          console.log(message.data)
+          console.log(this.showResult)
           this.second = parseInt(message.data)
-          if (this.second < 0) {
+          if (this.second <= 0) {
             if (this.showResult === false) {
               this.activeDiv = ''
-              this.submitAnswer()
+              //this.submitAnswer()
             }
           }
         } else {
-          this.questionItem = message.data
-          this.questionItem.teamName = this.teamInfo.fullName
-          this.activeDiv = ''
-          this.showResult = false
-          this.showWait = false
-          this.saveData()
+          //
         }
 
       })
 
-      this.$websocket.subscribe('/topic/model60/start', (message) => {
-        console.log(message)
-        this.showWait = false
-        this.saveData()
-      })
     },
   },
 
+  beforeRouteUpdate(to, from, next) {
+    const data = this.$store.state.data
+    this.questionItem = data
+    this.showResult = false
+    this.activeDiv = ''
+    this.saveData()
+    next();
+  },
+  
+  
   mounted() {
     const item = sessionStorage.getItem("user");
     if (!item) {
@@ -213,22 +201,12 @@ export default {
     }
     this.teamInfo = JSON.parse(item)
     console.log(this.teamInfo)
+    const data = this.$store.state.data
+    this.questionItem = data
     this.loadData();
-    this.$websocket.connect(() => {
-          this.setRetryTimer()
-        },
-        () => console.log("error")
-    )
+    this.setRetryTimer()
   },
-
-  beforeDestroy() {
-    if (this.$websocket) {
-      if (this.subscription) {
-        this.$websocket.unsubscribe(this.subscription)
-      }
-      this.$websocket.disconnect()
-    }
-  },
+  
 }
 </script>
 

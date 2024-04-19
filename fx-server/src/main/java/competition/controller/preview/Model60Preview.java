@@ -58,6 +58,9 @@ public class Model60Preview extends PreviewPane {
 
     @Resource
     private ControlPane controlPane;
+    
+    @Resource
+    private WsMessageHandler messageHandler;
 
     private static Questions current;
     
@@ -99,6 +102,9 @@ public class Model60Preview extends PreviewPane {
                 controlPane.setQuestionPreview((Model60) res);
             }
         }
+
+        messageHandler.notifyPage("model60", CurrentQuestions.getQuestionList());
+        
         tiganBox.getChildren().clear();
 
         Configs configs = configsMapper.selectById(1);

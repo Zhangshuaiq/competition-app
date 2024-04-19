@@ -7,10 +7,7 @@ import competition.controller.match.QuestionPreview;
 import competition.controller.match.ReloadPane;
 import competition.entity.Questions;
 import competition.entity.Teams;
-import competition.util.CurrentQuestions;
-import competition.util.ExtendedScreen;
-import competition.util.PreviewStack;
-import competition.util.TeamRuntime;
+import competition.util.*;
 import competition.ws.Model7RuntimeData;
 import competition.ws.WsMessageHandler;
 import javafx.animation.Timeline;
@@ -65,6 +62,7 @@ public class Model7Preview extends PreviewPane {
 
     @FXML
     public void initialize() {
+        messageHandler.notifyPage("model7", CurrentQuestions.getQuestionList());
         PreviewStack.addPreview(this);
         container.setPadding(new Insets(0, 10, 0, 10));
         reload();
@@ -72,16 +70,15 @@ public class Model7Preview extends PreviewPane {
 
 
     private void showData() {
+        
         if (ExtendedScreen.hasShow()) {
             // 进入比赛
             Object res = ExtendedScreen.showWithControl("/view/match/Model7.fxml");
             if (res != null) {
                 controlPane.setQuestionPreview((Model7) res);
             }
+            container.setPrefWidth(ExtendedScreen.getWidth());
         }
-
-
-        container.setPrefWidth(ExtendedScreen.getWidth());
         container.getChildren().clear();
         container.setVgap(20);
         container.setHgap(20);
@@ -91,7 +88,7 @@ public class Model7Preview extends PreviewPane {
         for (int i = 0; i < runtimeData.size(); i++) {
             AnchorPane anchorPane = new AnchorPane();
             anchorPane.setPadding(new Insets(0, 10, 0, 10));
-            anchorPane.setPrefWidth((ExtendedScreen.getWidth() - 40) / 4);
+            anchorPane.setPrefWidth((Navigator.getWidth() - 40) / 4);
             anchorPane.setMinWidth(0);
             anchorPane.setMaxWidth(Double.MAX_VALUE); // 允许AnchorPane扩展以填充可用空间
             container.add(anchorPane, i % 4, i / 4);

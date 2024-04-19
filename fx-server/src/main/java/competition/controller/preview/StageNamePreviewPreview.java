@@ -77,6 +77,9 @@ public class StageNamePreviewPreview extends PreviewPane {
         stages = stagesMapper.selectById(innerStageId);
         PreviewStack.addPreview(this);
         PreviewStack.addReturn(this);
+
+        messageHandler.notifyPage("stageName", stages);
+        
         container.setOnMouseClicked(new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent event) {
@@ -284,7 +287,7 @@ public class StageNamePreviewPreview extends PreviewPane {
                         controlPane.setPreviewPane(
                                 Navigator.preview("/view/preview/StageQuestionPreview.fxml", "", "/view/style.css", true, true)
                         );
-                        messageHandler.notifyEnterWait("model7");
+                        //messageHandler.notifyEnterWait("model7");
                     }
                 } else {
                     // 展示子环节

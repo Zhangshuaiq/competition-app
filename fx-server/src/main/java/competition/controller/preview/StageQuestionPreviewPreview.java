@@ -31,7 +31,9 @@ import javax.annotation.Resource;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Component
 @Scope("prototype")
@@ -215,11 +217,18 @@ public class StageQuestionPreviewPreview extends PreviewPane {
             layout.setLayoutX(Integer.parseInt(cfgArr[3]));
             layout.setLayoutY(Integer.parseInt(cfgArr[4]));
 
+
+            Map<String, Object> dataMap = new HashMap<>();
+            dataMap.put("stage", currentStage);
+            dataMap.put("questions", questionList);
+            messageHandler.notifyPage("stageQuestion", dataMap);
+            
             for (int i = 0; i < questionList.size(); i++) {
                 StackPane item = new StackPane();
                 item.setPrefSize(Integer.parseInt(cfgArr[5]), Integer.parseInt(cfgArr[6]));
                 Questions questions = questionList.get(i);
                 Text text = new Text(questions.getQuestionNumber().toString());
+
                 if (CurrentQuestions.hasAnswer(questions.getQuestionNumber().toString())) {
                     item.setVisible(false);
                 } else {
@@ -290,7 +299,8 @@ public class StageQuestionPreviewPreview extends PreviewPane {
                                     Navigator.preview("/view/preview/Model7.fxml", "", "/view/style.css", true, true)
                             );
                             controlPane.updateScoreBoard();
-                            messageHandler.sendQuestionGroup(CurrentQuestions.getQuestionList());
+
+                            //messageHandler.sendQuestionGroup();
                             // 扩展屏显示题目信息
                         } else if (currentStage.getQuestionType() == 6) {
                             Integer m6 = currentStage.getM6();
@@ -313,7 +323,9 @@ public class StageQuestionPreviewPreview extends PreviewPane {
                                 );
                                 //controlPane.setPreviewPane(Navigator.preview("/view/preview/Model60.fxml", "", "/view/style.css", true, true));
                                 controlPane.updateScoreBoard();
-                                messageHandler.sendQuestion(questions);
+                                Model60RuntimeData.setRuntimeData(questions);
+                                messageHandler.notifyPage("model60", questions);
+                               // messageHandler.sendQuestion(questions);
                             } else {
                                 // 答题模式 -- 个人模式
                                 CurrentQuestions.recordAnswer(tihao);
@@ -326,9 +338,11 @@ public class StageQuestionPreviewPreview extends PreviewPane {
                                 );
                                // controlPane.setPreviewPane(Navigator.preview("/view/preview/Model61.fxml", "", "/view/style.css", true, true));
                                 controlPane.updateScoreBoard();
-                                messageHandler.sendQuestion(questions);
+                                Model61RuntimeData.setRuntimeData(questions);
+                                messageHandler.notifyPage("model61", questions);
+                               // messageHandler.sendQuestion(questions);
                             }
-                            // 扩展屏显示题目信息
+                            controlPane.selectQuestion(tihao);
                         } else {
                             String tihao = questions.getQuestionNumber().toString();
                             Questions questions = CurrentQuestions.getQ(tihao);

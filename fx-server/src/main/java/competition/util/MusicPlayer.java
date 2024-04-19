@@ -64,6 +64,21 @@ public class MusicPlayer {
     public static void play(String path) {
         System.out.println(path);
         MediaPlayer player = musicsMap.get(path);
-        player.play();
+        if (player == null) {
+            try {
+                Media media = new Media(new File(path).toURI().toString());
+                MediaPlayer mediaPlayer = new MediaPlayer(media);
+                mediaPlayer.play();
+                mediaPlayer.setOnEndOfMedia(() -> {
+                    mediaPlayer.stop();
+                    mediaPlayer.seek(Duration.ZERO);
+                });
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        } else {
+            player.play();
+        }
+       
     }
 }

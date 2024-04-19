@@ -22,4 +22,6 @@ public interface ReloadPane {
     default void shows(){};
     
     Node getPane();
+
+    default void hideTime(){}
 }

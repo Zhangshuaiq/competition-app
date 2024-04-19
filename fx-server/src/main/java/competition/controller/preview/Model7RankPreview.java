@@ -1,5 +1,6 @@
 package competition.controller.preview;
 
+import com.sun.org.apache.xpath.internal.operations.Mod;
 import competition.controller.ControlPane;
 import competition.controller.match.Model7Rank;
 import competition.controller.match.QuestionPreview;
@@ -106,6 +107,7 @@ public class Model7RankPreview extends PreviewPane{
         // 获取排名
         List<List<Model7RuntimeData.ModelData>> runtimeData = Model7RuntimeData.getRuntimeData();
         List<String> timeData = Model7RuntimeData.getTimes();
+        List<Integer> seconds = Model7RuntimeData.getSeconds();
         List<Model7RankData> rankList = new ArrayList<>();
         for (int i = 0; i < runtimeData.size(); i++) {
             List<Model7RuntimeData.ModelData> questionList = runtimeData.get(i);
@@ -121,6 +123,7 @@ public class Model7RankPreview extends PreviewPane{
 
             Model7RankData rankData = new Model7RankData();
             rankData.setScore(score);
+            rankData.setSecond(seconds.get(i));
             rankData.setTeam(team);
             rankData.setTime(time);
             rankList.add(rankData);
@@ -134,15 +137,12 @@ public class Model7RankPreview extends PreviewPane{
                 } else if (o1.getScore() > o2.getScore()) {
                     return -1;
                 } else {
-                    String t1 = o1.getTime().replace("分", "").replace("秒", "");
-                    String t2 = o2.getTime().replace("分", "").replace("秒", "");
-                    return Integer.parseInt(t2) - Integer.parseInt(t1);
+                    return o1.getSecond().compareTo(o2.getSecond());
                 }
             }
         });
 
         rankBox.getChildren().clear();
-        
         
 
         HBox title = new HBox();

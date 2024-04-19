@@ -10,6 +10,7 @@ import competition.entity.Stages;
 import competition.mapper.Model3Mapper;
 import competition.mapper.StagesMapper;
 import competition.util.*;
+import competition.ws.WsMessageHandler;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.geometry.Insets;
@@ -32,7 +33,9 @@ import javax.annotation.Resource;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 // 风险题
 @Component
@@ -63,6 +66,9 @@ public class Model3Preview extends PreviewPane{
     
     private List<Stages> children;
     
+    
+    @Resource
+    private WsMessageHandler messageHandler;
 
     public static void setPassedId(Integer passedId) {
         Model3Preview.passedId = passedId;
@@ -88,22 +94,7 @@ public class Model3Preview extends PreviewPane{
         
         // id 内部化
         this.parentStageId = passedId;
-        children = stagesMapper.selectList(new LambdaQueryWrapper<Stages>()
-                .eq(Stages::getParentId, parentStageId)
-        );
-
-        List<List<Questions>> qs = new ArrayList<>();
-        for (Stages child : children) {
-            List<Questions> stageQuestions = RuntimeQuestionStock.getStageQuestions(child.getSortVal());
-            for (int i = 0; i < stageQuestions.size(); i++) {
-                stageQuestions.get(i).setQuestionNumber(i + 1);
-                // 每个题目分值
-                stageQuestions.get(i).setScore(child.getScorePerQ());
-            }
-            qs.add(stageQuestions);
-        }
-        // 保存到当前的数据中
-        CurrentQuestions.setM3Questions(qs, parentStageId);
+        
         
         try {
             container.setBackground(new Background(new BackgroundImage(
@@ -134,7 +125,33 @@ public class Model3Preview extends PreviewPane{
     
     private void show(){
 
+
+        children = stagesMapper.selectList(new LambdaQueryWrapper<Stages>()
+                .eq(Stages::getParentId, parentStageId)
+        );
+
+        List<List<Questions>> qs = new ArrayList<>();
+        for (Stages child : children) {
+            List<Questions> stageQuestions = RuntimeQuestionStock.getStageQuestions(child.getSortVal());
+            for (int i = 0; i < stageQuestions.size(); i++) {
+                stageQuestions.get(i).setQuestionNumber(i + 1);
+                // 每个题目分值
+                stageQuestions.get(i).setScore(child.getScorePerQ());
+            }
+            qs.add(stageQuestions);
+        }
+
+
+        Map<String, Object> dataMap = new HashMap<>();
+        dataMap.put("stages", children);
+        dataMap.put("questions", qs);
+        messageHandler.notifyPage("model3", dataMap);
+        
+        // 保存到当前的数据中
+        CurrentQuestions.setM3Questions(qs, parentStageId);
+        
         // 清除旧的数据
+        
         titleBox.getChildren().clear();
         questionGrid.getChildren().clear();
         

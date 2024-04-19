@@ -44,7 +44,16 @@ public class TimeBoardPreview extends PreviewPane {
     private int endTime;
     
     private WsMessageHandler messageHandler;
-    
+
+
+    @Override
+    public void hideTime() {
+        teamScore.setVisible(false);
+        ReloadPane timeBoard = controlPane.getTimeBoard();
+        if (timeBoard != null) {
+            timeBoard.hideTime();
+        }
+    }
 
     @FXML
     public void initialize() {
@@ -102,13 +111,13 @@ public class TimeBoardPreview extends PreviewPane {
             this.timeVal = 0;
             this.timeValue = format(timeVal);
             endTime = time;
-            messageHandler.sendQuestionTime(this.timeValue);
+            messageHandler.sendQuestionTime(this.timeVal + "");
         } else {
             this.timeVal = time;
             this.timeValue = format(timeVal);
-            messageHandler.sendQuestionTime(this.timeValue);
+            messageHandler.sendQuestionTime(this.timeVal + "");
         }
-       
+        teamScore.setVisible(true);
         teamScore.setText(timeValue);
         timeline = new Timeline(new KeyFrame(Duration.seconds(1), e -> {
             if (order) {

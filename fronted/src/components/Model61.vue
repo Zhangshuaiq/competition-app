@@ -79,19 +79,6 @@
             <el-button :disabled="second <= 0 || showResult" style="width: 200px; height: 50px; font-size: x-large" type="primary" @click="submitAnswer"> 确 认 </el-button>
           </div>
         </div>
-  
-        <div v-if="showWait" style="text-align: center; padding: 0 100px">
-          <div class="result-info">
-  
-          </div>
-          <div class="result-info">
-            等待答题
-          </div>
-  
-          <div class="result-info">
-  
-          </div>
-        </div>
       </div>
     </div>
   </div>
@@ -184,7 +171,7 @@ export default {
         if (message.type === 'time') {
           console.log(message.data)
           this.second = parseInt(message.data)
-          if (this.second < 0) {
+          if (this.second <= 0) {
             if (this.showResult === false) {
               this.activeDiv = ''
               this.submitAnswer()
@@ -208,6 +195,13 @@ export default {
       })
     },
   },
+
+  beforeRouteUpdate(to, from, next) {
+    const data = this.$store.state.data
+    this.questionItem = data
+    this.showResult = false
+    next();
+  },
   
   mounted() {
     const item = sessionStorage.getItem("user");
@@ -218,21 +212,11 @@ export default {
     this.teamInfo = JSON.parse(item)
     console.log(this.teamInfo)
     this.loadData();
-    this.$websocket.connect(() => {
-          this.setRetryTimer()
-        },
-        () => console.log("error")
-    )
+    const data = this.$store.state.data
+    this.questionItem = data
+    this.setRetryTimer()
   },
-
-  beforeDestroy() {
-    if (this.$websocket) {
-      if (this.subscription) {
-        this.$websocket.unsubscribe(this.subscription)
-      }
-      this.$websocket.disconnect()
-    }
-  },
+  
 }
 </script>
 

@@ -182,7 +182,8 @@ export default {
       if (this.questionIndex >= 0 ) {
         this.$websocket.send('/app/model7/submit', {
           data: JSON.stringify(submited),
-          time: this.formatTime(this.second)
+          time: this.formatTime(this.second),
+          second: this.second
         })
          if ( this.questionIndex < this.questionList.length - 1) {
            this.questionIndex ++;
@@ -271,6 +272,8 @@ export default {
         clearTimeout(this.retryTimer);
         this.rule = ''
         if (message.type === 'time') {
+          this.showWait = false
+          this.btnClicked = true
           console.log(message.data)
           if (!this.showResult) {
             this.second = parseInt(message.data)
@@ -289,14 +292,7 @@ export default {
         }
         
       })
-
-      this.$websocket.subscribe('/topic/model7/start', (message) => {
-        console.log(message)
-        this.showWait = false
-        this.btnClicked = true
-        this.saveData()
-      })
-    
+      
     },
 
     
@@ -318,23 +314,10 @@ export default {
       this.second = parseInt(time)
     }
 
-    this.$websocket.connect(() => {
-          this.setRetryTimer();
-        },
-        () => console.log("error")
-    )
     
-   
+    this.setRetryTimer()
   },
-
-  beforeDestroy() {
-    if (this.$websocket) {
-      if (this.subscription) {
-        this.$websocket.unsubscribe(this.subscription)
-      }
-      this.$websocket.disconnect()
-    }
-  },
+  
 }                                                                             
 </script>
 
