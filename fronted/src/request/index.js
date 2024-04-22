@@ -2,11 +2,11 @@ import axios from "axios";
 
 // const url = window.MyAppConfig ? window.MyAppConfig.BASE_URL : 'http://localhost:8080';
 
-// const axiosInstance = axios.create({
-//     baseURL: "http://localhost:8080"
-// });
+const axiosInstance = axios.create({
+    baseURL: "http://localhost:8080"
+});
 
-const axiosInstance = axios.create();
+//const axiosInstance = axios.create();
 
 // axiosInstance.interceptors.request.use((config) => {
 //     let token =  window.sessionStorage.getItem('token')

@@ -74,7 +74,7 @@
             </el-row>
           </div>
           <div v-if="questionItem" style="text-align: center; margin-top: 20px">
-            <el-button :disabled="second <= 0 || showResult" style="width: 200px; height: 50px; font-size: x-large" type="primary" @click="submitAnswer"> 确 认 </el-button>
+            <el-button :disabled="second <= 0 || showResult" style="width: 200px; height: 50px; font-size: x-large" type="primary" @click="submitAnswer"> {{btnText}} </el-button>
           </div>
         </div>
       </div>
@@ -98,6 +98,7 @@ export default {
       showResult: false,
       showWait: true,
       rule: '',
+      btnText: "提 交"
     }
   },
   methods: {
@@ -116,6 +117,7 @@ export default {
       this.$websocket.send('/app/model60/submit', {
         data: JSON.stringify(submited),
       })
+      this.btnText = "已提交"
     },
 
 
@@ -143,6 +145,11 @@ export default {
       const result = sessionStorage.getItem("showResult")
       if (result && result !== 'null') {
         this.showResult = result === 'true'
+        if (this.showResult) {
+          this.btnText = "已提交"
+        } else {
+          this.btnText = "提 交"
+        }
       }
 
       const item = sessionStorage.getItem("questionItem");
@@ -188,7 +195,9 @@ export default {
     this.questionItem = data
     this.showResult = false
     this.activeDiv = ''
+    this.btnText = "提 交"
     this.saveData()
+    this.activeDiv = ''
     next();
   },
   

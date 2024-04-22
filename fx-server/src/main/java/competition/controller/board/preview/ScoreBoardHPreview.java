@@ -64,6 +64,11 @@ public class ScoreBoardHPreview extends PreviewPane implements BoardPane {
         show();
     }
 
+    @Override
+    public void reloadColor() {
+
+    }
+
     private void show() {
         int count = 2;
         BoardPane scoreBoard = controlPane.getScoreBoard();
@@ -91,7 +96,7 @@ public class ScoreBoardHPreview extends PreviewPane implements BoardPane {
         for (Teams team : teams) {
             VBox box = new VBox();
             box.setPrefWidth(Integer.parseInt(cfgArr[19]));
-            box.setSpacing(10);
+            box.setSpacing(1);
             StackPane stackPane = new StackPane();
             stackPane.setPrefSize(Integer.parseInt(cfgArr[19]), Integer.parseInt(cfgArr[20]));
             
@@ -100,7 +105,7 @@ public class ScoreBoardHPreview extends PreviewPane implements BoardPane {
             teamName.prefWidth(Integer.parseInt(cfgArr[19]));
             teamName.prefHeight(Integer.parseInt(cfgArr[20]));
             teamName.setFill(Color.valueOf(cfgArr[15]));
-            stackPane.setBackground(new Background(new BackgroundFill(Color.valueOf(cfgArr[16]), CornerRadii.EMPTY, Insets.EMPTY)));
+            stackPane.setBackground(new Background(new BackgroundFill(Color.valueOf(cfgArr[16]), new CornerRadii(10), Insets.EMPTY)));
             teamName.setFont(font);
             teamName.setUnderline(Boolean.valueOf(split[5]));
             teamName.setStrikethrough(Boolean.valueOf(split[2]));
@@ -120,7 +125,6 @@ public class ScoreBoardHPreview extends PreviewPane implements BoardPane {
             Text teamScore = new Text(team.getCurrentScore() + "");
             StackPane stackPane1 = new StackPane();
             stackPane1.setPrefSize(Integer.parseInt(cfgArr[19]), Integer.parseInt(cfgArr[20]));
-            teamScore.setTextAlignment(TextAlignment.CENTER);
             teamScore.setTextAlignment(TextAlignment.CENTER);
             teamScore.prefWidth(Integer.parseInt(cfgArr[19]));
             teamScore.prefHeight(Integer.parseInt(cfgArr[20]));
@@ -154,7 +158,11 @@ public class ScoreBoardHPreview extends PreviewPane implements BoardPane {
                     StackPane stackPane2 = new StackPane();
                     stackPane2.setPrefSize(Integer.parseInt(cfgArr[19]), Integer.parseInt(cfgArr[20]));
                     Model60RuntimeData.ModelData userData = answerMap.get(team.getFullName());
-                    Text userSelect = new Text(userData.getUserSelect());
+                    Text userSelect = new Text();
+                    // fix bug: 用户未选择答案的情况
+                    if (userData.getUserSelect() != null) {
+                        userSelect.setText(userData.getUserSelect());
+                    }
                     userSelect.setTextAlignment(TextAlignment.CENTER);
                     userSelect.prefWidth(Integer.parseInt(cfgArr[19]));
                     userSelect.prefHeight(Integer.parseInt(cfgArr[20]));
@@ -192,15 +200,20 @@ public class ScoreBoardHPreview extends PreviewPane implements BoardPane {
                             l.prefHeight(Integer.parseInt(cfgArr[20]));
                             l.prefWidth(w);
                             l.setFill(Color.valueOf(cfgArr[21]));
-                            if (StringUtils.isEmpty(modelData.getUserSelect())) {
-                                stackPane2.setBackground(new Background(new BackgroundFill(Color.valueOf(cfgArr[25]), new CornerRadii(10), Insets.EMPTY)));
+                            if (team.getStatusList().get(i) == 1) {
+                                stackPane2.setBackground(new Background(new BackgroundFill(Color.valueOf(cfgArr[26]), new CornerRadii(10), Insets.EMPTY)));
                             } else {
-                                if (modelData.getUserSelect().equals(modelData.getAnswer())) {
-                                    stackPane2.setBackground(new Background(new BackgroundFill(Color.valueOf(cfgArr[27]), new CornerRadii(10), Insets.EMPTY)));
+                                if (StringUtils.isEmpty(modelData.getUserSelect())) {
+                                    stackPane2.setBackground(new Background(new BackgroundFill(Color.valueOf(cfgArr[25]), new CornerRadii(10), Insets.EMPTY)));
                                 } else {
-                                    stackPane2.setBackground(new Background(new BackgroundFill(Color.valueOf(cfgArr[28]), new CornerRadii(10), Insets.EMPTY)));
+                                    if (modelData.getUserSelect().equals(modelData.getAnswer())) {
+                                        stackPane2.setBackground(new Background(new BackgroundFill(Color.valueOf(cfgArr[27]), new CornerRadii(10), Insets.EMPTY)));
+                                    } else {
+                                        stackPane2.setBackground(new Background(new BackgroundFill(Color.valueOf(cfgArr[28]), new CornerRadii(10), Insets.EMPTY)));
+                                    }
                                 }
                             }
+
                             // 居中
                             memberStatus.getChildren().add(stackPane2);
                         }

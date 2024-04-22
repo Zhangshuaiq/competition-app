@@ -1,5 +1,6 @@
 <template>
   <div id="container-box">
+    <ScoreBoard></ScoreBoard>
     <div id="container">
       <div v-if="rule" style="padding: 100px; text-align: center">
         {{rule}}
@@ -49,8 +50,11 @@
 </template>
 
 <script>
+import ScoreBoard from "@/components/ScoreBoard.vue";
+
 export default {
   name: "QuestionL",
+  components: {ScoreBoard},
 
   data(){
     return {
@@ -150,7 +154,7 @@ export default {
 }
 
 #container {
-  padding: 50px 100px;
+  padding:0 100px;
 }
 
 #question-name {

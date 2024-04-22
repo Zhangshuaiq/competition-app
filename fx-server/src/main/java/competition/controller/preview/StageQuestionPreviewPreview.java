@@ -303,6 +303,8 @@ public class StageQuestionPreviewPreview extends PreviewPane {
                             //messageHandler.sendQuestionGroup();
                             // 扩展屏显示题目信息
                         } else if (currentStage.getQuestionType() == 6) {
+                            // 重置当前的答题状态
+                            TeamRuntime.resetStatus();
                             Integer m6 = currentStage.getM6();
                             String tihao = questions.getQuestionNumber().toString();
                             Questions questions = CurrentQuestions.getQ(tihao);

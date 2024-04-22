@@ -74,10 +74,11 @@ public class StageNamePreviewPreview extends PreviewPane {
     @FXML
     public void initialize() {
         innerStageId= stageId;
-        stages = stagesMapper.selectById(innerStageId);
+
         PreviewStack.addPreview(this);
         PreviewStack.addReturn(this);
 
+        stages = stagesMapper.selectById(innerStageId);
         messageHandler.notifyPage("stageName", stages);
         
         container.setOnMouseClicked(new EventHandler<MouseEvent>() {
@@ -85,7 +86,7 @@ public class StageNamePreviewPreview extends PreviewPane {
             public void handle(MouseEvent event) {
                 if (event.getButton() == MouseButton.SECONDARY) {
                     StageNamePreviewAttr.setConfigId(innerStageId);
-                    StageNamePreviewAttr.setReloadPane(controlPane.getQuestionPreview());
+                    StageNamePreviewAttr.setReloadPane(StageNamePreviewPreview.this);
                     Navigator.navigatorTo("/view/match/StageNamePreviewAttr.fxml", "", "/view/style.css", false, false);
                 }
             }
@@ -94,6 +95,7 @@ public class StageNamePreviewPreview extends PreviewPane {
     }
 
     private void showView() {
+        stages = stagesMapper.selectById(innerStageId);
         if (ExtendedScreen.hasShow()) {
             StageNamePreview.setStageId(innerStageId);
             // 进入比赛

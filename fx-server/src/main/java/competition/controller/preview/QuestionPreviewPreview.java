@@ -180,13 +180,13 @@ public class QuestionPreviewPreview extends PreviewPane {
                 tiganLabel.setVisible(false);
                 tiganBox.setVisible(false);
                 imageQ.setVisible(true);
-                imageQ.setLayoutX(Integer.parseInt(split[5]));
-                imageQ.setLayoutY(Integer.parseInt(split[6]));
-                imageQ.setFitHeight(Integer.parseInt(split[8]));
-                imageQ.setFitWidth(Integer.parseInt(split[7]));
+                imageQ.setLayoutX(0);
+                imageQ.setLayoutY(0);
+                imageQ.setFitWidth(Navigator.getWidth());
+                imageQ.setFitHeight(Navigator.getHeight());
                 try {
                     imageQ.setImage(new Image(new FileInputStream(new File( BaseDir.IMAGE_DIR +  inner.getQuestion())),
-                            Integer.parseInt(split[7]), Integer.parseInt(split[8]), false, true));
+                            Navigator.getWidth(), Navigator.getHeight(), false, true));
                 } catch (FileNotFoundException e) {
                     e.printStackTrace();
                 }
@@ -551,13 +551,19 @@ public class QuestionPreviewPreview extends PreviewPane {
         GlobalCache.showAnswer = !GlobalCache.showAnswer;
         if (inner.getResourceType().equals("图片")) {
             imageQ.setVisible(true);
-            imageQ.setLayoutX(backPane.getLayoutX());
-            imageQ.setLayoutY(backPane.getLayoutY());
-            imageQ.setFitHeight(backPane.getPrefHeight());
-            imageQ.setFitWidth(backPane.getPrefWidth());
+            imageQ.setLayoutX(0);
+            imageQ.setLayoutY(0);
+            imageQ.setFitHeight(Navigator.getHeight());
+            imageQ.setFitWidth(Navigator.getWidth());
             try {
-                imageQ.setImage(new Image(new FileInputStream(new File( BaseDir.IMAGE_DIR +  inner.getAnswer())),
-                        backPane.getPrefWidth(), backPane.getPrefHeight(), false, true));
+                if (GlobalCache.showAnswer) {
+                    imageQ.setImage(new Image(new FileInputStream(new File( BaseDir.IMAGE_DIR +  inner.getAnswer())),
+                            Navigator.getWidth(), Navigator.getHeight(), false, true));
+                } else {
+                    imageQ.setImage(new Image(new FileInputStream(new File( BaseDir.IMAGE_DIR +  inner.getQuestion())),
+                            Navigator.getWidth(), Navigator.getHeight(), false, true));
+                }
+
             } catch (FileNotFoundException e) {
                 e.printStackTrace();
             }
@@ -601,13 +607,13 @@ public class QuestionPreviewPreview extends PreviewPane {
         if (GlobalCache.showAnswer) {
             if (inner.getResourceType().equals("图片")) {
                 imageQ.setVisible(true);
-                imageQ.setLayoutX(backPane.getLayoutX());
-                imageQ.setLayoutY(backPane.getLayoutY());
-                imageQ.setFitHeight(backPane.getPrefHeight());
-                imageQ.setFitWidth(backPane.getPrefWidth());
+                imageQ.setLayoutX(0);
+                imageQ.setLayoutY(0);
+                imageQ.setFitHeight(Navigator.getHeight());
+                imageQ.setFitWidth(Navigator.getWidth());
                 try {
                     imageQ.setImage(new Image(new FileInputStream(new File( BaseDir.IMAGE_DIR +  inner.getAnswer())),
-                            backPane.getPrefWidth(), backPane.getPrefHeight(), false, true));
+                            Navigator.getWidth(), Navigator.getHeight(), false, true));
                 } catch (FileNotFoundException e) {
                     e.printStackTrace();
                 }

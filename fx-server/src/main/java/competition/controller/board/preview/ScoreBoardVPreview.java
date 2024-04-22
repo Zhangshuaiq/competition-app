@@ -111,7 +111,7 @@ public class ScoreBoardVPreview extends PreviewPane implements BoardPane {
             VBox box = new VBox();
             box.setPrefWidth(Double.parseDouble(cfgArr[19]));
             box.setPrefHeight(Double.parseDouble(cfgArr[20]) * 2 + 20);
-            box.setSpacing(10);
+            box.setSpacing(1);
 
 
             StackPane stackPane = new StackPane();
@@ -123,7 +123,7 @@ public class ScoreBoardVPreview extends PreviewPane implements BoardPane {
             right.setPrefWidth(Double.parseDouble(cfgArr[19]));
             teamName.prefHeight(Double.parseDouble(cfgArr[20]));
             teamName.setFill(Color.valueOf(cfgArr[15]));
-            stackPane.setBackground(new Background(new BackgroundFill(Color.valueOf(cfgArr[16]), CornerRadii.EMPTY, Insets.EMPTY)));
+            stackPane.setBackground(new Background(new BackgroundFill(Color.valueOf(cfgArr[16]),  new CornerRadii(10), Insets.EMPTY)));
             teamName.setFont(font);
             teamName.setUnderline(Boolean.valueOf(split[5]));
             teamName.setStrikethrough(Boolean.valueOf(split[2]));

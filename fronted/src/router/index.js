@@ -10,6 +10,7 @@ import StageName from "@/components/StageName";
 import StageQuestion from "@/components/StageQuestion";
 import Question from "@/components/Question";
 import Model3 from "@/components/Model3";
+import Model61R from "@/components/Model61R.vue";
 Vue.use(Router);
 
 export default new Router({
@@ -43,6 +44,12 @@ export default new Router({
             path: '/model61',
             name: 'model61',
             component: Model61,
+        },
+
+        {
+            path: '/model61R',
+            name: 'model61R',
+            component: Model61R,
         },
 
         {

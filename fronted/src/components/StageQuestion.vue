@@ -1,5 +1,8 @@
 <template>
   <div class="container">
+    <div>
+      <ScoreBoard></ScoreBoard>
+    </div>
     <div id="stageName">
       <div>
         {{stage.name}}
@@ -19,8 +22,11 @@
 </template>
 
 <script>
+import ScoreBoard from "@/components/ScoreBoard.vue";
+
 export default {
   name: "StageQuestion",
+  components: {ScoreBoard},
 
   data() {
     return {
@@ -29,6 +35,13 @@ export default {
     }
   },
 
+  beforeRouteUpdate(to, from, next) {
+    const data = this.$store.state.data
+    console.log(data)
+    this.stage = data.stage
+    this.questions = data.questions
+    next();
+  },
 
   mounted() {
     const data = this.$store.state.data

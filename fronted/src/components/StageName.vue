@@ -1,18 +1,27 @@
 <template>
   <div class="container">
-    <el-row>
-      <el-col span="24" style="text-align: center">
-        <div class="stage-item">
-          {{ stage.name }}
-        </div>
-      </el-col>
-    </el-row>
+    <div>
+      <ScoreBoard></ScoreBoard>
+    </div>
+    <div class="stageName">
+      <el-row>
+        <el-col span="24" style="text-align: center">
+          <div class="stage-item">
+            {{ stage.name }}
+          </div>
+        </el-col>
+      </el-row>
+    </div>
+
   </div>
 </template>
 
 <script>
+import ScoreBoard from "@/components/ScoreBoard.vue";
+
 export default {
   name: "StageName",
+  components: {ScoreBoard},
   data(){
     return {
       stage: {}
@@ -53,9 +62,13 @@ export default {
   background-image: url("~@/assets/background.png");
   background-size: 100vw 100vh;
   height: 100vh;
+}
+
+.stageName {
   display: flex;           /* 启用Flexbox布局 */
   justify-content: center; /* 水平居中 */
   align-items: center;     /* 垂直居中 */
+  height: 70vh;
 }
 
 .stage-item {

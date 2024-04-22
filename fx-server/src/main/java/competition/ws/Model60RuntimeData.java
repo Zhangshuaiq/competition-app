@@ -68,7 +68,7 @@ public class Model60RuntimeData {
                 List<Teams> teams = TeamRuntime.getTeams();
                 for (Teams team : teams) {
                     if (team.getFullName().equals(data.getTeamName())) {
-                        team.setCurrentScore(team.getCurrentScore() + data.getScore());
+                        team.setNewScore(team.getCurrentScore() + data.getScore());
                         ControlPane controlPane = JavaFxApplication.getApplicationContext().getBean(ControlPane.class);
                         Platform.runLater(() -> {
                             controlPane.teamScore.setText(team.getCurrentScore().toString());

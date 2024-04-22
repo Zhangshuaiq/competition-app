@@ -16,22 +16,25 @@ export default {
       //const currentRouteName = this.$router.currentRoute.name;
       const targetRouteName = message.route;
 
-      // 如果消息包含数据和路由，更新 Vuex 状态
-      this.$store.commit('setCurrentRoute', targetRouteName);
-      this.$store.commit('setAdditionalData', message.data); // 假设 message.data 包含需要的额外数据
-
-      // 检查当前路由名称与目标路由名称是否相同
-      //if (targetRouteName !== currentRouteName) {
+      if (targetRouteName !== '') {
+        // 如果消息包含数据和路由，更新 Vuex 状态
+        this.$store.commit('setCurrentRoute', targetRouteName);
+        this.$store.commit('setAdditionalData', message.data); // 假设 message.data 包含需要的额外数据
+        // 检查当前路由名称与目标路由名称是否相同
+        //if (targetRouteName !== currentRouteName) {
         this.$router.push(
             {
               name: targetRouteName,
               query: {t: Date.now()}
             }
         );
-      //} 
-      //else {
-      //  console.log('Attempted to navigate to the same route:', targetRouteName);
-      //}
+        //}
+        //else {
+        //  console.log('Attempted to navigate to the same route:', targetRouteName);
+        //}
+      }
+
+      this.$store.commit('setTeamsData', message.teams)
     });
   }
 

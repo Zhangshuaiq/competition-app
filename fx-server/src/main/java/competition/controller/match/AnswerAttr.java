@@ -1,5 +1,6 @@
 package competition.controller.match;
 
+import competition.controller.ControlPane;
 import competition.entity.AnswerStyle;
 import competition.mapper.AnswerStyleMapper;
 import competition.util.AlignmentUtil;
@@ -189,6 +190,9 @@ public class AnswerAttr {
 
     @FXML
     private CheckBox f4BD;
+
+    @Resource
+    private ControlPane controlPane;
     
     
     
@@ -279,7 +283,7 @@ public class AnswerAttr {
         answerStyle.setStyle6(style6);
 
         answerStyleMapper.updateById(answerStyle);
-        PreviewStack.reload();
+        controlPane.getPreviewPane().reload();
         closeDialog();
     }
     

@@ -56,7 +56,7 @@ public class ShowAnswerPreview extends PreviewPane {
 
     @FXML
     public void initialize() {
-        PreviewStack.addPreview(this);
+        //PreviewStack.addPreview(this);
         container.setOnMouseClicked(new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent event) {
@@ -84,8 +84,8 @@ public class ShowAnswerPreview extends PreviewPane {
         if (!StringUtils.isEmpty(answerStyle.getStyle1())) {
             String[] split = answerStyle.getStyle1().split(ConfigSpliter.SPLITER);
             col = Integer.parseInt(split[0]);
-            rowSpace = Integer.parseInt(split[1]);
-            colSpace = Integer.parseInt(split[2]);
+            rowSpace = Integer.parseInt(split[2]);
+            colSpace = Integer.parseInt(split[1]);
             x = Integer.parseInt(split[3]);
             y = Integer.parseInt(split[4]);
             width = Integer.parseInt(split[5]);

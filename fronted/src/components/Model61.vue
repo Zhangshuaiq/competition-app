@@ -1,11 +1,14 @@
 <template>
   <div id="container-box">
+    <div>
+      <ScoreBoard></ScoreBoard>
+    </div>
     <div id="container">
       <div v-if="rule" style="padding: 100px; text-align: center">
         {{rule}}
       </div>
       <div v-else>
-        <div id="question-info"  v-if="questionItem && !showResult">
+        <div id="question-info"  v-if="questionItem">
           <div v-if="second >= 0" style="font-size: xx-large; color: red">
             剩余时间: {{second}} 秒
           </div>
@@ -76,7 +79,7 @@
           </div>
           
           <div v-if="questionItem" style="text-align: center; margin-top: 30px">
-            <el-button :disabled="second <= 0 || showResult" style="width: 200px; height: 50px; font-size: x-large" type="primary" @click="submitAnswer"> 确 认 </el-button>
+            <el-button :disabled="second <= 0 || showResult" style="width: 200px; height: 50px; font-size: x-large" type="primary" @click="submitAnswer"> {{btnText}} </el-button>
           </div>
         </div>
       </div>
@@ -85,8 +88,11 @@
 </template>
 
 <script>
+import ScoreBoard from "@/components/ScoreBoard.vue";
+
 export default {
   name: "Model61M",
+  components: {ScoreBoard},
   data(){
     return {
       retryTimer: null, // 用于重试逻辑的计时器
@@ -98,8 +104,8 @@ export default {
       teamInfo: '',
       second: -1,
       showResult: false,
-      showWait: true,
       rule: '',
+      btnText: "提 交"
     }
   },
   methods: {
@@ -108,23 +114,26 @@ export default {
       console.log(this.activeDiv)
       this.showResult = true;
       const submited = JSON.parse(JSON.stringify(this.questionItem))
-      this.saveData()
+
+
       // 队伍名称, 题目分值
       submited.teamName =  this.teamInfo.fullName
       submited.userSelect = this.activeDiv
       submited.userName = sessionStorage.getItem("member")
+      this.questionItem = submited
+      this.saveData()
       // 题目列表
       console.log(submited)
       //  提交答案
       this.$websocket.send('/app/model61/submit', {
         data: JSON.stringify(submited),
       })
+      this.btnText = "已提交"
     },
     
 
     saveData(){
       sessionStorage.setItem("showResult", this.showResult + "")
-      sessionStorage.setItem("showWait", this.showWait + "")
       sessionStorage.setItem("questionItem", JSON.stringify(this.questionItem))
     },
 
@@ -139,19 +148,20 @@ export default {
     },
 
     loadData(){
-      const wait = sessionStorage.getItem("showWait")
-      if (wait && wait !== 'null') {
-        this.showWait = wait === 'true'
-      }
-
       const result = sessionStorage.getItem("showResult")
       if (result && result !== 'null') {
         this.showResult = result === 'true'
+        if (this.showResult) {
+          this.btnText = "已提交"
+        } else {
+          this.btnText = "提 交"
+        }
       }
 
       const item = sessionStorage.getItem("questionItem");
       if (item && item !== 'null') {
         this.questionItem = JSON.parse(item)
+        this.activeDiv = this.questionItem.userSelect
       }
       console.log(this.questionItem)
     },
@@ -182,7 +192,6 @@ export default {
           this.questionItem.teamName = this.teamInfo.fullName
           this.activeDiv = ''
           this.showResult = false
-          this.showWait = false
           this.saveData()
         }
         
@@ -190,7 +199,7 @@ export default {
 
       this.$websocket.subscribe('/topic/model61/start', (message) => {
         console.log(message)
-        this.showWait = false
+        this.showResult = false
         this.saveData()
       })
     },
@@ -200,7 +209,10 @@ export default {
     const data = this.$store.state.data
     this.questionItem = data
     this.showResult = false
+    this.btnText = "提 交"
+    this.activeDiv = ""
     next();
+
   },
   
   mounted() {
@@ -213,7 +225,11 @@ export default {
     console.log(this.teamInfo)
     this.loadData();
     const data = this.$store.state.data
-    this.questionItem = data
+    if (this.questionItem.questionNumber !== data.questionNumber) {
+      this.questionItem = data
+      this.activeDiv = ""
+      this.showResult = false
+    }
     this.setRetryTimer()
   },
   

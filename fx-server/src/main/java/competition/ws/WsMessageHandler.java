@@ -7,13 +7,11 @@ import competition.controller.ControlPane;
 import competition.controller.match.Model60;
 import competition.controller.match.Model61;
 import competition.controller.match.Model7;
-import competition.controller.preview.Model60Preview;
-import competition.controller.preview.Model61Preview;
-import competition.controller.preview.Model7Preview;
-import competition.controller.preview.PreviewPane;
+import competition.controller.preview.*;
 import competition.entity.Questions;
 import competition.entity.Teams;
 import competition.mapper.TeamsMapper;
+import competition.util.TeamRuntime;
 import javafx.application.Platform;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
@@ -111,9 +109,10 @@ public class WsMessageHandler {
         Map parse = JSON.parseObject(jsonText, Map.class);
         Model61RuntimeData.ModelData data = JSON.parseObject(parse.get("data").toString(), Model61RuntimeData.ModelData.class);
         Model61RuntimeData.setRuntimeData(data);
-        
-        
-        
+
+
+        notifyPage("", null);
+
         Platform.runLater(() -> {
             ControlPane controlPane = JavaFxApplication.getApplicationContext().getBean(ControlPane.class);
             //controlPane.getPreviewPane().reload();
@@ -128,10 +127,11 @@ public class WsMessageHandler {
         Map parse = JSON.parseObject(jsonText, Map.class);
         Model60RuntimeData.ModelData data = JSON.parseObject(parse.get("data").toString(), Model60RuntimeData.ModelData.class);
         Model60RuntimeData.setRuntimeData(data);
+        notifyPage("", null);
         Platform.runLater(() -> {
             ControlPane controlPane = JavaFxApplication.getApplicationContext().getBean(ControlPane.class);
             //controlPane.getPreviewPane().reload();
-            controlPane.getScoreBoardPreview().reload();
+            controlPane.getScoreBoardPreview().reloadColor();
         });
     }
     
@@ -142,6 +142,7 @@ public class WsMessageHandler {
         Map<String, Object> dataMap = new HashMap<>();
         dataMap.put("route", route);
         dataMap.put("data", data);
+        dataMap.put("teams", TeamRuntime.getTeams());
         messagingTemplate.convertAndSend(PAGE_TOPIC, JSON.toJSONString(dataMap));
     }
     

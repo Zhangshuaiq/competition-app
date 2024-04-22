@@ -70,30 +70,39 @@ public class Model61RuntimeData {
             ModelData modelData = first.get();
             int i = runtimeData.indexOf(modelData);
             runtimeData.set(i, data);
-            // 团队加分,同步到界面
-            if (data.getUserSelect().equals(data.getAnswer())) {
-                List<Teams> teams = TeamRuntime.getTeams();
+            List<Teams> teams = TeamRuntime.getTeams();
+            // 团队加teams = {ArrayList@11567}  size = 8分,同步到界面
+
                 for (Teams team : teams) {
                     if (team.getFullName().equals(data.getTeamName())) {
-                        team.setCurrentScore(team.getCurrentScore() + data.getScore());
-                        ControlPane controlPane = JavaFxApplication.getApplicationContext().getBean(ControlPane.class);
-                        Platform.runLater(() -> {
-                            controlPane.teamScore.setText(team.getCurrentScore().toString());
-                        });                        
-                      
+
                         String members = team.getMembers();
                         if (!StringUtils.isEmpty(members)) {
-                            // 给队员加分
                             String[] split = members.split(",");
                             for (int j = 0; j < split.length; j++) {
                                 if (split[j].equals(data.getUserName())) {
-                                    team.getMemberScores().set(j, data.getScore());
+                                    if (data.getUserSelect().equals(data.getAnswer())) {
+                                        // 更新队员获取的总分数
+                                        Integer x = team.getMemberScores().get(j);
+                                        team.getMemberScores().set(j, x + data.getScore());
+                                        // 更新队员当前环节的分数
+                                        team.getQScores().set(j, data.getScore());
+                                    }
+                                    // 设置为已经回答完成
+                                    team.getStatusList().set(j, 1);
                                 }
                             }
                         }
-                    }
-                }
 
+                        if (data.getUserSelect().equals(data.getAnswer())) {
+                            // 更新队伍分数
+                            team.setNewScore(team.getCurrentScore() + data.getScore());
+                            ControlPane controlPane = JavaFxApplication.getApplicationContext().getBean(ControlPane.class);
+                            Platform.runLater(() -> {
+                                controlPane.teamScore.setText(team.getCurrentScore().toString());
+                            });
+                        }
+                    }
             }
         }
     }
@@ -115,6 +124,9 @@ public class Model61RuntimeData {
         
         // 题目分值
         private Integer score;
+
+        // 显示答题结果
+        private boolean show;
 
         // 阶段
         private String stageNumber;

@@ -9,7 +9,8 @@ export default new Vuex.Store({
     plugins: [createPersistedState()],
     state: {
         currentRoute: '',
-        data: {}  // 存储更多的数据
+        data: {},  // 存储更多的数据,
+        teams: {},
     },
     mutations: {
         setCurrentRoute(state, route) {
@@ -17,6 +18,9 @@ export default new Vuex.Store({
         },
         setAdditionalData(state, data) {
             state.data = data;
+        },
+        setTeamsData(state, data) {
+            state.teams = data
         }
     },
 });
