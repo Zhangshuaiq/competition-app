@@ -1,24 +1,32 @@
 <template>
   <div class="container">
-    
+
+
+    <div id="stageName">
+      <div>
+        {{pstage.name}}
+      </div>
+      
+    </div>
+
     <div id="questionList">
       <el-row v-for="i in stages.length" :key="i">
         <el-col span="4">
 
           <div class="question-item" style="background-color: black; border-radius: 8px">
-            {{stages[i - 1].name}}
+            {{ stages[i - 1].name }}
           </div>
         </el-col>
-        <el-col  span="18">
+        <el-col span="18">
           <el-row>
-            <el-col span="3" v-for="question in questions[i - 1]" :key="question.questionNumber">
+            <el-col span="2" v-for="question in questions[i - 1]" :key="question.questionNumber">
               <div class="question-item" :style="{ visibility: question.hasAnswer === true  ? 'hidden' : 'visible' }">
                 {{ question.questionNumber }}
               </div>
             </el-col>
           </el-row>
         </el-col>
-        
+
       </el-row>
     </div>
   </div>
@@ -31,7 +39,8 @@ export default {
   data() {
     return {
       stages: [],
-      questions: []
+      questions: [],
+      pstage: {}
     }
   },
 
@@ -41,6 +50,7 @@ export default {
     console.log(data)
     this.stages = data.stages
     this.questions = data.questions
+    this.pstage = data.pstage
   }
 
 
@@ -58,21 +68,19 @@ export default {
 }
 
 #stageName {
-  display: flex; /* 启用Flexbox布局 */
-  justify-content: center; /* 水平居中 */
-  align-items: center; /* 垂直居中 */
+  padding-top: 20px;
 }
 
-.stageName div {
-  width: 80px;
+#stageName div {
+  background-color: #3397CE;
+  text-align: center;
   height: 80px;
   line-height: 80px;
-  text-align: center;
-  border-radius: 8px;
-  color: red;
-  background-color: #3397CE;
-  margin-top: 100px;
-  font-size: xx-large;
+  width: 50%;
+  padding: 10px 0;
+  margin: 0 25%;
+  font-size: xxx-large;
+  color: white;
 }
 
 #questionList {
@@ -80,10 +88,10 @@ export default {
 }
 
 .question-item {
-  width: 80px;
-  height: 80px;
+  width: 60px;
+  height: 60px;
   background-color: dodgerblue;
-  line-height: 80px;
+  line-height: 60px;
   color: white;
   font-size: xx-large;
   text-align: center;

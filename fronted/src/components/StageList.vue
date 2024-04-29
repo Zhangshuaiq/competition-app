@@ -5,7 +5,7 @@
     </div>
     <div class="stageList">
       <el-row>
-        <el-col span="24" style="text-align: center" v-for="item in stages" :key="item.id">
+        <el-col span="12" style="text-align: center" v-for="item in stages" :key="item.id">
           <div class="stage-item">
             {{ item.name }}
           </div>
@@ -66,6 +66,7 @@ export default {
  }
 
  .stageList {
+   margin-top: 20vh;
    display: flex;           /* 启用Flexbox布局 */
    justify-content: center; /* 水平居中 */
    align-items: center;     /* 垂直居中 */

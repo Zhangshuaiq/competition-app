@@ -1,16 +1,30 @@
 <template>
   <div id="container-box">
+    <div>
+      <ScoreBoard></ScoreBoard>
+    </div>
+    <div style="margin-top: 10px; padding-left: 20px; font-weight: bold; font-size: x-large; " >
+      <el-row>
+        <el-col span="4"> 组号: {{ teamInfo.shortName }}</el-col>
+        <el-col span="4"> 组名: {{ teamInfo.fullName }}</el-col>
+        <el-col span="4"> 选手: {{ member }}</el-col>
+        <el-col span="4"> 环节: {{ stage.name}}</el-col>
+        <el-col span="4">
+          <div v-if="second >= 0" style="color: red">
+            剩余时间: {{second}} 秒
+          </div>
+        </el-col>
+      </el-row>
+    </div>
     <div id="container">
       <div v-if="rule" style="padding: 100px; text-align: center">
         {{rule}}
       </div>
       <div v-else>
         <div id="question-info"  v-if="questionItem">
-          <div v-if="second >= 0" style="font-size: xx-large; color: red">
-            剩余时间: {{second}} 秒
-          </div>
+         
           <div id="question-name">
-            {{ questionItem.questionNumber }} &nbsp;&nbsp; {{ questionItem.question }}
+            {{ questionItem.questionNumber }} &nbsp;({{questionItem.questionType}}) &nbsp; {{ questionItem.question }}
           </div>
           <div id="answer-selection">
             <div class="selection-item"  v-if="questionItem.choiceA">
@@ -38,44 +52,49 @@
             </div>
           </div>
           <br>
-          <div>
-            <el-row>
-              <el-col span="4">
-                <div class="answer-item" :class="{ 'blue-background': activeDiv === 'A' }" @click="setActiveDiv('A')" v-if="questionItem.choiceA">
+          <div style="margin: 0 25%">
+            <el-row type="flex" justify="center" style="text-align: center">
+              <el-col span="4" class="column-center"  v-if="questionItem.choiceA">
+                <div class="answer-item" :class="{ 'blue-background': activeDiv === 'A' }" @click="setActiveDiv('A')">
                   A
                 </div>
               </el-col>
-              <el-col span="4">
-                <div class="answer-item" :class="{ 'blue-background': activeDiv === 'B' }" @click="setActiveDiv('B')" v-if="questionItem.choiceB">
+              <el-col span="4" class="column-center" v-if="questionItem.choiceB">
+                <div class="answer-item" :class="{ 'blue-background': activeDiv === 'B' }" @click="setActiveDiv('B')" >
                   B
                 </div>
               </el-col>
-              <el-col span="4">
-                <div class="answer-item" :class="{ 'blue-background': activeDiv === 'C' }" @click="setActiveDiv('C')" v-if="questionItem.choiceC">
+              <el-col span="4" class="column-center" v-if="questionItem.choiceC">
+                <div class="answer-item" :class="{ 'blue-background': activeDiv === 'C' }" @click="setActiveDiv('C')" >
                   C
                 </div>
-  
+
               </el-col>
-              <el-col span="4">
-                <div class="answer-item" :class="{ 'blue-background': activeDiv === 'D' }" @click="setActiveDiv('D')" v-if="questionItem.choiceD">
+              <el-col span="4" class="column-center" v-if="questionItem.choiceD">
+                <div class="answer-item" :class="{ 'blue-background': activeDiv === 'D' }" @click="setActiveDiv('D')" >
                   D
                 </div>
               </el-col>
-              <el-col span="4">
-                <div class="answer-item" :class="{ 'blue-background': activeDiv === 'E' }" @click="setActiveDiv('E')" v-if="questionItem.choiceE">
+              <el-col span="4" class="column-center" v-if="questionItem.choiceE">
+                <div class="answer-item" :class="{ 'blue-background': activeDiv === 'E' }" @click="setActiveDiv('E')" >
                   E
                 </div>
               </el-col>
-              <el-col span="4">
-                <div class="answer-item" :class="{ 'blue-background': activeDiv === 'F' }" @click="setActiveDiv('F')" v-if="questionItem.choiceF">
+              <el-col span="4" class="column-center" v-if="questionItem.choiceF">
+                <div class="answer-item" :class="{ 'blue-background': activeDiv === 'F' }" @click="setActiveDiv('F')" >
                   F
                 </div>
               </el-col>
             </el-row>
           </div>
+
           <div v-if="questionItem" style="text-align: center; margin-top: 20px">
             <el-button :disabled="second <= 0 || showResult" style="width: 200px; height: 50px; font-size: x-large" type="primary" @click="submitAnswer"> {{btnText}} </el-button>
           </div>
+        </div>
+
+        <div v-if="showResult" id="answer-info" style="font-size: xx-large; margin-top: 20px; text-align: center;">
+          正确答案: <font color="#cd5c5c">{{questionItem.answer}}</font>
         </div>
       </div>
     </div>
@@ -83,8 +102,11 @@
 </template>
 
 <script>
+import ScoreBoard from "@/components/ScoreBoard";
+
 export default {
   name: "Model60M",
+  components: {ScoreBoard},
   data(){
     return {
       retryTimer: null, // 用于重试逻辑的计时器
@@ -98,7 +120,9 @@ export default {
       showResult: false,
       showWait: true,
       rule: '',
-      btnText: "提 交"
+      btnText: "提 交",
+      member: '',
+      stage: {}
     }
   },
   methods: {
@@ -182,7 +206,7 @@ export default {
             }
           }
         } else {
-          //
+          this.showResult = ! this.showResult
         }
 
       })
@@ -210,7 +234,10 @@ export default {
     }
     this.teamInfo = JSON.parse(item)
     console.log(this.teamInfo)
+    this.member = sessionStorage.getItem('member')
+
     const data = this.$store.state.data
+    this.stage = this.$store.state.stage
     this.questionItem = data
     this.loadData();
     this.setRetryTimer()
@@ -220,6 +247,12 @@ export default {
 </script>
 
 <style scoped>
+
+.column-center {
+  display: flex;
+  justify-content: center; /* 水平居中 */
+  align-items: center; /* 垂直居中 */
+}
 
 #container-box {
   background-image: url("~@/assets/background.png");

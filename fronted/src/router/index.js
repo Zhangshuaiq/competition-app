@@ -11,6 +11,9 @@ import StageQuestion from "@/components/StageQuestion";
 import Question from "@/components/Question";
 import Model3 from "@/components/Model3";
 import Model61R from "@/components/Model61R.vue";
+import Roll from "@/components/Roll";
+import ClueQuestion from "@/components/ClueQuestion";
+import Rule from "@/components/Rule";
 Vue.use(Router);
 
 export default new Router({
@@ -81,6 +84,24 @@ export default new Router({
             path: '/model3',
             name: 'model3',
             component: Model3
+        },
+
+        {
+            path: '/rule',
+            name: 'rule',
+            component: Rule
+        },
+
+        {
+            path: '/roll',
+            name: 'roll',
+            component: Roll
+        },
+
+        {
+            path: '/clue',
+            name: 'clue',
+            component: ClueQuestion
         }
     ],
 });

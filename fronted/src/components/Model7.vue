@@ -66,36 +66,36 @@
             </div>
           </div>
           <br>
-          <div>
-            <el-row>
-              <el-col span="4">
-                <div class="answer-item" :class="{ 'blue-background': activeDiv === 'A' }" @click="setActiveDiv('A')" v-if="questionItem.choiceA">
+          <div style="margin: 0 25%">
+            <el-row type="flex" justify="center" style="text-align: center">
+              <el-col span="4" class="column-center"  v-if="questionItem.choiceA">
+                <div class="answer-item" :class="{ 'blue-background': activeDiv === 'A' }" @click="setActiveDiv('A')">
                   A
                 </div>
               </el-col>
-              <el-col span="4">
-                <div class="answer-item" :class="{ 'blue-background': activeDiv === 'B' }" @click="setActiveDiv('B')" v-if="questionItem.choiceB">
+              <el-col span="4" class="column-center" v-if="questionItem.choiceB">
+                <div class="answer-item" :class="{ 'blue-background': activeDiv === 'B' }" @click="setActiveDiv('B')" >
                   B
                 </div>
               </el-col>
-              <el-col span="4">
-                <div class="answer-item" :class="{ 'blue-background': activeDiv === 'C' }" @click="setActiveDiv('C')" v-if="questionItem.choiceC">
+              <el-col span="4" class="column-center" v-if="questionItem.choiceC">
+                <div class="answer-item" :class="{ 'blue-background': activeDiv === 'C' }" @click="setActiveDiv('C')" >
                   C
                 </div>
 
               </el-col>
-              <el-col span="4">
-                <div class="answer-item" :class="{ 'blue-background': activeDiv === 'D' }" @click="setActiveDiv('D')" v-if="questionItem.choiceD">
+              <el-col span="4" class="column-center" v-if="questionItem.choiceD">
+                <div class="answer-item" :class="{ 'blue-background': activeDiv === 'D' }" @click="setActiveDiv('D')" >
                   D
                 </div>
               </el-col>
-              <el-col span="4">
-                <div class="answer-item" :class="{ 'blue-background': activeDiv === 'E' }" @click="setActiveDiv('E')" v-if="questionItem.choiceE">
+              <el-col span="4" class="column-center" v-if="questionItem.choiceE">
+                <div class="answer-item" :class="{ 'blue-background': activeDiv === 'E' }" @click="setActiveDiv('E')" >
                   E
                 </div>
               </el-col>
-              <el-col span="4">
-                <div class="answer-item" :class="{ 'blue-background': activeDiv === 'F' }" @click="setActiveDiv('F')" v-if="questionItem.choiceF">
+              <el-col span="4" class="column-center" v-if="questionItem.choiceF">
+                <div class="answer-item" :class="{ 'blue-background': activeDiv === 'F' }" @click="setActiveDiv('F')" >
                   F
                 </div>
               </el-col>
@@ -214,6 +214,7 @@ export default {
     
     saveData(){
       sessionStorage.setItem("time", this.second + "")
+      sessionStorage.setItem("score", this.score + "")
       sessionStorage.setItem("showWait", this.showWait + "")
       sessionStorage.setItem("showResult", this.showResult + "")
       sessionStorage.setItem("questionItem", JSON.stringify(this.questionItem))
@@ -233,6 +234,11 @@ export default {
     },
     
     loadData(){
+
+      const score = sessionStorage.getItem("score")
+      if (score && score !== 'null') {
+        this.score = parseInt(score)
+      }
 
       const wait = sessionStorage.getItem("showWait")
       if (wait && wait !== 'null') {
@@ -266,6 +272,14 @@ export default {
     setActiveDiv(divNumber) {
       this.activeDiv = divNumber;
     },
+
+    shuffleArray(array) {
+      for (let i = array.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]]; // ES6 语法，用于交换两个元素
+      }
+      return array;
+    },
     
     subscribeQuestionGroup(){
       this.subscription = this.$websocket.subscribe('/topic/question/group', (message) => {
@@ -278,17 +292,26 @@ export default {
           if (!this.showResult) {
             this.second = parseInt(message.data)
           }
+          this.saveData()
+        } else if (message.type === 'finish') {
+          this.showResult = true
+          this.saveData()
         } else {
-          this.questionList = message.data
+          const random = message.random
+          // 随机乱序题序
+          if (random) {
+            this.questionList = this.shuffleArray(message.data)
+          } else {
+            this.questionList = message.data
+          }
           this.questionIndex = 0;
           this.questionItem = this.questionList[this.questionIndex]
           this.questionItem.teamName = this.teamInfo.fullName
           this.userSelects = []
           this.showWait = false
+          this.showResult = false
+          this.score = 0
           this.saveData()
-          if (this.second === -1) {
-            this.second = 0;
-          }
         }
         
       })
@@ -313,15 +336,31 @@ export default {
     if (time && time !== "null"){
       this.second = parseInt(time)
     }
-
-    
     this.setRetryTimer()
+  },
+
+  beforeRouteLeave(to, from, next) {
+    console.log(from, to, next)
+    // 在这里编写离开页面前需要执行的逻辑
+    // 例如，你可以在这里提示用户保存未保存的更改
+    if (from.name !== to.name) {
+      sessionStorage.removeItem("time")
+      sessionStorage.removeItem("score")
+      sessionStorage.removeItem("showResult")
+    }
+    next()
   },
   
 }                                                                             
 </script>
 
 <style scoped>
+
+.column-center {
+  display: flex;
+  justify-content: center; /* 水平居中 */
+  align-items: center; /* 垂直居中 */
+}
 
 #status-bar {
   background-color: #3397CE;

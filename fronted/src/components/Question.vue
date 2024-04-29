@@ -1,17 +1,29 @@
 <template>
   <div id="container-box">
-    <ScoreBoard></ScoreBoard>
+    <div>
+      <ScoreBoard></ScoreBoard>
+    </div>
+    <div style="margin-top: 10px; padding-left: 20px; font-weight: bold; font-size: x-large; " >
+      <el-row>
+        <el-col span="4"> 组号: {{ teamInfo.shortName }}</el-col>
+        <el-col span="4"> 组名: {{ teamInfo.fullName }}</el-col>
+        <el-col span="4"> 选手: {{ member }}</el-col>
+        <el-col span="4"> 环节: {{ stage.name}}</el-col>
+        <el-col span="4">
+          <div v-if="second >= 0" style="color: red; ">
+            剩余时间: {{second}} 秒
+          </div>
+        </el-col>
+      </el-row>
+    </div>
     <div id="container">
       <div v-if="rule" style="padding: 100px; text-align: center">
         {{rule}}
       </div>
       <div v-else>
         <div id="question-info"  v-if="questionItem">
-          <div v-if="second >= 0" style="font-size: xx-large; color: red">
-            剩余时间: {{second}} 秒
-          </div>
           <div id="question-name">
-            {{ questionItem.questionNumber }} &nbsp;&nbsp; {{ questionItem.question }}
+            {{ questionItem.questionNumber }} &nbsp; ({{questionItem.questionType}}) &nbsp; {{ questionItem.question }}
           </div>
           <div id="answer-selection">
             <div class="selection-item"  v-if="questionItem.choiceA">
@@ -58,6 +70,7 @@ export default {
 
   data(){
     return {
+      
       retryTimer: null, // 用于重试逻辑的计时器
       retryInterval: 500, // 重试间隔时间，例如5秒
 
@@ -68,6 +81,8 @@ export default {
       showResult: false,
       showWait: true,
       rule: '',
+      member: '',
+      stage: {}
     }
   },
   methods: {
@@ -86,23 +101,7 @@ export default {
       }, this.retryInterval);
     },
 
-    loadData(){
-      // const wait = sessionStorage.getItem("showWait")
-      // if (wait && wait !== 'null') {
-      //   this.showWait = wait === 'true'
-      // }
-      //
-      // const result = sessionStorage.getItem("showResult")
-      // if (result && result !== 'null') {
-      //   this.showResult = result === 'true'
-      // }
-      //
-      // const item = sessionStorage.getItem("questionItem");
-      // if (item && item !== 'null') {
-      //   this.questionItem = JSON.parse(item)
-      // }
-      // console.log(this.questionItem)
-    },
+
 
     subscribeQuestion(){
       this.subscription = this.$websocket.subscribe('/topic/question', (message) => {
@@ -115,7 +114,8 @@ export default {
           console.log(message.data)
           this.second = parseInt(message.data)
         } else {
-          this.showResult = true
+          this.showResult = ! this.showResult
+          this.second = -1
         }
 
       })
@@ -132,13 +132,14 @@ export default {
 
   mounted() {
     const item = sessionStorage.getItem("user");
+    this.member = sessionStorage.getItem('member')
     if (!item) {
       this.$router.push({name: "contestant"})
       return
     }
     this.teamInfo = JSON.parse(item)
-    this.loadData();
     const data = this.$store.state.data
+    this.stage = this.$store.state.stage
     this.questionItem = data
     this.setRetryTimer()
   },

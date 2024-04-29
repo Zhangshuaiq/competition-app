@@ -18,6 +18,7 @@ export default {
 
       if (targetRouteName !== '') {
         // 如果消息包含数据和路由，更新 Vuex 状态
+        this.$store.commit('setStage', message.stage);
         this.$store.commit('setCurrentRoute', targetRouteName);
         this.$store.commit('setAdditionalData', message.data); // 假设 message.data 包含需要的额外数据
         // 检查当前路由名称与目标路由名称是否相同
