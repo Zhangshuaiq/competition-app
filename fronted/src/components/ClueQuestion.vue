@@ -27,27 +27,27 @@
           </div>
           <div id="answer-selection">
             <div class="selection-item"  v-if="questionItem.choiceA">
-              A . {{questionItem.choiceA}}
+               {{questionItem.choiceA}}
             </div>
 
             <div class="selection-item"  v-if="questionItem.choiceB">
-              B . {{questionItem.choiceB}}
+               {{questionItem.choiceB}}
             </div>
 
             <div class="selection-item"  v-if="questionItem.choiceC">
-              C . {{questionItem.choiceC}}
+               {{questionItem.choiceC}}
             </div>
 
             <div class="selection-item"  v-if="questionItem.choiceD">
-              D . {{questionItem.choiceD}}
+               {{questionItem.choiceD}}
             </div>
 
             <div class="selection-item"  v-if="questionItem.choiceE">
-              E . {{questionItem.choiceE}}
+               {{questionItem.choiceE}}
             </div>
 
             <div class="selection-item"  v-if="questionItem.choiceF">
-              F . {{questionItem.choiceF}}
+               {{questionItem.choiceF}}
             </div>
           </div>
         </div>
@@ -113,6 +113,8 @@ export default {
         if (message.type === 'time') {
           console.log(message.data)
           this.second = parseInt(message.data)
+        } else if (message.type === 'clue'){
+          this.questionItem = message.data
         } else {
           this.showResult = ! this.showResult
         }

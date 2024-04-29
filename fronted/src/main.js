@@ -15,7 +15,7 @@ Vue.use(ElementUI);
 // const port = window.location.port ? `:${window.location.port}` : ':8080';
 // // 构建WebSocket的URL
 // const wsUrl = `http://${host}${port}/ws`;
-const wsUrl = `http://localhost:8080/ws`;
+const wsUrl = `http://192.168.1.7:8080/ws`;
 Vue.use(WebSocketPlugin, { url: wsUrl });
 Vue.use(TimerPlugin, {});
 

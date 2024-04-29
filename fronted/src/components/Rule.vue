@@ -54,6 +54,7 @@ export default {
     this.teamInfo = JSON.parse(item)
     const data = this.$store.state.data
     this.stage = this.$store.state.stage
+    console.log(this.stage)
     this.rule = data
   },
 }
