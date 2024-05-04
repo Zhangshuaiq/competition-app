@@ -134,6 +134,7 @@ export default {
       // 队伍名称, 题目分值
       submited.teamName =  this.teamInfo.fullName
       submited.userSelect = this.activeDiv
+      submited.second = this.second
       this.questionItem = submited
       this.saveData()
       // 题目列表

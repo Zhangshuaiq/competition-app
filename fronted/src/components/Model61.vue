@@ -136,6 +136,7 @@ export default {
       submited.teamName =  this.teamInfo.fullName
       submited.userSelect = this.activeDiv
       submited.userName = sessionStorage.getItem("member")
+      submited.second = this.second
       this.questionItem = submited
       this.saveData()
       // 题目列表
