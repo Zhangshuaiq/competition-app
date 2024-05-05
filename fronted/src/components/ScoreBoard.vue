@@ -27,7 +27,7 @@
             </div>
             <div v-else class="board-item" :style="{backgroundColor: statusColor[item.status]}">
               <div v-if="item.status === 2 || item.status === 3">
-                {{questionItem.userSelect}}
+                {{item.teamSelect}}
               </div>
             </div>
           </div>

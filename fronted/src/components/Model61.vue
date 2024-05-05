@@ -3,15 +3,15 @@
     <div>
       <ScoreBoard></ScoreBoard>
     </div>
-    <div style="margin-top: 10px; padding-left: 20px; font-weight: bold; font-size: x-large;" >
+    <div style="margin-top: 10px; padding-left: 20px; font-weight: bold; " >
       <el-row>
         <el-col span="4"> 组号: {{ teamInfo.shortName }}</el-col>
         <el-col span="4"> 组名: {{ teamInfo.fullName }}</el-col>
         <el-col span="4"> 选手: {{ member }}</el-col>
         <el-col span="4"> 环节: {{ stage.name}}</el-col>
         <el-col span="4">
-          <div v-if="second >= 0" style="font-size: xx-large; color: red">
-            剩余时间: {{second}} 秒
+          <div v-if="second >= 0" style="color: red">
+            时间: {{second}} 秒
           </div>
         </el-col>
       </el-row>
@@ -89,7 +89,12 @@
           </div>
           
           <div v-if="questionItem" style="text-align: center; margin-top: 30px">
-            <el-button :disabled="second <= 0 || showResult" style="width: 200px; height: 50px; font-size: x-large" type="primary" @click="submitAnswer"> {{btnText}} </el-button>
+            <div v-if="submit">
+              <el-button disabled style="width: 200px; height: 50px; font-size: x-large" type="primary" @click="submitAnswer"> {{btnText}} </el-button>
+            </div>
+            <div v-else>
+              <el-button :disabled="second <= 0 || showResult || this.activeDiv === ''" style="width: 200px; height: 50px; font-size: x-large" type="primary" @click="submitAnswer"> {{btnText}} </el-button>
+            </div>
           </div>
         </div>
 
@@ -121,14 +126,15 @@ export default {
       rule: '',
       btnText: "提 交",
       member: '',
-      stage: ''
+      stage: '',
+      submit : false,
     }
   },
   methods: {
     submitAnswer(){
       // 提交答案到后台
       console.log(this.activeDiv)
-      this.showResult = true;
+      // this.showResult = true;
       const submited = JSON.parse(JSON.stringify(this.questionItem))
 
 
@@ -138,6 +144,7 @@ export default {
       submited.userName = sessionStorage.getItem("member")
       submited.second = this.second
       this.questionItem = submited
+      this.submit = true
       this.saveData()
       // 题目列表
       console.log(submited)
@@ -146,11 +153,13 @@ export default {
         data: JSON.stringify(submited),
       })
       this.btnText = "已提交"
+
     },
     
 
     saveData(){
       sessionStorage.setItem("showResult", this.showResult + "")
+      sessionStorage.setItem("submit", this.submit + "")
       sessionStorage.setItem("questionItem", JSON.stringify(this.questionItem))
     },
 
@@ -165,14 +174,21 @@ export default {
     },
 
     loadData(){
-      const result = sessionStorage.getItem("showResult")
-      if (result && result !== 'null') {
-        this.showResult = result === 'true'
-        if (this.showResult) {
+
+      const submit = sessionStorage.getItem("submit")
+      if (submit && submit !== 'null') {
+        this.submit = submit === 'true'
+        if (this.submit) {
           this.btnText = "已提交"
         } else {
           this.btnText = "提 交"
         }
+      }
+
+
+      const result = sessionStorage.getItem("showResult")
+      if (result && result !== 'null') {
+        this.showResult = result === 'true'
       }
 
       const item = sessionStorage.getItem("questionItem");
@@ -197,11 +213,11 @@ export default {
         }
         if (message.type === 'time') {
           this.second = parseInt(message.data)
-          if (this.second <= 0) {
-            if (this.showResult === false) {
-              this.activeDiv = ''
-            }
-          }
+          // if (this.second <= 0) {
+          //   // if (this.showResult === false) {
+          //   //   this.activeDiv = ''
+          //   // }
+          // }
         } else {
           this.showResult = ! this.showResult
         }
@@ -222,10 +238,9 @@ export default {
     this.showResult = false
     this.btnText = "提 交"
     this.activeDiv = ""
+    this.submit = false
     this.saveData()
-    this.activeDiv = ''
     next();
-
   },
   
   mounted() {

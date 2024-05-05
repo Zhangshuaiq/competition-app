@@ -3,7 +3,7 @@
     <div>
       <ScoreBoard></ScoreBoard>
     </div>
-    <div style="margin-top: 10px; padding-left: 20px; font-weight: bold; font-size: x-large; " >
+    <div style="margin-top: 10px; padding-left: 20px; font-weight: bold; " >
       <el-row>
         <el-col span="4"> 组号: {{ teamInfo.shortName }}</el-col>
         <el-col span="4"> 组名: {{ teamInfo.fullName }}</el-col>
@@ -11,7 +11,7 @@
         <el-col span="4"> 环节: {{ stage.name}}</el-col>
         <el-col span="4">
           <div v-if="second >= 0" style="color: red">
-            剩余时间: {{second}} 秒
+            时间: {{second}} 秒
           </div>
         </el-col>
       </el-row>
@@ -89,7 +89,13 @@
           </div>
 
           <div v-if="questionItem" style="text-align: center; margin-top: 20px">
-            <el-button :disabled="second <= 0 || showResult" style="width: 200px; height: 50px; font-size: x-large" type="primary" @click="submitAnswer"> {{btnText}} </el-button>
+
+            <div v-if="submit">
+              <el-button disabled style="width: 200px; height: 50px; font-size: x-large" type="primary" @click="submitAnswer"> {{btnText}} </el-button>
+            </div>
+            <div v-else>
+              <el-button :disabled="second <= 0 || showResult || this.activeDiv === ''" style="width: 200px; height: 50px; font-size: x-large" type="primary" @click="submitAnswer"> {{btnText}} </el-button>
+            </div>
           </div>
         </div>
 
@@ -122,20 +128,21 @@ export default {
       rule: '',
       btnText: "提 交",
       member: '',
-      stage: {}
+      stage: {},
+      submit : false,
     }
   },
   methods: {
     submitAnswer(){
       // 提交答案到后台
       console.log(this.activeDiv)
-      this.showResult = true;
       const submited = JSON.parse(JSON.stringify(this.questionItem))
       // 队伍名称, 题目分值
       submited.teamName =  this.teamInfo.fullName
       submited.userSelect = this.activeDiv
       submited.second = this.second
       this.questionItem = submited
+      this.submit = true
       this.saveData()
       // 题目列表
       //  提交答案
@@ -149,6 +156,7 @@ export default {
     saveData(){
       sessionStorage.setItem("showResult", this.showResult + "")
       sessionStorage.setItem("showWait", this.showWait + "")
+      sessionStorage.setItem("submit", this.submit + "")
       sessionStorage.setItem("questionItem", JSON.stringify(this.questionItem))
     },
 
@@ -167,14 +175,19 @@ export default {
         this.showWait = wait === 'true'
       }
 
-      const result = sessionStorage.getItem("showResult")
-      if (result && result !== 'null') {
-        this.showResult = result === 'true'
-        if (this.showResult) {
+      const submit = sessionStorage.getItem("submit")
+      if (submit && submit !== 'null') {
+        this.submit = submit === 'true'
+        if (this.submit) {
           this.btnText = "已提交"
         } else {
           this.btnText = "提 交"
         }
+      }
+
+      const result = sessionStorage.getItem("showResult")
+      if (result && result !== 'null') {
+        this.showResult = result === 'true'
       }
 
       const item = sessionStorage.getItem("questionItem");
@@ -221,8 +234,9 @@ export default {
     this.showResult = false
     this.activeDiv = ''
     this.btnText = "提 交"
-    this.saveData()
+    this.submit = false
     this.activeDiv = ''
+    this.saveData()
     next();
   },
   

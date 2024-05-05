@@ -11,8 +11,14 @@
               <el-col span="12">
                 {{ teamInfo.fullName }}
               </el-col>
-              <el-col span="12">
-                完成{{questionIndex<0?0:questionIndex}}题 | 用时{{ formatTime() }}
+              <el-col  span="12">
+                <div v-if="showResult">
+                  完成{{questionIndex<0?0:questionIndex + 1}}题 | 用时{{ formatTime() }}
+                </div>
+                <div v-else>
+                  完成{{questionIndex<0?0:questionIndex}}题 | 用时{{ formatTime() }}
+                </div>
+
               </el-col>
             </el-row>
           </div>

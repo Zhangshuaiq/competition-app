@@ -3,7 +3,7 @@
     <div>
       <ScoreBoard></ScoreBoard>
     </div>
-    <div style="margin-top: 10px; padding-left: 20px; font-weight: bold; font-size: x-large; " >
+    <div style="margin-top: 10px; padding-left: 20px; font-weight: bold;" >
       <el-row>
         <el-col span="4"> 组号: {{ teamInfo.shortName }}</el-col>
         <el-col span="4"> 组名: {{ teamInfo.fullName }}</el-col>
@@ -11,7 +11,7 @@
         <el-col span="4"> 环节: {{ stage.name}}</el-col>
         <el-col span="4">
           <div v-if="second >= 0" style="color: red; ">
-            剩余时间: {{second}} 秒
+            时间: {{second}} 秒
           </div>
         </el-col>
       </el-row>
