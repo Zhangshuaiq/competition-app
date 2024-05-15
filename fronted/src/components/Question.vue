@@ -22,37 +22,66 @@
       </div>
       <div v-else>
         <div id="question-info"  v-if="questionItem">
-          <div id="question-name">
-            {{ questionItem.questionNumber }} &nbsp; ({{questionItem.questionType}}) &nbsp; {{ questionItem.question }}
+          <!--       图片不区分题目类型。因为图文制作在一起   -->
+          <div v-if="questionItem.resourceType === '图片'">
+            <el-image style="width: 100%" :src="resourceUrl" ></el-image>
           </div>
-          <div id="answer-selection">
-            <div class="selection-item"  v-if="questionItem.choiceA">
-              A . {{questionItem.choiceA}}
+          <!--    音频无需展示      -->
+          <!--    视频需要播放      -->
+          <!--    文字则正常展示      -->
+          <div v-else-if="questionItem.questionType === '单选题' || questionItem.questionType === '多选题' || questionItem.questionType === '不定项选择题'">
+            <div class="question-name">
+              {{ questionItem.questionNumber }} &nbsp; ({{questionItem.questionType}}) &nbsp; {{ questionItem.question }}
             </div>
-
-            <div class="selection-item"  v-if="questionItem.choiceB">
-              B . {{questionItem.choiceB}}
+            <div v-if="questionItem.resourceType === '视频'">
+              <video width="320" height="240" controls muted>
+                <source :src="resourceUrl" type="video/mp4">
+                Your browser does not support the video tag.
+              </video>
             </div>
+            <!--     选择性质的题目有选项       -->
+            <div id="answer-selection">
+              <div class="selection-item"  v-if="questionItem.choiceA">
+                A . {{questionItem.choiceA}}
+              </div>
 
-            <div class="selection-item"  v-if="questionItem.choiceC">
-              C . {{questionItem.choiceC}}
-            </div>
+              <div class="selection-item"  v-if="questionItem.choiceB">
+                B . {{questionItem.choiceB}}
+              </div>
 
-            <div class="selection-item"  v-if="questionItem.choiceD">
-              D . {{questionItem.choiceD}}
-            </div>
+              <div class="selection-item"  v-if="questionItem.choiceC">
+                C . {{questionItem.choiceC}}
+              </div>
 
-            <div class="selection-item"  v-if="questionItem.choiceE">
-              E . {{questionItem.choiceE}}
-            </div>
+              <div class="selection-item"  v-if="questionItem.choiceD">
+                D . {{questionItem.choiceD}}
+              </div>
 
-            <div class="selection-item"  v-if="questionItem.choiceF">
-              F . {{questionItem.choiceF}}
+              <div class="selection-item"  v-if="questionItem.choiceE">
+                E . {{questionItem.choiceE}}
+              </div>
+
+              <div class="selection-item"  v-if="questionItem.choiceF">
+                F . {{questionItem.choiceF}}
+              </div>
             </div>
           </div>
+          <div v-else-if="questionItem.questionType === '填空题' || questionItem.questionType === '简答题' || questionItem.questionType === '判断题'">
+            <div class="question-name">
+              {{ questionItem.questionNumber }} &nbsp; ({{questionItem.questionType}}) &nbsp; {{ questionItem.question }}
+            </div>
+            <div v-if="questionItem.resourceType === '视频'">
+              <video width="320" height="240" controls muted>
+                <source :src="resourceUrl" type="video/mp4">
+                Your browser does not support the video tag.
+              </video>
+            </div>
+            <!--      填空 简单 判断无需展示选项       -->
+          </div>
+
         </div>
         
-        <div v-if="showResult" id="answer-info" style="font-size: xx-large; margin-top: 20px; text-align: center;">
+        <div v-if="showResult && this.questionItem.resourceType !== '图片'" id="answer-info" style="font-size: xx-large; margin-top: 20px; text-align: center;">
           正确答案: <font color="#cd5c5c">{{questionItem.answer}}</font>
         </div>
 
@@ -63,7 +92,7 @@
 
 <script>
 import ScoreBoard from "@/components/ScoreBoard.vue";
-
+import baseUrl from "@/config";
 export default {
   name: "QuestionL",
   components: {ScoreBoard},
@@ -73,7 +102,6 @@ export default {
       
       retryTimer: null, // 用于重试逻辑的计时器
       retryInterval: 500, // 重试间隔时间，例如5秒
-
       subscription: null,
       questionItem: null,
       teamInfo: '',
@@ -82,16 +110,11 @@ export default {
       showWait: true,
       rule: '',
       member: '',
-      stage: {}
+      stage: {},
+      resourceUrl: '',
     }
   },
   methods: {
-    saveData(){
-      sessionStorage.setItem("showResult", this.showResult + "")
-      sessionStorage.setItem("showWait", this.showWait + "")
-      sessionStorage.setItem("questionItem", JSON.stringify(this.questionItem))
-    },
-
     setRetryTimer() {
       // 先清除之前的计时器（如果有）
       clearTimeout(this.retryTimer);
@@ -115,6 +138,13 @@ export default {
           this.second = parseInt(message.data)
         } else {
           this.showResult = ! this.showResult
+          if (this.questionItem.resourceType === '图片') {
+            if (this.showResult) {
+              this.resourceUrl = this.resourceUrl = `${baseUrl}/resource/${this.questionItem.answer}`
+            } else {
+              this.resourceUrl = this.resourceUrl = `${baseUrl}/resource/${this.questionItem.question}`
+            }
+          }
           this.second = -1
         }
 
@@ -126,6 +156,12 @@ export default {
   beforeRouteUpdate(to, from, next) {
     const data = this.$store.state.data
     this.questionItem = data
+    if (this.questionItem.resourceType === '图片') {
+      this.resourceUrl = `${baseUrl}/resource/${this.questionItem.question}`
+    } else if (this.questionItem.resourceType === '视频') {
+      this.resourceUrl = `${baseUrl}/resource/${this.questionItem.resource}`
+    }
+    console.log(this.resourceUrl)
     this.showResult = false
     next();
   },
@@ -141,6 +177,11 @@ export default {
     const data = this.$store.state.data
     this.stage = this.$store.state.stage
     this.questionItem = data
+    if (this.questionItem.resourceType === '图片') {
+      this.resourceUrl = `${baseUrl}/resource/${this.questionItem.question}`
+    } else if (this.questionItem.resourceType === '视频') {
+      this.resourceUrl = `${baseUrl}/resource/${this.questionItem.resource}`
+    }
     this.setRetryTimer()
   },
 }
@@ -158,7 +199,7 @@ export default {
   padding:0 100px;
 }
 
-#question-name {
+.question-name {
   font-family: "Microsoft YaHei UI";
   font-size: xx-large;
 }

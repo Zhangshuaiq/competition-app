@@ -22,70 +22,152 @@
       </div>
       <div v-else>
         <div id="question-info"  v-if="questionItem">
-         
-          <div id="question-name">
-            {{ questionItem.questionNumber }} &nbsp;({{questionItem.questionType}}) &nbsp; {{ questionItem.question }}
-          </div>
-          <div id="answer-selection">
-            <div class="selection-item"  v-if="questionItem.choiceA">
-              A . {{questionItem.choiceA}}
-            </div>
-  
-            <div class="selection-item"  v-if="questionItem.choiceB">
-              B . {{questionItem.choiceB}}
-            </div>
-  
-            <div class="selection-item"  v-if="questionItem.choiceC">
-              C . {{questionItem.choiceC}}
-            </div>
-  
-            <div class="selection-item"  v-if="questionItem.choiceD">
-              D . {{questionItem.choiceD}}
-            </div>
-  
-            <div class="selection-item"  v-if="questionItem.choiceE">
-              E . {{questionItem.choiceE}}
-            </div>
-  
-            <div class="selection-item"  v-if="questionItem.choiceF">
-              F . {{questionItem.choiceF}}
-            </div>
-          </div>
-          <br>
-          <div style="margin: 0 25%">
-            <el-row type="flex" justify="center" style="text-align: center">
-              <el-col span="4" class="column-center"  v-if="questionItem.choiceA">
-                <div class="answer-item" :class="{ 'blue-background': activeDiv === 'A' }" @click="setActiveDiv('A')">
-                  A
-                </div>
-              </el-col>
-              <el-col span="4" class="column-center" v-if="questionItem.choiceB">
-                <div class="answer-item" :class="{ 'blue-background': activeDiv === 'B' }" @click="setActiveDiv('B')" >
-                  B
-                </div>
-              </el-col>
-              <el-col span="4" class="column-center" v-if="questionItem.choiceC">
-                <div class="answer-item" :class="{ 'blue-background': activeDiv === 'C' }" @click="setActiveDiv('C')" >
-                  C
-                </div>
 
-              </el-col>
-              <el-col span="4" class="column-center" v-if="questionItem.choiceD">
-                <div class="answer-item" :class="{ 'blue-background': activeDiv === 'D' }" @click="setActiveDiv('D')" >
-                  D
-                </div>
-              </el-col>
-              <el-col span="4" class="column-center" v-if="questionItem.choiceE">
-                <div class="answer-item" :class="{ 'blue-background': activeDiv === 'E' }" @click="setActiveDiv('E')" >
-                  E
-                </div>
-              </el-col>
-              <el-col span="4" class="column-center" v-if="questionItem.choiceF">
-                <div class="answer-item" :class="{ 'blue-background': activeDiv === 'F' }" @click="setActiveDiv('F')" >
-                  F
-                </div>
-              </el-col>
-            </el-row>
+          <!--       图片不区分题目类型。因为图文制作在一起   -->
+          <div v-if="questionItem.resourceType === '图片'">
+            <el-image style="width: 100%" :src="resourceUrl" ></el-image>
+          </div>
+          <!--    音频无需展示      -->
+          <!--    视频需要播放      -->
+          <!--    文字则正常展示      -->
+
+          <div v-else-if="questionItem.questionType === '单选题' || questionItem.questionType === '多选题' || questionItem.questionType === '不定项选择题'">
+            <div id="question-name">
+              {{ questionItem.questionNumber }} &nbsp;({{questionItem.questionType}}) &nbsp; {{ questionItem.question }}
+            </div>
+            <div id="answer-selection">
+              <div class="selection-item"  v-if="questionItem.choiceA">
+                A . {{questionItem.choiceA}}
+              </div>
+
+              <div class="selection-item"  v-if="questionItem.choiceB">
+                B . {{questionItem.choiceB}}
+              </div>
+
+              <div class="selection-item"  v-if="questionItem.choiceC">
+                C . {{questionItem.choiceC}}
+              </div>
+
+              <div class="selection-item"  v-if="questionItem.choiceD">
+                D . {{questionItem.choiceD}}
+              </div>
+
+              <div class="selection-item"  v-if="questionItem.choiceE">
+                E . {{questionItem.choiceE}}
+              </div>
+
+              <div class="selection-item"  v-if="questionItem.choiceF">
+                F . {{questionItem.choiceF}}
+              </div>
+            </div>
+          </div>
+
+          <div v-else-if="questionItem.questionType === '填空题' || questionItem.questionType === '简答题' || questionItem.questionType === '判断题'">
+            <div class="question-name">
+              {{ questionItem.questionNumber }} &nbsp; ({{questionItem.questionType}}) &nbsp; {{ questionItem.question }}
+            </div>
+            <div v-if="questionItem.resourceType === '视频'">
+              <video width="320" height="240" controls muted>
+                <source :src="resourceUrl" type="video/mp4">
+                Your browser does not support the video tag.
+              </video>
+            </div>
+            <!--      填空 简单 判断无需展示选项       -->
+          </div>
+
+          <br>
+
+          <div style="margin: 0 25%">
+            <!--    单选题答案只能选择一个       -->
+            <div v-if="questionItem.questionType === '单选题'">
+              <el-row type="flex" justify="center" style="text-align: center">
+                <el-col span="4" class="column-center"  v-if="questionItem.choiceA">
+                  <div class="answer-item" :class="{ 'blue-background': activeDiv === 'A' }" @click="setActiveDiv('A')">
+                    A
+                  </div>
+                </el-col>
+                <el-col span="4" class="column-center" v-if="questionItem.choiceB">
+                  <div class="answer-item" :class="{ 'blue-background': activeDiv === 'B' }" @click="setActiveDiv('B')" >
+                    B
+                  </div>
+                </el-col>
+                <el-col span="4" class="column-center" v-if="questionItem.choiceC">
+                  <div class="answer-item" :class="{ 'blue-background': activeDiv === 'C' }" @click="setActiveDiv('C')" >
+                    C
+                  </div>
+
+                </el-col>
+                <el-col span="4" class="column-center" v-if="questionItem.choiceD">
+                  <div class="answer-item" :class="{ 'blue-background': activeDiv === 'D' }" @click="setActiveDiv('D')" >
+                    D
+                  </div>
+                </el-col>
+                <el-col span="4" class="column-center" v-if="questionItem.choiceE">
+                  <div class="answer-item" :class="{ 'blue-background': activeDiv === 'E' }" @click="setActiveDiv('E')" >
+                    E
+                  </div>
+                </el-col>
+                <el-col span="4" class="column-center" v-if="questionItem.choiceF">
+                  <div class="answer-item" :class="{ 'blue-background': activeDiv === 'F' }" @click="setActiveDiv('F')" >
+                    F
+                  </div>
+                </el-col>
+              </el-row>
+            </div>
+            <div v-else-if="questionItem.questionType === '判断题'">
+              <el-row type="flex" justify="center" style="text-align: center">
+                <el-col span="4" class="column-center" >
+                  <div class="answer-item" :class="{ 'blue-background': activeDiv === '正确' }" @click="setActiveDiv('正确')">
+                    正确
+                  </div>
+                </el-col>
+                <el-col span="4" class="column-center">
+                  <div class="answer-item" :class="{ 'blue-background': activeDiv === '错误' }" @click="setActiveDiv('错误')" >
+                    错误
+                  </div>
+                </el-col>
+              </el-row>
+            </div>
+            <div v-else-if="questionItem.questionType === '多选题' || questionItem.questionType === '不定项选择题'">
+              <el-row type="flex" justify="center" style="text-align: center">
+                <el-col span="4" class="column-center"  v-if="questionItem.choiceA">
+                  <div class="multi-answer-item" :class="{ 'blue-background': activeDiv.indexOf('A') >= 0 }" @click="appendActiveDiv('A')">
+                    A
+                  </div>
+                </el-col>
+                <el-col span="4" class="column-center" v-if="questionItem.choiceB">
+                  <div class="multi-answer-item" :class="{ 'blue-background': activeDiv.indexOf('B') >= 0  }" @click="appendActiveDiv('B')" >
+                    B
+                  </div>
+                </el-col>
+                <el-col span="4" class="column-center" v-if="questionItem.choiceC">
+                  <div class="multi-answer-item" :class="{ 'blue-background': activeDiv.indexOf('C') >= 0  }" @click="appendActiveDiv('C')" >
+                    C
+                  </div>
+
+                </el-col>
+                <el-col span="4" class="column-center" v-if="questionItem.choiceD">
+                  <div class="multi-answer-item" :class="{ 'blue-background': activeDiv.indexOf('D') >= 0  }" @click="appendActiveDiv('D')" >
+                    D
+                  </div>
+                </el-col>
+                <el-col span="4" class="column-center" v-if="questionItem.choiceE">
+                  <div class="multi-answer-item" :class="{ 'blue-background': activeDiv.indexOf('E') >= 0  }" @click="appendActiveDiv('E')" >
+                    E
+                  </div>
+                </el-col>
+                <el-col span="4" class="column-center" v-if="questionItem.choiceF">
+                  <div class="multi-answer-item" :class="{ 'blue-background': activeDiv.indexOf('F') >= 0  }" @click="appendActiveDiv('F')" >
+                    F
+                  </div>
+                </el-col>
+              </el-row>
+            </div>
+            <div v-else>
+              <el-row type="flex" justify="center" style="text-align: center">
+                <el-input :disabled="(second <= 0 || showResult)" placeholder="请输入答案" type="textarea" rows="3" v-model="activeDiv"></el-input>
+              </el-row>
+            </div>
           </div>
 
           <div v-if="questionItem" style="text-align: center; margin-top: 20px">
@@ -109,7 +191,7 @@
 
 <script>
 import ScoreBoard from "@/components/ScoreBoard";
-
+import baseUrl from "@/config";
 export default {
   name: "Model60M",
   components: {ScoreBoard},
@@ -130,6 +212,7 @@ export default {
       member: '',
       stage: {},
       submit : false,
+      resourceUrl: '',
     }
   },
   methods: {
@@ -194,13 +277,21 @@ export default {
       if (item && item !== 'null') {
         this.questionItem = JSON.parse(item)
         console.log(this.questionItem)
-        this.activeDiv = this.questionItem.userSelect
+        this.activeDiv = this.questionItem.userSelect || ''
       }
     },
 
 
     setActiveDiv(divNumber) {
       this.activeDiv = divNumber;
+    },
+
+    appendActiveDiv(divNumber) {
+      if (this.activeDiv.indexOf(divNumber) >= 0) {
+        this.activeDiv = this.activeDiv.replace(divNumber, "")
+      } else {
+        this.activeDiv = this.activeDiv + divNumber;
+      }
     },
 
     subscribeQuestion(){
@@ -213,14 +304,21 @@ export default {
         if (message.type === 'time') {
           console.log(this.showResult)
           this.second = parseInt(message.data)
-          if (this.second <= 0) {
-            if (this.showResult === false) {
-              this.activeDiv = ''
-              //this.submitAnswer()
-            }
-          }
+          // if (this.second <= 0) {
+          //   if (this.showResult === false) {
+          //     this.activeDiv = ''
+          //     //this.submitAnswer()
+          //   }
+          // }
         } else {
           this.showResult = ! this.showResult
+          if (this.questionItem.resourceType === '图片') {
+            if (this.showResult) {
+              this.resourceUrl = this.resourceUrl = `${baseUrl}/resource/${this.questionItem.answer}`
+            } else {
+              this.resourceUrl = this.resourceUrl = `${baseUrl}/resource/${this.questionItem.question}`
+            }
+          }
         }
 
       })
@@ -231,6 +329,11 @@ export default {
   beforeRouteUpdate(to, from, next) {
     const data = this.$store.state.data
     this.questionItem = data
+    if (this.questionItem.resourceType === '图片') {
+      this.resourceUrl = `${baseUrl}/resource/${this.questionItem.question}`
+    } else if (this.questionItem.resourceType === '视频') {
+      this.resourceUrl = `${baseUrl}/resource/${this.questionItem.resource}`
+    }
     this.showResult = false
     this.activeDiv = ''
     this.btnText = "提 交"
@@ -254,6 +357,11 @@ export default {
     const data = this.$store.state.data
     this.stage = this.$store.state.stage
     this.questionItem = data
+    if (this.questionItem.resourceType === '图片') {
+      this.resourceUrl = `${baseUrl}/resource/${this.questionItem.question}`
+    } else if (this.questionItem.resourceType === '视频') {
+      this.resourceUrl = `${baseUrl}/resource/${this.questionItem.resource}`
+    }
     this.loadData();
     this.setRetryTimer()
   },
@@ -302,6 +410,16 @@ export default {
   font-size: xxx-large;
   background-color: white;
 }
+
+.multi-answer-item {
+  height: 60px;
+  width: 60px;
+  line-height: 60px;
+  text-align: center;
+  font-size: xxx-large;
+  background-color: white;
+}
+
 
 .blue-background {
   background-color: skyblue;

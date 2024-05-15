@@ -53,6 +53,7 @@
    beforeRouteUpdate(to, from, next) {
      const data = this.$store.state.teams
      this.teamList = data
+     console.log(this.teamList)
      next();
    },
 

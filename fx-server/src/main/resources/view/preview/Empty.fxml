@@ -6,8 +6,22 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
+<<<<<<< Updated upstream:fx-server/src/main/resources/view/preview/Empty.fxml
 <AnchorPane xmlns="http://javafx.com/javafx"
             xmlns:fx="http://javafx.com/fxml"
             prefHeight="400.0" prefWidth="600.0">
+=======
+>>>>>>> Stashed changes:fx-server/target/classes/view/backend/GradeMng.fxml
 
+<AnchorPane prefHeight="827.0" prefWidth="1100.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="competition.controller.backend.GradeMng">
+   <children>
+      <Button layoutX="411.0" layoutY="48.0" mnemonicParsing="false" text="清除数据" />
+      <Button layoutX="605.0" layoutY="48.0" mnemonicParsing="false" text="导出 Excel" />
+      <TableView layoutX="59.0" layoutY="89.0" prefHeight="665.0" prefWidth="996.0">
+        <columns>
+          <TableColumn prefWidth="75.0" text="C1" />
+          <TableColumn prefWidth="75.0" text="C2" />
+        </columns>
+      </TableView>
+   </children>
 </AnchorPane>
