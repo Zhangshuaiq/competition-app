@@ -12,6 +12,6 @@
             fx:id="container"
             fx:controller="competition.controller.board.preview.TimeBoardPreview"
             style="-fx-background-color: transparent;"
-            prefWidth="600.0">
+            prefWidth="-Infinity">
 
 </AnchorPane>

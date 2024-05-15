@@ -13,7 +13,7 @@ public class Questions {
     @ExcelProperty(index = 1, value="阶段名称")
     private String stageName;
 
-    // 判断题 简答题 填空题 单选题 多选题
+    // 判断题 简答题 填空题 单选题 多选题 不定项选择
     @ExcelProperty(index = 2, value="问题类型")
     private String questionType;
 

@@ -15,4 +15,7 @@ public class Model3Style {
     private String titleStyle;
     
     private String qStyle;
+    
+    // 风险题目大标题样式
+    private String headStyle;
 }

@@ -9,15 +9,15 @@
 
 <AnchorPane fx:id="container" prefHeight="400.0" prefWidth="609.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="competition.controller.match.Model7Rank">
    <children>
-      <VBox fx:id="outBox" layoutX="14.0" layoutY="37.0" prefHeight="231.0" prefWidth="581.0">
-         <children>
-            <Label fx:id="competitionLab" alignment="CENTER" prefHeight="44.0" prefWidth="581.0" text="竞  技  排  行  榜">
-               <font>
-                  <Font size="34.0" />
-               </font>
-            </Label>
-            <VBox fx:id="rankBox" prefHeight="295.0" prefWidth="527.0" />
-         </children>
-      </VBox>
+
+      <Label fx:id="competitionLab" alignment="CENTER" layoutX="30" layoutY="30" prefHeight="44.0" prefWidth="581.0" text="竞  技  排  行  榜">
+         <font>
+            <Font size="34.0" />
+         </font>
+      </Label>
+
+
+      <VBox fx:id="rankBox" layoutX="13.0" layoutY="79.0" prefHeight="-Infinity" prefWidth="1801.0" />
+
    </children>
 </AnchorPane>

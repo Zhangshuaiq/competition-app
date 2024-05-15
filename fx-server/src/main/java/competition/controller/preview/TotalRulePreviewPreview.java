@@ -27,6 +27,7 @@ import javax.annotation.Resource;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 @Component
@@ -49,7 +50,7 @@ public class TotalRulePreviewPreview extends PreviewPane {
             public void handle(MouseEvent event) {
                 // 打开设置
                 if (event.getButton() == MouseButton.SECONDARY) {
-                    RulePreviewAttr.setReloadPane(controlPane.getQuestionPreview());
+                    //RulePreviewAttr.setReloadPane(controlPane.getQuestionPreview());
                     Navigator.navigatorTo("/view/match/RulePreviewAttr.fxml", "", "/view/style.css", false, false);
                 }
             }
@@ -59,7 +60,7 @@ public class TotalRulePreviewPreview extends PreviewPane {
 
     private void show() {
         String path = TextResource.ZGZ;
-        List<String> lines = FileUtil.readLines(path, Charset.defaultCharset());
+        List<String> lines = FileUtil.readLines(path, StandardCharsets.UTF_8);
 
         if (ExtendedScreen.hasShow()) {
             // 外屏展示总规则

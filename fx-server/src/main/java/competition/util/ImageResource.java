@@ -79,6 +79,22 @@ public class ImageResource {
         return null;
     }
 
+    public static final String 播放(){
+        return BaseDir.IMAGE_DIR + File.separator + "播放.png";
+    }
+
+    public static final String 暂停(){
+        return BaseDir.IMAGE_DIR + File.separator + "暂停.png";
+    }
+
+    public static final String 快进(){
+        return BaseDir.IMAGE_DIR + File.separator + "快进.png";
+    }
+
+    public static final String 快退(){
+        return BaseDir.IMAGE_DIR + File.separator + "快退.png";
+    }
+
     public static final String 风险背景(){
         String res = BaseDir.IMAGE_DIR + File.separator + "风险环节背景.png";
         if (new File(res).exists()) {
@@ -181,6 +197,24 @@ public class ImageResource {
         }
 
         res = BaseDir.IMAGE_DIR + File.separator + "答题背景.jpeg";
+        if (new File(res).exists()) {
+            return res;
+        }
+        return null;
+    }
+
+    public static final String 竞技模式背景(){
+        String res = BaseDir.IMAGE_DIR + File.separator + "竞技模式背景.png";
+        if (new File(res).exists()) {
+            return res;
+        }
+
+        res = BaseDir.IMAGE_DIR + File.separator + "竞技模式背景.jpg";
+        if (new File(res).exists()) {
+            return res;
+        }
+
+        res = BaseDir.IMAGE_DIR + File.separator + "竞技模式背景.jpeg";
         if (new File(res).exists()) {
             return res;
         }

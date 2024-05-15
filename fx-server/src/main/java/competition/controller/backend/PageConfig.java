@@ -10,6 +10,7 @@ import competition.util.PreviewStack;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.paint.Color;
+import javafx.scene.text.Font;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
@@ -27,6 +28,12 @@ public class PageConfig {
     
     @FXML
     RadioButton thq, thh, tgh;
+    
+    @FXML
+    private TextField ztzh; // 状态栏字号
+    
+    @FXML
+    private ColorPicker ztys; // 状态栏颜色
     
     private ToggleGroup txGroup;
     
@@ -364,6 +371,11 @@ public class PageConfig {
         Map<Integer, Configs> configsMap = configs.stream().collect(Collectors.toMap(x -> x.getId(), x -> x));
         final Configs dati = configsMap.get(1);
         final String config = dati.getConfig();
+        Font defaultFont = ztzh.getFont();
+        
+        // 默认状态字体和颜色
+        ztzh.setText((int) defaultFont.getSize() + "");
+        ztys.setValue(Color.WHITE);
         if (!StringUtils.isEmpty(config)) {
             final String[] split = config.split(ConfigSpliter.SPLITER);
             tg.setValue(Color.valueOf(split[0]));
@@ -398,6 +410,11 @@ public class PageConfig {
             zttcw.setValue(Color.valueOf(split[28]));
             djsx.setText(split[29]);
             djsy.setText(split[30]);
+            if (split.length >= 33) {
+                ztzh.setText(split[31]);
+                ztys.setValue(Color.valueOf(split[32]));
+            }
+          
         }
         
         final Configs huanjie = configsMap.get(2);
@@ -549,6 +566,8 @@ public class PageConfig {
         final String zhuangtaitiaocuowu = zttcw.getValue().toString();
         final String daojishix = djsx.getText();
         final String daojishiy = djsy.getText();
+        final String ztzihao = ztzh.getText();
+        final String ztyanse = ztys.getValue().toString();
         
         String datiValue = (!StringUtils.isEmpty(tigan) ? tigan: ConfigSpliter.DIFFER) + ConfigSpliter.SPLITER
                 + (!StringUtils.isEmpty(daan)? daan: ConfigSpliter.DIFFER)  + ConfigSpliter.SPLITER
@@ -580,7 +599,9 @@ public class PageConfig {
                 + zhuangtaitiaozhengque  + ConfigSpliter.SPLITER
                 + zhuangtaitiaocuowu  + ConfigSpliter.SPLITER
                 + daojishix  + ConfigSpliter.SPLITER
-                + daojishiy ;
+                + daojishiy  + ConfigSpliter.SPLITER
+                + ztzihao + ConfigSpliter.SPLITER
+                + ztyanse;
 
         // 环节  ------------------------------------------------
         final String huanjiebianhaoyanse = hjbh.getValue().toString();

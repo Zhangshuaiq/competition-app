@@ -7,6 +7,9 @@ import competition.controller.preview.PreviewPane;
 import competition.entity.Configs;
 import competition.mapper.ConfigsMapper;
 import competition.util.*;
+import competition.ws.Model60RuntimeData;
+import competition.ws.Model61RuntimeData;
+import competition.ws.Model7RuntimeData;
 import competition.ws.WsMessageHandler;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
@@ -81,9 +84,9 @@ public class TimeBoardPreview extends PreviewPane {
         ReloadPane timeBoard = controlPane.getTimeBoard();
         if (timeBoard == null) {
             timeBoard = (ReloadPane) ExtendedScreen.timeWithPos("/view/board/match/TimeBoard.fxml", "", "/view/style.css", true);
+            controlPane.setTimeBoard(timeBoard);
         }
         if (timeBoard != null) {
-            controlPane.setTimeBoard(timeBoard);
             timeBoard.reload(timeVal, timeValue);
         }
     }
@@ -142,6 +145,22 @@ public class TimeBoardPreview extends PreviewPane {
             this.timeValue = format(timeVal);
             messageHandler.sendQuestionTime(timeVal + "");
             messageHandler.sendModel7Time(timeVal + "");
+            for (int i = 0; i < Model7RuntimeData.getSeconds().size(); i++) {
+                Model7RuntimeData.getTimes().set(i, timeValue.replace(":", "分") + "秒");
+                if (!Model7RuntimeData.getFinished().get(i)) {
+                    Model7RuntimeData.getSeconds().set(i, timeVal);
+                    Model7RuntimeData.getFts().set(i, timeValue.replace(":", "分") + "秒");
+                }
+            }
+
+            // 团队模式更新时间数值
+            Model60RuntimeData.freshTime(timeVal);
+            Model61RuntimeData.freshTime(timeVal);
+            
+            // 已结束
+            if(timeline == null) {
+                controlPane.stopOnTime();
+            }
             PreviewStack.reload(this.timeVal, this.timeValue);
             showData();
         }));

@@ -1,11 +1,19 @@
 package competition.controller.match;
 
 
+import competition.controller.ControlPane;
+import competition.controller.preview.CluePreviewPreview;
+import competition.controller.preview.QuestionPreviewPreview;
+import competition.controller.preview.StageQuestionPreviewPreview;
 import competition.entity.Configs;
 import competition.entity.Questions;
 import competition.entity.Stages;
 import competition.mapper.ConfigsMapper;
 import competition.util.*;
+import competition.ws.Model60RuntimeData;
+import competition.ws.Model61RuntimeData;
+import competition.ws.Model7RuntimeData;
+import competition.ws.WsMessageHandler;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.geometry.Insets;
@@ -28,60 +36,63 @@ import javax.annotation.Resource;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Component
 @Scope("prototype")
 public class StageQuestionPreview implements ReloadPane{
-    
-    
+
+
     @FXML
     private AnchorPane container;
-    
+
     @Resource
     private ConfigsMapper configsMapper;
-    
-    
+
+    @Resource
+    private ControlPane controlPane;
+
+    @Resource
+    private WsMessageHandler messageHandler;
+
+
     private static Stages currentStage;
+
+    private  Stages inner;
 
     public static void setCurrentStage(Stages currentStage) {
         StageQuestionPreview.currentStage = currentStage;
     }
 
+
     @Override
-    public Node getPane() {
+    public AnchorPane getPane() {
         return container;
     }
-    
+
     @FXML
-    public void initialize(){
-        container.setOnMouseClicked(new EventHandler<MouseEvent>() {
-            @Override
-            public void handle(MouseEvent event) {
-                if (event.getButton() == MouseButton.SECONDARY) {
-                    //StageQuestionPreviewAttr.setConfigId(2);
-                  
-                }
-            }
-        });
+    public void initialize() {
+        inner = currentStage;
         showData();
     }
-    
-    
-    private void showData(){
 
+
+    private void showData() {
         try {
             container.setBackground(new Background(new BackgroundImage(
                     new Image(new FileInputStream(ImageResource.选题背景())), BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT, BackgroundPosition.DEFAULT,
-                    new BackgroundSize(ExtendedScreen.getWidth(), ExtendedScreen.getHeight(), false, false, false, false)
+                    new BackgroundSize(Navigator.getWidth(), Navigator.getHeight(), false, false, false, false)
             )));
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
-        
+
+
         container.getChildren().clear();
         // 未选择阶段，不展示
-        if (currentStage == null) {
+        if (inner == null) {
             return;
         }
 
@@ -102,14 +113,16 @@ public class StageQuestionPreview implements ReloadPane{
         });
         if (!StringUtils.isEmpty(config)){
 
-            String questionStyle = currentStage.getQuestionStyle();
+            String questionStyle = inner.getQuestionStyle();
             String[] styleArr = {};
             if(!StringUtils.isEmpty(questionStyle)) {
                 styleArr = questionStyle.split(ConfigSpliter.DIFFER);
             }
+
+
             // 标题名称
             StackPane title = new StackPane();
-            Text stageName = new Text(currentStage.getName());
+            Text stageName = new Text(inner.getName());
             title.getChildren().add(stageName);
             // 环节标题的字体颜色和背景色
             stageName.setFill(Color.valueOf(stageConfigAttrSplit[2]));
@@ -122,7 +135,8 @@ public class StageQuestionPreview implements ReloadPane{
             stageName.setLayoutY(ConfigSpliter.DEFAULT_Y);
             stageName.prefWidth(ConfigSpliter.DEFAULT_W);
             stageName.prefHeight(ConfigSpliter.DEFAULT_H);
-            
+
+
             if (styleArr.length > 1 && !ConfigSpliter.EMPTY.equals(styleArr[0])) {
                 String[] detailArr = styleArr[0].split(ConfigSpliter.SPLITER);
                 title.setLayoutX(Integer.parseInt(detailArr[0]));
@@ -145,8 +159,7 @@ public class StageQuestionPreview implements ReloadPane{
                     // 填充背景颜色
                     title.setBackground(new Background(new BackgroundFill(Color.valueOf(detailArr[5]), CornerRadii.EMPTY, Insets.EMPTY)));
                 }
-                
-                
+
                 stageName.setLayoutX(Integer.parseInt(detailArr[0]));
                 stageName.setLayoutY(Integer.parseInt(detailArr[1]));
                 stageName.prefWidth(Integer.parseInt(detailArr[2]));
@@ -168,11 +181,11 @@ public class StageQuestionPreview implements ReloadPane{
                 stageName.setUnderline(Boolean.valueOf(detailArr[12]));
                 stageName.setStrikethrough(Boolean.valueOf(detailArr[9]));
             }
-            
+
             container.getChildren().add(title);
-            
+
             // 以后台配置为准
-            
+
             String[] cfgArr = config.split(ConfigSpliter.SPLITER);
 
             int col = 1;
@@ -182,20 +195,25 @@ public class StageQuestionPreview implements ReloadPane{
                     col = Integer.parseInt(detailArr[15]);
                 }
             }
-            
+
 
             layout.setHgap(20);
             layout.setVgap(20);
             layout.setLayoutX(Integer.parseInt(cfgArr[3]));
             layout.setLayoutY(Integer.parseInt(cfgArr[4]));
-           
 
-            
+
+            Map<String, Object> dataMap = new HashMap<>();
+            dataMap.put("stage", inner);
+            dataMap.put("questions", questionList);
+            messageHandler.notifyPage("stageQuestion", dataMap);
+
             for (int i = 0; i < questionList.size(); i++) {
                 StackPane item = new StackPane();
                 item.setPrefSize(Integer.parseInt(cfgArr[5]), Integer.parseInt(cfgArr[6]));
                 Questions questions = questionList.get(i);
                 Text text = new Text(questions.getQuestionNumber().toString());
+
                 if (CurrentQuestions.hasAnswer(questions.getQuestionNumber().toString())) {
                     item.setVisible(false);
                 } else {
@@ -206,7 +224,7 @@ public class StageQuestionPreview implements ReloadPane{
 
                     layout.setLayoutX(Integer.parseInt(detailArr[0]));
                     layout.setLayoutY(Integer.parseInt(detailArr[1]));
-                    
+
                     item.setPrefSize(Integer.parseInt(detailArr[2]), Integer.parseInt(detailArr[3]));
                     item.setAlignment(AlignmentUtil.getAlign(detailArr[13]));
                     item.setLayoutX(Integer.parseInt(detailArr[0]));
@@ -219,7 +237,7 @@ public class StageQuestionPreview implements ReloadPane{
                             try {
                                 item.setBackground(new Background(new BackgroundImage(new Image(new FileInputStream(detailArr[6])),
                                         BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT, BackgroundPosition.DEFAULT,
-                                 new BackgroundSize(Integer.parseInt(detailArr[2]), Integer.parseInt(detailArr[3]), false, false, false, false))));
+                                        new BackgroundSize(Integer.parseInt(detailArr[2]), Integer.parseInt(detailArr[3]), false, false, false, false))));
                             } catch (FileNotFoundException e) {
                                 e.printStackTrace();
                             }
@@ -228,7 +246,8 @@ public class StageQuestionPreview implements ReloadPane{
                         // 填充背景颜色
                         item.setBackground(new Background(new BackgroundFill(Color.valueOf(detailArr[5]), CornerRadii.EMPTY, Insets.EMPTY)));
                     }
-                    
+
+
                     Font font = Font.font(FontMap.getFont(detailArr[7]), FontWeight.NORMAL, FontPosture.REGULAR, Integer.parseInt(detailArr[8]));
                     text.setFont(font);
                     if (Boolean.valueOf(detailArr[10])) {
@@ -248,12 +267,16 @@ public class StageQuestionPreview implements ReloadPane{
                 item.getChildren().add(text);
                 layout.add(item, i % col, i / col);
             }
-            
-            
+
+
 
         }
 
         container.getChildren().add(layout);
+    }
+
+    public Stages getInner() {
+        return inner;
     }
 
     @Override

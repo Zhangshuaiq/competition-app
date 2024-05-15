@@ -1,20 +1,24 @@
 package competition.controller.match;
 
+import competition.controller.ControlPane;
+import competition.entity.Model3Style;
 import competition.entity.Questions;
 import competition.entity.Teams;
-import competition.util.CurrentQuestions;
-import competition.util.ExtendedScreen;
-import competition.util.PreviewStack;
-import competition.util.TeamRuntime;
+import competition.mapper.Model3Mapper;
+import competition.util.*;
 import competition.ws.Model7RuntimeData;
 import competition.ws.WsMessageHandler;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.control.Label;
+import javafx.scene.image.Image;
+import javafx.scene.input.MouseButton;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
@@ -26,6 +30,8 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
 import javax.annotation.Resource;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.util.List;
 
 // 竞技模式显示控制
@@ -38,49 +44,73 @@ public class Model7 implements ReloadPane {
 
     private String timeValue = "00秒";
 
+    @Resource
+    private ControlPane controlPane;
 
-    private int timeVal;
+    @Resource
+    private Model3Mapper model3Mapper;
 
+
+    public void stopTiming() {
+    }
 
     @Override
     public Node getPane() {
         return container;
     }
 
-    public void startTiming(int value) {
-//        timeVal = value;
-//        messageHandler.sendModel7Time(timeVal + "");
-//        timeline.setCycleCount(-1);
-//        timeline.play();
-    }
-
-    public void stopTiming() {
-//        if (timeline != null) {
-//            timeline.stop();
-//        }
-    }
-
     @FXML
     public void initialize() {
-        container.setPadding(new Insets(0, 10, 0, 10));
         reload();
     }
 
 
     private void showData() {
-        container.setPrefWidth(ExtendedScreen.getWidth());
+
+        try {
+            container.setBackground(new Background(new BackgroundImage(
+                    new Image(new FileInputStream(ImageResource.竞技模式背景())), BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT, BackgroundPosition.DEFAULT,
+                    new BackgroundSize(Navigator.getWidth(), Navigator.getHeight(), false, false, false, false)
+            )));
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+
+        Model3Style model3Style = model3Mapper.selectById(2);
+        String titleStyle = model3Style.getTitleStyle();
+
+        int vgap = 20;
+        int hgap = 20;
+        int x = 10;
+        int y = 0;
+        int width = (int) ((Navigator.getWidth() - 40) / 4);
+        int height = 287;
+        int col = 4;
+
+        if (!StringUtils.isEmpty(titleStyle)) {
+            String[] split = titleStyle.split(ConfigSpliter.SPLITER);
+            col = Integer.parseInt(split[0]);
+            x = Integer.parseInt(split[5]);
+            y = Integer.parseInt(split[6]);
+            width = Integer.parseInt(split[3]);
+            height = Integer.parseInt(split[4]);
+            vgap = Integer.parseInt(split[1]);
+            hgap = Integer.parseInt(split[2]);
+        }
+        container.setPadding(new Insets(y, 0, 0, x));
         container.getChildren().clear();
-        container.setVgap(20);
-        container.setHgap(20);
+        container.setVgap(vgap);
+        container.setHgap(hgap);
         // 添加
         List<List<Model7RuntimeData.ModelData>> runtimeData = Model7RuntimeData.getRuntimeData();
         List<Teams> teams = TeamRuntime.getTeams();
         for (int i = 0; i < runtimeData.size(); i++) {
             AnchorPane anchorPane = new AnchorPane();
-            anchorPane.setPrefWidth(ExtendedScreen.getWidth() / 4);
+            anchorPane.setPadding(new Insets(0, 10, 0, 10));
+            anchorPane.setPrefWidth(width);
             anchorPane.setMinWidth(0);
             anchorPane.setMaxWidth(Double.MAX_VALUE); // 允许AnchorPane扩展以填充可用空间
-            container.add(anchorPane, i % 4, i / 4);
+            container.add(anchorPane, i % col, i / col);
             VBox upArea = new VBox();
             upArea.setMinWidth(0);
             upArea.setMaxWidth(Double.MAX_VALUE);
@@ -107,7 +137,6 @@ public class Model7 implements ReloadPane {
                 c.setFill(Color.WHITE);
                 row2.getChildren().add(c);
             }
-            int lastIndex = -1;
             for (int i1 = 0; i1 < modelData.size(); i1++) {
                 Model7RuntimeData.ModelData m = modelData.get(i1);
                 if (m.getUserSelect() == null) {
@@ -121,7 +150,6 @@ public class Model7 implements ReloadPane {
                     ((Circle) (row2.getChildren().get(i1))).setFill(Color.RED);
                 }
                 last = m;
-                lastIndex = i1;
             }
             // 第一行
             HBox row1 = new HBox();
@@ -135,6 +163,9 @@ public class Model7 implements ReloadPane {
             scoreL.setPrefWidth(anchorPane.getPrefWidth() / 4);
             scoreL.setTextFill(Color.WHITE);
             Label timeL = new Label("完成" + finish + "题|用时" + timeValue);
+            if (Model7RuntimeData.getFinished().get(i)) {
+                timeL.setText("完成" + finish + "题|用时" + Model7RuntimeData.getFts().get(i));
+            }
             timeL.setPrefWidth(anchorPane.getPrefWidth() / 2);
             timeL.setTextFill(Color.WHITE);
 
@@ -144,45 +175,48 @@ public class Model7 implements ReloadPane {
             AnchorPane downArea = new AnchorPane();
             downArea.setPrefWidth(anchorPane.getPrefWidth());
             downArea.setStyle("-fx-border-color: black; -fx-border-width: 1");
-            anchorPane.getChildren().add(downArea);
+            if (!GlobalCache.model7Hide) {
+                anchorPane.getChildren().add(downArea);
+            }
             downArea.setLayoutY(52);
-            downArea.setPrefHeight(250);
+            downArea.setPrefHeight(height - 37);
 
-            if (last == null) {
-                Label waitLab = new Label("等待答题");
-                waitLab.setPrefWidth(downArea.getPrefWidth());
-                waitLab.setPrefHeight(downArea.getPrefHeight());
-                waitLab.setFont(Font.font(32));
-                waitLab.setTextAlignment(TextAlignment.CENTER);
-                waitLab.setAlignment(Pos.CENTER);
-                downArea.getChildren().add(waitLab);
-            } else {
-                // 回答完毕
-                if (Model7RuntimeData.getFinished().get(i)) {
-                    Label endLab = new Label("答题结束");
-                    endLab.setPrefWidth(downArea.getPrefWidth());
-                    endLab.setPrefHeight(downArea.getPrefHeight() / 5);
-                    endLab.setLayoutY(downArea.getPrefHeight() / 5);
-                    endLab.setFont(Font.font(32));
-                    endLab.setAlignment(Pos.CENTER);
-                    endLab.setTextAlignment(TextAlignment.CENTER);
+            // 回答完毕
+            if (Model7RuntimeData.getFinished().get(i)) {
+                Label endLab = new Label("答题结束");
+                endLab.setPrefWidth(downArea.getPrefWidth());
+                endLab.setPrefHeight(downArea.getPrefHeight() / 5);
+                endLab.setLayoutY(downArea.getPrefHeight() / 5);
+                endLab.setFont(Font.font(32));
+                endLab.setAlignment(Pos.CENTER);
+                endLab.setTextAlignment(TextAlignment.CENTER);
 
-                    Label scoreLab = new Label(score + "分");
-                    scoreLab.setPrefWidth(downArea.getPrefWidth());
-                    scoreLab.setPrefHeight(downArea.getPrefHeight() / 5);
-                    scoreLab.setLayoutY(downArea.getPrefHeight() * 0.4);
-                    scoreLab.setFont(Font.font(32));
-                    scoreLab.setTextAlignment(TextAlignment.CENTER);
-                    scoreLab.setAlignment(Pos.CENTER);
-
-                    Label timeLab = new Label(timeValue);
-                    timeLab.setPrefWidth(downArea.getPrefWidth());
-                    timeLab.setPrefHeight(downArea.getPrefHeight() / 5);
-                    timeLab.setLayoutY(downArea.getPrefHeight() * 0.6);
-                    timeLab.setFont(Font.font(32));
-                    timeLab.setTextAlignment(TextAlignment.CENTER);
-                    timeLab.setAlignment(Pos.CENTER);
-                    downArea.getChildren().addAll(endLab, scoreLab, timeLab);
+                Label scoreLab = new Label(score + "分");
+                scoreLab.setPrefWidth(downArea.getPrefWidth());
+                scoreLab.setPrefHeight(downArea.getPrefHeight() / 5);
+                scoreLab.setLayoutY(downArea.getPrefHeight() * 0.4);
+                scoreLab.setFont(Font.font(32));
+                scoreLab.setTextAlignment(TextAlignment.CENTER);
+                scoreLab.setAlignment(Pos.CENTER);
+                List<String> fts = Model7RuntimeData.getFts();
+                Label timeLab = new Label(fts.get(i));
+                timeLab.setPrefWidth(downArea.getPrefWidth());
+                timeLab.setPrefHeight(downArea.getPrefHeight() / 5);
+                timeLab.setLayoutY(downArea.getPrefHeight() * 0.6);
+                timeLab.setFont(Font.font(32));
+                timeLab.setTextAlignment(TextAlignment.CENTER);
+                timeLab.setAlignment(Pos.CENTER);
+                downArea.getChildren().addAll(endLab, scoreLab, timeLab);
+            }
+            else {
+                if (last == null) {
+                    Label waitLab = new Label("等待答题");
+                    waitLab.setPrefWidth(downArea.getPrefWidth());
+                    waitLab.setPrefHeight(downArea.getPrefHeight());
+                    waitLab.setFont(Font.font(32));
+                    waitLab.setTextAlignment(TextAlignment.CENTER);
+                    waitLab.setAlignment(Pos.CENTER);
+                    downArea.getChildren().add(waitLab);
                 } else {
                     VBox vbx = new VBox();
                     // 设置边距
@@ -236,7 +270,7 @@ public class Model7 implements ReloadPane {
                         select.setPrefHeight(30);
                         select.setTextAlignment(TextAlignment.CENTER);
                         select.setTextFill(Color.WHITE);
-                        select.setPrefWidth(answerArea.getPrefWidth() / 4);
+                        select.setPrefWidth(answerArea.getPrefWidth());
 
                         Label status = new Label();
                         if (last.getAnswer().equals(last.getUserSelect())) {
@@ -249,13 +283,13 @@ public class Model7 implements ReloadPane {
                         status.setPrefHeight(30);
                         status.setTextAlignment(TextAlignment.CENTER);
                         status.setTextFill(Color.WHITE);
-                        status.setPrefWidth(answerArea.getPrefWidth() / 5);
+                        status.setPrefWidth(answerArea.getPrefWidth());
 
                         answerArea.getChildren().addAll(select, status);
                     }
                 }
-
             }
+
 
         }
     }
@@ -269,16 +303,8 @@ public class Model7 implements ReloadPane {
 
     @Override
     public void reload(int time, String timeTxt) {
-        boolean allFinished = true;
-        for (Boolean b : Model7RuntimeData.getFinished()) {
-            if (!b) {
-                allFinished = false;
-            }
-        }
-
-        if (!allFinished) {
-            this.timeValue = timeTxt;
-        }
+        this.timeValue = timeTxt;
         showData();
     }
+
 }

@@ -15,7 +15,6 @@ import competition.ws.WsMessageHandler;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.geometry.Insets;
-import javafx.geometry.Pos;
 import javafx.scene.image.Image;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
@@ -77,7 +76,7 @@ public class StageQuestionPreviewPreview extends PreviewPane {
             public void handle(MouseEvent event) {
                 if (event.getButton() == MouseButton.SECONDARY) {
                     StageQuestionPreviewAttr.setReloadPane(controlPane.getQuestionPreview());
-                    StageQuestionPreviewAttr.setCurrentStage(currentStage);
+                    StageQuestionPreviewAttr.setCurrentStage(inner);
                     Navigator.navigatorTo("/view/match/StageQuestionPreviewAttr.fxml", "", "/view/style.css", false, false);
                 }
             }
@@ -128,7 +127,7 @@ public class StageQuestionPreviewPreview extends PreviewPane {
         });
         if (!StringUtils.isEmpty(config)){
 
-            String questionStyle = currentStage.getQuestionStyle();
+            String questionStyle = inner.getQuestionStyle();
             String[] styleArr = {};
             if(!StringUtils.isEmpty(questionStyle)) {
                 styleArr = questionStyle.split(ConfigSpliter.DIFFER);
@@ -137,7 +136,7 @@ public class StageQuestionPreviewPreview extends PreviewPane {
 
             // 标题名称
             StackPane title = new StackPane();
-            Text stageName = new Text(currentStage.getName());
+            Text stageName = new Text(inner.getName());
             title.getChildren().add(stageName);
             // 环节标题的字体颜色和背景色
             stageName.setFill(Color.valueOf(stageConfigAttrSplit[2]));
@@ -219,7 +218,7 @@ public class StageQuestionPreviewPreview extends PreviewPane {
 
 
             Map<String, Object> dataMap = new HashMap<>();
-            dataMap.put("stage", currentStage);
+            dataMap.put("stage", inner);
             dataMap.put("questions", questionList);
             messageHandler.notifyPage("stageQuestion", dataMap);
             
@@ -290,22 +289,22 @@ public class StageQuestionPreviewPreview extends PreviewPane {
                         // 给题目设置分值
                         // 扩展屏幕展示并排答题界面（竞技模式）
                         for (Questions q : CurrentQuestions.getQuestionList()) {
-                            q.setScore(currentStage.getScorePerQ());
+                            q.setScore(inner.getScorePerQ());
                         }
-                        if (currentStage.getQuestionType() == 7) {
+                        if (inner.getQuestionType() == 7) {
                             Model7RuntimeData.setTeams(TeamRuntime.getTeams());
                             // 发送试题列表给前端
                             controlPane.setPreviewPane(
-                                    Navigator.preview("/view/preview/Model7.fxml", "", "/view/style.css", true, true)
+                                    Navigator.preview("/view/preview/Model7Preview.fxml", "", "/view/style.css", true, true)
                             );
                             controlPane.updateScoreBoard();
 
                             //messageHandler.sendQuestionGroup();
                             // 扩展屏显示题目信息
-                        } else if (currentStage.getQuestionType() == 6) {
+                        } else if (inner.getQuestionType() == 6) {
                             // 重置当前的答题状态
                             TeamRuntime.resetStatus();
-                            Integer m6 = currentStage.getM6();
+                            Integer m6 = inner.getM6();
                             String tihao = questions.getQuestionNumber().toString();
                             Questions questions = CurrentQuestions.getQ(tihao);
                             if (questions == null) {
@@ -353,7 +352,7 @@ public class StageQuestionPreviewPreview extends PreviewPane {
                             // 内屏更新
                            
                             Integer questionType = inner.getQuestionType();
-                            if (questionType == 2) {
+                            if (questionType == 2 || questionType == 1) {
                                 // 正常自选题
                                 QuestionPreviewPreview.setCurrent(questions);
                                 controlPane.setPreviewPane(

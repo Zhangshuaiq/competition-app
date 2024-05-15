@@ -3,10 +3,6 @@ package competition.controller.board.preview;
 import competition.controller.ControlPane;
 import competition.controller.board.BoardPane;
 import competition.controller.board.match.ScoreBoardH;
-import competition.controller.board.match.ScoreBoardV;
-import competition.controller.preview.Model60Preview;
-import competition.controller.preview.Model61Preview;
-import competition.controller.preview.Model7Preview;
 import competition.controller.preview.PreviewPane;
 import competition.entity.Configs;
 import competition.entity.ScoreStyle;
@@ -23,8 +19,6 @@ import javafx.fxml.FXML;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
-import javafx.scene.control.CheckBox;
-import javafx.scene.control.Label;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
@@ -51,7 +45,7 @@ public class ScoreBoardHPreview extends PreviewPane implements BoardPane {
     @Resource
     private ConfigsMapper configsMapper;
 
-    private Set<String> selected = new HashSet<>();
+    private final Set<String> selected = new HashSet<>();
 
     @Resource
     private ControlPane controlPane;
@@ -88,9 +82,16 @@ public class ScoreBoardHPreview extends PreviewPane implements BoardPane {
         String[] cfgArr = config.split(ConfigSpliter.SPLITER);
         container.getChildren().clear();
         container.setSpacing(20);
+        
+        Color statusColor = Color.WHITE;
+        int statusSize = (int) new Text().getFont().getSize();
 
-
-
+        if (cfgArr.length >= 33) {
+            statusSize = Integer.parseInt(cfgArr[31]);
+            statusColor = Color.valueOf(cfgArr[32]);
+        }
+        
+        Font statusFont = Font.font("Microsoft YaHei", statusSize);
        
         List<Teams> teams = TeamRuntime.getTeams();
         for (Teams team : teams) {
@@ -160,25 +161,37 @@ public class ScoreBoardHPreview extends PreviewPane implements BoardPane {
                     Model60RuntimeData.ModelData userData = answerMap.get(team.getFullName());
                     Text userSelect = new Text();
                     // fix bug: 用户未选择答案的情况
-                    if (userData.getUserSelect() != null) {
-                        userSelect.setText(userData.getUserSelect());
-                    }
                     userSelect.setTextAlignment(TextAlignment.CENTER);
                     userSelect.prefWidth(Integer.parseInt(cfgArr[19]));
                     userSelect.prefHeight(Integer.parseInt(cfgArr[20]));
-                    userSelect.setFill(Color.valueOf(cfgArr[21]));
-                    if (StringUtils.isEmpty(userData.getUserSelect())) {
-                        stackPane2.setBackground(new Background(new BackgroundFill(Color.valueOf(cfgArr[25]), new CornerRadii(10), Insets.EMPTY)));
+                    userSelect.setFont(statusFont);
+                    userSelect.setFill(statusColor);
+                    if (team.getStatus() == 1) {
+                        // 回答但是未展示答案
+                        stackPane2.setBackground(new Background(new BackgroundFill(Color.valueOf(cfgArr[26]), new CornerRadii(10), Insets.EMPTY)));
                     } else {
-                        if (userData.getAnswer().equals(userData.getUserSelect())) {
-                            stackPane2.setBackground(new Background(new BackgroundFill(Color.valueOf(cfgArr[27]), new CornerRadii(10), Insets.EMPTY)));
+                        if (StringUtils.isEmpty(userData.getUserSelect())) {
+                            if (team.getStatus() == 3) {
+                                // 答题已结束，展示错误的状态
+                                stackPane2.setBackground(new Background(new BackgroundFill(Color.valueOf(cfgArr[28]), new CornerRadii(10), Insets.EMPTY)));
+                            } else {
+                                // 答题未结束，展示未选择状态
+                                stackPane2.setBackground(new Background(new BackgroundFill(Color.valueOf(cfgArr[25]), new CornerRadii(10), Insets.EMPTY)));
+                            }
                         } else {
-                            stackPane2.setBackground(new Background(new BackgroundFill(Color.valueOf(cfgArr[28]), new CornerRadii(10), Insets.EMPTY)));
+                            userSelect.setText(userData.getUserSelect());
+                            if (userData.getAnswer().equals(userData.getUserSelect())) {
+                                stackPane2.setBackground(new Background(new BackgroundFill(Color.valueOf(cfgArr[27]), new CornerRadii(10), Insets.EMPTY)));
+                            } else {
+                                stackPane2.setBackground(new Background(new BackgroundFill(Color.valueOf(cfgArr[28]), new CornerRadii(10), Insets.EMPTY)));
+                            }
                         }
                     }
+
                     stackPane2.getChildren().add(userSelect);
                     box.getChildren().add(stackPane2);
-                } else if (questionType == 6 && m6 == 1) {
+                }
+                else if (questionType == 6 && m6 == 1) {
                     List<Model61RuntimeData.ModelData> runtimeData = Model61RuntimeData.getRuntimeData();
                     Map<String, Model61RuntimeData.ModelData> dataMap = runtimeData.stream().collect(Collectors.toMap(x -> x.getTeamName() + "-" + x.getUserName(), x -> x));
                     count = 3;
@@ -199,12 +212,20 @@ public class ScoreBoardHPreview extends PreviewPane implements BoardPane {
                             stackPane2.getChildren().add(l);
                             l.prefHeight(Integer.parseInt(cfgArr[20]));
                             l.prefWidth(w);
-                            l.setFill(Color.valueOf(cfgArr[21]));
+                            l.setFont(statusFont);
+                            l.setFill(statusColor);
                             if (team.getStatusList().get(i) == 1) {
                                 stackPane2.setBackground(new Background(new BackgroundFill(Color.valueOf(cfgArr[26]), new CornerRadii(10), Insets.EMPTY)));
                             } else {
                                 if (StringUtils.isEmpty(modelData.getUserSelect())) {
-                                    stackPane2.setBackground(new Background(new BackgroundFill(Color.valueOf(cfgArr[25]), new CornerRadii(10), Insets.EMPTY)));
+                                    if (team.getStatusList().get(i) == 3) {
+                                        // 答题已结束，展示错误的状态
+                                        stackPane2.setBackground(new Background(new BackgroundFill(Color.valueOf(cfgArr[28]), new CornerRadii(10), Insets.EMPTY)));
+                                    } else {
+                                        // 答题未结束，展示未选择状态
+                                        stackPane2.setBackground(new Background(new BackgroundFill(Color.valueOf(cfgArr[25]), new CornerRadii(10), Insets.EMPTY)));
+                                    }
+                                    //stackPane2.setBackground(new Background(new BackgroundFill(Color.valueOf(cfgArr[25]), new CornerRadii(10), Insets.EMPTY)));
                                 } else {
                                     if (modelData.getUserSelect().equals(modelData.getAnswer())) {
                                         stackPane2.setBackground(new Background(new BackgroundFill(Color.valueOf(cfgArr[27]), new CornerRadii(10), Insets.EMPTY)));
@@ -219,7 +240,8 @@ public class ScoreBoardHPreview extends PreviewPane implements BoardPane {
                         }
                         box.getChildren().add(memberStatus);
                     }
-                } else if (questionType == 7) {
+                }
+                else if (questionType == 7) {
                     count = 3;
                 }
 
@@ -261,7 +283,6 @@ public class ScoreBoardHPreview extends PreviewPane implements BoardPane {
         container.setLayoutX(Double.parseDouble(cfgArr[17]));
         container.setLayoutY(Double.parseDouble(cfgArr[18]));
         container.setPrefWidth((Double.parseDouble(cfgArr[19]) + 20) * teams.size() + 200);
-        //container.setPrefHeight(Double.parseDouble(cfgArr[20]) * count + 10 * (count));
     }
 
 

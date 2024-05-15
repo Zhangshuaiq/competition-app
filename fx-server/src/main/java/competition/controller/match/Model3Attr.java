@@ -31,12 +31,6 @@ import java.io.File;
 public class Model3Attr {
 
     @FXML
-    private TextField colNumber;
-
-    @FXML
-    private TextField nameWidthInput;
-
-    @FXML
     private TextField nameHeightInput;
 
     @FXML
@@ -46,25 +40,25 @@ public class Model3Attr {
     private CheckBox numberBackgroundChoice;
 
     @FXML
-    private ComboBox<String> numberFontSelector;
+    private ColorPicker headfColorInput;
 
     @FXML
     private TextField nameXInput;
 
     @FXML
-    private TextField numberXInput;
+    private CheckBox headIticChoice;
 
     @FXML
-    private TextField nameBackgroundPath;
+    private TextField colNumber;
 
     @FXML
-    private ColorPicker nameColorInput, nfColorInput;
+    private ColorPicker nfColorInput;
 
     @FXML
     private CheckBox nameIticChoice;
 
     @FXML
-    private CheckBox numberDeleteChoice;
+    private ColorPicker numberfColorInput;
 
     @FXML
     private CheckBox nameDeleteChoice;
@@ -76,15 +70,6 @@ public class Model3Attr {
     private ComboBox<String> numberTextAlignSelector;
 
     @FXML
-    private ComboBox<String> nameFontSelector;
-
-    @FXML
-    private CheckBox nameBoldChoice;
-
-    @FXML
-    private CheckBox numberBoldChoice;
-
-    @FXML
     private TextField numberSpaceInput;
 
     @FXML
@@ -92,6 +77,9 @@ public class Model3Attr {
 
     @FXML
     private ComboBox<String> nameTextAlignSelector;
+
+    @FXML
+    private CheckBox headBackgroundChoice;
 
     @FXML
     private TextField numberFontSize;
@@ -106,35 +94,93 @@ public class Model3Attr {
     private TextField numberWidthInput;
 
     @FXML
-    private TextField nameYInput;
+    private TextField headHeightInput;
 
     @FXML
     private TextField numberBackgroundPath;
 
     @FXML
+    private CheckBox headBoldChoice;
+
+    @FXML
     private CheckBox numberIticChoice;
 
     @FXML
-    private TextField nameFontSize;
+    private CheckBox headDeleteChoice;
 
     @FXML
     private TextField numberYInput;
 
     @FXML
-    private CheckBox nameBackgroundChoice;
+    private TextField nameWidthInput;
+
+    @FXML
+    private ComboBox<String> numberFontSelector;
+
+    @FXML
+    private TextField numberXInput;
+
+    @FXML
+    private CheckBox headUnderlineChoice;
+
+    @FXML
+    private TextField headXInput;
+
+    @FXML
+    private TextField nameBackgroundPath;
+
+    @FXML
+    private ColorPicker headColorInput;
+
+    @FXML
+    private TextField headWidthInput;
+
+    @FXML
+    private ComboBox<String> headTextAlignSelector;
+
+    @FXML
+    private ColorPicker nameColorInput;
+
+    @FXML
+    private CheckBox numberDeleteChoice;
 
     @FXML
     private TextField numberColSpaceInput;
 
     @FXML
-    private ColorPicker numberfColorInput;
+    private ComboBox<String> nameFontSelector;
 
+    @FXML
+    private TextField headFontSize;
 
-    @Resource
-    private ConfigsMapper configsMapper;
+    @FXML
+    private CheckBox nameBoldChoice;
 
-    @Resource
-    private StagesMapper stagesMapper;
+    @FXML
+    private CheckBox numberBoldChoice;
+
+    @FXML
+    private TextField headBackgroundPath;
+
+    @FXML
+    private TextField nameYInput;
+
+    @FXML
+    private ComboBox<String> headFontSelector;
+
+    @FXML
+    private TextField headSpaceInput;
+
+    @FXML
+    private TextField nameFontSize;
+
+    @FXML
+    private CheckBox nameBackgroundChoice;
+
+    @FXML
+    private TextField headYInput;
+    
+    
 
 
     // 风险题目
@@ -153,6 +199,24 @@ public class Model3Attr {
         Model3Attr.currentStage = currentStage;
     }
 
+    @FXML
+    public void selectHeadImg() {
+        FileChooser chooser = new FileChooser();
+        chooser.setInitialDirectory(new File(BaseDir.IMAGE_DIR));
+        chooser.getExtensionFilters().addAll(
+                new FileChooser.ExtensionFilter("Image Files", "*.png", "*.jpg", "*.gif")
+        );
+        File file = chooser.showOpenDialog(null);
+        if (file != null) {
+            headBackgroundPath.setText(file.getAbsolutePath());
+        }
+    }
+
+
+    @FXML
+    public void cancelHeadImg() {
+        headBackgroundPath.setText("");
+    }
 
     @FXML
     public void selectNameImg() {
@@ -195,20 +259,68 @@ public class Model3Attr {
 
     @FXML
     public void initialize() {
-        Configs configs = configsMapper.selectById(4);
         nameTextAlignSelector.setItems(FXCollections.observableList(AlignmentUtil.alignNames()));
         nameFontSelector.setItems(FXCollections.observableList(FontMap.fontNames()));
 
         numberTextAlignSelector.setItems(FXCollections.observableList(AlignmentUtil.alignNames()));
         numberFontSelector.setItems(FXCollections.observableList(FontMap.fontNames()));
-
+        headTextAlignSelector.setItems(FXCollections.observableList(AlignmentUtil.alignNames()));
+        headFontSelector.setItems(FXCollections.observableList(FontMap.fontNames()));
 
         Model3Style model3Style = mapper.selectById(1);
 
         showNameConfig(model3Style.getTitleStyle());
         showNumberConfig(model3Style.getQStyle());
+        showHeadConfig(model3Style.getHeadStyle());
     }
 
+
+
+    @FXML
+    public void saveHeadConfig(){
+        String x = headXInput.getText();
+        String y = headYInput.getText();
+        String width = headWidthInput.getText();
+        String height = headHeightInput.getText();
+        boolean fillBackground = headBackgroundChoice.isSelected();
+        final String backgroundColor = headColorInput.getValue().toString();
+        String backgroundImage = headBackgroundPath.getText();
+        final String fontFamily = headFontSelector.getValue();
+        String fsize = headFontSize.getText();
+        final boolean delete = headDeleteChoice.isSelected();
+        final boolean bold = headBoldChoice.isSelected();
+        final boolean itic = headIticChoice.isSelected();
+        final boolean underlne = headUnderlineChoice.isSelected();
+        final String alignValue = headTextAlignSelector.getValue();
+        final String rowSpace = headSpaceInput.getText();
+
+        String detail = x + ConfigSpliter.SPLITER
+                + y + ConfigSpliter.SPLITER
+                + width + ConfigSpliter.SPLITER
+                + height + ConfigSpliter.SPLITER
+                + fillBackground + ConfigSpliter.SPLITER
+                + backgroundColor + ConfigSpliter.SPLITER
+                + backgroundImage + ConfigSpliter.SPLITER
+                + fontFamily + ConfigSpliter.SPLITER
+                + fsize + ConfigSpliter.SPLITER
+                + delete + ConfigSpliter.SPLITER
+                + bold + ConfigSpliter.SPLITER
+                + itic + ConfigSpliter.SPLITER
+                + underlne + ConfigSpliter.SPLITER
+                + alignValue + ConfigSpliter.SPLITER
+                + rowSpace + ConfigSpliter.SPLITER
+                + headfColorInput.getValue();
+
+        Model3Style model3Style = mapper.selectById(1);
+        model3Style.setHeadStyle(detail);
+        mapper.updateById(model3Style);
+        if (reloadPane != null) {
+            reloadPane.reload();
+        }
+        PreviewStack.reload();
+        closeStage();
+    }
+    
     @FXML
     public void saveNameConfig() {
         String x = nameXInput.getText();
@@ -369,6 +481,47 @@ public class Model3Attr {
             }
         } else {
             // 默认数据
+        }
+    }
+
+
+    private void showHeadConfig(String style) {
+        Font defaultFont = new JLabel().getFont();
+        headFontSelector.setValue(defaultFont.getFamily());
+        headFontSize.setText(defaultFont.getSize() + "");
+        headIticChoice.setSelected(false);
+        headDeleteChoice.setSelected(false);
+        headSpaceInput.setText("0");
+        headXInput.setText(Model3Preview.HEAD_X + "");
+        headYInput.setText(Model3Preview.HEAD_Y + "");
+        headWidthInput.setText(Model3Preview.HEAD_W + "");
+        headHeightInput.setText(Model3Preview.HEAD_H + "");
+        headColorInput.setValue(Color.YELLOW);
+        headfColorInput.setValue(Color.BLACK);
+        headTextAlignSelector.setValue("居中对齐");
+
+        if (!StringUtils.isEmpty(style)) {
+            String[] split = style.split(ConfigSpliter.DIFFER);
+            if (split.length > 0 && !ConfigSpliter.EMPTY.equals(split[0])) {
+                String headCfg = split[0];
+                String[] cfgArr = headCfg.split(ConfigSpliter.SPLITER);
+                headXInput.setText(cfgArr[0]);
+                headYInput.setText(cfgArr[1]);
+                headWidthInput.setText(cfgArr[2]);
+                headHeightInput.setText(cfgArr[3]);
+                headBackgroundChoice.setSelected(Boolean.valueOf(cfgArr[4]));
+                headColorInput.setValue(Color.valueOf(cfgArr[5]));
+                headBackgroundPath.setText(cfgArr[6]);
+                headFontSelector.setValue(cfgArr[7]);
+                headFontSize.setText(Integer.parseInt(cfgArr[8]) + "");
+                headDeleteChoice.setSelected(Boolean.valueOf(cfgArr[9]));
+                headBoldChoice.setSelected(Boolean.valueOf(cfgArr[10]));
+                headIticChoice.setSelected(Boolean.valueOf(cfgArr[11]));
+                headUnderlineChoice.setSelected(Boolean.valueOf(cfgArr[12]));
+                headTextAlignSelector.setValue(cfgArr[13]);
+                headSpaceInput.setText(cfgArr[14]);
+                headfColorInput.setValue(Color.valueOf(cfgArr[15]));
+            }
         }
     }
 

@@ -1,9 +1,12 @@
 package competition.controller.backend;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import competition.controller.ControlPane;
 import competition.entity.Teams;
 import competition.mapper.TeamsMapper;
 import competition.util.Information;
+import competition.util.ScoreSaver;
+import competition.util.TeamRuntime;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.geometry.Pos;
@@ -37,10 +40,10 @@ public class TeamConfig {
     private TableView<Teams> tableView;
     
     @FXML
-    private TextField codeInput, shortNameInput, fullNameInput;
+    private TextField codeInput, shortNameInput, fullNameInput, passwordInput;
     
     @FXML
-    private TableColumn<Teams, String> codeCol, shortNameCol, fullNameCol, memberCol;
+    private TableColumn<Teams, String> codeCol, shortNameCol, fullNameCol, memberCol, passwordCol;
     
     @Resource
     private TeamsMapper teamsMapper;
@@ -52,12 +55,16 @@ public class TeamConfig {
     private TextField memberBaseScore;
     
     
+    @Resource
+    private ControlPane controlPane;
+    
     @FXML
     public void initialize(){
         codeCol.setCellValueFactory(new PropertyValueFactory<>("code"));
         shortNameCol.setCellValueFactory(new PropertyValueFactory<>("shortName"));
         fullNameCol.setCellValueFactory(new PropertyValueFactory<>("fullName"));
         memberCol.setCellValueFactory(new PropertyValueFactory<>("members"));
+        passwordCol.setCellValueFactory(new PropertyValueFactory<>("password"));
         showTeam();
     }
     
@@ -95,6 +102,7 @@ public class TeamConfig {
         final String codeVal = codeInput.getText();
         final String shortNameVal = shortNameInput.getText();
         final String fullNameVal = fullNameInput.getText();
+        final String password = passwordInput.getText();
 
         List<String> members = new ArrayList<>();
 
@@ -111,9 +119,9 @@ public class TeamConfig {
         teams.setShortName(shortNameVal);
         teams.setFullName(fullNameVal);
         teams.setMembers(memberVal);
+        teams.setPassword(password);
         
         teamsMapper.insert(teams);
-        
         showTeam();
     }
     
@@ -127,6 +135,7 @@ public class TeamConfig {
         codeInput.setText(selectedItem.getCode());
         shortNameInput.setText(selectedItem.getShortName());
         fullNameInput.setText(selectedItem.getFullName());
+        passwordInput.setText(selectedItem.getPassword());
         final String[] split = selectedItem.getMembers().split(",");
         memberBox.getChildren().removeIf(x -> x instanceof HBox);
         for (String m : split) {
@@ -146,6 +155,7 @@ public class TeamConfig {
         final String codeVal = codeInput.getText();
         final String shortNameVal = shortNameInput.getText();
         final String fullNameVal = fullNameInput.getText();
+        final String password = passwordInput.getText();
 
         List<String> members = new ArrayList<>();
 
@@ -163,6 +173,7 @@ public class TeamConfig {
         teams.setShortName(shortNameVal);
         teams.setFullName(fullNameVal);
         teams.setMembers(memberVal);
+        teams.setPassword(password);
         teamsMapper.updateById(teams);
         showTeam();
     }
@@ -197,6 +208,28 @@ public class TeamConfig {
             team.setTeamScore(Integer.parseInt(text));
             teamsMapper.updateById(team);
         }
+        ScoreSaver.clear();
+
+        // 排序队伍，按照编码排序
+        teams.sort(Comparator.comparingInt(o -> Integer.parseInt(o.getCode())));
+
+        for (Teams team : teams) {
+            team.setCurrentScore(team.getTeamScore());
+            team.setMemberScores(new ArrayList<>());
+            team.setQScores(new ArrayList<>());
+            team.setStatusList(new ArrayList<>());
+            team.setStatus(0);
+            if (!StringUtils.isEmpty(team.getMembers())) {
+                String[] split = team.getMembers().split(",");
+                for (String s : split) {
+                    team.getMemberScores().add(team.getMemberScore());
+                    team.getStatusList().add(0);
+                    team.getQScores().add(0);
+                }
+            }
+        }
+        TeamRuntime.setTeams(teams);
+        controlPane.getScoreBoardPreview().reload();
     }
     
     
@@ -212,6 +245,24 @@ public class TeamConfig {
             team.setMemberScore(Integer.parseInt(text));
             teamsMapper.updateById(team);
         }
+        
+        for (Teams team : teams) {
+            team.setCurrentScore(team.getTeamScore());
+            team.setMemberScores(new ArrayList<>());
+            team.setQScores(new ArrayList<>());
+            team.setStatusList(new ArrayList<>());
+            team.setStatus(0);
+            if (!StringUtils.isEmpty(team.getMembers())) {
+                String[] split = team.getMembers().split(",");
+                for (String s : split) {
+                    team.getMemberScores().add(team.getMemberScore());
+                    team.getStatusList().add(0);
+                    team.getQScores().add(0);
+                }
+            }
+        }
+        TeamRuntime.setTeams(teams);
+        controlPane.getScoreBoardPreview().reload();
     }
     
     

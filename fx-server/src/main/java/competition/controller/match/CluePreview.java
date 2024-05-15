@@ -1,17 +1,23 @@
 package competition.controller.match;
 
 
+import com.alibaba.fastjson2.JSON;
 import competition.controller.ControlPane;
+import competition.controller.preview.CluePreviewPreview;
 import competition.entity.Configs;
 import competition.entity.QuestionStyle;
 import competition.entity.Questions;
 import competition.mapper.ConfigsMapper;
 import competition.util.*;
+import competition.ws.WsMessageHandler;
 import javafx.collections.ObservableList;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.geometry.Insets;
 import javafx.scene.Node;
 import javafx.scene.image.Image;
+import javafx.scene.input.MouseButton;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
@@ -81,6 +87,14 @@ public class CluePreview implements ReloadPane {
 
     private void showData() {
         inner = current;
+        Questions questions = JSON.parseObject(JSON.toJSONString(inner), Questions.class);
+        questions.setChoiceA("");
+        questions.setChoiceB("");
+        questions.setChoiceC("");
+        questions.setChoiceD("");
+        questions.setChoiceE("");
+        questions.setChoiceF("");
+
         try {
             container.setBackground(new Background(new BackgroundImage(
                     new Image(new FileInputStream(ImageResource.答题背景())), BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT, BackgroundPosition.DEFAULT,
@@ -253,8 +267,11 @@ public class CluePreview implements ReloadPane {
                                             BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT, BackgroundPosition.DEFAULT,
                                             new BackgroundSize(Integer.parseInt(split1[2]), Integer.parseInt(split1[3]), false, false, false, false))));
                                 } catch (FileNotFoundException e) {
-                                    e.printStackTrace();
+                                    tiganBox.setBackground(new Background(new BackgroundFill(Color.TRANSPARENT, CornerRadii.EMPTY, Insets.EMPTY)));
+                                    //e.printStackTrace();
                                 }
+                            } else {
+                                tiganBox.setBackground(new Background(new BackgroundFill(Color.TRANSPARENT, CornerRadii.EMPTY, Insets.EMPTY)));
                             }
                         } else {
                             // 填充背景颜色
@@ -280,8 +297,10 @@ public class CluePreview implements ReloadPane {
                         tiganLabel.setLineSpacing(Integer.parseInt(split1[14]));
 
                         for (Node child : tiganBox.getChildren()) {
+                            child.prefWidth(Integer.parseInt(split1[2]));
                             if (child instanceof Text) {
                                 Text ch = (Text) child;
+                                ch.setWrappingWidth(Integer.parseInt(split1[2]));
                                 ch.setFont(font);
                                 ch.setUnderline(Boolean.valueOf(split1[12]));
                                 ch.setStrikethrough(Boolean.valueOf(split1[9]));
@@ -383,7 +402,9 @@ public class CluePreview implements ReloadPane {
 
 
                             stageLabel.setWrappingWidth(Integer.parseInt(split1[2]));
-                            stageLabel.setLineSpacing(Integer.parseInt(split1[14]));
+                            if (split1.length >= 15) {
+                                stageLabel.setLineSpacing(Integer.parseInt(split1[14]));
+                            }
                             Font font = Font.font(FontMap.getFont(split1[7]), FontWeight.NORMAL, FontPosture.REGULAR, Integer.parseInt(split1[8]));
                             stageLabel.setFont(font);
                             stageLabel.setUnderline(Boolean.valueOf(split1[12]));
@@ -411,41 +432,6 @@ public class CluePreview implements ReloadPane {
     public void showAnswer() {
         GlobalCache.showAnswer = !GlobalCache.showAnswer;
         backPane.setVisible(GlobalCache.showAnswer);
-        ReloadPane questionPreview = controlPane.getQuestionPreview();
-        if (ExtendedScreen.hasShow()) {
-            if (questionPreview != null) {
-                questionPreview.showAnswer();
-            }
-        }
-    }
-
-    public void hideTiming() {
-        //timeLabel.setVisible(false);
-    }
-
-    public void startTiming(int value) {
-//        timeVal = value;
-//        timeLabel.setText("答题剩余时间:" + timeVal + " 秒");
-//        timeLabel.setVisible(true);
-//        timeline.setCycleCount(-1);
-//        timeline.play();
-    }
-
-    public void stopTiming() {
-//        if (timeline != null) {
-//            timeline.stop();
-//        }
-    }
-
-    @Override
-    public void reload(int time, String timeTxt) {
-        ObservableList<Node> children = tiganBox.getChildren();
-        for (Node child : children) {
-            if (!child.isVisible()) {
-                child.setVisible(true);
-                break;
-            }
-        }
     }
 
     public Questions getInner() {
@@ -457,6 +443,44 @@ public class CluePreview implements ReloadPane {
         backPane.setVisible(GlobalCache.showAnswer);
         showData();
     }
-    
-    
+
+
+    @FXML
+    public void showClue(){
+        ObservableList<Node> children = tiganBox.getChildren();
+        for (Node child : children) {
+            if (!child.isVisible()) {
+                child.setVisible(true);
+                break;
+            }
+        }
+        Questions questions = JSON.parseObject(JSON.toJSONString(inner), Questions.class);
+        questions.setChoiceA("");
+        questions.setChoiceB("");
+        questions.setChoiceC("");
+        questions.setChoiceD("");
+        questions.setChoiceE("");
+        questions.setChoiceF("");
+        for (Node child : children) {
+            if (child == tiganLabel) {
+                continue;
+            }
+            Text text = (Text) child;
+            if (child.isVisible()) {
+                if (StringUtils.isEmpty(questions.getChoiceA())) {
+                    questions.setChoiceA(text.getText());
+                } else if (StringUtils.isEmpty(questions.getChoiceB())) {
+                    questions.setChoiceB(text.getText());
+                } else if (StringUtils.isEmpty(questions.getChoiceC())) {
+                    questions.setChoiceC(text.getText());
+                } else if (StringUtils.isEmpty(questions.getChoiceD())) {
+                    questions.setChoiceD(text.getText());
+                } else if (StringUtils.isEmpty(questions.getChoiceE())) {
+                    questions.setChoiceE(text.getText());
+                } else if (StringUtils.isEmpty(questions.getChoiceF())) {
+                    questions.setChoiceF(text.getText());
+                }
+            }
+        }
+    }
 }

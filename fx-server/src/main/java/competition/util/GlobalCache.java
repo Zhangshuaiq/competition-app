@@ -5,6 +5,19 @@ import java.util.Map;
 
 public class GlobalCache {
     
+    
+    // 是否展示竞技比赛的详情
+    public static boolean model7Hide = false;
+    
+    // 竞技排名是否正在显示
+    public static boolean showModel7Rank = false;
+    
+    // 选手排行是否正在展示
+    public static boolean showMemberRank = false;
+    
+    // 团队排行是否正在展示
+    public static boolean showTeamRank = false;
+    
     // 视频是否正在播放
     public static boolean videoPlay = false;
     

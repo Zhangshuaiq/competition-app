@@ -2,7 +2,6 @@ package competition.controller.preview;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import competition.controller.ControlPane;
-import competition.controller.board.preview.TimeBoardPreview;
 import competition.controller.match.*;
 import competition.entity.Configs;
 import competition.entity.Questions;
@@ -49,9 +48,6 @@ public class StageNamePreviewPreview extends PreviewPane {
     @Resource
     private ConfigsMapper configsMapper;
     
-    @Resource
-    private StageNamePreview stageNamePreview;
-
     @Resource
     private WsMessageHandler messageHandler;
 
@@ -214,7 +210,7 @@ public class StageNamePreviewPreview extends PreviewPane {
                     // 风险题 优先级高
                     Model3Preview.setPassedId(stages.getId());
                     controlPane.setPreviewPane(
-                            Navigator.preview("/view/preview/Model3.fxml", "", "/view/style.css", true, true)
+                            Navigator.preview("/view/preview/Model3Preview.fxml", "", "/view/style.css", true, true)
                     );
                     return;
                 }
@@ -237,9 +233,13 @@ public class StageNamePreviewPreview extends PreviewPane {
                     // 判断环节出题的类型
                     if (stages.getQuestionType() == 1) {
                         // 连续答题
-                        List<Questions> questionList = CurrentQuestions.getQuestionList();
-                        QuestionPreviewPreview.setCurrent( questionList.get(0));
-                        controlPane.selectQuestion(questionList.get(0).getQuestionNumber().toString());
+                        List<Questions> collect = CurrentQuestions.getQuestionList().stream().filter(x -> !x.isHasAnswer()).collect(Collectors.toList());
+                        if (!collect.isEmpty()) {
+                            QuestionPreviewPreview.setCurrent(collect.get(0));
+                            controlPane.selectQuestion(collect.get(0).getQuestionNumber().toString());
+                            CurrentQuestions.recordAnswer(collect.get(0).getQuestionNumber().toString());
+                        }
+                        
                         controlPane.setPreviewPane(
                                 Navigator.preview("/view/preview/QuestionPreview.fxml", "", "/view/style.css", true, true)
                         );

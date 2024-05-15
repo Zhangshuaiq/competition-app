@@ -1,6 +1,7 @@
 package competition.controller.match;
 
 
+import competition.controller.ControlPane;
 import competition.entity.Configs;
 import competition.mapper.ConfigsMapper;
 import competition.util.*;
@@ -75,12 +76,9 @@ public class RulePreviewAttr {
     
     private static int configId = 5;
     
-    private static ReloadPane reloadPane;
-
-    public static void setReloadPane(ReloadPane reloadPane) {
-        RulePreviewAttr.reloadPane = reloadPane;
-    }
-
+    
+    @Resource
+    private ControlPane controlPane;
 
     @FXML
     public void initialize(){
@@ -196,9 +194,6 @@ public class RulePreviewAttr {
 
         Stage stage = (Stage) ((Node)xInput).getScene().getWindow();
         stage.close();
-        PreviewStack.reload();
-        if (reloadPane != null) {
-            reloadPane.reload();
-        }
+        controlPane.getPreviewPane().reload();
     }
 }

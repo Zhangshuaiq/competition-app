@@ -1,27 +1,29 @@
 package competition.controller.preview;
 
 import competition.controller.ControlPane;
-import competition.controller.match.Model7Rank;
+import competition.controller.match.MemberRank;
 import competition.entity.Configs;
+import competition.entity.RankStyle;
 import competition.entity.Teams;
 import competition.mapper.ConfigsMapper;
-import competition.modal.Model61RankData;
-import competition.modal.Model7RankData;
-import competition.util.ConfigSpliter;
-import competition.util.ExtendedScreen;
-import competition.util.PreviewStack;
-import competition.util.TeamRuntime;
-import competition.ws.Model61RuntimeData;
-import competition.ws.Model7RuntimeData;
+import competition.mapper.RankStyleMapper;
+import competition.modal.TeamMemberRankData;
+import competition.util.*;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Label;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
+import javafx.scene.input.MouseButton;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 
 import javax.annotation.Resource;
 import java.util.ArrayList;
@@ -30,7 +32,7 @@ import java.util.List;
 
 @Component
 @Scope("prototype")
-public class Model61RankPreview extends PreviewPane{
+public class MemberRankPreview extends PreviewPane{
 
     @FXML
     private AnchorPane container;
@@ -39,7 +41,7 @@ public class Model61RankPreview extends PreviewPane{
     private Label competitionLab;
 
     @FXML
-    private VBox rankBox, outBox;
+    private VBox rankBox;
     
     @Resource
     private ControlPane controlPane;
@@ -47,10 +49,42 @@ public class Model61RankPreview extends PreviewPane{
     @Resource 
     private ConfigsMapper configsMapper;
 
+    @Resource
+    private RankStyleMapper rankStyleMapper;
+
+    private int page = 0;
 
     @FXML
     public void initialize() {
-        PreviewStack.addPreview(this);
+
+        container.setOnMouseClicked(new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent event) {
+                if (event.getButton() == MouseButton.SECONDARY) {
+                    // 显示属性配置弹出
+                    Navigator.navigatorTo("/view/match/MemberRankPreviewAttr.fxml", "", "/view/style.css", false, false);
+                }
+            }
+        });
+
+        Navigator.previewStage.addEventFilter(KeyEvent.KEY_PRESSED,new EventHandler<KeyEvent>() {
+            @Override
+            public void handle(KeyEvent event) {
+                // 上
+                if (event.getCode() == KeyCode.UP) {
+                    if (page > 0) {
+                        page --;
+                    }
+                    showData();
+                } else if (event.getCode() == KeyCode.DOWN) {
+                    // 下
+                    page ++;
+                    showData();
+                }
+            }
+        });
+
+
         this.showData();
     }
 
@@ -61,14 +95,50 @@ public class Model61RankPreview extends PreviewPane{
 
     private void showData() {
 
+        RankStyle rankStyle = rankStyleMapper.selectById(3);
+        String rankConfig = rankStyle.getRankConfig();
+        String headConfig = rankStyle.getHeadConfig();
+
+
         Configs configs = configsMapper.selectById(7);
         String config = configs.getConfig();
         String[] cfgArr = config.split(ConfigSpliter.SPLITER);
 
-        double oldWidth = competitionLab.getPrefWidth();
+        int x = Integer.parseInt(cfgArr[9]);
+        int y = Integer.parseInt(cfgArr[10]);
         int width = Integer.parseInt(cfgArr[11]);
-        
         int height = Integer.parseInt(cfgArr[12]);
+        int count = 8;
+        int rowSpace = 10;
+
+        String font = competitionLab.getFont().getName();
+        int size = (int) competitionLab.getFont().getSize();
+
+        if (!StringUtils.isEmpty(rankConfig)) {
+            String[] split = rankConfig.split(ConfigSpliter.SPLITER);
+            x = Integer.parseInt(split[0]);
+            y = Integer.parseInt(split[1]);
+            width = Integer.parseInt(split[2]);
+            height = Integer.parseInt(split[3]);
+            rowSpace = Integer.parseInt(split[6]);
+            font = FontMap.getFont(split[5]);
+            size = Integer.parseInt(split[4]);
+            count = Integer.parseInt(split[7]);
+        }
+
+        if (!StringUtils.isEmpty(headConfig)) {
+            String[] split = headConfig.split(ConfigSpliter.SPLITER);
+            competitionLab.setLayoutX(Integer.parseInt(split[0]));
+            competitionLab.setLayoutY(Integer.parseInt(split[1]));
+            competitionLab.setPrefWidth(Integer.parseInt(split[2]));
+            competitionLab.setPrefHeight(Integer.parseInt(split[3]));
+            int fs = Integer.parseInt(split[5]);
+            Color color = Color.valueOf(split[4]);
+            String fn = split[6];
+            Font f = Font.font(fn, fs);
+            competitionLab.setFont(f);
+            competitionLab.setTextFill(color);
+        }
         
         int w0 = Integer.parseInt(cfgArr[0]);
         int w1 = Integer.parseInt(cfgArr[1]);
@@ -85,37 +155,24 @@ public class Model61RankPreview extends PreviewPane{
         Color color2 = Color.valueOf(cfgArr[7]);
         Color color3 = Color.valueOf(cfgArr[8]);
 
-        if (ExtendedScreen.hasShow()) {
-            // 进入比赛
-//            Object res = ExtendedScreen.showWithControl("/view/match/Model7Rank.fxml");
-//            if (res != null) {
-//                controlPane.setQuestionPreview((Model7Rank) res);
-//            }
-        }
 
-        outBox.setLayoutX(Integer.parseInt(cfgArr[9]));
-        outBox.setLayoutY(Integer.parseInt(cfgArr[10]));
-        outBox.setPrefWidth(width);
-
-        Font font = competitionLab.getFont();
-        competitionLab.setPrefWidth(width);
+        rankBox.setLayoutX(x);
+        rankBox.setLayoutY(y);
         rankBox.setPrefWidth(width);
-        rankBox.setSpacing(30);
-        double ratio = width / oldWidth;
-        competitionLab.setPrefHeight(competitionLab.getPrefHeight() * ratio);
-        // 动态调整字体的比例
-        competitionLab.setFont(Font.font(font.getSize() * ratio * 0.5));
+        rankBox.setPrefHeight(height * count + (rowSpace) * (count - 1));
+        rankBox.setSpacing(rowSpace);
+
 
         // 获取排名
         List<Teams> teams = TeamRuntime.getTeams();
-        List<Model61RankData> rankList = new ArrayList<>();
+        List<TeamMemberRankData> rankList = new ArrayList<>();
         for (int i = 0; i < teams.size(); i++) {
             Teams item = teams.get(i);
             String members = item.getMembers();
             List<Integer> memberScores = item.getMemberScores();
             String[] mArr = members.split(",");
             for (int j = 0; j < mArr.length; j++) {
-                Model61RankData rankData = new Model61RankData();
+                TeamMemberRankData rankData = new TeamMemberRankData();
                 rankData.setScore(0);
                 if (j < memberScores.size()){
                     rankData.setScore(memberScores.get(j));
@@ -126,9 +183,9 @@ public class Model61RankPreview extends PreviewPane{
             }
         }
         // sort 根据分数和时间进行排序
-        rankList.sort(new Comparator<Model61RankData>() {
+        rankList.sort(new Comparator<TeamMemberRankData>() {
             @Override
-            public int compare(Model61RankData o1, Model61RankData o2) {
+            public int compare(TeamMemberRankData o1, TeamMemberRankData o2) {
                 if (o1.getScore() < o2.getScore()) {
                     return 1;
                 } else if (o1.getScore() > o2.getScore()) {
@@ -138,6 +195,38 @@ public class Model61RankPreview extends PreviewPane{
             }
         });
 
+        int rank = 1;
+        TeamMemberRankData first = rankList.get(0);
+        for (TeamMemberRankData rankData : rankList) {
+            if (first.compareTo(rankData)< 0) {
+                rank ++;
+            }
+            rankData.setRank(rank);
+            first = rankData;
+        }
+
+        // 分页
+        int end = (page + 1) * count;
+        int start = page * count;
+        if (end > rankList.size() ) {
+            end = rankList.size();
+        }
+
+        int totalPage = rankList.size() / count;
+        int left = rankList.size() % count;
+        if (left == 0) {
+            totalPage = totalPage - 1;
+        }
+
+        if (page > totalPage) {
+            page = totalPage;
+            return;
+        }
+
+        if (start < 0) {
+            start = 0;
+        }
+        
         rankBox.getChildren().clear();
         
         
@@ -149,7 +238,7 @@ public class Model61RankPreview extends PreviewPane{
         rankL.setTextFill(fcolor);
         rankL.setAlignment(Pos.CENTER);
         rankL.setPrefHeight(height);
-        rankL.setFont(Font.font(48));
+        rankL.setFont(Font.font(font, size));
         rankL.setPrefWidth(w0w);
 
         Label teamL = new Label("团队");
@@ -157,28 +246,29 @@ public class Model61RankPreview extends PreviewPane{
         teamL.setPrefHeight(height);
         teamL.setPrefWidth(w1w);
         teamL.setAlignment(Pos.CENTER);
-        teamL.setFont(Font.font(48));
+        teamL.setFont(Font.font(font, size));
 
         Label scoreL = new Label("分数");
         scoreL.setTextFill(fcolor);
         scoreL.setPrefHeight(height);
         scoreL.setPrefWidth(w2w);
         scoreL.setAlignment(Pos.CENTER);
-        scoreL.setFont(Font.font(48));
+        scoreL.setFont(Font.font(font, size));
 
         Label timeL = new Label("选手");
         timeL.setTextFill(fcolor);
         timeL.setPrefHeight(height);
         timeL.setPrefWidth(w3w);
         timeL.setAlignment(Pos.CENTER);
-        timeL.setFont(Font.font(48));
+        timeL.setFont(Font.font(font, size));
 
         title.getChildren().addAll(rankL, teamL, timeL, scoreL);
         title.setBackground(new Background(new BackgroundFill(bgcolor, CornerRadii.EMPTY, Insets.EMPTY)));
         rankBox.getChildren().add(title);
 
-        for (int i = 0; i < rankList.size(); i++) {
-            Model61RankData rankData = rankList.get(i);
+        
+        for (int i = start; i < end; i++) {
+            TeamMemberRankData rankData = rankList.get(i);
             HBox itemRow = new HBox();
             // 随机背景色
             Color c = bgcolor;
@@ -191,38 +281,46 @@ public class Model61RankPreview extends PreviewPane{
             }
             itemRow.setBackground(new Background(new BackgroundFill(c, CornerRadii.EMPTY, Insets.EMPTY)));
             itemRow.setPrefWidth(rankBox.getPrefWidth());
-            Label rankD = new Label((i + 1) + "");
+            Label rankD = new Label((rankData.getRank()) + "");
             rankD.setTextFill(fcolor);
             rankD.setPrefHeight(height);
             rankD.setPrefWidth(w0w);
             rankD.setAlignment(Pos.CENTER);
-            rankD.setFont(Font.font(48));
+            rankD.setFont(Font.font(font, size));
 
             Label teamD = new Label(rankData.getTeam());
             teamD.setTextFill(fcolor);
             teamD.setPrefHeight(height);
             teamD.setPrefWidth(w1w);
             teamD.setAlignment(Pos.CENTER);
-            teamD.setFont(Font.font(48));
+            teamD.setFont(Font.font(font, size));
 
             Label scoreD = new Label(rankData.getMember() + "");
             scoreD.setTextFill(fcolor);
             scoreD.setPrefHeight(height);
             scoreD.setPrefWidth(w2w);
             scoreD.setAlignment(Pos.CENTER);
-            scoreD.setFont(Font.font(48));
+            scoreD.setFont(Font.font(font, size));
 
             Label timeD = new Label(rankData.getScore() + "");
             timeD.setTextFill(fcolor);
             timeD.setPrefHeight(height);
             timeD.setPrefWidth(w3w);
             timeD.setAlignment(Pos.CENTER);
-            timeD.setFont(Font.font(48));
+            timeD.setFont(Font.font(font, size));
 
             itemRow.getChildren().addAll(rankD, teamD, scoreD, timeD);
             rankBox.getChildren().add(itemRow);
         }
-        
+
+        // 外屏展示
+        if (ExtendedScreen.hasShow()) {
+            MemberRank.setRankDataList(rankList.subList(start, end));
+            Object res = ExtendedScreen.showWithControl("/view/match/MemberRank.fxml");
+            if (res != null) {
+                controlPane.setQuestionPreview((MemberRank) res);
+            }
+        }
     }
 
     @Override

@@ -54,8 +54,6 @@ public class StagePreviewPreview extends PreviewPane {
     @Resource
     private ConfigsMapper configsMapper;
 
-    @Resource
-    private StagePreview stagePreview;
     
     @Resource
     private StagesStyleMapper stagesStyleMapper;
@@ -175,38 +173,6 @@ public class StagePreviewPreview extends PreviewPane {
                 int count = 0;
                 for (Stages stage : stages) {
                     HBox box = new HBox();
-//                    StackPane stageNumberPane = new StackPane();
-//                    Text stageNumber = new Text(stage.getSortVal());
-//                    stageNumber.prefWidth(50);
-//                    stageNumber.prefHeight(50);
-//                    stageNumber.setTextAlignment(TextAlignment.CENTER);
-//                    stageNumber.setStyle("-fx-fill: " + split[0].replace("0x", "#"));
-//                    if (detailArr.length > 0) {
-//                        Font font = Font.font(detailArr[7], FontWeight.NORMAL, FontPosture.REGULAR, Integer.parseInt(detailArr[8]));
-//                        stageNumber.setFont(font);
-//                        if (Boolean.valueOf(detailArr[10])) {
-//                            stageNumber.setStroke(stageNumber.getFill());
-//                        } else {
-//                            stageNumber.setStroke(null);
-//
-//                        }
-//                        stageNumber.getTransforms().clear();
-//                        if (Boolean.valueOf(detailArr[11])) {
-//                            stageNumber.getTransforms().add(new Shear(-0.3, 0));
-//                        }
-//                        stageNumber.setUnderline(Boolean.valueOf(detailArr[12]));
-//                        stageNumber.setStrikethrough(Boolean.valueOf(detailArr[9]));
-//                        stageNumber.setTextAlignment(AlignmentUtil.getTextAlign(detailArr[13]));
-//                    }
-//
-//
-//                    stageNumberPane.getChildren().add(stageNumber);
-//                    stageNumberPane.setStyle("-fx-background-color: " + split[1].replace("0x", "#"));
-//                    stageNumberPane.setPrefSize(50, 50);
-
-//                    box.getChildren().add(stageNumberPane);
-                    // 标题
-
                     StackPane stageNamePane = new StackPane();
                     Text stageName = new Text(stage.getName());
                     stageName.setTextAlignment(TextAlignment.CENTER);
@@ -228,13 +194,9 @@ public class StagePreviewPreview extends PreviewPane {
                             }
                         } else {
                             // 填充背景颜色
-                            stageNamePane.setBackground(new Background(new BackgroundFill(Color.valueOf(detailArr[5]), CornerRadii.EMPTY, Insets.EMPTY)));
+                            stageNamePane.setBackground(new Background(new BackgroundFill(Color.valueOf(detailArr[5]), new CornerRadii(10), Insets.EMPTY)));
                         }
                     }
-                    
-                    
-                    //stageNamePane.setStyle("-fx-background-color: " + split[3].replace("0x", "#"));
-
                     if (detailArr.length > 0) {
                         Font font = Font.font(FontMap.getFont(detailArr[7]), FontWeight.NORMAL, FontPosture.REGULAR, Integer.parseInt(detailArr[8]));
                         stageName.setFont(font);

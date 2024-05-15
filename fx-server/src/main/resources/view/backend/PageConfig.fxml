@@ -7,7 +7,8 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<AnchorPane prefHeight="827.0" prefWidth="1100.0" style="-fx-background-color: #e8e8e4;" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="competition.controller.backend.PageConfig">
+<AnchorPane prefHeight="827.0" prefWidth="1100.0" style="-fx-background-color: #e8e8e4;" 
+            xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="competition.controller.backend.PageConfig">
    <children>
       <Label layoutX="26.0" layoutY="19.0" text="答题页" />
       <Label layoutX="100.0" layoutY="19.0" text="题干" />
@@ -30,23 +31,23 @@
       <TextField fx:id="dtg" layoutX="1019.0" layoutY="14.0" prefHeight="30.0" prefWidth="60.0" />
       <Label layoutX="998.0" layoutY="19.0" text="高" />
       <Label layoutX="100.0" layoutY="56.0" text="题型" />
-      <RadioButton fx:id="thq" userData="1" layoutX="142.0" layoutY="56.0" mnemonicParsing="false" text="题号前" />
-      <RadioButton fx:id="thh" userData="2" layoutX="244.0" layoutY="56.0" mnemonicParsing="false" text="题号后" />
-      <RadioButton fx:id="tgh" userData="3" layoutX="337.0" layoutY="56.0" mnemonicParsing="false" text="题干后" />
+      <RadioButton fx:id="thq" layoutX="142.0" layoutY="56.0" mnemonicParsing="false" text="题号前" userData="1" />
+      <RadioButton fx:id="thh" layoutX="244.0" layoutY="56.0" mnemonicParsing="false" text="题号后" userData="2" />
+      <RadioButton fx:id="tgh" layoutX="337.0" layoutY="56.0" mnemonicParsing="false" text="题干后" userData="3" />
       <Label layoutX="482.0" layoutY="56.0" text="题型标注" />
-      <RadioButton fx:id="fkh" userData="1" layoutX="565.0" layoutY="56.0" mnemonicParsing="false" text="方括号" />
-      <RadioButton fx:id="ykh" userData="2" layoutX="655.0" layoutY="56.0" mnemonicParsing="false" text="圆括号" />
-      <RadioButton fx:id="kg" userData="3" layoutX="759.0" layoutY="56.0" mnemonicParsing="false" text="空格" />
-      <RadioButton fx:id="wu" userData="4" layoutX="843.0" layoutY="56.0" mnemonicParsing="false" text="无" />
+      <RadioButton fx:id="fkh" layoutX="565.0" layoutY="56.0" mnemonicParsing="false" text="方括号" userData="1" />
+      <RadioButton fx:id="ykh" layoutX="655.0" layoutY="56.0" mnemonicParsing="false" text="圆括号" userData="2" />
+      <RadioButton fx:id="kg" layoutX="759.0" layoutY="56.0" mnemonicParsing="false" text="空格" userData="3" />
+      <RadioButton fx:id="wu" layoutX="843.0" layoutY="56.0" mnemonicParsing="false" text="无" userData="4" />
       <Label layoutX="100.0" layoutY="88.0" text="标题" />
       <ColorPicker fx:id="bt" layoutX="145.0" layoutY="83.0" prefHeight="30.0" prefWidth="30.0" />
       <CheckBox layoutX="228.0" layoutY="88.0" mnemonicParsing="false" text="显示标题" fx:id="xsbt" />
       <Label layoutX="363.0" layoutY="88.0" text="字号" />
       <TextField fx:id="zh" layoutX="407.0" layoutY="84.0" prefHeight="30.0" prefWidth="60.0" />
       <Label layoutX="100.0" layoutY="125.0" text="记分牌" />
-      <RadioButton fx:id="hxfb" userData="1" layoutX="184.0" layoutY="125.0" mnemonicParsing="false" text="横向排布" />
-      <RadioButton fx:id="zydl" userData="2" layoutX="304.0" layoutY="125.0" mnemonicParsing="false" text="左右对联" />
-      <RadioButton fx:id="jinyong" userData="3" layoutX="435.0" layoutY="125.0" mnemonicParsing="false" text="禁用" />
+      <RadioButton fx:id="hxfb" layoutX="184.0" layoutY="125.0" mnemonicParsing="false" text="横向排布" userData="1" />
+      <RadioButton fx:id="zydl" layoutX="304.0" layoutY="125.0" mnemonicParsing="false" text="左右对联" userData="2" />
+      <RadioButton fx:id="jinyong" layoutX="435.0" layoutY="125.0" mnemonicParsing="false" text="禁用" userData="3" />
       <Label layoutX="100.0" layoutY="165.0" text="队名" />
       <ColorPicker fx:id="dm" layoutX="143.0" layoutY="160.0" prefHeight="30.0" prefWidth="30.0" />
       <Label layoutX="212.0" layoutY="165.0" text="队名背景" />
@@ -121,7 +122,7 @@
       <Label layoutX="998.0" layoutY="375.0" text="高" />
       <TextField fx:id="pmg" layoutX="1019.0" layoutY="370.0" prefHeight="30.0" prefWidth="60.0" />
       <Label layoutX="26.0" layoutY="461.0" text="规则页" />
-      <Label  layoutX="100.0" layoutY="461.0" text="规则字色" />
+      <Label layoutX="100.0" layoutY="461.0" text="规则字色" />
       <ColorPicker fx:id="gzzs" layoutX="173.0" layoutY="456.0" prefHeight="30.0" prefWidth="30.0" />
       <Label layoutX="700.0" layoutY="422.0" text="坐标" />
       <Label layoutX="736.0" layoutY="420.0" prefHeight="20.0" prefWidth="8.0" text="x" />
@@ -244,6 +245,11 @@
       <Label layoutX="998.0" layoutY="707.0" text="高" />
       <TextField fx:id="jjg" layoutX="1019.0" layoutY="703.0" prefHeight="30.0" prefWidth="60.0" />
       <Separator layoutX="10.0" layoutY="739.0" prefHeight="3.0" prefWidth="1084.0" />
-      <Button layoutX="503.0" layoutY="769.0" mnemonicParsing="false" prefHeight="30.0" prefWidth="127.0" text="保存" onMouseClicked="#updateConfig"/>
+      <Button layoutX="503.0" layoutY="769.0" mnemonicParsing="false" onMouseClicked="#updateConfig" prefHeight="30.0" prefWidth="127.0" text="保存" />
+      <Label layoutX="669.0" layoutY="125.0" text="状态栏" />
+      <Label layoutX="789.0" layoutY="125.0" text="字号" />
+      <TextField fx:id="ztzh" layoutX="834.0" layoutY="120.0" prefHeight="30.0" prefWidth="60.0" />
+      <Label layoutX="920.0" layoutY="125.0" text="颜色" />
+      <ColorPicker fx:id="ztys" layoutX="962.0" layoutY="120.0" prefHeight="30.0" prefWidth="30.0" />
    </children>
 </AnchorPane>

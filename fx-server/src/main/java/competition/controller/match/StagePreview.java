@@ -2,6 +2,9 @@ package competition.controller.match;
 
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import competition.controller.ControlPane;
+import competition.controller.preview.StageNamePreviewPreview;
+import competition.controller.preview.StagePreviewPreview;
 import competition.entity.Configs;
 import competition.entity.Stages;
 import competition.entity.StagesStyle;
@@ -9,6 +12,7 @@ import competition.mapper.ConfigsMapper;
 import competition.mapper.StagesMapper;
 import competition.mapper.StagesStyleMapper;
 import competition.util.*;
+import competition.ws.WsMessageHandler;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.geometry.Insets;
@@ -34,6 +38,10 @@ import java.util.List;
 @Scope("prototype")
 public class StagePreview implements ReloadPane {
 
+
+    @Resource
+    private ControlPane controlPane;
+
     @FXML
     private AnchorPane container;
 
@@ -47,58 +55,49 @@ public class StagePreview implements ReloadPane {
     private StagesStyleMapper stagesStyleMapper;
 
     private static Integer parentStageId;
-    
-    private Integer innerStageId;
+
+    private Integer innerStageID;
+
 
     public static void setParentStageId(Integer parentStageId) {
         StagePreview.parentStageId = parentStageId;
     }
 
-    @FXML
-    public void initialize() {
-        innerStageId = parentStageId;
-        container.setOnMouseClicked(new EventHandler<MouseEvent>() {
-            @Override
-            public void handle(MouseEvent event) {
-                if (event.getButton() == MouseButton.SECONDARY) {
-                   
-                }
-            }
-        });
-        showView();
-    }
 
     @Override
-    public Node getPane() {
+    public AnchorPane getPane() {
         return container;
+    }
+
+    @FXML
+    public void initialize() {
+        innerStageID = parentStageId;
+        showView();
     }
 
 
     private void showView() {
-
         try {
             container.setBackground(new Background(new BackgroundImage(
-                    new Image(new FileInputStream(ImageResource.环节背景())), BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT, BackgroundPosition.DEFAULT,
-                    new BackgroundSize(ExtendedScreen.getWidth(), ExtendedScreen.getHeight(), false, false, false, false)
+                    new Image(new FileInputStream(ImageResource.环节背景())), BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT, BackgroundPosition.CENTER,
+                    new BackgroundSize(Navigator.getWidth(), Navigator.getHeight(), false, false, false, false)
             )));
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
-        
-        
+
         container.getChildren().clear();
         Configs configs = configsMapper.selectById(2);
         final String configVal = configs.getConfig();
-        final String fontDetail = configs.getDetails();
+
         if (!StringUtils.isEmpty(configVal)) {
             final String[] split = configVal.split(ConfigSpliter.SPLITER);
             if (Boolean.valueOf(split[9])) {
                 // 使用图片展示而不是样式
             } else {
                 List<Stages> stages;
-
                 StagesStyle stagesStyle;
-                if (innerStageId == null) {
+                if (innerStageID == null) {
                     stages = stagesMapper.selectList(new LambdaQueryWrapper<Stages>()
                             .isNull(Stages::getParentId)
                             .orderByAsc(Stages::getSortVal)
@@ -108,13 +107,16 @@ public class StagePreview implements ReloadPane {
                     );
                 } else {
                     stages = stagesMapper.selectList(new LambdaQueryWrapper<Stages>()
-                            .eq(Stages::getParentId, innerStageId)
+                            .eq(Stages::getParentId, innerStageID)
                             .orderByAsc(Stages::getSortVal)
                     );
                     stagesStyle = stagesStyleMapper.selectOne(new LambdaQueryWrapper<StagesStyle>()
-                            .eq(StagesStyle::getParentId, innerStageId)
+                            .eq(StagesStyle::getParentId, innerStageID)
                     );
                 }
+
+
+
                 String[] detailArr = {};
                 if (stagesStyle != null) {
                     detailArr = stagesStyle.getStyle().split(ConfigSpliter.SPLITER);
@@ -128,7 +130,7 @@ public class StagePreview implements ReloadPane {
                 stageContainer.setLayoutX(x);
                 stageContainer.setLayoutY(y);
                 stageContainer.prefWidth(width);
-                //stageContainer.prefHeight(height);
+                // stageContainer.height
 
                 if (detailArr.length > 0) {
                     stageContainer.setLayoutX(Integer.parseInt(detailArr[0]));
@@ -142,38 +144,6 @@ public class StagePreview implements ReloadPane {
                 int count = 0;
                 for (Stages stage : stages) {
                     HBox box = new HBox();
-//                    StackPane stageNumberPane = new StackPane();
-//                    Text stageNumber = new Text(stage.getSortVal());
-//                    stageNumber.prefWidth(50);
-//                    stageNumber.prefHeight(50);
-//                    stageNumber.setTextAlignment(TextAlignment.CENTER);
-//                    stageNumber.setStyle("-fx-fill: " + split[0].replace("0x", "#"));
-//                    if (detailArr.length > 0) {
-//                        Font font = Font.font(detailArr[7], FontWeight.NORMAL, FontPosture.REGULAR, Integer.parseInt(detailArr[8]));
-//                        stageNumber.setFont(font);
-//                        if (Boolean.valueOf(detailArr[10])) {
-//                            stageNumber.setStroke(stageNumber.getFill());
-//                        } else {
-//                            stageNumber.setStroke(null);
-//
-//                        }
-//                        stageNumber.getTransforms().clear();
-//                        if (Boolean.valueOf(detailArr[11])) {
-//                            stageNumber.getTransforms().add(new Shear(-0.3, 0));
-//                        }
-//                        stageNumber.setUnderline(Boolean.valueOf(detailArr[12]));
-//                        stageNumber.setStrikethrough(Boolean.valueOf(detailArr[9]));
-//                        stageNumber.setTextAlignment(AlignmentUtil.getTextAlign(detailArr[13]));
-//                    }
-//
-//
-//                    stageNumberPane.getChildren().add(stageNumber);
-//                    stageNumberPane.setStyle("-fx-background-color: " + split[1].replace("0x", "#"));
-//                    stageNumberPane.setPrefSize(50, 50);
-//                    
-//                    box.getChildren().add(stageNumberPane);
-                    // 标题
-
                     StackPane stageNamePane = new StackPane();
                     Text stageName = new Text(stage.getName());
                     stageName.setTextAlignment(TextAlignment.CENTER);
@@ -195,11 +165,9 @@ public class StagePreview implements ReloadPane {
                             }
                         } else {
                             // 填充背景颜色
-                            stageNamePane.setBackground(new Background(new BackgroundFill(Color.valueOf(detailArr[5]), CornerRadii.EMPTY, Insets.EMPTY)));
+                            stageNamePane.setBackground(new Background(new BackgroundFill(Color.valueOf(detailArr[5]), new CornerRadii(10), Insets.EMPTY)));
                         }
                     }
-                    //stageNamePane.setStyle("-fx-background-color: " + split[3].replace("0x", "#"));
-
                     if (detailArr.length > 0) {
                         Font font = Font.font(FontMap.getFont(detailArr[7]), FontWeight.NORMAL, FontPosture.REGULAR, Integer.parseInt(detailArr[8]));
                         stageName.setFont(font);
@@ -233,10 +201,8 @@ public class StagePreview implements ReloadPane {
                             stageName.setText(String.join(sli, cs));
                         }
                     }
-                    
+
                     box.getChildren().add(stageNamePane);
-
-
                     int cols = 1;
                     if (detailArr.length >= 17) {
                         cols = Integer.parseInt(detailArr[16]);
@@ -259,18 +225,20 @@ public class StagePreview implements ReloadPane {
                     }
                     stageContainer.add(box, col, row);
                     count ++;
-                    //stageContainer.getChildren().add(box);
+
+                    // stageContainer.getChildren().add(box);
                 }
-
                 container.getChildren().add(stageContainer);
-
             }
         }
     }
 
     @Override
     public void reload() {
-        System.out.println(innerStageId);
         showView();
+    }
+
+    public Integer getInnerStageID() {
+        return innerStageID;
     }
 }

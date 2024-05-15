@@ -35,7 +35,6 @@ public class TimeBoard implements ReloadPane {
 
     private ConfigsMapper configsMapper;
 
-
     @FXML
     public void initialize(){
         configsMapper = JavaFxApplication.getApplicationContext().getBean(ConfigsMapper.class);
@@ -52,12 +51,18 @@ public class TimeBoard implements ReloadPane {
     public void reload(int time, String timeTxt) {
         this.timeVal = time;
         this.timeValue = timeTxt;
+        Configs configs = configsMapper.selectById(1);
+        String config = configs.getConfig();
+        String[] split = config.split(ConfigSpliter.SPLITER);
+        teamScore.setTextAlignment(TextAlignment.CENTER);
+        teamScore.setAlignment(Pos.CENTER);
+        teamScore.setFont(Font.font(Integer.parseInt(split[24])));
+        teamScore.setTextFill(Color.valueOf(split[23]));
         showData();
     }
 
     @Override
     public void reload() {
-       
         Configs configs = configsMapper.selectById(1);
         String config = configs.getConfig();
         String[] split = config.split(ConfigSpliter.SPLITER);

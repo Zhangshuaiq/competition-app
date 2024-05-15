@@ -1,6 +1,7 @@
 package competition.controller.preview;
 
 
+import com.alibaba.fastjson2.JSON;
 import competition.controller.ControlPane;
 import competition.controller.match.CluePreview;
 import competition.controller.match.QuestionPreview;
@@ -11,6 +12,7 @@ import competition.entity.QuestionStyle;
 import competition.entity.Questions;
 import competition.mapper.ConfigsMapper;
 import competition.util.*;
+import competition.ws.WsMessageHandler;
 import javafx.collections.ObservableList;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
@@ -34,7 +36,9 @@ import javax.annotation.Resource;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Component
 @Scope("prototype")
@@ -62,6 +66,9 @@ public class CluePreviewPreview extends PreviewPane{
 
     @Resource
     private ConfigsMapper configsMapper;
+    
+    @Resource
+    private WsMessageHandler messageHandler;
 
 
     private static Questions current;
@@ -82,6 +89,7 @@ public class CluePreviewPreview extends PreviewPane{
     @FXML
     public void initialize() {
         inner = current;
+
         PreviewStack.addPreview(this);
         container.setOnMouseClicked(new EventHandler<MouseEvent>() {
             @Override
@@ -100,6 +108,14 @@ public class CluePreviewPreview extends PreviewPane{
 
     private void showData() {
         inner = current;
+        Questions questions = JSON.parseObject(JSON.toJSONString(inner), Questions.class);
+        questions.setChoiceA("");
+        questions.setChoiceB("");
+        questions.setChoiceC("");
+        questions.setChoiceD("");
+        questions.setChoiceE("");
+        questions.setChoiceF("");
+        messageHandler.notifyPage("clue", questions);
         if (ExtendedScreen.hasShow()) {
             CluePreview.setCurrent(inner);
             // 进入比赛
@@ -281,8 +297,11 @@ public class CluePreviewPreview extends PreviewPane{
                                             BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT, BackgroundPosition.DEFAULT,
                                             new BackgroundSize(Integer.parseInt(split1[2]), Integer.parseInt(split1[3]), false, false, false, false))));
                                 } catch (FileNotFoundException e) {
-                                    e.printStackTrace();
+                                    tiganBox.setBackground(new Background(new BackgroundFill(Color.TRANSPARENT, CornerRadii.EMPTY, Insets.EMPTY)));
+                                    //e.printStackTrace();
                                 }
+                            } else {
+                                tiganBox.setBackground(new Background(new BackgroundFill(Color.TRANSPARENT, CornerRadii.EMPTY, Insets.EMPTY)));
                             }
                         } else {
                             // 填充背景颜色
@@ -308,8 +327,10 @@ public class CluePreviewPreview extends PreviewPane{
                         tiganLabel.setLineSpacing(Integer.parseInt(split1[14]));
 
                         for (Node child : tiganBox.getChildren()) {
+                            child.prefWidth(Integer.parseInt(split1[2]));
                             if (child instanceof Text) {
                                 Text ch = (Text) child;
+                                ch.setWrappingWidth(Integer.parseInt(split1[2]));
                                 ch.setFont(font);
                                 ch.setUnderline(Boolean.valueOf(split1[12]));
                                 ch.setStrikethrough(Boolean.valueOf(split1[9]));
@@ -411,7 +432,9 @@ public class CluePreviewPreview extends PreviewPane{
 
 
                             stageLabel.setWrappingWidth(Integer.parseInt(split1[2]));
-                            stageLabel.setLineSpacing(Integer.parseInt(split1[14]));
+                            if (split1.length >= 15) {
+                                stageLabel.setLineSpacing(Integer.parseInt(split1[14]));
+                            }
                             Font font = Font.font(FontMap.getFont(split1[7]), FontWeight.NORMAL, FontPosture.REGULAR, Integer.parseInt(split1[8]));
                             stageLabel.setFont(font);
                             stageLabel.setUnderline(Boolean.valueOf(split1[12]));
@@ -447,9 +470,6 @@ public class CluePreviewPreview extends PreviewPane{
         }
     }
 
-    public void hideTiming() {
-        //timeLabel.setVisible(false);
-    }
 
     public void startTiming(int value) {
 //        timeVal = value;
@@ -485,6 +505,37 @@ public class CluePreviewPreview extends PreviewPane{
                 break;
             }
         }
+        Questions questions = JSON.parseObject(JSON.toJSONString(inner), Questions.class);
+        questions.setChoiceA("");
+        questions.setChoiceB("");
+        questions.setChoiceC("");
+        questions.setChoiceD("");
+        questions.setChoiceE("");
+        questions.setChoiceF("");
+        for (Node child : children) {
+            if (child == tiganLabel) {
+                continue;
+            }
+            Text text = (Text) child;
+            if (child.isVisible()) {
+                if (StringUtils.isEmpty(questions.getChoiceA())) {
+                    questions.setChoiceA(text.getText());
+                } else if (StringUtils.isEmpty(questions.getChoiceB())) {
+                    questions.setChoiceB(text.getText());
+                } else if (StringUtils.isEmpty(questions.getChoiceC())) {
+                    questions.setChoiceC(text.getText());
+                } else if (StringUtils.isEmpty(questions.getChoiceD())) {
+                    questions.setChoiceD(text.getText());
+                } else if (StringUtils.isEmpty(questions.getChoiceE())) {
+                    questions.setChoiceE(text.getText());
+                } else if (StringUtils.isEmpty(questions.getChoiceF())) {
+                    questions.setChoiceF(text.getText());
+                }
+            }
+        }
+        
+        messageHandler.sendClue( questions);
+
         ReloadPane questionPreview = controlPane.getQuestionPreview();
         if (questionPreview != null) {
             questionPreview.reload(0, "");

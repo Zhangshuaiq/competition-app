@@ -232,33 +232,6 @@ public class RollPreview implements ReloadPane {
                     questionText.setStrikethrough(Boolean.valueOf(detailArr[9]));
                 }
                 questionText.setFill(Color.valueOf(cfgArr[0]));
-//                backPane.setOnMouseClicked(new EventHandler<MouseEvent>() {
-//                        @Override
-//                        public void handle(MouseEvent event) {
-//                            if (event.getButton() != MouseButton.PRIMARY) {
-//                                return;
-//                            }
-//                            // 给题目设置分值
-//                            // 扩展屏幕展示并排答题界面（竞技模式）
-//                            for (Questions q : CurrentQuestions.getQuestionList()) {
-//                                q.setScore(currentStage.getScorePerQ());
-//                            }
-//                            String tihao = questions.getQuestionNumber().toString();
-//                            Questions questions = CurrentQuestions.getQ(tihao);
-//                            CurrentQuestions.recordAnswer(tihao);
-//                            // 设置当前需要显示的题目
-//                            // 内屏更新
-//                            QuestionPreviewPreview.setCurrent(questions);
-//                            controlPane.setPreviewPane(
-//                                    Navigator.preview("/view/preview/QuestionPreview.fxml", "", "/view/style.css", true, true)
-//                            );
-//                            // 控制面板选择题号
-//                            controlPane.selectQuestion(tihao);
-//    
-//                        }
-//                    });
-
-
         }
     }
 

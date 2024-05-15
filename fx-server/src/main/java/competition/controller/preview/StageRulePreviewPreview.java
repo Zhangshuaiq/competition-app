@@ -8,9 +8,12 @@ import competition.controller.match.StageRulePreviewAttr;
 import competition.entity.Configs;
 import competition.entity.Stages;
 import competition.mapper.ConfigsMapper;
+import competition.mapper.StagesMapper;
 import competition.util.*;
+import competition.ws.WsMessageHandler;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
+import javafx.geometry.Insets;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseButton;
@@ -46,14 +49,29 @@ public class StageRulePreviewPreview extends PreviewPane{
     
     @Resource
     private ConfigsMapper configsMapper;
+    
+    @Resource
+    private StagesMapper stagesMapper;
+    
+    @Resource
+    private WsMessageHandler messageHandler;
 
     public static void setCurrentStage(Stages currentStage) {
         StageRulePreviewPreview.currentStage = currentStage;
     }
 
+    public static final int TITLE_X = 300;
+
+    public static final int TITLE_Y = 100;
+
+    public static final int TITLE_W = 600;
+
+    public static final int TITLE_H = 100;
+    
 
     @Override
     public void reload() {
+        currentStage = stagesMapper.selectById(currentStage.getId());
         showRuleContent();
     }
 
@@ -65,20 +83,12 @@ public class StageRulePreviewPreview extends PreviewPane{
             @Override
             public void handle(MouseEvent event) {
                 if (event.getButton() == MouseButton.SECONDARY) {
-                    StageRulePreviewAttr.setReloadPane(controlPane.getQuestionPreview());
+                    StageRulePreviewAttr.setStageId(innerStage.getId());
                     Navigator.navigatorTo("/view/match/StageRulePreviewAttr.fxml", "", "/view/style.css", false, false);
                 } else if (event.getButton() == MouseButton.PRIMARY) {
-                    // 进入选题列表
-//                    StageQuestionPreviewPreview.setCurrentStage(innerStage);
-//                    controlPane.setPreviewPane(
-//                            Navigator.preview("/view/preview/StageQuestionPreview.fxml", "", "/view/style.css", true, true)
-//                    );
                 }
             }
         });
-        
-      
-        //PreviewStack.addPreview(this);
         showRuleContent();
     }
 
@@ -112,29 +122,141 @@ public class StageRulePreviewPreview extends PreviewPane{
         if (currentStage == null) {
             return;
         }
+        
+        messageHandler.notifyPage("rule", currentStage.getRuleContent());
+        String titleRuleStyle = currentStage.getTitleRuleStyle();
+        String[] trsArr = {};
+        if (!StringUtils.isEmpty(titleRuleStyle)) {
+            trsArr = titleRuleStyle.split(ConfigSpliter.SPLITER);
+        }
+        
+        Text title = new Text(currentStage.getName());
+        StackPane titlePane = new StackPane();
+        titlePane.getChildren().add(title);
+        if (trsArr.length <= 0) {
+
+            titlePane.setLayoutX(TITLE_X);
+            titlePane.setLayoutY(TITLE_Y);
+            titlePane.setPrefWidth(TITLE_W);
+            titlePane.setPrefHeight(TITLE_H);
+            titlePane.setBackground(new Background(new BackgroundFill(Color.YELLOW, CornerRadii.EMPTY, Insets.EMPTY)));
+
+            title.setX(TITLE_X);
+            title.setY(TITLE_Y);
+            title.prefWidth(TITLE_W);
+            title.prefHeight(TITLE_H);
+            title.setFill(Color.BLACK);
+        } else {
+            final String[] cfgArr = trsArr;
+            title.setX(Integer.parseInt(cfgArr[0]));
+            title.setY(Integer.parseInt(cfgArr[1]));
+            title.prefWidth(Integer.parseInt(cfgArr[2]));
+            title.prefHeight(Integer.parseInt(cfgArr[3]));
+            title.setFill(Color.valueOf(cfgArr[15]));
+
+            titlePane.setLayoutX(Integer.parseInt(cfgArr[0]));
+            titlePane.setLayoutY(Integer.parseInt(cfgArr[1]));
+            titlePane.setPrefWidth(Integer.parseInt(cfgArr[2]));
+            titlePane.setPrefHeight(Integer.parseInt(cfgArr[3]));
+
+
+            if (Boolean.valueOf(cfgArr[4])) {
+                // 填充背景图片
+                if (!StringUtils.isEmpty(cfgArr[6])) {
+                    try {
+                        titlePane.setBackground(new Background(new BackgroundImage(new Image(new FileInputStream(cfgArr[6])),
+                                BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT, BackgroundPosition.DEFAULT,
+                                new BackgroundSize(Integer.parseInt(cfgArr[2]), Integer.parseInt(cfgArr[3]), false, false, false, false))));
+                    } catch (FileNotFoundException e) {
+                        e.printStackTrace();
+                    }
+                }
+            } else {
+                // 填充背景颜色
+                titlePane.setBackground(new Background(new BackgroundFill(Color.valueOf(cfgArr[5]), CornerRadii.EMPTY, Insets.EMPTY)));
+            }
+
+            Font font = Font.font(FontMap.getFont(cfgArr[7]), FontWeight.NORMAL, FontPosture.REGULAR, Double.parseDouble(cfgArr[8]));
+            title.setFont(font);
+            if (Boolean.valueOf(cfgArr[10])) {
+                title.setStroke(title.getFill());
+            } else {
+                title.setStroke(null);
+            }
+            title.getTransforms().clear();
+            if (Boolean.valueOf(cfgArr[11])) {
+                title.getTransforms().add(new Shear(-0.3, 0));
+            }
+            title.setUnderline(Boolean.valueOf(cfgArr[12]));
+            title.setStrikethrough(Boolean.valueOf(cfgArr[9]));
+            title.setTextAlignment(AlignmentUtil.getTextAlign(cfgArr[13]));
+            title.setLineSpacing(Integer.parseInt(cfgArr[14]));
+            title.setWrappingWidth(Integer.parseInt(cfgArr[2]));
+        }
+        container.getChildren().add(titlePane);
+
+
+
         final String config = ruleConfig.getConfig();
         String details = ruleConfig.getDetails();
         String ruleType = currentStage.getRuleType();
         final String ruleContent = currentStage.getRuleContent();
         Text text = new Text(ruleContent);
+        StackPane textPane = new StackPane();
+        textPane.getChildren().add(text);
+
+        String[] cfgArr = config.split(ConfigSpliter.SPLITER);
+
+        textPane.setLayoutX(Integer.parseInt(cfgArr[1]));
+        textPane.setLayoutY(Integer.parseInt(cfgArr[2]));
+        textPane.setPrefWidth(Integer.parseInt(cfgArr[3]));
+        textPane.setPrefHeight(Integer.parseInt(cfgArr[4]));
+        textPane.setBackground(new Background(new BackgroundFill(Color.YELLOW, CornerRadii.EMPTY, Insets.EMPTY)));
+
+        text.setX(Integer.parseInt(cfgArr[1]));
+        text.setY(Integer.parseInt(cfgArr[2]));
+        text.prefWidth(Integer.parseInt(cfgArr[3]));
+        text.prefHeight(Integer.parseInt(cfgArr[4]));
+        text.setFill(Color.valueOf(cfgArr[0]));
+        text.setWrappingWidth(Integer.parseInt(cfgArr[3]));
         if (StringUtils.isEmpty(details)) {
-            final String[] cfgArr = config.split(ConfigSpliter.SPLITER);
-            text.setX(Integer.parseInt(cfgArr[1]));
-            text.setY(Integer.parseInt(cfgArr[2]));
-            text.prefWidth(Integer.parseInt(cfgArr[3]));
-            text.prefHeight(Integer.parseInt(cfgArr[4]));
-            text.setFill(Color.valueOf(cfgArr[0]));
-            text.setWrappingWidth(Integer.parseInt(cfgArr[3]));
-            container.getChildren().add(text);
         } else {
-            final String[] cfgArr = details.split(ConfigSpliter.SPLITER);
+            cfgArr = details.split(ConfigSpliter.SPLITER);
             text.setX(Integer.parseInt(cfgArr[0]));
             text.setY(Integer.parseInt(cfgArr[1]));
             text.prefWidth(Integer.parseInt(cfgArr[2]));
             text.prefHeight(Integer.parseInt(cfgArr[3]));
-            text.setFill(Color.valueOf(cfgArr[5]));
+
+            textPane.setLayoutX(Integer.parseInt(cfgArr[0]));
+            textPane.setLayoutY(Integer.parseInt(cfgArr[1]));
+            textPane.setPrefWidth(Integer.parseInt(cfgArr[2]));
+            textPane.setPrefHeight(Integer.parseInt(cfgArr[3]));
+
+            if (Boolean.valueOf(cfgArr[4])) {
+                // 填充背景图片
+                if (!StringUtils.isEmpty(cfgArr[6])) {
+                    try {
+                        textPane.setBackground(new Background(new BackgroundImage(new Image(new FileInputStream(cfgArr[6])),
+                                BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT, BackgroundPosition.DEFAULT,
+                                new BackgroundSize(Integer.parseInt(cfgArr[2]), Integer.parseInt(cfgArr[3]), false, false, false, false))));
+                    } catch (FileNotFoundException e) {
+                        e.printStackTrace();
+                    }
+                }
+            } else {
+                // 填充背景颜色
+                textPane.setBackground(new Background(new BackgroundFill(Color.valueOf(cfgArr[5]), CornerRadii.EMPTY, Insets.EMPTY)));
+            }
+            
             Font font = Font.font(FontMap.getFont(cfgArr[7]), FontWeight.NORMAL, FontPosture.REGULAR, Integer.parseInt(cfgArr[8]));
+            
             text.setFont(font);
+            if (cfgArr.length >= 16) {
+                text.setFill(Color.valueOf(cfgArr[15]));
+            } else {
+                text.setFill(Color.BLACK);
+            }
+           
             if (Boolean.valueOf(cfgArr[10])) {
                 text.setStroke(text.getFill());
             } else {
@@ -149,7 +271,9 @@ public class StageRulePreviewPreview extends PreviewPane{
             text.setTextAlignment(AlignmentUtil.getTextAlign(cfgArr[13]));
             text.setLineSpacing(Integer.parseInt(cfgArr[14]));
             text.setWrappingWidth(Integer.parseInt(cfgArr[2]));
-            container.getChildren().add(text);
+          
         }
+        container.getChildren().add(textPane);
+
     }
 }

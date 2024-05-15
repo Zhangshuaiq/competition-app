@@ -11,6 +11,7 @@ import competition.entity.Questions;
 import competition.entity.Stages;
 import competition.mapper.ConfigsMapper;
 import competition.util.*;
+import competition.ws.WsMessageHandler;
 import javafx.animation.AnimationTimer;
 import javafx.application.Platform;
 import javafx.event.EventHandler;
@@ -59,6 +60,9 @@ public class RollPreviewPreview extends PreviewPane {
     
     @FXML
     private Text questionText, stageName;
+    
+    @Resource
+    private WsMessageHandler messageHandler;
 
 
     private static Stages currentStage;
@@ -105,6 +109,7 @@ public class RollPreviewPreview extends PreviewPane {
     }
 
     private void showData() {
+        messageHandler.notifyPage("roll", null);
         if (ExtendedScreen.hasShow()) {
             RollPreview.setCurrentStage(inner);
             // 进入比赛
@@ -324,6 +329,7 @@ public class RollPreviewPreview extends PreviewPane {
                 int randomNumber = (int)(Math.random() * questionList.size());
                 String selectedNo = questionList.get(randomNumber).getQuestionNumber().toString();
                 questionText.setText(selectedNo);
+                messageHandler.notifyPage("roll", selectedNo);
                 if (rollPreview != null) {
                     rollPreview.reload(0, selectedNo);
                 }

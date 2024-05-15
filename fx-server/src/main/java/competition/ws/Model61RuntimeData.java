@@ -15,6 +15,10 @@ import java.util.Optional;
 
 // 答题模式-个人 实时更新数据,后端使用
 public class Model61RuntimeData {
+    
+    // 已回答的所有状态
+    public static List<List<ModelData>> totalData = new ArrayList<>();
+    
     // 实时回答状态
     private static List<ModelData> runtimeData = new ArrayList<>();
     
@@ -25,7 +29,10 @@ public class Model61RuntimeData {
     }
 
     public static void setTeams(List<Teams> teams) {
-        runtimeData.clear();
+        
+        // 保存已有的数据，用于计算排名
+        forceFinish();
+        //runtimeData.clear();
         Model61RuntimeData.teams = teams;
         for (Teams team : teams) {
             String members = team.getMembers();
@@ -39,6 +46,25 @@ public class Model61RuntimeData {
                 }
             }
         }
+    }
+
+    // 更新计时
+    public static void freshTime(int second) {
+        for (ModelData datum : runtimeData) {
+            if (StringUtils.isEmpty(datum.getUserSelect())) {
+                datum.second = second;
+            }
+        }
+    }
+    
+    public static void forceFinish(){
+        if (!runtimeData.isEmpty()) {
+            String stageNumber = runtimeData.get(0).getStageNumber();
+            if (!StringUtils.isEmpty(stageNumber)) {
+                totalData.add(new ArrayList<>(runtimeData));
+            }
+        }
+        runtimeData.clear();
     }
 
     public static void setRuntimeData(Questions data) {
@@ -71,7 +97,6 @@ public class Model61RuntimeData {
             int i = runtimeData.indexOf(modelData);
             runtimeData.set(i, data);
             List<Teams> teams = TeamRuntime.getTeams();
-            // 团队加teams = {ArrayList@11567}  size = 8分,同步到界面
 
                 for (Teams team : teams) {
                     if (team.getFullName().equals(data.getTeamName())) {
@@ -87,20 +112,31 @@ public class Model61RuntimeData {
                                         team.getMemberScores().set(j, x + data.getScore());
                                         // 更新队员当前环节的分数
                                         team.getQScores().set(j, data.getScore());
+                                    } else {
+                                        team.getQScores().set(j, -data.getScore());
                                     }
                                     // 设置为已经回答完成
                                     team.getStatusList().set(j, 1);
                                 }
                             }
                         }
-
+                        ControlPane controlPane = JavaFxApplication.getApplicationContext().getBean(ControlPane.class);
                         if (data.getUserSelect().equals(data.getAnswer())) {
                             // 更新队伍分数
-                            team.setNewScore(team.getCurrentScore() + data.getScore());
-                            ControlPane controlPane = JavaFxApplication.getApplicationContext().getBean(ControlPane.class);
+                            if (controlPane.getCurrentStage().getCountTotal() == 1) {
+                                team.setNewScore(team.getCurrentScore() + data.getScore());
+                            } else {
+                                team.setNewScore(team.getCurrentScore());
+                            }
                             Platform.runLater(() -> {
                                 controlPane.teamScore.setText(team.getCurrentScore().toString());
                             });
+                        } else {
+                            if (controlPane.getCurrentStage().getCountTotal() == 1) {
+                                team.setNewScore(team.getCurrentScore() - controlPane.getCurrentStage().getDesValue());
+                            } else {
+                                team.setNewScore(team.getCurrentScore());
+                            }
                         }
                     }
             }
@@ -111,7 +147,10 @@ public class Model61RuntimeData {
     public static List<ModelData> getRuntimeData() {
         return runtimeData;
     }
-    
+
+    public static List<List<ModelData>> getTotalData() {
+        return totalData;
+    }
 
     @Data
     public static class ModelData {
@@ -123,7 +162,7 @@ public class Model61RuntimeData {
         private String userName;
         
         // 题目分值
-        private Integer score;
+        private Integer score = 0;
 
         // 显示答题结果
         private boolean show;
@@ -163,6 +202,9 @@ public class Model61RuntimeData {
 
         // 选手选项
         private String userSelect;
+        
+        // 回答时间
+        private Integer second = 0;
 
     }
 

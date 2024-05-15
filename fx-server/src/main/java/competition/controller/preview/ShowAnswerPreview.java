@@ -1,5 +1,8 @@
 package competition.controller.preview;
 
+import competition.controller.ControlPane;
+import competition.controller.match.RollPreview;
+import competition.controller.match.ShowAnswer;
 import competition.entity.AnswerStyle;
 import competition.mapper.AnswerStyleMapper;
 import competition.modal.TeamResult;
@@ -44,6 +47,9 @@ public class ShowAnswerPreview extends PreviewPane {
 
     @FXML
     private GridPane gridPane;
+    
+    @Resource
+    private ControlPane controlPane;
 
     @Resource
     private AnswerStyleMapper answerStyleMapper;
@@ -72,6 +78,16 @@ public class ShowAnswerPreview extends PreviewPane {
 
     private void showData() {
 
+        if (ExtendedScreen.hasShow()) {
+            ShowAnswer.setTeamResult(teamResult);
+            // 进入比赛
+            Object res = ExtendedScreen.showWithControl("/view/match/ShowAnswer.fxml");
+            if (res != null) {
+                controlPane.setQuestionPreview((ShowAnswer) res);
+            }
+        }
+        
+        
         AnswerStyle answerStyle = answerStyleMapper.selectById(1);
 
         int col = 1;
@@ -332,8 +348,8 @@ public class ShowAnswerPreview extends PreviewPane {
                 ut.prefHeight(height);
                 rPane.getChildren().add(ut);
                 if (dataItem.getScore() > 0) {
+                    ut.setText("+ " + dataItem.getScore());
                     rPane.setAlignment(AlignmentUtil.getAlign(f3l));
-
                     ut.setFill(f3Color);
                     Font font3 = Font.font(FontMap.getFont(f3Font), FontWeight.NORMAL, FontPosture.REGULAR, f3Size);
                     ut.setFont(font3);

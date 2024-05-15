@@ -20,6 +20,8 @@ public class Model7RuntimeData {
     private static List<Teams> teams = new ArrayList<>();
 
     private static List<String> times = new ArrayList<>();
+    
+    private static List<String > fts = new ArrayList<>();
 
     private static List<Integer> seconds = new ArrayList<>();
 
@@ -29,6 +31,10 @@ public class Model7RuntimeData {
         return finished;
     }
 
+    public static List<String> getFts() {
+        return fts;
+    }
+
     public static List<String> getTimes() {
         return times;
     }
@@ -36,6 +42,7 @@ public class Model7RuntimeData {
     public static List<Integer> getSeconds() {
         return seconds;
     }
+    
 
     public static List<Teams> getTeams() {
         return teams;
@@ -46,11 +53,13 @@ public class Model7RuntimeData {
         finished.clear();
         times.clear();
         seconds.clear();
+        fts.clear();
         Model7RuntimeData.teams = teams;
         for (Teams team : teams) {
             runtimeData.add(new ArrayList<>());
             times.add("0分00秒");
             seconds.add(0);
+            fts.add("0分00秒");
             finished.add(false);
         }
     }
@@ -108,11 +117,39 @@ public class Model7RuntimeData {
         }
         // 答题完成
         if (modelData.size() == CurrentQuestions.getQuestionList().size()) {
+            fts.set(i, times.get(i));
             finished.set(i, true);
+        }
+    }
+    
+    
+    // 强制停止答题
+    public static void forceFinish(){
+        for (int i = 0; i < teams.size(); i++) {
+           if (!finished.get(i)) {
+               fts.set(i, times.get(i));
+               finished.set(i, true);
+           }
+        }
+    }
+    
+    public static void reset(){
+        runtimeData.clear();
+        finished.clear();
+        times.clear();
+        seconds.clear();
+        fts.clear();
+        for (Teams team : teams) {
+            runtimeData.add(new ArrayList<>());
+            times.add("0分00秒");
+            seconds.add(0);
+            fts.add("0分00秒");
+            finished.add(false);
         }
     }
 
 
+    
     public static List<List<ModelData>> getRuntimeData() {
         return runtimeData;
     }

@@ -4,11 +4,10 @@ import com.alibaba.fastjson2.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import competition.JavaFxApplication;
 import competition.controller.ControlPane;
-import competition.controller.match.Model60;
-import competition.controller.match.Model61;
 import competition.controller.match.Model7;
 import competition.controller.preview.*;
 import competition.entity.Questions;
+import competition.entity.Stages;
 import competition.entity.Teams;
 import competition.mapper.TeamsMapper;
 import competition.util.TeamRuntime;
@@ -19,6 +18,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.util.StringUtils;
 
 import javax.annotation.Resource;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -72,7 +72,7 @@ public class WsMessageHandler {
     
     @MessageMapping("/enter")
     public void enter(byte[] msg){
-        String jsonText = new String(msg);
+        String jsonText =  new String(msg, StandardCharsets.UTF_8);
         Map parse = JSON.parseObject(jsonText, Map.class);
         String team = parse.get("team").toString();
         WsTeamMemberWaiter.addWaiter(team);
@@ -82,7 +82,7 @@ public class WsMessageHandler {
     // 竞技模式提交触发
     @MessageMapping("/model7/submit")
     public void submitModel7(byte[] msg){
-        String jsonText = new String(msg);
+        String jsonText = new String(msg, StandardCharsets.UTF_8);
         Map parse = JSON.parseObject(jsonText, Map.class);
         Model7RuntimeData.ModelData data = JSON.parseObject(parse.get("data").toString(), Model7RuntimeData.ModelData.class);
         String time = parse.get("time").toString();
@@ -105,7 +105,7 @@ public class WsMessageHandler {
     // 个人答题模式提交触发
     @MessageMapping("/model61/submit")
     public void submitModel61(byte[] msg){
-        String jsonText = new String(msg);
+        String jsonText =  new String(msg, StandardCharsets.UTF_8);
         Map parse = JSON.parseObject(jsonText, Map.class);
         Model61RuntimeData.ModelData data = JSON.parseObject(parse.get("data").toString(), Model61RuntimeData.ModelData.class);
         Model61RuntimeData.setRuntimeData(data);
@@ -123,7 +123,7 @@ public class WsMessageHandler {
 
     @MessageMapping("/model60/submit")
     public void submitModel60(byte[] msg){
-        String jsonText = new String(msg);
+        String jsonText = new String(msg, StandardCharsets.UTF_8);
         Map parse = JSON.parseObject(jsonText, Map.class);
         Model60RuntimeData.ModelData data = JSON.parseObject(parse.get("data").toString(), Model60RuntimeData.ModelData.class);
         Model60RuntimeData.setRuntimeData(data);
@@ -131,7 +131,7 @@ public class WsMessageHandler {
         Platform.runLater(() -> {
             ControlPane controlPane = JavaFxApplication.getApplicationContext().getBean(ControlPane.class);
             //controlPane.getPreviewPane().reload();
-            controlPane.getScoreBoardPreview().reloadColor();
+            controlPane.getScoreBoardPreview().reload();
         });
     }
     
@@ -139,10 +139,12 @@ public class WsMessageHandler {
     
     
     public void notifyPage(String route, Object data){
+        ControlPane controlPane = JavaFxApplication.getApplicationContext().getBean(ControlPane.class);
         Map<String, Object> dataMap = new HashMap<>();
         dataMap.put("route", route);
         dataMap.put("data", data);
         dataMap.put("teams", TeamRuntime.getTeams());
+        dataMap.put("stage", controlPane.getCurrentStage());
         messagingTemplate.convertAndSend(PAGE_TOPIC, JSON.toJSONString(dataMap));
     }
     
@@ -169,6 +171,13 @@ public class WsMessageHandler {
 //            messagingTemplate.convertAndSend(ENTER_TOPIC, JSON.toJSONString(data));
 //        }
 //    }
+    
+    // 强制结束
+    public void model7Finish(){
+        Map<String, String> dataMap = new HashMap<>();
+        dataMap.put("type", "finish");
+        messagingTemplate.convertAndSend(QUESTION_GROUP_TOPIC, JSON.toJSONString(dataMap));
+    }
 
     // 竞技模式时间同步
     public void sendModel7Time(String time){
@@ -178,20 +187,20 @@ public class WsMessageHandler {
         messagingTemplate.convertAndSend(QUESTION_GROUP_TOPIC, JSON.toJSONString(dataMap));
     }
     
-    public void sendModel60Start(){
-        Map<String, String> data = new HashMap<>();
-        messagingTemplate.convertAndSend(MODEL_60_START_TOPIC, JSON.toJSONString(data));
-    }
-    
-    public void sendModel61Start(){
-        Map<String, String> data = new HashMap<>();
-        messagingTemplate.convertAndSend(MODEL_61_START_TOPIC, JSON.toJSONString(data));
-    }
-
-    public void sendModel7Start() {
-        Map<String, String> data = new HashMap<>();
-        messagingTemplate.convertAndSend(MODEL_7_START_TOPIC, JSON.toJSONString(data));
-    }
+//    public void sendModel60Start(){
+//        Map<String, String> data = new HashMap<>();
+//        messagingTemplate.convertAndSend(MODEL_60_START_TOPIC, JSON.toJSONString(data));
+//    }
+//    
+//    public void sendModel61Start(){
+//        Map<String, String> data = new HashMap<>();
+//        messagingTemplate.convertAndSend(MODEL_61_START_TOPIC, JSON.toJSONString(data));
+//    }
+//
+//    public void sendModel7Start() {
+//        Map<String, String> data = new HashMap<>();
+//        messagingTemplate.convertAndSend(MODEL_7_START_TOPIC, JSON.toJSONString(data));
+//    }
     
     
     public void sendShowAnswer() {
@@ -199,7 +208,13 @@ public class WsMessageHandler {
         dataMap.put("type", "answer");
         messagingTemplate.convertAndSend(QUESTION_TOPIC, JSON.toJSONString(dataMap));
     }
-    
+
+    public void sendClue(Object data) {
+        Map<String, Object> dataMap = new HashMap<>();
+        dataMap.put("type", "clue");
+        dataMap.put("data", data);
+        messagingTemplate.convertAndSend(QUESTION_TOPIC, JSON.toJSONString(dataMap));
+    }
     
     public void sendQuestionTime(String time) {
         Map<String, String> dataMap = new HashMap<>();
@@ -215,17 +230,18 @@ public class WsMessageHandler {
         messagingTemplate.convertAndSend(QUESTION_TOPIC, JSON.toJSONString(data));
     }
     
-    public void sendQuestion(Questions questions){
-        Map<String, Object> dataMap = new HashMap<>();
-        dataMap.put("type", "Q");
-        dataMap.put("data", questions);
-        messagingTemplate.convertAndSend(QUESTION_TOPIC, JSON.toJSONString(dataMap));
-    }
+//    public void sendQuestion(Questions questions){
+//        Map<String, Object> dataMap = new HashMap<>();
+//        dataMap.put("type", "Q");
+//        dataMap.put("data", questions);
+//        messagingTemplate.convertAndSend(QUESTION_TOPIC, JSON.toJSONString(dataMap));
+//    }
     
-    public void sendQuestionGroup(List<Questions> questionsList) {
+    public void sendQuestionGroup(List<Questions> questionsList, boolean random) {
         Map<String, Object> dataMap = new HashMap<>();
         dataMap.put("type", "G");
         dataMap.put("data", questionsList);
+        dataMap.put("random", random);
         messagingTemplate.convertAndSend(QUESTION_GROUP_TOPIC, JSON.toJSONString(dataMap));
     }
     

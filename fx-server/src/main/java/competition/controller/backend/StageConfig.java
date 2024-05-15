@@ -56,6 +56,11 @@ public class StageConfig {
     @FXML
     private ComboBox<String> paChoice, ruleChoice;
 
+    @FXML
+    private CheckBox countTotal;
+    
+    @FXML
+    private TextField desValue;
 
     @FXML
     private TextField nameInput;
@@ -480,6 +485,8 @@ public class StageConfig {
             paChoice.setValue(current.getpAType());
             ruleChoice.setValue(current.getRuleType());
             timeOrder.setSelected(current.getOrderVal() == 1);
+            countTotal.setSelected(current.getCountTotal() == 1);
+            desValue.setText(current.getDesValue().toString());
             for (Toggle toggle : ccType.getToggles()) {
                 if (toggle.getUserData().toString().equals(current.getQuestionType().toString())) {
                     toggle.setSelected(true);
@@ -487,13 +494,13 @@ public class StageConfig {
                     break;
                 }
             }
-//            for (Toggle toggle : modelType.getToggles()) {
-//                if (toggle.getUserData().toString().equals(current.getModelType())) {
-//                    toggle.setSelected(true);
-//                    modelType.selectToggle(toggle);
-//                    break;
-//                }
-//            }
+            for (Toggle toggle : timeCountType.getToggles()) {
+                if (toggle.getUserData().toString().equals(current.getTimeCType().toString())) {
+                    toggle.setSelected(true);
+                    timeCountType.selectToggle(toggle);
+                    break;
+                }
+            }
             ruleText.setVisible(true);
             ruleImg.setVisible(false);
             ruleText.setText(current.getRuleContent());
@@ -597,6 +604,8 @@ public class StageConfig {
         current.setRuleContent(data);
         current.setrRandomSort(randomSort2Selected?1:0);
         current.setOrderVal(timeOrder.isSelected()? 1: 0);
+        current.setDesValue(Integer.parseInt(desValue.getText()));
+        current.setCountTotal(countTotal.isSelected()? 1: 0);
         stagesMapper.updateById(current);
         
         firstBox.getChildren().clear();
@@ -662,6 +671,9 @@ public class StageConfig {
         stages.setRuleContent(data);
         stages.setM6(model6Check.isSelected()? 1: 0);
         stages.setrRandomSort(randomSort2Selected?1:0);
+        stages.setDesValue(Integer.parseInt(desValue.getText()));
+        stages.setCountTotal(countTotal.isSelected()? 1: 0);
+        
         current.setOrderVal(timeOrder.isSelected()? 1: 0);
         if (addLevel == 1) {
                 int size = stagesMapper.selectList(new LambdaQueryWrapper<Stages>()

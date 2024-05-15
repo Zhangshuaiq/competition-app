@@ -1,5 +1,6 @@
 package competition.controller.match;
 
+import competition.controller.ControlPane;
 import competition.entity.Configs;
 import competition.entity.Stages;
 import competition.mapper.ConfigsMapper;
@@ -128,6 +129,10 @@ public class StageQuestionPreviewAttr {
 
     @Resource
     private StagesMapper stagesMapper;
+    
+    
+    @Resource
+    private ControlPane controlPane;
 
     private static ReloadPane reloadPane;
 
@@ -265,6 +270,7 @@ public class StageQuestionPreviewAttr {
                 reloadPane.reload();
             }
         }
+        controlPane.reloadStage();
         PreviewStack.reload();
         closeStage();
 
@@ -385,6 +391,7 @@ public class StageQuestionPreviewAttr {
                 reloadPane.reload();
             }
         }
+        controlPane.reloadStage();
         PreviewStack.reload();
         closeStage();
     }

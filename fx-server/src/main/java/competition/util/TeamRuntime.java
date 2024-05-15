@@ -30,7 +30,7 @@ public class TeamRuntime {
             List<Integer> qScores = team.getQScores();
             for (int i = 0; i < qScores.size(); i++) {
                 if (qScores.get(i) == 0) {
-                    team.getStatusList().set(i, 0);
+                    team.getStatusList().set(i, 3);
                 } else if (qScores.get(i) > 0) {
                     team.getStatusList().set(i, 2);
                 } else {
@@ -43,19 +43,20 @@ public class TeamRuntime {
 
     public static void updateS(){
         for (Teams team : teams) {
-            if (team.getCurrentScore() < team.getNewScore()) {
-                team.setStatus(2);
-            } else  if (team.getCurrentScore() > team.getNewScore()) {
+            if (team.getQScore() == 0) {
                 team.setStatus(3);
-            } else {
-                team.setStatus(0);
-            }
+            } else if (team.getQScore() > 0) {
+                team.setStatus(2);
+            } else  if (team.getQScore() < 0) { 
+                team.setStatus(3);
+            } 
         }
     }
 
     public static void resetStatus(){
         for (Teams team : teams) {
             team.setStatus(0);
+            team.setQScore(0);
             for (int i = 0; i < team.getStatusList().size(); i++) {
                 team.getStatusList().set(i, 0);
                 team.getQScores().set(i, 0);

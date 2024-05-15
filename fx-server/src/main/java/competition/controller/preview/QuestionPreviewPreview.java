@@ -1,5 +1,6 @@
 package competition.controller.preview;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import competition.controller.ControlPane;
 import competition.controller.match.QuestionPreview;
 import competition.controller.match.QuestionPreviewAttr;
@@ -9,6 +10,7 @@ import competition.entity.QuestionStyle;
 import competition.entity.Questions;
 import competition.entity.Stages;
 import competition.mapper.ConfigsMapper;
+import competition.mapper.StagesMapper;
 import competition.util.*;
 import competition.ws.WsMessageHandler;
 import javafx.event.EventHandler;
@@ -71,6 +73,9 @@ public class QuestionPreviewPreview extends PreviewPane {
 
     @Resource
     private ConfigsMapper configsMapper;
+    
+    @Resource
+    private StagesMapper stagesMapper;
 
 
     private static Questions current;
@@ -103,13 +108,13 @@ public class QuestionPreviewPreview extends PreviewPane {
                 }
             }
         });
+        
         showData();
     }
 
 
     private void showData() {
         inner = current;
-
         Stages currentStage = controlPane.getCurrentStage();
         if (currentStage.getQuestionType() == 6) {
           if (currentStage.getM6() == 0) {
@@ -130,6 +135,12 @@ public class QuestionPreviewPreview extends PreviewPane {
             }
         }
 
+        // 是否自动计时
+        if (currentStage.getTimeCType() == 2) {
+            //controlPane.timeReset();
+            controlPane.startTiming();
+        }
+        
         try {
             container.setBackground(new Background(new BackgroundImage(
                     new Image(new FileInputStream(ImageResource.答题背景())), BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT, BackgroundPosition.DEFAULT,
@@ -185,7 +196,7 @@ public class QuestionPreviewPreview extends PreviewPane {
                 imageQ.setFitWidth(Navigator.getWidth());
                 imageQ.setFitHeight(Navigator.getHeight());
                 try {
-                    imageQ.setImage(new Image(new FileInputStream(new File( BaseDir.IMAGE_DIR +  inner.getQuestion())),
+                    imageQ.setImage(new Image(new FileInputStream(new File( BaseDir.TIKU_RES_DIR +  inner.getQuestion())),
                             Navigator.getWidth(), Navigator.getHeight(), false, true));
                 } catch (FileNotFoundException e) {
                     e.printStackTrace();
@@ -251,10 +262,11 @@ public class QuestionPreviewPreview extends PreviewPane {
             
             // 只有选择题展示选项
             tiganBox.getChildren().add(tiganLabel);
-            if (questionType.equals("单选题") || questionType.equals("多选题")) {
+            if (questionType.equals("单选题") || questionType.equals("多选题") || questionType.equals("不定项选择")) {
                 if (!StringUtils.isEmpty(inner.getChoiceA())) {
                     Text chA = new Text("A." + inner.getChoiceA());
                     chA.prefWidth(Integer.parseInt(split[7]));
+                    chA.setWrappingWidth(Integer.parseInt(split[7]));
                     chA.setFill(Color.valueOf(split[0]));
                     tiganBox.getChildren().add(chA);
                 }
@@ -262,6 +274,7 @@ public class QuestionPreviewPreview extends PreviewPane {
                 if (!StringUtils.isEmpty(inner.getChoiceB())) {
                     Text chB = new Text("B." + inner.getChoiceB());
                     chB.prefWidth(Integer.parseInt(split[7]));
+                    chB.setWrappingWidth(Integer.parseInt(split[7]));
                     chB.setFill(Color.valueOf(split[0]));
                     tiganBox.getChildren().add(chB);
                 }
@@ -269,6 +282,7 @@ public class QuestionPreviewPreview extends PreviewPane {
                 if (!StringUtils.isEmpty(inner.getChoiceC())) {
                     Text chA = new Text("C." + inner.getChoiceC());
                     chA.prefWidth(Integer.parseInt(split[7]));
+                    chA.setWrappingWidth(Integer.parseInt(split[7]));
                     chA.setFill(Color.valueOf(split[0]));
                     tiganBox.getChildren().add(chA);
                 }
@@ -276,6 +290,7 @@ public class QuestionPreviewPreview extends PreviewPane {
                 if (!StringUtils.isEmpty(inner.getChoiceD())) {
                     Text chA = new Text("D." + inner.getChoiceD());
                     chA.prefWidth(Integer.parseInt(split[7]));
+                    chA.setWrappingWidth(Integer.parseInt(split[7]));
                     chA.setFill(Color.valueOf(split[0]));
                     tiganBox.getChildren().add(chA);
                 }
@@ -283,6 +298,7 @@ public class QuestionPreviewPreview extends PreviewPane {
                 if (!StringUtils.isEmpty(inner.getChoiceE())) {
                     Text chA = new Text("E." + inner.getChoiceE());
                     chA.prefWidth(Integer.parseInt(split[7]));
+                    chA.setWrappingWidth(Integer.parseInt(split[7]));
                     chA.setFill(Color.valueOf(split[0]));
                     tiganBox.getChildren().add(chA);
                 }
@@ -290,6 +306,7 @@ public class QuestionPreviewPreview extends PreviewPane {
                 if (!StringUtils.isEmpty(inner.getChoiceF())) {
                     Text chA = new Text("F." + inner.getChoiceF());
                     chA.prefWidth(Integer.parseInt(split[7]));
+                    chA.setWrappingWidth(Integer.parseInt(split[7]));
                     chA.setFill(Color.valueOf(split[0]));
                     tiganBox.getChildren().add(chA);
                 }
@@ -300,6 +317,7 @@ public class QuestionPreviewPreview extends PreviewPane {
                 if (!StringUtils.isEmpty(inner.getChoiceA())) {
                     Text chA = new Text(inner.getChoiceA());
                     chA.prefWidth(Integer.parseInt(split[7]));
+                    chA.setWrappingWidth(Integer.parseInt(split[7]));
                     chA.setFill(Color.valueOf(split[0]));
                     tiganBox.getChildren().add(chA);
                 }
@@ -307,6 +325,7 @@ public class QuestionPreviewPreview extends PreviewPane {
                 if (!StringUtils.isEmpty(inner.getChoiceB())) {
                     Text chB = new Text(inner.getChoiceB());
                     chB.prefWidth(Integer.parseInt(split[7]));
+                    chB.setWrappingWidth(Integer.parseInt(split[7]));
                     chB.setFill(Color.valueOf(split[0]));
                     tiganBox.getChildren().add(chB);
                 }
@@ -314,6 +333,7 @@ public class QuestionPreviewPreview extends PreviewPane {
                 if (!StringUtils.isEmpty(inner.getChoiceC())) {
                     Text chA = new Text(inner.getChoiceC());
                     chA.prefWidth(Integer.parseInt(split[7]));
+                    chA.setWrappingWidth(Integer.parseInt(split[7]));
                     chA.setFill(Color.valueOf(split[0]));
                     tiganBox.getChildren().add(chA);
                 }
@@ -321,6 +341,7 @@ public class QuestionPreviewPreview extends PreviewPane {
                 if (!StringUtils.isEmpty(inner.getChoiceD())) {
                     Text chA = new Text(inner.getChoiceD());
                     chA.prefWidth(Integer.parseInt(split[7]));
+                    chA.setWrappingWidth(Integer.parseInt(split[7]));
                     chA.setFill(Color.valueOf(split[0]));
                     tiganBox.getChildren().add(chA);
                 }
@@ -328,6 +349,7 @@ public class QuestionPreviewPreview extends PreviewPane {
                 if (!StringUtils.isEmpty(inner.getChoiceE())) {
                     Text chA = new Text(inner.getChoiceE());
                     chA.prefWidth(Integer.parseInt(split[7]));
+                    chA.setWrappingWidth(Integer.parseInt(split[7]));
                     chA.setFill(Color.valueOf(split[0]));
                     tiganBox.getChildren().add(chA);
                 }
@@ -335,6 +357,7 @@ public class QuestionPreviewPreview extends PreviewPane {
                 if (!StringUtils.isEmpty(inner.getChoiceF())) {
                     Text chA = new Text(inner.getChoiceF());
                     chA.prefWidth(Integer.parseInt(split[7]));
+                    chA.setWrappingWidth(Integer.parseInt(split[7]));
                     chA.setFill(Color.valueOf(split[0]));
                     tiganBox.getChildren().add(chA);
                 }
@@ -354,9 +377,7 @@ public class QuestionPreviewPreview extends PreviewPane {
                 if (questionStyle != null) {
                     String style1 = questionStyle.getStyle1();
                     if (!StringUtils.isEmpty(style1)) {
-
                         String[] split1 = style1.split(ConfigSpliter.SPLITER);
-
                         tiganBox.setLayoutX(Integer.parseInt(split1[0]));
                         tiganBox.setLayoutY(Integer.parseInt(split1[1]));
                         tiganBox.setPrefWidth(Integer.parseInt(split1[2]));
@@ -392,8 +413,11 @@ public class QuestionPreviewPreview extends PreviewPane {
                                             BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT, BackgroundPosition.DEFAULT,
                                             new BackgroundSize(Integer.parseInt(split1[2]), Integer.parseInt(split1[3]), false, false, false, false))));
                                 } catch (FileNotFoundException e) {
-                                    e.printStackTrace();
+                                    tiganBox.setBackground(new Background(new BackgroundFill(Color.TRANSPARENT, CornerRadii.EMPTY, Insets.EMPTY)));
+                                    // e.printStackTrace();
                                 }
+                            } else {
+                                tiganBox.setBackground(new Background(new BackgroundFill(Color.TRANSPARENT, CornerRadii.EMPTY, Insets.EMPTY)));
                             }
                         } else {
                             // 填充背景颜色
@@ -419,8 +443,10 @@ public class QuestionPreviewPreview extends PreviewPane {
                         tiganLabel.setLineSpacing(Integer.parseInt(split1[14]));
 
                         for (Node child : tiganBox.getChildren()) {
+                            child.prefWidth(Integer.parseInt(split1[2]));
                             if (child instanceof Text) {
                                 Text ch = (Text) child;
+                                ch.setWrappingWidth(Integer.parseInt(split1[2]));
                                 ch.setFont(font);
                                 ch.setUnderline(Boolean.valueOf(split1[12]));
                                 ch.setStrikethrough(Boolean.valueOf(split1[9]));
@@ -443,7 +469,6 @@ public class QuestionPreviewPreview extends PreviewPane {
                     // 答案样式
                     String style2 = questionStyle.getStyle2();
                     if (!StringUtils.isEmpty(style2)) {
-
                         String[] split1 = style2.split(ConfigSpliter.SPLITER);
 
                         backPane.setLayoutX(Integer.parseInt(split1[0]));
@@ -492,8 +517,16 @@ public class QuestionPreviewPreview extends PreviewPane {
                     String style3 = questionStyle.getStyle3();
                     // 标题展示
                     stagePane.setVisible(Boolean.valueOf(split[12]));
+                    String stageNumber = inner.getStageNumber();
+                    Stages stages = stagesMapper.selectOne(new LambdaQueryWrapper<Stages>().eq(Stages::getSortVal, stageNumber).last(" limit 1"));
                     if (stagePane.isVisible()) {
-                        stageLabel.setText(controlPane.getCurrentStage().getName());
+                        Stages currentStage1 = controlPane.getCurrentStage();
+                        if (currentStage1.getQuestionType() == 3) {
+                            stageLabel.setText(currentStage1.getName() + " " + stages.getName());
+                        } else {
+                            stageLabel.setText(stages.getName());
+                        }
+                       
                         stageLabel.setFill(Color.valueOf(split[11]));
                         if (!StringUtils.isEmpty(style3)) {
                             String[] split1 = style3.split(ConfigSpliter.SPLITER);
@@ -557,10 +590,10 @@ public class QuestionPreviewPreview extends PreviewPane {
             imageQ.setFitWidth(Navigator.getWidth());
             try {
                 if (GlobalCache.showAnswer) {
-                    imageQ.setImage(new Image(new FileInputStream(new File( BaseDir.IMAGE_DIR +  inner.getAnswer())),
+                    imageQ.setImage(new Image(new FileInputStream(new File( BaseDir.TIKU_RES_DIR +  inner.getAnswer())),
                             Navigator.getWidth(), Navigator.getHeight(), false, true));
                 } else {
-                    imageQ.setImage(new Image(new FileInputStream(new File( BaseDir.IMAGE_DIR +  inner.getQuestion())),
+                    imageQ.setImage(new Image(new FileInputStream(new File( BaseDir.TIKU_RES_DIR +  inner.getQuestion())),
                             Navigator.getWidth(), Navigator.getHeight(), false, true));
                 }
 
@@ -579,9 +612,6 @@ public class QuestionPreviewPreview extends PreviewPane {
         }
     }
 
-    public void hideTiming() {
-        //timeLabel.setVisible(false);
-    }
 
     public void startTiming(int value) {
 //        timeVal = value;
@@ -612,7 +642,7 @@ public class QuestionPreviewPreview extends PreviewPane {
                 imageQ.setFitHeight(Navigator.getHeight());
                 imageQ.setFitWidth(Navigator.getWidth());
                 try {
-                    imageQ.setImage(new Image(new FileInputStream(new File( BaseDir.IMAGE_DIR +  inner.getAnswer())),
+                    imageQ.setImage(new Image(new FileInputStream(new File( BaseDir.TIKU_RES_DIR +  inner.getAnswer())),
                             Navigator.getWidth(), Navigator.getHeight(), false, true));
                 } catch (FileNotFoundException e) {
                     e.printStackTrace();

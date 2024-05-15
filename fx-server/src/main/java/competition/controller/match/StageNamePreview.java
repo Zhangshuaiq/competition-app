@@ -1,10 +1,15 @@
 package competition.controller.match;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import competition.controller.ControlPane;
+import competition.controller.preview.*;
 import competition.entity.Configs;
+import competition.entity.Questions;
 import competition.entity.Stages;
 import competition.mapper.ConfigsMapper;
 import competition.mapper.StagesMapper;
 import competition.util.*;
+import competition.ws.WsMessageHandler;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.geometry.Insets;
@@ -18,64 +23,77 @@ import javafx.scene.text.*;
 import javafx.scene.transform.Shear;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
+import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
 import javax.annotation.Resource;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.util.Collections;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Component
 @Scope("prototype")
 public class StageNamePreview implements ReloadPane{
 
+    @Resource
+    private ControlPane controlPane;
 
     @FXML
     private AnchorPane container;
-    
+
     @Resource
     private StagesMapper stagesMapper;
-    
+
     @Resource
     private ConfigsMapper configsMapper;
-    
+
     private static Integer stageId;
 
     private Integer innerStageId;
+
+    private Stages stages;
 
     public static void setStageId(Integer stageId) {
         StageNamePreview.stageId = stageId;
     }
 
+
     @Override
-    public Node getPane() {
+    public AnchorPane getPane() {
         return container;
     }
-    
-    @FXML
-    public void initialize(){
-        innerStageId = stageId;
-        container.setOnMouseClicked(new EventHandler<MouseEvent>() {
-            @Override
-            public void handle(MouseEvent event) {
-                if (event.getButton() == MouseButton.SECONDARY) {
 
-                }
-            }
-        });
+    @FXML
+    public void initialize() {
+        innerStageId= stageId;
+
+        stages = stagesMapper.selectById(innerStageId);
         showView();
     }
 
     private void showView() {
+        stages = stagesMapper.selectById(innerStageId);
 
         try {
-            container.setBackground(new Background(new BackgroundImage(
-                    new Image(new FileInputStream(ImageResource.环节名称背景())), BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT, BackgroundPosition.DEFAULT,
-                    new BackgroundSize(ExtendedScreen.getWidth(), ExtendedScreen.getHeight(), false, false, false, false)
-            )));
+            String img = ImageResource.stageImg(stages.getSortVal());
+            if (img != null) {
+                container.setBackground(new Background(new BackgroundImage(
+                        new Image(new FileInputStream(img)), BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT, BackgroundPosition.DEFAULT,
+                        new BackgroundSize(Navigator.getWidth(), Navigator.getHeight(), false, false, false, false)
+                )));
+            } else {
+                container.setBackground(new Background(new BackgroundImage(
+                        new Image(new FileInputStream(ImageResource.环节名称背景())), BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT, BackgroundPosition.DEFAULT,
+                        new BackgroundSize(Navigator.getWidth(), Navigator.getHeight(), false, false, false, false)
+                )));
+            }
+
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
-        
+
         container.getChildren().clear();
         StackPane box = new StackPane();
         container.getChildren().add(box);
@@ -90,7 +108,6 @@ public class StageNamePreview implements ReloadPane{
         //            xscjan.setSelected(Boolean.valueOf(huanjieArr[8]));
         //            xshjlb.setSelected(Boolean.valueOf(huanjieArr[9]));
         final Configs stageConfig = configsMapper.selectById(2);
-        final Stages stages = stagesMapper.selectById(innerStageId);
         final String style = stages.getStyle();
         final String config = stageConfig.getConfig();
         final String[] huanjieArr = config.split(ConfigSpliter.SPLITER);
@@ -113,12 +130,13 @@ public class StageNamePreview implements ReloadPane{
             box.setLayoutY(Integer.parseInt(detailArr[1]));
             box.setPrefWidth(Integer.parseInt(detailArr[2]));
             box.setPrefHeight(Integer.parseInt(detailArr[3]));
+
             if (Boolean.valueOf(detailArr[4])) {
                 // 填充背景图片
                 if (!StringUtils.isEmpty(detailArr[6])) {
                     try {
-                        box.setBackground(new Background(new BackgroundImage(new Image(new FileInputStream(detailArr[6])), 
-                                BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT, BackgroundPosition.DEFAULT, 
+                        box.setBackground(new Background(new BackgroundImage(new Image(new FileInputStream(detailArr[6])),
+                                BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT, BackgroundPosition.DEFAULT,
                                 new BackgroundSize(Integer.parseInt(detailArr[2]), Integer.parseInt(detailArr[3]), false, false, false, false))));
                     } catch (FileNotFoundException e) {
                         e.printStackTrace();
@@ -152,9 +170,12 @@ public class StageNamePreview implements ReloadPane{
             title.setStrikethrough(Boolean.valueOf(detailArr[9]));
             box.getChildren().add(title);
         }
-
     }
-    
+
+    public Integer getInnerStageId() {
+        return innerStageId;
+    }
+
     @Override
     public void reload() {
         showView();

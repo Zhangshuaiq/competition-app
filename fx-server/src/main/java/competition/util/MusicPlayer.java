@@ -63,6 +63,9 @@ public class MusicPlayer {
 
     public static void play(String path) {
         System.out.println(path);
+        if (!new File(path).exists()) {
+            return;
+        }
         MediaPlayer player = musicsMap.get(path);
         if (player == null) {
             try {

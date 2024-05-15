@@ -2,6 +2,7 @@ package competition.controller.preview;
 
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.sun.org.apache.xpath.internal.operations.Mod;
 import competition.controller.ControlPane;
 import competition.controller.match.*;
 import competition.entity.Model3Style;
@@ -49,7 +50,10 @@ public class Model3Preview extends PreviewPane{
     private VBox titleBox;
     
     @FXML
-    private GridPane questionGrid;
+    private VBox questionBox;
+    
+    @FXML
+    private StackPane headPane;
     
     @Resource
     private Model3Mapper mapper;
@@ -115,17 +119,32 @@ public class Model3Preview extends PreviewPane{
     // 默认位置
     public static int DEFAULT_X = 100;
 
-
     public static int DEFAULT_Y = 100;
 
     public static int DEFAULT_W = 100;
 
     public static int DEFAULT_H = 50;
     
+    // 默认head位置
+    public static int HEAD_X = 400;
+    
+    public static int HEAD_Y = 100;
+    
+    public static int HEAD_W = 600;
+    
+    public static int HEAD_H = 100;
     
     private void show(){
 
-
+        // 外屏展示
+        if (ExtendedScreen.hasShow()) {
+            Model3.setPassedId(this.parentStageId);
+            Object res = ExtendedScreen.showWithControl("/view/match/Model3.fxml");
+            if (res != null) {
+                controlPane.setQuestionPreview((Model3) res);
+            }
+        }
+        
         children = stagesMapper.selectList(new LambdaQueryWrapper<Stages>()
                 .eq(Stages::getParentId, parentStageId)
         );
@@ -142,9 +161,12 @@ public class Model3Preview extends PreviewPane{
         }
 
 
+        Stages stages = stagesMapper.selectById(parentStageId);
+
         Map<String, Object> dataMap = new HashMap<>();
         dataMap.put("stages", children);
         dataMap.put("questions", qs);
+        dataMap.put("pstage", stages);
         messageHandler.notifyPage("model3", dataMap);
         
         // 保存到当前的数据中
@@ -153,12 +175,18 @@ public class Model3Preview extends PreviewPane{
         // 清除旧的数据
         
         titleBox.getChildren().clear();
-        questionGrid.getChildren().clear();
+        questionBox.getChildren().clear();
+        headPane.getChildren().clear();
         
         Model3Style model3Style = mapper.selectById(1);
         String titleStyle = model3Style.getTitleStyle();
         String qStyle = model3Style.getQStyle();
+        String headStyle = model3Style.getHeadStyle();
         
+        String [] headArr = {};
+        if (!StringUtils.isEmpty(headStyle)) {
+            headArr = headStyle.split(ConfigSpliter.SPLITER);
+        }
         
         String [] titleArr = {};
         if (!StringUtils.isEmpty(titleStyle)) {
@@ -168,6 +196,61 @@ public class Model3Preview extends PreviewPane{
         String [] qArr = {};
         if (!StringUtils.isEmpty(qStyle)) {
             qArr = qStyle.split(ConfigSpliter.SPLITER);
+        }
+
+        Text head = new Text(stages.getName());
+        headPane.getChildren().add(head);
+        headPane.setBackground(new Background(new BackgroundFill(Color.YELLOW, CornerRadii.EMPTY, Insets.EMPTY)));
+        headPane.setLayoutX(HEAD_X);
+        headPane.setLayoutY(HEAD_Y);
+        headPane.setPrefWidth(HEAD_W);
+        headPane.setPrefHeight(HEAD_H);
+
+        head.setFill(Color.BLACK);
+        head.setLayoutX(HEAD_X);
+        head.setLayoutY(HEAD_Y);
+        head.prefWidth(HEAD_W);
+        head.prefHeight(HEAD_H);
+        
+        // 显示标题
+        if (headArr.length > 0) {
+            headPane.setLayoutX(Integer.parseInt(headArr[0]));
+            headPane.setLayoutY(Integer.parseInt(headArr[1]));
+            headPane.setPrefWidth(Integer.parseInt(headArr[2]));
+            headPane.setPrefHeight(Integer.parseInt(headArr[3]));
+            headPane.setAlignment(AlignmentUtil.getAlign(headArr[13]));
+
+            if (Boolean.valueOf(headArr[4])) {
+                // 填充背景图片
+                if (!StringUtils.isEmpty(headArr[6])) {
+                    try {
+                        headPane.setBackground(new Background(new BackgroundImage(new Image(new FileInputStream(headArr[6])),
+                                BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT, BackgroundPosition.DEFAULT,
+                                new BackgroundSize(Integer.parseInt(headArr[2]), Integer.parseInt(headArr[3]), false, false, false, false))));
+                    } catch (FileNotFoundException e) {
+                        e.printStackTrace();
+                    }
+                }
+            } else {
+                // 填充背景颜色
+                headPane.setBackground(new Background(new BackgroundFill(Color.valueOf(headArr[5]), CornerRadii.EMPTY, Insets.EMPTY)));
+            }
+
+            head.setLayoutX(Integer.parseInt(headArr[0]));
+            head.setLayoutY(Integer.parseInt(headArr[1]));
+            head.prefWidth(Integer.parseInt(headArr[2]));
+            head.prefHeight(Integer.parseInt(headArr[3]));
+            head.setTextAlignment(AlignmentUtil.getTextAlign(headArr[13]));
+            Font font = Font.font(FontMap.getFont(headArr[7]), FontWeight.NORMAL, FontPosture.REGULAR, Integer.parseInt(headArr[8]));
+            head.setFont(font);
+            // 字体颜色
+            head.setFill(Color.valueOf(headArr[15]));
+            head.getTransforms().clear();
+            if (Boolean.valueOf(headArr[11])) {
+                head.getTransforms().add(new Shear(-0.3, 0));
+            }
+            head.setUnderline(Boolean.valueOf(headArr[12]));
+            head.setStrikethrough(Boolean.valueOf(headArr[9]));
         }
         
         for (int i = 0; i < children.size(); i++) {
@@ -255,6 +338,7 @@ public class Model3Preview extends PreviewPane{
         
         for (int i = 0; i < CurrentQuestions.getM3Questions().size(); i++) {
             List<Questions> questionsList = CurrentQuestions.getM3Questions().get(i);
+            GridPane questionGrid = new GridPane();
             for (int i1 = 0; i1 < questionsList.size(); i1++) {
                 StackPane item = new StackPane();
                 item.setPrefSize(50, 50);
@@ -272,18 +356,24 @@ public class Model3Preview extends PreviewPane{
                 questionGrid.setLayoutY(DEFAULT_Y);
                 questionGrid.setHgap(10);
                 questionGrid.setVgap(0);
-                
+
+                questionBox.setLayoutX(DEFAULT_X + DEFAULT_W + 50);
+                questionBox.setLayoutY(DEFAULT_Y);
+                questionBox.setSpacing(0);
+
+                int cols = 6;
                 if (qArr.length > 0) {
                     String[] detailArr = qArr;
 
-                    questionGrid.setLayoutX(Integer.parseInt(detailArr[0]));
-                    questionGrid.setLayoutY(Integer.parseInt(detailArr[1]));
+                    questionBox.setLayoutX(Integer.parseInt(detailArr[0]));
+                    questionBox.setLayoutY(Integer.parseInt(detailArr[1]));
                     item.setPrefSize(Integer.parseInt(detailArr[2]), Integer.parseInt(detailArr[3]));
                     item.setAlignment(AlignmentUtil.getAlign(detailArr[13]));
                     item.setLayoutX(Integer.parseInt(detailArr[0]));
                     item.setLayoutY(Integer.parseInt(detailArr[1]));
                     questionGrid.setVgap(Integer.parseInt(detailArr[14]));
                     questionGrid.setHgap(Integer.parseInt(detailArr[16]));
+                    questionBox.setSpacing(Integer.parseInt(detailArr[14]));
                     if (Boolean.valueOf(detailArr[4])) {
                         // 填充背景图片
                         if (!StringUtils.isEmpty(detailArr[6])) {
@@ -316,6 +406,7 @@ public class Model3Preview extends PreviewPane{
                     text.setFill(Color.valueOf(detailArr[17]));
                     text.setUnderline(Boolean.valueOf(detailArr[12]));
                     text.setStrikethrough(Boolean.valueOf(detailArr[9]));
+                    cols = Integer.parseInt(detailArr[15]);
                 }
 
                 item.setOnMouseClicked(new EventHandler<MouseEvent>() {
@@ -343,8 +434,9 @@ public class Model3Preview extends PreviewPane{
                 
                 item.getChildren().add(text);
                 // 添加到对应的位置
-                questionGrid.add(item, i1 , i );
+                questionGrid.add(item, i1 % cols , i1 / cols );
             }
+            questionBox.getChildren().add(questionGrid);
         }
         
     }

@@ -1,13 +1,17 @@
 package competition.controller.match;
 
 import cn.hutool.core.io.FileUtil;
+import competition.controller.ControlPane;
 import competition.controller.preview.PreviewPane;
 import competition.entity.Configs;
 import competition.mapper.ConfigsMapper;
 import competition.util.*;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.image.Image;
+import javafx.scene.input.MouseButton;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
@@ -22,6 +26,7 @@ import javax.annotation.Resource;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 @Component
@@ -33,6 +38,9 @@ public class TotalRulePreview implements ReloadPane {
     @Resource
     private ConfigsMapper configsMapper;
 
+    @Resource
+    private ControlPane controlPane;
+
 
     @FXML
     public void initialize() {
@@ -41,11 +49,11 @@ public class TotalRulePreview implements ReloadPane {
 
     private void show() {
         String path = TextResource.ZGZ;
-        List<String> lines = FileUtil.readLines(path, Charset.defaultCharset());
+        List<String> lines = FileUtil.readLines(path, StandardCharsets.UTF_8);
 
         try {
             container.setBackground(new Background(new BackgroundImage(
-                    new Image(new FileInputStream(ImageResource.总规则背景())), BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT, BackgroundPosition.DEFAULT,
+                    new Image(new FileInputStream(ImageResource.总规则背景())), BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT, BackgroundPosition.CENTER,
                     new BackgroundSize(Navigator.getWidth(), Navigator.getHeight(), false, false, false, false)
             )));
         } catch (FileNotFoundException e) {
@@ -67,21 +75,6 @@ public class TotalRulePreview implements ReloadPane {
             text.setWrappingWidth(Integer.parseInt(cfgArr[3]));
             container.getChildren().add(text);
         } else {
-            // 300%%
-            // 400%%
-            // 200%%
-            // 300%%
-            // false%%
-            // 0xffffffff%%
-            // %%
-            // Dialog%%
-            // 12%%
-            // false%%
-            // false%%
-            // false%%
-            // false%%
-            // 左对齐%%
-            // 0
             final String[] cfgArr = details.split(ConfigSpliter.SPLITER);
             text.setX(Integer.parseInt(cfgArr[0]));
             text.setY(Integer.parseInt(cfgArr[1]));
@@ -106,8 +99,6 @@ public class TotalRulePreview implements ReloadPane {
             text.setWrappingWidth(Integer.parseInt(cfgArr[2]));
             container.getChildren().add(text);
         }
-
-
     }
 
     @Override

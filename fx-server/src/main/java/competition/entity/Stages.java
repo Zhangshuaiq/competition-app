@@ -52,6 +52,15 @@ public class Stages {
     
     private Integer m6;
     
+    // 答错扣除分值
+    private Integer desValue;
+    
+    // 当前环节得分是否计入总分
+    private Integer countTotal;
+    
+    // 规则页标题的样式
+    private String titleRuleStyle;
+    
 
     public void setSortVal(String sortVal) {
         this.sortVal = sortVal;
