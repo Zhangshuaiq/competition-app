@@ -13,7 +13,7 @@
             </div>
             <div style="display: flex; justify-content: center; height: 60px; line-height: 60px">
               ` <div v-if="!item.members"></div>
-                <div v-else v-for="(member, mIndex) in item.members.split(',')" @click="enterWaitPage(item, member)"
+                <div v-else v-for="(member, mIndex) in item.members.split(',')" @click="selectMember(item, member)"
                      :key="mIndex" class="member">
                   {{member}}
                 </div>
@@ -23,6 +23,19 @@
         </el-col>
       </el-row>
     </div>
+
+
+    <el-dialog title="登陆验证" :visible.sync="dialogFormVisible">
+      <el-form :model="form">
+          <el-form-item label="请输入密码" label-width="120">
+          <el-input v-model="form.password" autocomplete="off"></el-input>
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="dialogFormVisible = false">取 消</el-button>
+        <el-button type="primary" @click="validPassword">确 定</el-button>
+      </div>
+    </el-dialog>
   </div>
   
 </template>
@@ -35,7 +48,13 @@ export default {
   
   data() {
     return {
-      teamList: []
+      form: {
+        password: ''
+      },
+      teamList: [],
+      dialogFormVisible: false,
+      teamItem: '',
+      member: ''
     }
   },
   
@@ -47,6 +66,23 @@ export default {
           this.teamList = res.data
         }
       })
+    },
+
+    validPassword(){
+      if (this.teamItem.password === this.form.password) {
+        this.enterWaitPage(this.teamItem, this.member);
+      } else {
+        this.$message.error("登陆密码错误")
+      }
+    },
+
+    selectMember(teamItem, member){
+      this.teamItem = teamItem;
+      this.member = member;
+      this.dialogFormVisible = true
+      this.form = {
+        password: ''
+      }
     },
 
     enterWaitPage(teamItem, member){

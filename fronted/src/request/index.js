@@ -2,9 +2,15 @@ import axios from "axios";
 
 // const url = window.MyAppConfig ? window.MyAppConfig.BASE_URL : 'http://localhost:8080';
 
+<<<<<<< HEAD
 // const axiosInstance = axios.create({
 //     baseURL: "http://192.168.1.11:8080"
 // });
+=======
+const axiosInstance = axios.create({
+    baseURL: "http://192.168.1.8:8080"
+});
+>>>>>>> 8612ba1b (前端添加登陆验证)
 
 const axiosInstance = axios.create();
 

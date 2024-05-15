@@ -11,11 +11,19 @@ import store from './store';
 Vue.config.productionTip = false
 
 Vue.use(ElementUI);
+<<<<<<< HEAD
 const host = window.location.hostname;
 const port = window.location.port ? `:${window.location.port}` : ':8080';
 // 构建WebSocket的URL
 const wsUrl = `http://${host}${port}/ws`;
 // const wsUrl = `http://192.168.1.11:8080/ws`;
+=======
+// const host = window.location.hostname;
+// const port = window.location.port ? `:${window.location.port}` : ':8080';
+// // 构建WebSocket的URL
+// const wsUrl = `http://${host}${port}/ws`;
+const wsUrl = `http://192.168.1.8:8080/ws`;
+>>>>>>> 8612ba1b (前端添加登陆验证)
 Vue.use(WebSocketPlugin, { url: wsUrl });
 Vue.use(TimerPlugin, {});
 
