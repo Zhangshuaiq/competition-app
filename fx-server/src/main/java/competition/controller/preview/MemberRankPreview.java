@@ -9,6 +9,7 @@ import competition.mapper.ConfigsMapper;
 import competition.mapper.RankStyleMapper;
 import competition.modal.TeamMemberRankData;
 import competition.util.*;
+import competition.ws.WsMessageHandler;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.geometry.Insets;
@@ -26,9 +27,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
 import javax.annotation.Resource;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
+import java.util.*;
 
 @Component
 @Scope("prototype")
@@ -51,6 +50,9 @@ public class MemberRankPreview extends PreviewPane{
 
     @Resource
     private RankStyleMapper rankStyleMapper;
+    
+    @Resource
+    private WsMessageHandler messageHandler;
 
     private int page = 0;
 
@@ -70,6 +72,9 @@ public class MemberRankPreview extends PreviewPane{
         Navigator.previewStage.addEventFilter(KeyEvent.KEY_PRESSED,new EventHandler<KeyEvent>() {
             @Override
             public void handle(KeyEvent event) {
+                if (controlPane.getPreviewPane() != MemberRankPreview.this) {
+                    return;
+                }
                 // 上
                 if (event.getCode() == KeyCode.UP) {
                     if (page > 0) {
@@ -198,7 +203,7 @@ public class MemberRankPreview extends PreviewPane{
         int rank = 1;
         TeamMemberRankData first = rankList.get(0);
         for (TeamMemberRankData rankData : rankList) {
-            if (first.compareTo(rankData)< 0) {
+            if (first.compareTo(rankData)> 0) {
                 rank ++;
             }
             rankData.setRank(rank);
@@ -313,6 +318,10 @@ public class MemberRankPreview extends PreviewPane{
             rankBox.getChildren().add(itemRow);
         }
 
+        Map<String, Object> mapData = new HashMap<>();
+        mapData.put("title", "团 队 排 行 榜");
+        mapData.put("rank", rankList.subList(start, end));
+        messageHandler.notifyPage("memberRank", mapData);
         // 外屏展示
         if (ExtendedScreen.hasShow()) {
             MemberRank.setRankDataList(rankList.subList(start, end));

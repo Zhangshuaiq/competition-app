@@ -1,5 +1,6 @@
 package competition;
 
+import competition.util.GlobalCache;
 import competition.util.MusicPlayer;
 import competition.util.MusicResource;
 import competition.util.ScoreSaver;
@@ -38,6 +39,8 @@ public class JavaFxApplication extends Application {
         Parent load = loader.load();
         Scene scene = new Scene(load);
         scene.getStylesheets().add("/view/style.css"); // 应用 CSS
+        System.out.println(GlobalCache.dpi);
+
 //        // 鼠标按下时记录初始坐标
 //        load.setOnMousePressed(event -> {
 //            xOffset = event.getSceneX();

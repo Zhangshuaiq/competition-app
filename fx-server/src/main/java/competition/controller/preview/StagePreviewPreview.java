@@ -152,8 +152,8 @@ public class StagePreviewPreview extends PreviewPane {
                 }
                 int x = Integer.parseInt(split[4]);
                 int y = Integer.parseInt(split[5]);
-                int width = Integer.parseInt(split[6]);
-                int height = Integer.parseInt(split[7]);
+                double width = Integer.parseInt(split[6]) * GlobalCache.scaleFactor ;
+                double height = Integer.parseInt(split[7]) * GlobalCache.scaleFactor;
 
                 GridPane stageContainer = new GridPane();
                 stageContainer.setLayoutX(x);

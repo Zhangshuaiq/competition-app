@@ -1,10 +1,15 @@
 package competition.util;
 
+import javafx.stage.Screen;
+
 import java.util.HashMap;
 import java.util.Map;
 
 public class GlobalCache {
     
+    // 屏幕缩放比
+    public static double dpi = Screen.getPrimary().getDpi();
+    public static  double scaleFactor = dpi / 96;
     
     // 是否展示竞技比赛的详情
     public static boolean model7Hide = false;

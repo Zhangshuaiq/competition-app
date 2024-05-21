@@ -15,6 +15,7 @@ import competition.util.Navigator;
 import competition.ws.Model60RuntimeData;
 import competition.ws.Model61RuntimeData;
 import competition.ws.Model7RuntimeData;
+import competition.ws.WsMessageHandler;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.geometry.Insets;
@@ -32,10 +33,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
 import javax.annotation.Resource;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -62,6 +60,9 @@ public class Model7RankPreview extends PreviewPane {
 
     @Resource
     private RankStyleMapper rankStyleMapper;
+    
+    @Resource
+    private WsMessageHandler messageHandler;
 
     private int page = 0;
 
@@ -82,6 +83,9 @@ public class Model7RankPreview extends PreviewPane {
         Navigator.previewStage.addEventFilter(KeyEvent.KEY_PRESSED, new EventHandler<KeyEvent>() {
             @Override
             public void handle(KeyEvent event) {
+                if (controlPane.getPreviewPane() != Model7RankPreview.this) {
+                    return;
+                }
                 // 上
                 if (event.getCode() == KeyCode.UP) {
                     if (page > 0) {
@@ -183,8 +187,9 @@ public class Model7RankPreview extends PreviewPane {
 
         List<Model7RankData> rankList = new ArrayList<>();
 
-
+        Map<String, Object> mapData = new HashMap<>();
         if (currentStage.getQuestionType() == 6) {
+            mapData.put("title", "答题排行榜");
             competitionLab.setText("答题排行榜");
             if (currentStage.getM6() == 0) {
 
@@ -277,6 +282,7 @@ public class Model7RankPreview extends PreviewPane {
 
             }
         } else if (currentStage.getQuestionType() == 7) {
+            mapData.put("title", "竞技排行榜");
             competitionLab.setText("竞技排行榜");
             // 获取竞技排名
             List<List<Model7RuntimeData.ModelData>> runtimeData = Model7RuntimeData.getRuntimeData();
@@ -433,7 +439,9 @@ public class Model7RankPreview extends PreviewPane {
             itemRow.getChildren().addAll(rankD, teamD, scoreD, timeD);
             rankBox.getChildren().add(itemRow);
         }
-
+       
+        mapData.put("rank", rankList.subList(start, end));
+        messageHandler.notifyPage("stageRank", mapData);
         if (ExtendedScreen.hasShow()) {
             Model7Rank.setRankList(rankList.subList(start, end));
             // 进入比赛

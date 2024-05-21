@@ -10,6 +10,7 @@ import competition.mapper.RankStyleMapper;
 import competition.modal.Model7RankData;
 import competition.modal.TeamMemberRankData;
 import competition.util.*;
+import competition.ws.WsMessageHandler;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.geometry.Insets;
@@ -28,7 +29,9 @@ import org.springframework.util.StringUtils;
 
 import javax.annotation.Resource;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Component
 @Scope("prototype")
@@ -51,6 +54,9 @@ public class TeamRankPreview extends PreviewPane{
 
     @Resource
     private RankStyleMapper rankStyleMapper;
+    
+    @Resource
+    private WsMessageHandler messageHandler;
 
     private int page = 0;
     
@@ -72,6 +78,9 @@ public class TeamRankPreview extends PreviewPane{
         Navigator.previewStage.addEventFilter(KeyEvent.KEY_PRESSED,new EventHandler<KeyEvent>() {
             @Override
             public void handle(KeyEvent event) {
+                if (controlPane.getPreviewPane() != TeamRankPreview.this) {
+                    return;
+                }
                 // 上
                 if (event.getCode() == KeyCode.UP) {
                     if (page > 0) {
@@ -187,7 +196,7 @@ public class TeamRankPreview extends PreviewPane{
         int rank = 1;
         TeamMemberRankData first = rankList.get(0);
         for (TeamMemberRankData rankData : rankList) {
-            if (first.compareTo(rankData)< 0) {
+            if (first.compareTo(rankData)> 0) {
                 rank ++;
             }
             rankData.setRank(rank);
@@ -287,7 +296,10 @@ public class TeamRankPreview extends PreviewPane{
             itemRow.getChildren().addAll(rankD, teamD, scoreD);
             rankBox.getChildren().add(itemRow);
         }
-
+        Map<String, Object> mapData = new HashMap<>();
+        mapData.put("title", "团 队 排 行 榜");
+        mapData.put("rank", rankList.subList(start, end));
+        messageHandler.notifyPage("teamRank", mapData);
         if (ExtendedScreen.hasShow()) {
             TeamRank.setRankList(rankList.subList(start, end));
             Object res = ExtendedScreen.showWithControl("/view/match/TeamRank.fxml");

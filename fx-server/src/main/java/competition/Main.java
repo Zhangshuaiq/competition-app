@@ -1,5 +1,6 @@
 package competition;
 
+import competition.util.GlobalCache;
 import javafx.application.Application;
 import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.boot.SpringApplication;

@@ -106,6 +106,7 @@ public class Model7Preview extends PreviewPane {
             col = Integer.parseInt(split[0]);
             x = Integer.parseInt(split[5]);
             y = Integer.parseInt(split[6]);
+            
             width = Integer.parseInt(split[3]);
             height = Integer.parseInt(split[4]);
             vgap = Integer.parseInt(split[1]);
