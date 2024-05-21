@@ -150,10 +150,10 @@ public class StagePreviewPreview extends PreviewPane {
                 if (stagesStyle != null) {
                     detailArr = stagesStyle.getStyle().split(ConfigSpliter.SPLITER);
                 }
-                double x = Integer.parseInt(split[4]) * GlobalCache.scaleFactor;
-                double y = Integer.parseInt(split[5]) * GlobalCache.scaleFactor;
-                double width = Integer.parseInt(split[6]) * GlobalCache.scaleFactor ;
-                double height = Integer.parseInt(split[7]) * GlobalCache.scaleFactor;
+                double x = PositionUtil.calculateX(Navigator.getWidth(), Integer.parseInt(split[4]));
+                double y = PositionUtil.calculateX(Navigator.getHeight(), Integer.parseInt(split[5]));
+                double width = PositionUtil.calculateW( Integer.parseInt(split[6]));
+                double height = PositionUtil.calculateH( Integer.parseInt(split[7]));
 
                 GridPane stageContainer = new GridPane();
                 stageContainer.setLayoutX(x);
@@ -162,9 +162,9 @@ public class StagePreviewPreview extends PreviewPane {
                // stageContainer.height
 
                 if (detailArr.length > 0) {
-                    stageContainer.setLayoutX(Integer.parseInt(detailArr[0]) * GlobalCache.scaleFactor);
-                    stageContainer.setLayoutY(Integer.parseInt(detailArr[1]) * GlobalCache.scaleFactor);
-                    stageContainer.prefWidth(Integer.parseInt(detailArr[2]) * GlobalCache.scaleFactor);
+                    stageContainer.setLayoutX( PositionUtil.calculateX(Navigator.getWidth(), Integer.parseInt(detailArr[0])));
+                    stageContainer.setLayoutY( PositionUtil.calculateX(Navigator.getHeight(), Integer.parseInt(detailArr[1])));
+                    stageContainer.prefWidth( PositionUtil.calculateW( Integer.parseInt(detailArr[2])));
                     stageContainer.setVgap(Integer.parseInt(detailArr[14]) * GlobalCache.scaleFactor);
                     stageContainer.setHgap(Integer.parseInt(detailArr[14]) * GlobalCache.scaleFactor);
                     stageContainer.setAlignment(AlignmentUtil.getAlign(detailArr[13]));
