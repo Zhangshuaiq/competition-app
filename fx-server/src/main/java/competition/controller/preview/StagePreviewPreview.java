@@ -150,8 +150,8 @@ public class StagePreviewPreview extends PreviewPane {
                 if (stagesStyle != null) {
                     detailArr = stagesStyle.getStyle().split(ConfigSpliter.SPLITER);
                 }
-                int x = Integer.parseInt(split[4]);
-                int y = Integer.parseInt(split[5]);
+                double x = Integer.parseInt(split[4]) * GlobalCache.scaleFactor;
+                double y = Integer.parseInt(split[5]) * GlobalCache.scaleFactor;
                 double width = Integer.parseInt(split[6]) * GlobalCache.scaleFactor ;
                 double height = Integer.parseInt(split[7]) * GlobalCache.scaleFactor;
 
@@ -162,11 +162,11 @@ public class StagePreviewPreview extends PreviewPane {
                // stageContainer.height
 
                 if (detailArr.length > 0) {
-                    stageContainer.setLayoutX(Integer.parseInt(detailArr[0]));
-                    stageContainer.setLayoutY(Integer.parseInt(detailArr[1]));
-                    stageContainer.prefWidth(Integer.parseInt(detailArr[2]));
-                    stageContainer.setVgap(Integer.parseInt(detailArr[14]));
-                    stageContainer.setHgap(Integer.parseInt(detailArr[14]));
+                    stageContainer.setLayoutX(Integer.parseInt(detailArr[0]) * GlobalCache.scaleFactor);
+                    stageContainer.setLayoutY(Integer.parseInt(detailArr[1]) * GlobalCache.scaleFactor);
+                    stageContainer.prefWidth(Integer.parseInt(detailArr[2]) * GlobalCache.scaleFactor);
+                    stageContainer.setVgap(Integer.parseInt(detailArr[14]) * GlobalCache.scaleFactor);
+                    stageContainer.setHgap(Integer.parseInt(detailArr[14]) * GlobalCache.scaleFactor);
                     stageContainer.setAlignment(AlignmentUtil.getAlign(detailArr[13]));
                 }
 
