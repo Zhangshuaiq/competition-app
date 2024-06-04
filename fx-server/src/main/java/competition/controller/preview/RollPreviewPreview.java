@@ -86,22 +86,29 @@ public class RollPreviewPreview extends PreviewPane {
         inner = currentStage;
         PreviewStack.addPreview(this);
         PreviewStack.addReturn(this);
-        container.setOnMouseClicked(new EventHandler<MouseEvent>() {
-            @Override
-            public void handle(MouseEvent event) {
-                if (event.getButton() == MouseButton.SECONDARY) {
-                    StageQuestionPreviewAttr.setReloadPane(controlPane.getQuestionPreview());
-                    StageQuestionPreviewAttr.setCurrentStage(currentStage);
-                    Navigator.navigatorTo("/view/match/StageQuestionPreviewAttr.fxml", "", "/view/style.css", false, false);
-                } else if (event.getButton() == MouseButton.PRIMARY) {
-                    if (!GlobalCache.isRolling) {
-                        GlobalCache.isRolling = true;
-                        // 选题
-                        startSelector();
-                    } else {
-                        stopSelector();
-                        GlobalCache.isRolling = false;
-                    }
+
+        backPane.setOnMouseClicked(event -> {
+            event.consume();
+            String text = questionText.getText();
+            if (!StringUtils.isEmpty(text)) {
+                // 进入题目界面
+                controlPane.showQuestion();
+            }
+        });
+        
+        container.setOnMouseClicked(event -> {
+            if (event.getButton() == MouseButton.SECONDARY) {
+                StageQuestionPreviewAttr.setReloadPane(controlPane.getQuestionPreview());
+                StageQuestionPreviewAttr.setCurrentStage(currentStage);
+                Navigator.navigatorTo("/view/match/StageQuestionPreviewAttr.fxml", "", "/view/style.css", false, false);
+            } else if (event.getButton() == MouseButton.PRIMARY) {
+                if (!GlobalCache.isRolling) {
+                    GlobalCache.isRolling = true;
+                    // 选题
+                    startSelector();
+                } else {
+                    stopSelector();
+                    GlobalCache.isRolling = false;
                 }
             }
         });
@@ -120,11 +127,11 @@ public class RollPreviewPreview extends PreviewPane {
         }
         try {
             container.setBackground(new Background(new BackgroundImage(
-                    new Image(new FileInputStream(ImageResource.选题背景())), BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT, BackgroundPosition.DEFAULT,
+                    new Image(new FileInputStream(ImageResource.滚动抽题背景())), BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT, BackgroundPosition.DEFAULT,
                     new BackgroundSize(Navigator.getWidth(), Navigator.getHeight(), false, false, false, false)
             )));
         } catch (FileNotFoundException e) {
-            e.printStackTrace();
+            container.setBackground(new Background(new BackgroundFill(Color.TRANSPARENT, new CornerRadii(10), Insets.EMPTY)));
         }
 
 
@@ -159,7 +166,7 @@ public class RollPreviewPreview extends PreviewPane {
             stageName.setText(currentStage.getName());
             // 环节标题的字体颜色和背景色
             stageName.setFill(Color.valueOf(stageConfigAttrSplit[2]));
-            title.setBackground(new Background(new BackgroundFill(Color.valueOf(stageConfigAttrSplit[3]), CornerRadii.EMPTY, Insets.EMPTY)));
+            title.setBackground(new Background(new BackgroundFill(Color.valueOf(stageConfigAttrSplit[3]), new CornerRadii(10), Insets.EMPTY)));
             title.setLayoutX(ConfigSpliter.DEFAULT_X);
             title.setLayoutY(ConfigSpliter.DEFAULT_Y);
             title.setPrefWidth(ConfigSpliter.DEFAULT_W);
@@ -185,12 +192,14 @@ public class RollPreviewPreview extends PreviewPane {
                                     BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT, BackgroundPosition.DEFAULT,
                                     new BackgroundSize(Integer.parseInt(detailArr[2]), Integer.parseInt(detailArr[3]), false, false, false, false))));
                         } catch (FileNotFoundException e) {
-                            e.printStackTrace();
+                            title.setBackground(new Background(new BackgroundFill(Color.TRANSPARENT, new CornerRadii(10), Insets.EMPTY)));
                         }
+                    } else {
+                        title.setBackground(new Background(new BackgroundFill(Color.TRANSPARENT, new CornerRadii(10), Insets.EMPTY)));
                     }
                 } else {
                     // 填充背景颜色
-                    title.setBackground(new Background(new BackgroundFill(Color.valueOf(detailArr[5]), CornerRadii.EMPTY, Insets.EMPTY)));
+                    title.setBackground(new Background(new BackgroundFill(Color.valueOf(detailArr[5]),new CornerRadii(10), Insets.EMPTY)));
                 }
 
                 stageName.setLayoutX(Integer.parseInt(detailArr[0]));
@@ -246,12 +255,14 @@ public class RollPreviewPreview extends PreviewPane {
                                         BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT, BackgroundPosition.DEFAULT,
                                         new BackgroundSize(Integer.parseInt(detailArr[2]), Integer.parseInt(detailArr[3]), false, false, false, false))));
                             } catch (FileNotFoundException e) {
-                                e.printStackTrace();
+                                backPane.setBackground(new Background(new BackgroundFill(Color.TRANSPARENT, new CornerRadii(10), Insets.EMPTY)));
                             }
+                        } else {
+                            backPane.setBackground(new Background(new BackgroundFill(Color.TRANSPARENT, new CornerRadii(10), Insets.EMPTY)));
                         }
                     } else {
                         // 填充背景颜色
-                        backPane.setBackground(new Background(new BackgroundFill(Color.valueOf(detailArr[5]), CornerRadii.EMPTY, Insets.EMPTY)));
+                        backPane.setBackground(new Background(new BackgroundFill(Color.valueOf(detailArr[5]),  new CornerRadii(10), Insets.EMPTY)));
                     }
 
 

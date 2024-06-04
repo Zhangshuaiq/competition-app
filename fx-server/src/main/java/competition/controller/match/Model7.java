@@ -73,7 +73,7 @@ public class Model7 implements ReloadPane {
                     new BackgroundSize(Navigator.getWidth(), Navigator.getHeight(), false, false, false, false)
             )));
         } catch (FileNotFoundException e) {
-            e.printStackTrace();
+            container.setBackground(new Background(new BackgroundFill(Color.TRANSPARENT, new CornerRadii(10), Insets.EMPTY)));
         }
 
         Model3Style model3Style = model3Mapper.selectById(2);
@@ -118,7 +118,7 @@ public class Model7 implements ReloadPane {
             anchorPane.getChildren().add(upArea);
             upArea.setPrefWidth(anchorPane.getPrefWidth());
             // 背景颜色
-            upArea.setBackground(new Background(new BackgroundFill(Color.BLUE, new CornerRadii(5), Insets.EMPTY)));
+            upArea.setBackground(new Background(new BackgroundFill(Color.BLUE, new CornerRadii(10), Insets.EMPTY)));
             upArea.setPrefHeight(37);
 
             // 第二行
@@ -266,7 +266,7 @@ public class Model7 implements ReloadPane {
                     answerArea.setSpacing(5);
                     if (last.getUserSelect() != null) {
                         Label select = new Label("回答:" + last.getUserSelect());
-                        select.setBackground(new Background(new BackgroundFill(Color.BLUE, new CornerRadii(5), Insets.EMPTY)));
+                        select.setBackground(new Background(new BackgroundFill(Color.BLUE, new CornerRadii(10), Insets.EMPTY)));
                         select.setPrefHeight(30);
                         select.setTextAlignment(TextAlignment.CENTER);
                         select.setTextFill(Color.WHITE);
@@ -275,10 +275,10 @@ public class Model7 implements ReloadPane {
                         Label status = new Label();
                         if (last.getAnswer().equals(last.getUserSelect())) {
                             status.setText("正确");
-                            status.setBackground(new Background(new BackgroundFill(Color.GREEN, new CornerRadii(5), Insets.EMPTY)));
+                            status.setBackground(new Background(new BackgroundFill(Color.GREEN, new CornerRadii(10), Insets.EMPTY)));
                         } else {
                             status.setText("错误");
-                            status.setBackground(new Background(new BackgroundFill(Color.RED, new CornerRadii(5), Insets.EMPTY)));
+                            status.setBackground(new Background(new BackgroundFill(Color.RED, new CornerRadii(10), Insets.EMPTY)));
                         }
                         status.setPrefHeight(30);
                         status.setTextAlignment(TextAlignment.CENTER);

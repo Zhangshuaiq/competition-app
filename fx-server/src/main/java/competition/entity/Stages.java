@@ -61,6 +61,9 @@ public class Stages {
     // 规则页标题的样式
     private String titleRuleStyle;
     
+    // 答案单独展示
+    private Integer answerSingle;
+    
 
     public void setSortVal(String sortVal) {
         this.sortVal = sortVal;

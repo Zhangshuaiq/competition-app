@@ -111,7 +111,7 @@ public class StagePreviewPreview extends PreviewPane {
                     new BackgroundSize(Navigator.getWidth(), Navigator.getHeight(), false, false, false, false)
             )));
         } catch (FileNotFoundException e) {
-            e.printStackTrace();
+            container.setBackground(new Background(new BackgroundFill(Color.TRANSPARENT, new CornerRadii(10), Insets.EMPTY)));
         }
 
         container.getChildren().clear();
@@ -150,10 +150,10 @@ public class StagePreviewPreview extends PreviewPane {
                 if (stagesStyle != null) {
                     detailArr = stagesStyle.getStyle().split(ConfigSpliter.SPLITER);
                 }
-                double x = PositionUtil.calculateX(Navigator.getWidth(), Integer.parseInt(split[4]));
-                double y = PositionUtil.calculateX(Navigator.getHeight(), Integer.parseInt(split[5]));
-                double width = PositionUtil.calculateW( Integer.parseInt(split[6]));
-                double height = PositionUtil.calculateH( Integer.parseInt(split[7]));
+                double x = ScreenAdapter.calculateMainX(Integer.parseInt(split[4]));
+                double y =  ScreenAdapter.calculateMainY(Integer.parseInt(split[5]));
+                double width =  ScreenAdapter.calculateMainW(Integer.parseInt(split[6])); 
+                double height =  ScreenAdapter.calculateMainH(Integer.parseInt(split[7]));
 
                 GridPane stageContainer = new GridPane();
                 stageContainer.setLayoutX(x);
@@ -162,11 +162,11 @@ public class StagePreviewPreview extends PreviewPane {
                // stageContainer.height
 
                 if (detailArr.length > 0) {
-                    stageContainer.setLayoutX( PositionUtil.calculateX(Navigator.getWidth(), Integer.parseInt(detailArr[0])));
-                    stageContainer.setLayoutY( PositionUtil.calculateX(Navigator.getHeight(), Integer.parseInt(detailArr[1])));
-                    stageContainer.prefWidth( PositionUtil.calculateW( Integer.parseInt(detailArr[2])));
-                    stageContainer.setVgap(Integer.parseInt(detailArr[14]) * GlobalCache.scaleFactor);
-                    stageContainer.setHgap(Integer.parseInt(detailArr[14]) * GlobalCache.scaleFactor);
+                    stageContainer.setLayoutX(ScreenAdapter.calculateMainX(Integer.parseInt(detailArr[0])));
+                    stageContainer.setLayoutY(ScreenAdapter.calculateMainY(Integer.parseInt(detailArr[1])));
+                    stageContainer.prefWidth(ScreenAdapter.calculateMainW(Integer.parseInt(detailArr[2])));
+                    stageContainer.setVgap(Integer.parseInt(detailArr[14]));
+                    stageContainer.setHgap(Integer.parseInt(detailArr[14]));
                     stageContainer.setAlignment(AlignmentUtil.getAlign(detailArr[13]));
                 }
 
@@ -189,8 +189,10 @@ public class StagePreviewPreview extends PreviewPane {
                                             BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT, BackgroundPosition.CENTER,
                                             new BackgroundSize(Integer.parseInt(detailArr[2]), Integer.parseInt(detailArr[3]), false, false, false, false))));
                                 } catch (FileNotFoundException e) {
-                                    e.printStackTrace();
+                                    stageNamePane.setBackground(new Background(new BackgroundFill(Color.TRANSPARENT, new CornerRadii(10), Insets.EMPTY)));
                                 }
+                            } else {
+                                stageNamePane.setBackground(new Background(new BackgroundFill(Color.TRANSPARENT, new CornerRadii(10), Insets.EMPTY)));
                             }
                         } else {
                             // 填充背景颜色

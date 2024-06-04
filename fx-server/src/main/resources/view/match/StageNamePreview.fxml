@@ -6,28 +6,9 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<<<<<<< Updated upstream:fx-server/src/main/resources/view/match/StageNamePreview.fxml
 <AnchorPane xmlns="http://javafx.com/javafx"
             xmlns:fx="http://javafx.com/fxml"
             fx:controller="competition.controller.match.StageNamePreview"
             fx:id="container"
             prefHeight="400.0" prefWidth="600.0">
-=======
->>>>>>> Stashed changes:fx-server/target/classes/view/backend/QuestionStock.fxml
-
-<AnchorPane prefHeight="827.0" prefWidth="1100.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="competition.controller.backend.QuestionStock">
-   <children>
-      <TableView layoutX="42.0" layoutY="78.0" prefHeight="709.0" prefWidth="1032.0">
-        <columns>
-          <TableColumn prefWidth="75.0" text="环节编号" />
-          <TableColumn prefWidth="75.0" text="题型" />
-            <TableColumn prefWidth="75.0" text="资源" />
-            <TableColumn prefWidth="290.0" text="题干" />
-            <TableColumn prefWidth="278.0" text="选项" />
-            <TableColumn prefWidth="138.0" text="答案" />
-            <TableColumn prefWidth="99.0" text="备注" />
-        </columns>
-      </TableView>
-      <Button layoutX="42.0" layoutY="29.0" mnemonicParsing="false" prefHeight="30.0" prefWidth="129.0" text="导入题目" />
-   </children>
 </AnchorPane>

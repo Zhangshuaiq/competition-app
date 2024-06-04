@@ -8,6 +8,7 @@ import competition.mapper.ConfigsMapper;
 import competition.util.*;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
+import javafx.geometry.Insets;
 import javafx.scene.Node;
 import javafx.scene.image.Image;
 import javafx.scene.input.MouseButton;
@@ -57,7 +58,7 @@ public class TotalRulePreview implements ReloadPane {
                     new BackgroundSize(Navigator.getWidth(), Navigator.getHeight(), false, false, false, false)
             )));
         } catch (FileNotFoundException e) {
-            e.printStackTrace();
+            container.setBackground(new Background(new BackgroundFill(Color.TRANSPARENT, new CornerRadii(10), Insets.EMPTY)));
         }
         container.getChildren().clear();
         final Configs ruleConfig = configsMapper.selectById(5);

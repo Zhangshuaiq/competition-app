@@ -32,6 +32,9 @@ public class Model61RuntimeData {
         
         // 保存已有的数据，用于计算排名
         forceFinish();
+        if (!runtimeData.isEmpty()) {
+            runtimeData.clear();
+        }
         //runtimeData.clear();
         Model61RuntimeData.teams = teams;
         for (Teams team : teams) {
@@ -64,7 +67,7 @@ public class Model61RuntimeData {
                 totalData.add(new ArrayList<>(runtimeData));
             }
         }
-        runtimeData.clear();
+      //  runtimeData.clear();
     }
 
     public static void setRuntimeData(Questions data) {

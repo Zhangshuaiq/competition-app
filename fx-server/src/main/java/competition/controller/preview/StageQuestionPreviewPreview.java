@@ -100,7 +100,7 @@ public class StageQuestionPreviewPreview extends PreviewPane {
                     new BackgroundSize(Navigator.getWidth(), Navigator.getHeight(), false, false, false, false)
             )));
         } catch (FileNotFoundException e) {
-            e.printStackTrace();
+            container.setBackground(new Background(new BackgroundFill(Color.TRANSPARENT, new CornerRadii(10), Insets.EMPTY)));
         }
         
         
@@ -140,7 +140,7 @@ public class StageQuestionPreviewPreview extends PreviewPane {
             title.getChildren().add(stageName);
             // 环节标题的字体颜色和背景色
             stageName.setFill(Color.valueOf(stageConfigAttrSplit[2]));
-            title.setBackground(new Background(new BackgroundFill(Color.valueOf(stageConfigAttrSplit[3]), CornerRadii.EMPTY, Insets.EMPTY)));
+            title.setBackground(new Background(new BackgroundFill(Color.valueOf(stageConfigAttrSplit[3]), new CornerRadii(10), Insets.EMPTY)));
             title.setLayoutX(ConfigSpliter.DEFAULT_X);
             title.setLayoutY(ConfigSpliter.DEFAULT_Y);
             title.setPrefWidth(ConfigSpliter.DEFAULT_W);
@@ -166,12 +166,14 @@ public class StageQuestionPreviewPreview extends PreviewPane {
                                     BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT, BackgroundPosition.DEFAULT,
                                     new BackgroundSize(Integer.parseInt(detailArr[2]), Integer.parseInt(detailArr[3]), false, false, false, false))));
                         } catch (FileNotFoundException e) {
-                            e.printStackTrace();
+                            title.setBackground(new Background(new BackgroundFill(Color.TRANSPARENT, new CornerRadii(10), Insets.EMPTY)));
                         }
+                    } else {
+                        title.setBackground(new Background(new BackgroundFill(Color.TRANSPARENT, new CornerRadii(10), Insets.EMPTY)));
                     }
                 } else {
                     // 填充背景颜色
-                    title.setBackground(new Background(new BackgroundFill(Color.valueOf(detailArr[5]), CornerRadii.EMPTY, Insets.EMPTY)));
+                    title.setBackground(new Background(new BackgroundFill(Color.valueOf(detailArr[5]), new CornerRadii(10), Insets.EMPTY)));
                 }
 
                 stageName.setLayoutX(Integer.parseInt(detailArr[0]));
@@ -253,12 +255,14 @@ public class StageQuestionPreviewPreview extends PreviewPane {
                                         BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT, BackgroundPosition.DEFAULT,
                                         new BackgroundSize(Integer.parseInt(detailArr[2]), Integer.parseInt(detailArr[3]), false, false, false, false))));
                             } catch (FileNotFoundException e) {
-                                e.printStackTrace();
+                                item.setBackground(new Background(new BackgroundFill(Color.TRANSPARENT, new CornerRadii(10), Insets.EMPTY)));
                             }
+                        } else {
+                            item.setBackground(new Background(new BackgroundFill(Color.TRANSPARENT, new CornerRadii(10), Insets.EMPTY)));
                         }
                     } else {
                         // 填充背景颜色
-                        item.setBackground(new Background(new BackgroundFill(Color.valueOf(detailArr[5]), CornerRadii.EMPTY, Insets.EMPTY)));
+                        item.setBackground(new Background(new BackgroundFill(Color.valueOf(detailArr[5]),  new CornerRadii(10), Insets.EMPTY)));
                     }
                     
                     

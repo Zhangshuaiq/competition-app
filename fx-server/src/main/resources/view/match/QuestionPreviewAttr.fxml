@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import java.lang.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.*?>
 
-<TabPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="746.0" prefWidth="474.0" tabClosingPolicy="UNAVAILABLE" xmlns="http://javafx.com/javafx/11.0.14-internal" xmlns:fx="http://javafx.com/fxml/1" fx:controller="competition.controller.match.QuestionPreviewAttr">
+<TabPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="746.0" prefWidth="474.0" tabClosingPolicy="UNAVAILABLE" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="competition.controller.match.QuestionPreviewAttr">
     <tabs>
         <Tab text="              环节名              ">
             <content>
@@ -125,10 +126,11 @@
                         <Label layoutX="16.0" layoutY="468.0" text="文本内容" textFill="#8a8686" />
                         <Separator layoutX="94.0" layoutY="477.0" prefHeight="3.0" prefWidth="304.0" />
                         <TextArea fx:id="nameText" layoutX="23.0" layoutY="493.0" prefHeight="167.0" prefWidth="441.0" />
-                  <Button layoutX="213.0" layoutY="667.0" mnemonicParsing="false" onMouseClicked="#saveStageNameConfig" prefHeight="30.0" prefWidth="96.0" text="本环节应用" />
-                  <Button layoutX="63.0" layoutY="667.0" mnemonicParsing="false" onMouseClicked="#saveAllNameConfig" prefHeight="30.0" prefWidth="96.0" text="全部应用" />
+                  <Button layoutX="242.0" layoutY="667.0" mnemonicParsing="false" onMouseClicked="#saveStageNameConfig" prefHeight="30.0" prefWidth="96.0" text="本环节应用" />
+                  <Button layoutX="138.0" layoutY="667.0" mnemonicParsing="false" onMouseClicked="#saveAllNameConfig" prefHeight="30.0" prefWidth="96.0" text="全部应用" />
                   <Label layoutX="330.0" layoutY="434.0" text="字间距" />
                   <TextField fx:id="wordSpaceInput" layoutX="379.0" layoutY="429.0" prefHeight="30.0" prefWidth="91.0" />
+                  <Button layoutX="42.0" layoutY="667.0" mnemonicParsing="false" onAction="#updateQuestionContent" text="更新文本" />
                     </children>
                 </AnchorPane>
             </content>
@@ -192,8 +194,9 @@
                         <Label layoutX="16.0" layoutY="462.0" text="文本内容" textFill="#8a8686" />
                         <Separator layoutX="94.0" layoutY="472.0" prefHeight="3.0" prefWidth="304.0" />
                         <TextArea fx:id="answerText" layoutX="26.0" layoutY="491.0" prefHeight="168.0" prefWidth="432.0" />
-                  <Button layoutX="194.0" layoutY="663.0" mnemonicParsing="false" onMouseClicked="#saveStageAnswerConfig" prefHeight="30.0" prefWidth="96.0" text="本环节应用" />
-                  <Button layoutX="51.0" layoutY="663.0" mnemonicParsing="false" onMouseClicked="#saveAllAnswerConfig" prefHeight="30.0" prefWidth="96.0" text="全部应用" />
+                  <Button layoutX="227.0" layoutY="663.0" mnemonicParsing="false" onMouseClicked="#saveStageAnswerConfig" prefHeight="30.0" prefWidth="96.0" text="本环节应用" />
+                  <Button layoutX="120.0" layoutY="663.0" mnemonicParsing="false" onMouseClicked="#saveAllAnswerConfig" prefHeight="30.0" prefWidth="96.0" text="全部应用" />
+                  <Button layoutX="35.0" layoutY="663.0" mnemonicParsing="false" text="更新文本" onAction="#updateAnswerText"/>
                     </children>
                 </AnchorPane>
             </content>

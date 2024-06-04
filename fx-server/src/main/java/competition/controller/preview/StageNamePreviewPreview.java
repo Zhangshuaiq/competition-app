@@ -141,7 +141,7 @@ public class StageNamePreviewPreview extends PreviewPane {
             box.setLayoutY(ConfigSpliter.DEFAULT_Y);
             box.setPrefWidth(ConfigSpliter.DEFAULT_W);
             box.setPrefHeight(ConfigSpliter.DEFAULT_H);
-            box.setBackground(new Background(new BackgroundFill(Color.valueOf(huanjieArr[3]), CornerRadii.EMPTY, Insets.EMPTY)));
+            box.setBackground(new Background(new BackgroundFill(Color.valueOf(huanjieArr[3]),  new CornerRadii(10), Insets.EMPTY)));
 
             Text title = new Text(stages.getName());
             title.prefWidth(ConfigSpliter.DEFAULT_W);
@@ -164,12 +164,14 @@ public class StageNamePreviewPreview extends PreviewPane {
                                 BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT, BackgroundPosition.DEFAULT,
                                 new BackgroundSize(Integer.parseInt(detailArr[2]), Integer.parseInt(detailArr[3]), false, false, false, false))));
                     } catch (FileNotFoundException e) {
-                        e.printStackTrace();
+                        box.setBackground(new Background(new BackgroundFill(Color.TRANSPARENT, new CornerRadii(10), Insets.EMPTY)));
                     }
+                } else {
+                    box.setBackground(new Background(new BackgroundFill(Color.TRANSPARENT, new CornerRadii(10), Insets.EMPTY)));
                 }
             } else {
                 // 填充背景颜色
-                box.setBackground(new Background(new BackgroundFill(Color.valueOf(detailArr[5]), CornerRadii.EMPTY, Insets.EMPTY)));
+                box.setBackground(new Background(new BackgroundFill(Color.valueOf(detailArr[5]),  new CornerRadii(10), Insets.EMPTY)));
             }
             Text title = new Text(stages.getName());
             title.setTextAlignment(AlignmentUtil.getTextAlign(detailArr[13]));

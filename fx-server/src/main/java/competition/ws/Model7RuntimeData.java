@@ -81,7 +81,6 @@ public class Model7RuntimeData {
             if (modelDatum.getQuestionNumber().equals(data.getQuestionNumber())) {
                 existed = true;
                 if (modelDatum.getUserSelect() == null) {
-                    // 团队加分,同步到界面
                     if (data.getAnswer().equals(data.getUserSelect())) {
                         modelData.set(j, data);
                         List<Teams> teams = TeamRuntime.getTeams();
@@ -110,6 +109,19 @@ public class Model7RuntimeData {
                         Platform.runLater(() -> {
                             controlPane.teamScore.setText(team.getCurrentScore().toString());
                         });
+
+                    }
+                }
+            } else {
+                // 答错扣分
+                List<Teams> teams = TeamRuntime.getTeams();
+                for (Teams team : teams) {
+                    if (team.getFullName().equals(data.getTeamName())) {
+                        Integer desValue = controlPane.getCurrentStage().getDesValue();
+                        team.setCurrentScore(team.getCurrentScore() - desValue);
+//                        Platform.runLater(() -> {
+//                            controlPane.teamScore.setText(team.getCurrentScore().toString());
+//                        });
 
                     }
                 }

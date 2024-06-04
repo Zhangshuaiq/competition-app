@@ -253,7 +253,7 @@ public class ScoreBoardHPreview extends PreviewPane implements BoardPane {
                     if (event.getButton() == MouseButton.PRIMARY) {
                         Border border = box.getBorder();
                         if (border == null) {
-                            box.setBorder(new Border(new BorderStroke(Color.GREEN, BorderStrokeStyle.SOLID, CornerRadii.EMPTY, new BorderWidths(5))));
+                            box.setBorder(new Border(new BorderStroke(Color.GREEN, BorderStrokeStyle.SOLID,  new CornerRadii(10), new BorderWidths(5))));
                             selected.add(teamName.getText());
                             controlPane.emptyTeam();
                         } else {
@@ -334,7 +334,7 @@ public class ScoreBoardHPreview extends PreviewPane implements BoardPane {
             Text teamName = (Text) pane.getChildren().get(0);
             if (select) {
                 controlPane.emptyTeam();
-                box.setBorder(new Border(new BorderStroke(Color.GREEN, BorderStrokeStyle.SOLID, CornerRadii.EMPTY, new BorderWidths(5))));
+                box.setBorder(new Border(new BorderStroke(Color.GREEN, BorderStrokeStyle.SOLID,  new CornerRadii(10), new BorderWidths(5))));
                 selected.add(teamName.getText());
             } else {
                 box.setBorder(null);

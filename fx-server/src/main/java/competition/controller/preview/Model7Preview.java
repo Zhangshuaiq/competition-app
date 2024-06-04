@@ -87,7 +87,7 @@ public class Model7Preview extends PreviewPane {
                     new BackgroundSize(Navigator.getWidth(), Navigator.getHeight(), false, false, false, false)
             )));
         } catch (FileNotFoundException e) {
-            e.printStackTrace();
+            container.setBackground(new Background(new BackgroundFill(Color.TRANSPARENT, new CornerRadii(10), Insets.EMPTY)));
         }
         
         Model3Style model3Style = model3Mapper.selectById(2);
@@ -141,7 +141,7 @@ public class Model7Preview extends PreviewPane {
             anchorPane.getChildren().add(upArea);
             upArea.setPrefWidth(anchorPane.getPrefWidth());
             // 背景颜色
-            upArea.setBackground(new Background(new BackgroundFill(Color.BLUE, new CornerRadii(5), Insets.EMPTY)));
+            upArea.setBackground(new Background(new BackgroundFill(Color.BLUE, new CornerRadii(10), Insets.EMPTY)));
             upArea.setPrefHeight(37);
 
             // 第二行
@@ -169,6 +169,7 @@ public class Model7Preview extends PreviewPane {
                     ((Circle) (row2.getChildren().get(i1))).setFill(Color.GREEN);
                     score += m.getScore();
                 } else {
+                    score -= controlPane.getCurrentStage().getDesValue();
                     finish++;
                     ((Circle) (row2.getChildren().get(i1))).setFill(Color.RED);
                 }
@@ -289,21 +290,22 @@ public class Model7Preview extends PreviewPane {
                     answerArea.setSpacing(5);
                     if (last.getUserSelect() != null) {
                         Label select = new Label("回答:" + last.getUserSelect());
-                        select.setBackground(new Background(new BackgroundFill(Color.BLUE, new CornerRadii(5), Insets.EMPTY)));
+                        select.setBackground(new Background(new BackgroundFill(Color.BLUE, new CornerRadii(10), Insets.EMPTY)));
                         select.setPrefHeight(30);
                         select.setTextAlignment(TextAlignment.CENTER);
                         select.setTextFill(Color.WHITE);
                         select.setPrefWidth(answerArea.getPrefWidth());
-
+                        select.setAlignment(Pos.CENTER);
                         Label status = new Label();
                         if (last.getAnswer().equals(last.getUserSelect())) {
                             status.setText("正确");
-                            status.setBackground(new Background(new BackgroundFill(Color.GREEN, new CornerRadii(5), Insets.EMPTY)));
+                            status.setBackground(new Background(new BackgroundFill(Color.GREEN, new CornerRadii(10), Insets.EMPTY)));
                         } else {
                             status.setText("错误");
-                            status.setBackground(new Background(new BackgroundFill(Color.RED, new CornerRadii(5), Insets.EMPTY)));
+                            status.setBackground(new Background(new BackgroundFill(Color.RED, new CornerRadii(10), Insets.EMPTY)));
                         }
                         status.setPrefHeight(30);
+                        status.setAlignment(Pos.CENTER);
                         status.setTextAlignment(TextAlignment.CENTER);
                         status.setTextFill(Color.WHITE);
                         status.setPrefWidth(answerArea.getPrefWidth());

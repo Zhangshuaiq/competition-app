@@ -392,7 +392,6 @@ public class QuestionPreviewAttr {
             reloadPane.reload();
         }
         PreviewStack.reload();
-        closeStage();
     }
 
     @FXML
@@ -426,7 +425,6 @@ public class QuestionPreviewAttr {
             reloadPane.reload();
         }
         PreviewStack.reload();
-        closeStage();
     }
 
 
@@ -458,7 +456,6 @@ public class QuestionPreviewAttr {
             reloadPane.reload();
         }
         PreviewStack.reload();
-        closeStage();
     }
 
 
@@ -501,48 +498,10 @@ public class QuestionPreviewAttr {
             configs.setConfig(String.join(ConfigSpliter.SPLITER, cfgArr));
             configsMapper.updateById(configs);
         }
-
-        // 写入（更新）题干内容到 excel 里
-        List<Questions> parse = RuntimeQuestionStock.getQuestions();
-        String[] split = nameText.getText().split("\n");
-        questions.setQuestion(split[0]);
-        if (split.length >= 2) {
-            questions.setChoiceA(split[1]);
-        } else {
-            questions.setChoiceA("");
-        }
-        if (split.length >= 3) {
-            questions.setChoiceB(split[2]);
-        } else {
-            questions.setChoiceB("");
-        }
-        if (split.length >= 4) {
-            questions.setChoiceC(split[3]);
-        } else {
-            questions.setChoiceC("");
-        }
-        if (split.length >= 5) {
-            questions.setChoiceD(split[4]);
-        } else {
-            questions.setChoiceD("");
-        }
-        if (split.length >= 6) {
-            questions.setChoiceE(split[5]);
-        } else {
-            questions.setChoiceE("");
-        }
-        if (split.length >= 7) {
-            questions.setChoiceF(split[6]);
-        } else {
-            questions.setChoiceF("");
-        }
-        parse.set(questions.getSort(), questions);
-        ExcelParser.write(ExcelParser.Q_PATH, parse, Questions.class);
         if (reloadPane != null) {
             reloadPane.reload();
         }
         PreviewStack.reload();
-        closeStage();
     }
     
     private void closeStage(){
@@ -588,7 +547,24 @@ public class QuestionPreviewAttr {
             configs.setConfig(String.join(ConfigSpliter.SPLITER, cfgArr));
             configsMapper.updateById(configs);
         }
-
+        if (reloadPane != null) {
+            reloadPane.reload();
+        }
+        PreviewStack.reload();
+    }
+    
+    
+    @FXML
+    public void updateAnswerText(){
+        // 写入（更新）题干内容到 excel 里
+        List<Questions> parse = RuntimeQuestionStock.getQuestions();
+        questions.setAnswer(answerText.getText());
+        parse.set(questions.getSort(), questions);
+        ExcelParser.write(ExcelParser.Q_PATH, parse, Questions.class);
+    }
+    
+    @FXML
+    public void updateQuestionContent(){
         // 写入（更新）题干内容到 excel 里
         List<Questions> parse = RuntimeQuestionStock.getQuestions();
         String[] split = nameText.getText().split("\n");
@@ -629,7 +605,6 @@ public class QuestionPreviewAttr {
             reloadPane.reload();
         }
         PreviewStack.reload();
-        closeStage();
     }
 
     @FXML
@@ -667,48 +642,6 @@ public class QuestionPreviewAttr {
             configs.setConfig(String.join(ConfigSpliter.SPLITER, cfgArr));
             configsMapper.updateById(configs);
         }
-
-        // 写入（更新）题干内容到 excel 里
-        List<Questions> parse = RuntimeQuestionStock.getQuestions();
-        String[] split = nameText.getText().split("\n");
-        questions.setQuestion(split[0]);
-        if (split.length >= 2) {
-            questions.setChoiceA(split[1]);
-        } else {
-            questions.setChoiceA("");
-        }
-        if (split.length >= 3) {
-            questions.setChoiceB(split[2]);
-        } else {
-            questions.setChoiceB("");
-        }
-        if (split.length >= 4) {
-            questions.setChoiceC(split[3]);
-        } else {
-            questions.setChoiceC("");
-        }
-        if (split.length >= 5) {
-            questions.setChoiceD(split[4]);
-        } else {
-            questions.setChoiceD("");
-        }
-        if (split.length >= 6) {
-            questions.setChoiceE(split[5]);
-        } else {
-            questions.setChoiceE("");
-        }
-        if (split.length >= 7) {
-            questions.setChoiceF(split[6]);
-        } else {
-            questions.setChoiceF("");
-        }
-        parse.set(questions.getSort(), questions);
-        ExcelParser.write(ExcelParser.Q_PATH, parse, Questions.class);
-        if (reloadPane != null) {
-            reloadPane.reload();
-        }
-        PreviewStack.reload();
-        closeStage();
     }
 
 
@@ -733,16 +666,11 @@ public class QuestionPreviewAttr {
         questionStyleList.get(questions.getSort()).setStyle2(style1);
         ExcelParser.write(ExcelParser.S_PATH, questionStyleList, QuestionStyle.class);
 
-        // 写入（更新）题干内容到 excel 里
-        List<Questions> parse = RuntimeQuestionStock.getQuestions();
-        questions.setAnswer(answerText.getText());
-        parse.set(questions.getSort(), questions);
-        ExcelParser.write(ExcelParser.Q_PATH, parse, Questions.class);
+        
         if (reloadPane != null) {
             reloadPane.reload();
         }
         PreviewStack.reload();
-        closeStage();
     }
 
     @FXML
@@ -770,17 +698,10 @@ public class QuestionPreviewAttr {
             }
         }
         ExcelParser.write(ExcelParser.S_PATH, questionStyleList, QuestionStyle.class);
-
-        // 写入（更新）题干内容到 excel 里
-        List<Questions> parse = RuntimeQuestionStock.getQuestions();
-        questions.setAnswer(answerText.getText());
-        parse.set(questions.getSort(), questions);
-        ExcelParser.write(ExcelParser.Q_PATH, parse, Questions.class);
         if (reloadPane != null) {
             reloadPane.reload();
         }
         PreviewStack.reload();
-        closeStage();
     }
 
     @FXML
@@ -806,16 +727,10 @@ public class QuestionPreviewAttr {
             questionStyle.setStyle2(style1);
         }
         ExcelParser.write(ExcelParser.S_PATH, questionStyleList, QuestionStyle.class);
-        // 写入（更新）题干内容到 excel 里
-        List<Questions> parse = RuntimeQuestionStock.getQuestions();
-        questions.setAnswer(answerText.getText());
-        parse.set(questions.getSort(), questions);
-        ExcelParser.write(ExcelParser.Q_PATH, parse, Questions.class);
         if (reloadPane != null) {
             reloadPane.reload();
         }
         PreviewStack.reload();
-        closeStage();
     }
 
 

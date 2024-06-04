@@ -1,6 +1,7 @@
 package competition;
 
 import competition.util.GlobalCache;
+import competition.util.Navigator;
 import javafx.application.Application;
 import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.boot.SpringApplication;
@@ -16,6 +17,7 @@ public class Main {
         Application.launch(JavaFxApplication.class, args);
         // 启动 springboot ，主要作为 ws 服务器接收数据
         SpringApplication.run(Main.class, args);
+
         //
     }
 }

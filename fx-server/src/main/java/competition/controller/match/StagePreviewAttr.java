@@ -280,9 +280,6 @@ public class StagePreviewAttr {
         
         configs.setDetails(detail);
         configsMapper.updateById(configs);
-
-        Stage stage = (Stage) ((Node)xInput).getScene().getWindow();
-        stage.close();
         if (reloadPane != null) {
             reloadPane.reload();
         }

@@ -20,13 +20,17 @@ import competition.ws.WsMessageHandler;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
+import javafx.event.Event;
 import javafx.event.EventHandler;
+import javafx.event.EventType;
 import javafx.fxml.FXML;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
@@ -50,6 +54,10 @@ public class ControlPane {
     private VideoPlayer videoPlayer;
 
     // 倒计时提示音控制, 默认 5 秒
+    
+    @FXML
+    private AnchorPane parentPane;
+    
     @FXML
     private TextField alertTime;
 
@@ -74,8 +82,10 @@ public class ControlPane {
     private Label stageText;
 
     @FXML
-    private ImageView playBtn, backendBtn, frontBtn;
+    private ImageView playBtn, backendBtn1, frontBtn1;
 
+    @FXML
+    private Button button, backendBtn, frontBtn;
 
     @FXML
     private ComboBox<String> questionCombox;
@@ -164,6 +174,44 @@ public class ControlPane {
 
     @FXML
     public void initialize() {
+        
+        Navigator.previewStage.addEventFilter(KeyEvent.KEY_PRESSED, new EventHandler<KeyEvent>() {
+            @Override
+            public void handle(KeyEvent event) {
+                System.out.println("Preview Event");
+                if (event.getCode() == KeyCode.S) {
+                    lastQuestion();
+                } else  if (event.getCode() == KeyCode.X) {
+                    nextQuestion();
+                } else  if (event.getCode() == KeyCode.J) {
+                    startTiming();
+                } else  if (event.getCode() == KeyCode.F) {
+                    timeReset();
+                } else  if (event.getCode() == KeyCode.D) {
+                    showAnswer();
+                }
+            }
+        });
+
+        parentPane.setOnKeyPressed(new EventHandler<KeyEvent>() {
+            @Override
+            public void handle(KeyEvent event) {
+                System.out.println(event.getCode());
+                if (event.getCode() == KeyCode.S) {
+                    lastQuestion();
+                } else  if (event.getCode() == KeyCode.X) {
+                    nextQuestion();
+                } else  if (event.getCode() == KeyCode.J) {
+                    startTiming();
+                } else  if (event.getCode() == KeyCode.F) {
+                    timeReset();
+                } else  if (event.getCode() == KeyCode.D) {
+                    showAnswer();
+                }
+            }
+        });
+        
+        
         if (timeVisibleBtn.getText().equals("不消失")) {
             timeVisibleBtn.setTextFill(Color.GREEN);
         } else {
@@ -174,7 +222,7 @@ public class ControlPane {
         // 初始化图片资源
         try {
             playBtn.setImage(new Image(new FileInputStream(new File(ImageResource.播放()))));
-            playBtn.setOnMouseClicked(new EventHandler<MouseEvent>() {
+            button.setOnMouseClicked(new EventHandler<MouseEvent>() {
                 @SneakyThrows
                 @Override
                 public void handle(MouseEvent event) {
@@ -199,22 +247,24 @@ public class ControlPane {
             Tooltip.install(frontBtn, frontTip);
             Tooltip backTip = new Tooltip("退 10 秒");
             Tooltip.install(backendBtn, backTip);
-            frontBtn.setImage(new Image(new FileInputStream(new File(ImageResource.快进()))));
+            frontBtn1.setImage(new Image(new FileInputStream(new File(ImageResource.快进()))));
             frontBtn.setOnMouseClicked(new EventHandler<MouseEvent>() {
                 @Override
                 public void handle(MouseEvent event) {
                     if (videoPlayer != null) {
                         videoPlayer.front();
                     }
+                   // ExtendedScreen.videoStage.setAlwaysOnTop(true);
                 }
             });
-            backendBtn.setImage(new Image(new FileInputStream(new File(ImageResource.快退()))));
+            backendBtn1.setImage(new Image(new FileInputStream(new File(ImageResource.快退()))));
             backendBtn.setOnMouseClicked(new EventHandler<MouseEvent>() {
                 @Override
                 public void handle(MouseEvent event) {
                     if (videoPlayer != null) {
                         videoPlayer.back();
                     }
+                  //  ExtendedScreen.videoStage.setAlwaysOnTop(true);
                 }
             });
         } catch (FileNotFoundException e) {
@@ -704,6 +754,9 @@ public class ControlPane {
     // 竞技排行
     @FXML
     public void model7Rank() {
+        if (controlStage == null) {
+            return;
+        }
         // 判断当前环节编号
         if (currentStage.getQuestionType() == 7 || currentStage.getQuestionType() == 6) {
             // 竞技答题排名(整体排名)
@@ -715,8 +768,6 @@ public class ControlPane {
                 GlobalCache.showModel7Rank = false;
             }
         }
-
-
     }
 
     // 选手排行
@@ -1149,6 +1200,7 @@ public class ControlPane {
         // 重置答题状态
         // 给题目设置分值
         // 扩展屏幕展示并排答题界面（竞技模式）
+        MusicPlayer.play(MusicResource.SHOW_QUESTION);
         for (Questions q : CurrentQuestions.getQuestionList()) {
             q.setScore(currentStage.getScorePerQ());
         }
@@ -1256,6 +1308,7 @@ public class ControlPane {
         if (controlStage == null) {
             return;
         }
+        MusicPlayer.play(MusicResource.SHOW_ANSWER);
         // 更新分数
         TeamRuntime.updateScore();
         Integer questionType = controlStage.getQuestionType();
@@ -1265,6 +1318,7 @@ public class ControlPane {
                 TeamRuntime.updateMS();
                 //TeamRuntime.resetStatus();
                 GlobalCache.showAnswer = true;
+                MusicPlayer.play(MusicResource.SHOW_ANSWER);
                 List<Model61RuntimeData.ModelData> runtimeData = Model61RuntimeData.getRuntimeData();
                 TeamResult result = new TeamResult();
                 String answer = runtimeData.get(0).getAnswer();
@@ -1276,7 +1330,7 @@ public class ControlPane {
                     if (runtimeData.get(i).getAnswer().equals(runtimeData.get(i).getUserSelect())) {
                         item.setScore(runtimeData.get(i).getScore());
                     } else {
-                        item.setScore(0);
+                        item.setScore(-currentStage.getDesValue());
                     }
                     item.setTeamName(runtimeData.get(i).getTeamName());
                     item.setMember(runtimeData.get(i).getUserName());
@@ -1295,6 +1349,8 @@ public class ControlPane {
         else {
             if (questionType == 6 && controlStage.getM6() == 0) {
                 TeamRuntime.updateS();
+
+                GlobalCache.showAnswer = !GlobalCache.showAnswer;
                 messageHandler.sendShowAnswer();
                 // 更新状态
                 List<Model60RuntimeData.ModelData> runtimeData = Model60RuntimeData.getRuntimeData();
@@ -1309,10 +1365,40 @@ public class ControlPane {
                 if (previewPane != null) {
                     previewPane.showAnswer();
                 }
+                
+                if (currentStage.getAnswerSingle() == 1) {
+                    // 单独展示
+                    if (GlobalCache.showAnswer) {
+                        // 更新状态
+                        TeamResult result = new TeamResult();
+                        String answer = runtimeData.get(0).getAnswer();
+                        result.setCorrectAnswer(answer);
+                        List<TeamResult.DataItem> items = new ArrayList<>();
+                        for (int i = 0; i < runtimeData.size(); i++) {
+                            TeamResult.DataItem item = new TeamResult.DataItem();
+                            item.setAnswer(runtimeData.get(i).getUserSelect());
+                            if (runtimeData.get(i).getAnswer().equals(runtimeData.get(i).getUserSelect())) {
+                                item.setScore(runtimeData.get(i).getScore());
+                            } else {
+                                item.setScore(-currentStage.getDesValue());
+                            }
+                            item.setTeamName(runtimeData.get(i).getTeamName());
+                            items.add(item);
+                        }
+                        result.setDataItemList(items);
+                        ShowAnswerPreview.setTeamResult(result);
+                        previewPane = Navigator.preview("/view/preview/ShowAnswer.fxml", "", "/view/style.css", true, true);
+                        messageHandler.notifyPage("model61R", result);
+                    } else {
+                        GlobalCache.showAnswer = false;
+                        returnLast();
+                    }
+                }
 //              
             } 
             else {
                 TeamRuntime.updateS();
+                GlobalCache.showAnswer = !GlobalCache.showAnswer;
                 messageHandler.sendShowAnswer();
                 // 更新状态
                 messageHandler.notifyPage("", null);

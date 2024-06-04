@@ -46,6 +46,12 @@ public class StageConfig {
     // 出题方式
     private ToggleGroup ccType;
     
+    @FXML
+    private TextField stageNoText;
+    
+    
+    @FXML
+    private CheckBox answerShow;
 
     @Resource
     private StagesMapper stagesMapper;
@@ -377,21 +383,58 @@ public class StageConfig {
             });
             firstBox.getChildren().add(row);
         }
-        
-        Label addLab = new Label(" + ");
+        StackPane stackPane = new StackPane();
+        Label addLab = new Label();
+        addLab.setBackground(new Background(new BackgroundImage(new Image(new FileInputStream(ImageResource.添加()), 171, 50, true, true),
+                BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT, BackgroundPosition.CENTER, BackgroundSize.DEFAULT)));
         addLab.setPrefHeight(50);
         addLab.setPrefWidth(171);
         addLab.setAlignment(Pos.CENTER);
         addLab.setTextFill(Color.BLACK);
         addLab.setFont(Font.font(24));
-        firstBox.getChildren().add(addLab);
-        addLab.setOnMouseClicked(new EventHandler<MouseEvent>() {
+        stackPane.getChildren().add(addLab);
+        firstBox.getChildren().add(stackPane);
+        stackPane.setOnMouseClicked(new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent event) {
                 clearClicked();
                 add = true;
                 addLevel = level;
-                addLab.getStyleClass().add("stage-title-clicked");
+                stackPane.getStyleClass().add("stage-title-clicked");
+
+                if (addLevel == 1) {
+                    int size = stagesMapper.selectList(new LambdaQueryWrapper<Stages>()
+                            .isNull(Stages::getParentId)).size() + 1;
+                    stageNoText.setText((size) + "");
+                } else  if (addLevel == 2) {
+                    if (current.getLevel() == 1) {
+                        int size = stagesMapper.selectList(new LambdaQueryWrapper<Stages>()
+                                .eq(Stages::getParentId, current.getId())
+                        ).size() + 1;
+                        stageNoText.setText(current.getSortVal() + "." + (size));
+                    } else if (current.getLevel() == 2) {
+                        Stages p = stagesMapper.selectById(current.getParentId());
+                        int size = stagesMapper.selectList(new LambdaQueryWrapper<Stages>()
+                                .eq(Stages::getParentId, p.getId())
+                        ).size() + 1;
+                        stageNoText.setText(p.getSortVal() + "." + (size));
+                    }
+
+                } else  if (addLevel == 3) {
+                    if (current.getLevel() == 2) {
+                        int size = stagesMapper.selectList(new LambdaQueryWrapper<Stages>()
+                                .eq(Stages::getParentId, current.getId())
+                        ).size() + 1;
+                        stageNoText.setText(current.getSortVal() + "." + (size));
+                    } else if (current.getLevel() == 3) {
+                        Stages p = stagesMapper.selectById(current.getParentId());
+                        int size = stagesMapper.selectList(new LambdaQueryWrapper<Stages>()
+                                .eq(Stages::getParentId, p.getId())
+                        ).size() + 1;
+                        stageNoText.setText(p.getSortVal() + "." + (size));
+                    }
+                }
+                
             }
         });
     }
@@ -473,6 +516,7 @@ public class StageConfig {
     
     private void showCurrentInfo(){
         if (current != null) {
+            stageNoText.setText(current.getSortVal());
             nameInput.setText(current.getName());
             scoreInput.setText(current.getScorePerQ() + "");
             timeDescInput.setText(current.getDescTime() + "");
@@ -486,6 +530,7 @@ public class StageConfig {
             ruleChoice.setValue(current.getRuleType());
             timeOrder.setSelected(current.getOrderVal() == 1);
             countTotal.setSelected(current.getCountTotal() == 1);
+            answerShow.setSelected(current.getAnswerSingle() == 1);
             desValue.setText(current.getDesValue().toString());
             for (Toggle toggle : ccType.getToggles()) {
                 if (toggle.getUserData().toString().equals(current.getQuestionType().toString())) {
@@ -606,6 +651,7 @@ public class StageConfig {
         current.setOrderVal(timeOrder.isSelected()? 1: 0);
         current.setDesValue(Integer.parseInt(desValue.getText()));
         current.setCountTotal(countTotal.isSelected()? 1: 0);
+        current.setAnswerSingle(answerShow.isSelected()?1: 0);
         stagesMapper.updateById(current);
         
         firstBox.getChildren().clear();
@@ -673,7 +719,7 @@ public class StageConfig {
         stages.setrRandomSort(randomSort2Selected?1:0);
         stages.setDesValue(Integer.parseInt(desValue.getText()));
         stages.setCountTotal(countTotal.isSelected()? 1: 0);
-        
+        stages.setAnswerSingle(answerShow.isSelected()?1: 0);
         current.setOrderVal(timeOrder.isSelected()? 1: 0);
         if (addLevel == 1) {
                 int size = stagesMapper.selectList(new LambdaQueryWrapper<Stages>()

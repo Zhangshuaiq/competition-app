@@ -25,7 +25,7 @@ import java.util.concurrent.atomic.AtomicReference;
 
 public class ExtendedScreen {
 
-    private static final Stage extendScreen = new Stage();
+    public static final Stage extendScreen = new Stage();
 
     public static final Stage timeBoardStage = new Stage();
 
@@ -36,11 +36,13 @@ public class ExtendedScreen {
     private static boolean extendShow = false;
 
     static {
-        // previewStage.initStyle(StageStyle.TRANSPARENT);
+        extendScreen.initStyle(StageStyle.TRANSPARENT);
         timeBoardStage.initStyle(StageStyle.TRANSPARENT);
         timeBoardStage.setAlwaysOnTop(true);
         scoreBoardStage.setAlwaysOnTop(true);
         scoreBoardStage.initStyle(StageStyle.TRANSPARENT);
+        videoStage.initStyle(StageStyle.TRANSPARENT);
+        videoStage.setAlwaysOnTop(true);
     }
     
     public static double getWidth(){

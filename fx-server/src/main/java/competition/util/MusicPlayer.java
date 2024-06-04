@@ -19,6 +19,14 @@ public class MusicPlayer {
         for (File file : files) {
            load(file.getAbsolutePath());
         }
+        path = BaseDir.MUSIC_DIR;
+        musicDir = new File(path);
+        files = musicDir.listFiles();
+        for (File file : files) {
+            if (!file.isDirectory()) {
+                load(file.getAbsolutePath());
+            }
+        }
 //        load(MusicResource.SECOND_5);
 //        load(MusicResource.SECOND_4);
 //        load(MusicResource.SECOND_3);
@@ -62,7 +70,6 @@ public class MusicPlayer {
     }
 
     public static void play(String path) {
-        System.out.println(path);
         if (!new File(path).exists()) {
             return;
         }

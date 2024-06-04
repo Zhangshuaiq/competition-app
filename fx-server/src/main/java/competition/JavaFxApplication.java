@@ -1,21 +1,21 @@
 package competition;
 
-import competition.util.GlobalCache;
-import competition.util.MusicPlayer;
-import competition.util.MusicResource;
-import competition.util.ScoreSaver;
+import competition.util.*;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.image.Image;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import javafx.stage.WindowEvent;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.context.ConfigurableApplicationContext;
 
+import java.io.FileInputStream;
+import java.io.FilterInputStream;
 import java.util.Arrays;
 
 public class JavaFxApplication extends Application {
@@ -39,8 +39,6 @@ public class JavaFxApplication extends Application {
         Parent load = loader.load();
         Scene scene = new Scene(load);
         scene.getStylesheets().add("/view/style.css"); // 应用 CSS
-        System.out.println(GlobalCache.dpi);
-
 //        // 鼠标按下时记录初始坐标
 //        load.setOnMousePressed(event -> {
 //            xOffset = event.getSceneX();
@@ -52,14 +50,19 @@ public class JavaFxApplication extends Application {
 //            primaryStage.setX(event.getScreenX() - xOffset);
 //            primaryStage.setY(event.getScreenY() - yOffset);
 //        });
-        
         primaryStage.setOnCloseRequest(event -> {
             ScoreSaver.saveScore();
             System.exit(0);
         });
         primaryStage.setScene(scene);
+        primaryStage.setResizable(false);
         primaryStage.setAlwaysOnTop(true);
         primaryStage.setTitle("答题竞赛系统");
+        try {
+            primaryStage.getIcons().add(new Image(new FileInputStream(BaseDir.IMAGE_DIR + "图标.jpg")));
+        }catch (Exception ex) {
+            System.out.println("加载不到图片");
+        }
         primaryStage.show();
         MusicPlayer.prePlay(MusicResource.SECOND_5);
 

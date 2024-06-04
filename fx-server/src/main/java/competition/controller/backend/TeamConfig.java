@@ -8,6 +8,7 @@ import competition.util.Information;
 import competition.util.ScoreSaver;
 import competition.util.TeamRuntime;
 import javafx.collections.FXCollections;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
@@ -16,6 +17,7 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
@@ -79,7 +81,18 @@ public class TeamConfig {
         HBox hBox = new HBox();
         final TextField textField = new TextField();
         textField.setPrefWidth(200);
-        hBox.getChildren().addAll(code, textField);
+
+        Label delete = new Label(" X ");
+        delete.setPrefWidth(50);
+        delete.setPrefHeight(30);
+        delete.setAlignment(Pos.CENTER);
+        delete.setOnMouseClicked(new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent event) {
+                memberBox.getChildren().remove(size - 1);
+            }
+        });
+        hBox.getChildren().addAll(code, textField, delete);
         memberBox.getChildren().add(size - 1, hBox);
     }
     
@@ -93,7 +106,19 @@ public class TeamConfig {
         HBox hBox = new HBox();
         final TextField textField = new TextField(member);
         textField.setPrefWidth(200);
-        hBox.getChildren().addAll(code, textField);
+
+        Label delete = new Label(" X ");
+        delete.setPrefWidth(50);
+        delete.setPrefHeight(30);
+        delete.setAlignment(Pos.CENTER);
+        delete.setOnMouseClicked(new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent event) {
+                memberBox.getChildren().remove(size - 1);
+            }
+        });
+        
+        hBox.getChildren().addAll(code, textField, delete);
         memberBox.getChildren().add(size - 1, hBox);
     }
     

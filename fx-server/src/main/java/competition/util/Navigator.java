@@ -38,6 +38,7 @@ public class Navigator {
 
     static {
        // previewStage.initStyle(StageStyle.TRANSPARENT);
+        previewStage.initStyle(StageStyle.TRANSPARENT);
         timeBoardStage.setAlwaysOnTop(true);
         timeBoardStage.initStyle(StageStyle.TRANSPARENT);
         scoreBoardStage.setAlwaysOnTop(true);
@@ -78,6 +79,7 @@ public class Navigator {
             if (hiddenControl) {
                 //previewStage.initStyle(StageStyle.TRANSPARENT);
             }
+            
             previewScene.getStylesheets().add(cssFile); // 应用 CSS
 
             previewStage.setScene(previewScene);

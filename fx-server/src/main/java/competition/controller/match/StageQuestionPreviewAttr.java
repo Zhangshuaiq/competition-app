@@ -272,7 +272,6 @@ public class StageQuestionPreviewAttr {
         }
         controlPane.reloadStage();
         PreviewStack.reload();
-        closeStage();
 
     }
 
@@ -393,7 +392,6 @@ public class StageQuestionPreviewAttr {
         }
         controlPane.reloadStage();
         PreviewStack.reload();
-        closeStage();
     }
 
 

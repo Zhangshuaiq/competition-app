@@ -318,7 +318,6 @@ public class Model3Attr {
             reloadPane.reload();
         }
         PreviewStack.reload();
-        closeStage();
     }
     
     @FXML
@@ -363,7 +362,6 @@ public class Model3Attr {
             reloadPane.reload();
         }
         PreviewStack.reload();
-        closeStage();
     }
 
     private void closeStage() {
@@ -424,7 +422,6 @@ public class Model3Attr {
             reloadPane.reload();
         }
         PreviewStack.reload();
-        closeStage();
     }
 
 

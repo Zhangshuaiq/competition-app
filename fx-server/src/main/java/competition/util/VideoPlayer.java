@@ -61,7 +61,6 @@ public class VideoPlayer {
         scene.getStylesheets().add("/view/style.css"); // 应用 CSS
        
         primaryStage.setTitle("视频播放器");
-        primaryStage.setFullScreen(true);
         primaryStage.setScene(scene);
         primaryStage.show();
         mediaPlayer.play();

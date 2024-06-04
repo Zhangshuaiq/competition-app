@@ -66,7 +66,10 @@
             <CheckBox fx:id="countTotal" layoutX="145.0" layoutY="191.0" mnemonicParsing="false" text="当前环节是否计入总分" />
             <Label layoutX="348.0" layoutY="192.0" text="答错减分" />
             <TextField fx:id="desValue" layoutX="414.0" layoutY="187.0" prefHeight="30.0" prefWidth="58.0" text="0" />
+            <CheckBox fx:id="answerShow" layoutX="164.0" layoutY="250.0" mnemonicParsing="false" text="答案单独展示" />
          </children>
       </AnchorPane>
+      <Label layoutX="550.0" layoutY="21.0" text="当前环节编号" />
+      <TextField fx:id="stageNoText" editable="false" layoutX="648.0" layoutY="16.0" />
    </children>
 </AnchorPane>

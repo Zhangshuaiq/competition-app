@@ -96,7 +96,6 @@ public class Model7Attr {
         }
         GlobalCache.model7Hide = hideCtl.isSelected();
         PreviewStack.reload();
-        closeWindow();
     }
     
     

@@ -10,6 +10,7 @@ import competition.entity.Questions;
 import competition.entity.Stages;
 import competition.entity.Teams;
 import competition.mapper.TeamsMapper;
+import competition.util.GlobalCache;
 import competition.util.TeamRuntime;
 import javafx.application.Platform;
 import org.springframework.messaging.handler.annotation.MessageMapping;
@@ -204,8 +205,9 @@ public class WsMessageHandler {
     
     
     public void sendShowAnswer() {
-        Map<String, String> dataMap = new HashMap<>();
+        Map<String, Object> dataMap = new HashMap<>();
         dataMap.put("type", "answer");
+        dataMap.put("data", GlobalCache.showAnswer);
         messagingTemplate.convertAndSend(QUESTION_TOPIC, JSON.toJSONString(dataMap));
     }
 

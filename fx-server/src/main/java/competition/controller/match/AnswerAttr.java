@@ -284,7 +284,6 @@ public class AnswerAttr {
 
         answerStyleMapper.updateById(answerStyle);
         controlPane.getPreviewPane().reload();
-        closeDialog();
     }
     
     

@@ -5,7 +5,10 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.*?>
 
-<AnchorPane minWidth="-Infinity" prefHeight="786.0" prefWidth="339.0" xmlns="http://javafx.com/javafx/11.0.14-internal" xmlns:fx="http://javafx.com/fxml/1" fx:controller="competition.controller.ControlPane">
+<AnchorPane minWidth="-Infinity" prefHeight="786.0" prefWidth="339.0" 
+            xmlns="http://javafx.com/javafx/11.0.14-internal" xmlns:fx="http://javafx.com/fxml/1" 
+            fx:id="parentPane"
+            fx:controller="competition.controller.ControlPane">
    <children>
       <Label alignment="CENTER" layoutY="1.0" onMouseClicked="#showTopStage" prefHeight="25.0" prefWidth="338.0" style="-fx-background-color: blue;" text="竞赛环节" textFill="WHITE">
          <font>
@@ -90,11 +93,26 @@
             </Label>
             <ComboBox fx:id="questionCombox" layoutX="42.0" layoutY="42.0" maxHeight="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="23.0" prefWidth="50.0" style="-fx-font-size: 10px">
             </ComboBox>
-            <ImageView fx:id="playBtn" fitHeight="25.0" fitWidth="25.0" layoutX="105.0" layoutY="41.0" pickOnBounds="true" preserveRatio="true" />
 
-            <ImageView fx:id="backendBtn" fitHeight="25.0" fitWidth="25.0" layoutX="150.0" layoutY="41.0" pickOnBounds="true" preserveRatio="true" />
+            <Button fx:id="button"  layoutX="105.0" layoutY="38.0"  prefHeight="25.0" prefWidth="25.0">
+               <graphic>
+                  <ImageView fx:id="playBtn" fitHeight="10.0" fitWidth="10.0" preserveRatio="true" />
+               </graphic>
+            </Button>
 
-            <ImageView fx:id="frontBtn" fitHeight="25.0" fitWidth="25.0" layoutX="195.0" layoutY="41.0" pickOnBounds="true" preserveRatio="true" />
+            <Button fx:id="backendBtn"   layoutX="150.0" layoutY="38.0"  prefHeight="25.0" prefWidth="25.0">
+               <graphic>
+                  <ImageView fx:id="backendBtn1"  fitHeight="10.0" fitWidth="10.0"   preserveRatio="true" />
+               </graphic>
+            </Button>
+
+            <Button fx:id="frontBtn"   layoutX="195.0" layoutY="38.0"  prefHeight="25.0" prefWidth="25.0">
+               <graphic>
+                  <ImageView fx:id="frontBtn1" fitHeight="10.0" fitWidth="10.0"  preserveRatio="true" />
+               </graphic>
+            </Button>
+
+
          </children>
       </AnchorPane>
       <Label alignment="CENTER" layoutX="1.0" layoutY="336.0" prefHeight="26.0" prefWidth="338.0" style="-fx-background-color: blue;" text="计时控制" textFill="WHITE">

@@ -4,10 +4,7 @@ import competition.controller.preview.PreviewPane;
 import competition.entity.AnswerStyle;
 import competition.mapper.AnswerStyleMapper;
 import competition.modal.TeamResult;
-import competition.util.AlignmentUtil;
-import competition.util.ConfigSpliter;
-import competition.util.FontMap;
-import competition.util.Navigator;
+import competition.util.*;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.geometry.Insets;
@@ -67,6 +64,15 @@ public class ShowAnswer implements ReloadPane {
 
     private void showData() {
 
+        try {
+            container.setBackground(new Background(new BackgroundImage(
+                    new Image(new FileInputStream(ImageResource.答案背景())), BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT, BackgroundPosition.DEFAULT,
+                    new BackgroundSize(Navigator.getWidth(), Navigator.getHeight(), false, false, false, false)
+            )));
+        } catch (FileNotFoundException e) {
+            container.setBackground(new Background(new BackgroundFill(Color.TRANSPARENT, new CornerRadii(10), Insets.EMPTY)));
+        }
+        
         AnswerStyle answerStyle = answerStyleMapper.selectById(1);
 
         int col = 1;
@@ -250,8 +256,10 @@ public class ShowAnswer implements ReloadPane {
                             BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT, BackgroundPosition.DEFAULT,
                             new BackgroundSize(width * col + (col - 1) * colSpace, height, false, false, false, false))));
                 } catch (FileNotFoundException e) {
-                    e.printStackTrace();
+                    answerBack.setBackground(new Background(new BackgroundFill(Color.TRANSPARENT, new CornerRadii(10), Insets.EMPTY)));
                 }
+            } else {
+                answerBack.setBackground(new Background(new BackgroundFill(Color.TRANSPARENT, new CornerRadii(10), Insets.EMPTY)));
             }
         } else {
             // 填充背景颜色
@@ -281,7 +289,10 @@ public class ShowAnswer implements ReloadPane {
                 itemBox.setPrefWidth(width);
                 itemBox.setPrefHeight(height);
                 TeamResult.DataItem dataItem = dataItemList.get(i);
-                String text = dataItem.getTeamName() + "  " + dataItem.getMember() + "  回答:" + dataItem.getAnswer();
+                String text = " 团队: " + dataItem.getTeamName() + "  " + dataItem.getMember() + "  回答:" + dataItem.getAnswer();
+                if (StringUtils.isEmpty(dataItem.getMember())) {
+                    text = " 团队: " + dataItem.getTeamName() + "  " + "  回答:" + dataItem.getAnswer();
+                }
                 Text memberResult = new Text(text);
                 stackPane.getChildren().add(memberResult);
                 stackPane.setAlignment(AlignmentUtil.getAlign(f2l));
@@ -312,8 +323,10 @@ public class ShowAnswer implements ReloadPane {
                                     BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT, BackgroundPosition.DEFAULT,
                                     new BackgroundSize(width, height, false, false, false, false))));
                         } catch (FileNotFoundException e) {
-                            e.printStackTrace();
+                            itemBox.setBackground(new Background(new BackgroundFill(Color.TRANSPARENT, new CornerRadii(10), Insets.EMPTY)));
                         }
+                    } else {
+                        itemBox.setBackground(new Background(new BackgroundFill(Color.TRANSPARENT, new CornerRadii(10), Insets.EMPTY)));
                     }
                 } else {
                     // 填充背景颜色
@@ -354,8 +367,10 @@ public class ShowAnswer implements ReloadPane {
                                         BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT, BackgroundPosition.DEFAULT,
                                         new BackgroundSize(ut.getStrokeWidth(), height, false, false, false, false))));
                             } catch (FileNotFoundException e) {
-                                e.printStackTrace();
+                                rPane.setBackground(new Background(new BackgroundFill(Color.TRANSPARENT, new CornerRadii(10), Insets.EMPTY)));
                             }
+                        } else {
+                            rPane.setBackground(new Background(new BackgroundFill(Color.TRANSPARENT, new CornerRadii(10), Insets.EMPTY)));
                         }
                     } else {
                         // 填充背景颜色
@@ -388,8 +403,10 @@ public class ShowAnswer implements ReloadPane {
                                         BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT, BackgroundPosition.DEFAULT,
                                         new BackgroundSize(ut.getStrokeWidth(), height, false, false, false, false))));
                             } catch (FileNotFoundException e) {
-                                e.printStackTrace();
+                                rPane.setBackground(new Background(new BackgroundFill(Color.TRANSPARENT, new CornerRadii(10), Insets.EMPTY)));
                             }
+                        } else {
+                            rPane.setBackground(new Background(new BackgroundFill(Color.TRANSPARENT, new CornerRadii(10), Insets.EMPTY)));
                         }
                     } else {
                         // 填充背景颜色
@@ -423,8 +440,10 @@ public class ShowAnswer implements ReloadPane {
                                         BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT, BackgroundPosition.DEFAULT,
                                         new BackgroundSize(ut.getStrokeWidth(), height, false, false, false, false))));
                             } catch (FileNotFoundException e) {
-                                e.printStackTrace();
+                                rPane.setBackground(new Background(new BackgroundFill(Color.TRANSPARENT, new CornerRadii(10), Insets.EMPTY)));
                             }
+                        } else {
+                            rPane.setBackground(new Background(new BackgroundFill(Color.TRANSPARENT, new CornerRadii(10), Insets.EMPTY)));
                         }
                     } else {
                         // 填充背景颜色

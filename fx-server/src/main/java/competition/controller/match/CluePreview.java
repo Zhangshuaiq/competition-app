@@ -101,7 +101,7 @@ public class CluePreview implements ReloadPane {
                     new BackgroundSize(Navigator.getWidth(), Navigator.getHeight(), false, false, false, false)
             )));
         } catch (FileNotFoundException e) {
-            e.printStackTrace();
+            container.setBackground(new Background(new BackgroundFill(Color.TRANSPARENT, new CornerRadii(10), Insets.EMPTY)));
         }
 
         tiganBox.getChildren().clear();
@@ -267,15 +267,15 @@ public class CluePreview implements ReloadPane {
                                             BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT, BackgroundPosition.DEFAULT,
                                             new BackgroundSize(Integer.parseInt(split1[2]), Integer.parseInt(split1[3]), false, false, false, false))));
                                 } catch (FileNotFoundException e) {
-                                    tiganBox.setBackground(new Background(new BackgroundFill(Color.TRANSPARENT, CornerRadii.EMPTY, Insets.EMPTY)));
+                                    tiganBox.setBackground(new Background(new BackgroundFill(Color.TRANSPARENT,  new CornerRadii(10), Insets.EMPTY)));
                                     //e.printStackTrace();
                                 }
                             } else {
-                                tiganBox.setBackground(new Background(new BackgroundFill(Color.TRANSPARENT, CornerRadii.EMPTY, Insets.EMPTY)));
+                                tiganBox.setBackground(new Background(new BackgroundFill(Color.TRANSPARENT,  new CornerRadii(10), Insets.EMPTY)));
                             }
                         } else {
                             // 填充背景颜色
-                            tiganBox.setBackground(new Background(new BackgroundFill(Color.valueOf(split1[5]), CornerRadii.EMPTY, Insets.EMPTY)));
+                            tiganBox.setBackground(new Background(new BackgroundFill(Color.valueOf(split1[5]),  new CornerRadii(10), Insets.EMPTY)));
                         }
 
                         tiganBox.setSpacing(Integer.parseInt(split1[14]));
@@ -340,12 +340,14 @@ public class CluePreview implements ReloadPane {
                                             BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT, BackgroundPosition.DEFAULT,
                                             new BackgroundSize(Integer.parseInt(split1[2]), Integer.parseInt(split1[3]), false, false, false, false))));
                                 } catch (FileNotFoundException e) {
-                                    e.printStackTrace();
+                                    backPane.setBackground(new Background(new BackgroundFill(Color.TRANSPARENT, new CornerRadii(10), Insets.EMPTY)));
                                 }
+                            } else {
+                                backPane.setBackground(new Background(new BackgroundFill(Color.TRANSPARENT, new CornerRadii(10), Insets.EMPTY)));
                             }
                         } else {
                             // 填充背景颜色
-                            backPane.setBackground(new Background(new BackgroundFill(Color.valueOf(split1[5]), CornerRadii.EMPTY, Insets.EMPTY)));
+                            backPane.setBackground(new Background(new BackgroundFill(Color.valueOf(split1[5]),  new CornerRadii(10), Insets.EMPTY)));
                         }
 
 
@@ -392,12 +394,14 @@ public class CluePreview implements ReloadPane {
                                                 BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT, BackgroundPosition.DEFAULT,
                                                 new BackgroundSize(Integer.parseInt(split1[2]), Integer.parseInt(split1[3]), false, false, false, false))));
                                     } catch (FileNotFoundException e) {
-                                        e.printStackTrace();
+                                        stagePane.setBackground(new Background(new BackgroundFill(Color.TRANSPARENT, new CornerRadii(10), Insets.EMPTY)));
                                     }
+                                } else {
+                                    stagePane.setBackground(new Background(new BackgroundFill(Color.TRANSPARENT, new CornerRadii(10), Insets.EMPTY)));
                                 }
                             } else {
                                 // 填充背景颜色
-                                stagePane.setBackground(new Background(new BackgroundFill(Color.valueOf(split1[5]), CornerRadii.EMPTY, Insets.EMPTY)));
+                                stagePane.setBackground(new Background(new BackgroundFill(Color.valueOf(split1[5]),  new CornerRadii(10), Insets.EMPTY)));
                             }
 
 

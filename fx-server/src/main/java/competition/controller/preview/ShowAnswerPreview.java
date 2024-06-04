@@ -86,6 +86,15 @@ public class ShowAnswerPreview extends PreviewPane {
                 controlPane.setQuestionPreview((ShowAnswer) res);
             }
         }
+
+        try {
+            container.setBackground(new Background(new BackgroundImage(
+                    new Image(new FileInputStream(ImageResource.答案背景())), BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT, BackgroundPosition.DEFAULT,
+                    new BackgroundSize(Navigator.getWidth(), Navigator.getHeight(), false, false, false, false)
+            )));
+        } catch (FileNotFoundException e) {
+            container.setBackground(new Background(new BackgroundFill(Color.TRANSPARENT, new CornerRadii(10), Insets.EMPTY)));
+        }
         
         
         AnswerStyle answerStyle = answerStyleMapper.selectById(1);
@@ -271,12 +280,13 @@ public class ShowAnswerPreview extends PreviewPane {
                             BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT, BackgroundPosition.DEFAULT,
                             new BackgroundSize(width * col + (col - 1) * colSpace, height, false, false, false, false))));
                 } catch (FileNotFoundException e) {
-                    e.printStackTrace();
+                    answerBack.setBackground(new Background(new BackgroundFill(Color.TRANSPARENT, new CornerRadii(10), Insets.EMPTY)));
+
                 }
             }
         } else {
             // 填充背景颜色
-            answerBack.setBackground(new Background(new BackgroundFill(f1BackColor, CornerRadii.EMPTY, Insets.EMPTY)));
+            answerBack.setBackground(new Background(new BackgroundFill(f1BackColor, new CornerRadii(10), Insets.EMPTY)));
         }
 
         if (teamResult != null) {
@@ -295,14 +305,16 @@ public class ShowAnswerPreview extends PreviewPane {
                 int r = i / col;
                 int c = i % col;
                 
-               
                 HBox itemBox = new HBox();
                 StackPane stackPane = new StackPane();
                 stackPane.setPrefSize(width - height, height);
                 itemBox.setPrefWidth(width);
                 itemBox.setPrefHeight(height);
                 TeamResult.DataItem dataItem = dataItemList.get(i);
-                String text = dataItem.getTeamName() + "  " + dataItem.getMember() + "  回答:" + dataItem.getAnswer();
+                String text = " 团队: " + dataItem.getTeamName() + "  " + dataItem.getMember() + "  回答:" + dataItem.getAnswer();
+                if (StringUtils.isEmpty(dataItem.getMember())) {
+                    text = " 团队: " + dataItem.getTeamName() + "  " + "  回答:" + dataItem.getAnswer();
+                }
                 Text memberResult = new Text(text);
                 stackPane.getChildren().add(memberResult);
                 stackPane.setAlignment(AlignmentUtil.getAlign(f2l));
@@ -333,12 +345,14 @@ public class ShowAnswerPreview extends PreviewPane {
                                     BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT, BackgroundPosition.DEFAULT,
                                     new BackgroundSize(width, height, false, false, false, false))));
                         } catch (FileNotFoundException e) {
-                            e.printStackTrace();
+                            itemBox.setBackground(new Background(new BackgroundFill(Color.TRANSPARENT, new CornerRadii(10), Insets.EMPTY)));
                         }
+                    } else {
+                        itemBox.setBackground(new Background(new BackgroundFill(Color.TRANSPARENT, new CornerRadii(10), Insets.EMPTY)));
                     }
                 } else {
                     // 填充背景颜色
-                    itemBox.setBackground(new Background(new BackgroundFill(f2BackColor, CornerRadii.EMPTY, Insets.EMPTY)));
+                    itemBox.setBackground(new Background(new BackgroundFill(f2BackColor, new CornerRadii(10), Insets.EMPTY)));
                 }
                 
                 StackPane rPane = new StackPane();
@@ -348,7 +362,7 @@ public class ShowAnswerPreview extends PreviewPane {
                 ut.prefHeight(height);
                 rPane.getChildren().add(ut);
                 if (dataItem.getScore() > 0) {
-                    ut.setText("+ " + dataItem.getScore());
+                    ut.setText("+" + dataItem.getScore());
                     rPane.setAlignment(AlignmentUtil.getAlign(f3l));
                     ut.setFill(f3Color);
                     Font font3 = Font.font(FontMap.getFont(f3Font), FontWeight.NORMAL, FontPosture.REGULAR, f3Size);
@@ -375,12 +389,14 @@ public class ShowAnswerPreview extends PreviewPane {
                                         BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT, BackgroundPosition.DEFAULT,
                                         new BackgroundSize(ut.getStrokeWidth(), height, false, false, false, false))));
                             } catch (FileNotFoundException e) {
-                                e.printStackTrace();
+                                rPane.setBackground(new Background(new BackgroundFill(Color.TRANSPARENT, new CornerRadii(10), Insets.EMPTY)));
                             }
+                        } else {
+                            rPane.setBackground(new Background(new BackgroundFill(Color.TRANSPARENT, new CornerRadii(10), Insets.EMPTY)));
                         }
                     } else {
                         // 填充背景颜色
-                        rPane.setBackground(new Background(new BackgroundFill(f3BackColor, CornerRadii.EMPTY, Insets.EMPTY)));
+                        rPane.setBackground(new Background(new BackgroundFill(f3BackColor,  new CornerRadii(10), Insets.EMPTY)));
                     }
                 } else if (dataItem.getScore() < 0) {
                     rPane.setAlignment(AlignmentUtil.getAlign(f4l));
@@ -409,12 +425,14 @@ public class ShowAnswerPreview extends PreviewPane {
                                         BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT, BackgroundPosition.DEFAULT,
                                         new BackgroundSize(ut.getStrokeWidth(), height, false, false, false, false))));
                             } catch (FileNotFoundException e) {
-                                e.printStackTrace();
+                                rPane.setBackground(new Background(new BackgroundFill(Color.TRANSPARENT, new CornerRadii(10), Insets.EMPTY)));
                             }
+                        } else {
+                            rPane.setBackground(new Background(new BackgroundFill(Color.TRANSPARENT, new CornerRadii(10), Insets.EMPTY)));
                         }
                     } else {
                         // 填充背景颜色
-                        rPane.setBackground(new Background(new BackgroundFill(f4BackColor, CornerRadii.EMPTY, Insets.EMPTY)));
+                        rPane.setBackground(new Background(new BackgroundFill(f4BackColor,  new CornerRadii(10), Insets.EMPTY)));
                     }
                 } else {
                     rPane.setAlignment(AlignmentUtil.getAlign(f5l));
@@ -444,15 +462,16 @@ public class ShowAnswerPreview extends PreviewPane {
                                         BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT, BackgroundPosition.DEFAULT,
                                         new BackgroundSize(ut.getStrokeWidth(), height, false, false, false, false))));
                             } catch (FileNotFoundException e) {
-                                e.printStackTrace();
+                                rPane.setBackground(new Background(new BackgroundFill(Color.TRANSPARENT, new CornerRadii(10), Insets.EMPTY)));
                             }
+                        } else {
+                            rPane.setBackground(new Background(new BackgroundFill(Color.TRANSPARENT, new CornerRadii(10), Insets.EMPTY)));
                         }
                     } else {
                         // 填充背景颜色
-                        rPane.setBackground(new Background(new BackgroundFill(f5BackColor, CornerRadii.EMPTY, Insets.EMPTY)));
+                        rPane.setBackground(new Background(new BackgroundFill(f5BackColor,  new CornerRadii(10), Insets.EMPTY)));
                     }
                 }
-
                 itemBox.getChildren().add(stackPane);
                 itemBox.getChildren().add(rPane);
                 gridPane.add(itemBox, c, r);

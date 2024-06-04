@@ -106,7 +106,6 @@ public class ScorePreviewAttr {
         }
         
         controlPane.getScoreBoardPreview().reload();
-        closeStage();
     }
     
     @FXML

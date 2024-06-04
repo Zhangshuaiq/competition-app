@@ -1,6 +1,7 @@
 package competition.rest;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import competition.entity.Teams;
 import competition.mapper.TeamsMapper;
 import competition.resp.JsonResp;
 import competition.util.BaseDir;
@@ -17,6 +18,8 @@ import javax.annotation.Resource;
 import java.net.MalformedURLException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Comparator;
+import java.util.List;
 
 @RestController
 @RequestMapping("/rest")
@@ -29,7 +32,9 @@ public class RestApi {
     
     @GetMapping("/teams")
     public JsonResp teamList(){
-        return JsonResp.success(teamsMapper.selectList(new LambdaQueryWrapper<>()));
+        List<Teams> teams = teamsMapper.selectList(new LambdaQueryWrapper<>());
+        teams.sort((o1, o2) -> Integer.parseInt(o1.getCode()) - Integer.parseInt(o2.getCode()));
+        return JsonResp.success(teams);
     }
     
     @GetMapping("/heartbeat")

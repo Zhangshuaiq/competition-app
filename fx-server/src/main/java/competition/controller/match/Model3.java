@@ -95,7 +95,7 @@ public class Model3 implements ReloadPane {
                     new BackgroundSize(Navigator.getWidth(), Navigator.getHeight(), false, false, false, false)
             )));
         } catch (FileNotFoundException e) {
-            e.printStackTrace();
+            container.setBackground(new Background(new BackgroundFill(Color.TRANSPARENT, new CornerRadii(10), Insets.EMPTY)));
         }
         this.show();
     }
@@ -181,7 +181,7 @@ public class Model3 implements ReloadPane {
 
         Text head = new Text(stages.getName());
         headPane.getChildren().add(head);
-        headPane.setBackground(new Background(new BackgroundFill(Color.YELLOW, CornerRadii.EMPTY, Insets.EMPTY)));
+        headPane.setBackground(new Background(new BackgroundFill(Color.YELLOW, new CornerRadii(10), Insets.EMPTY)));
         headPane.setLayoutX(HEAD_X);
         headPane.setLayoutY(HEAD_Y);
         headPane.setPrefWidth(HEAD_W);
@@ -209,12 +209,14 @@ public class Model3 implements ReloadPane {
                                 BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT, BackgroundPosition.DEFAULT,
                                 new BackgroundSize(Integer.parseInt(headArr[2]), Integer.parseInt(headArr[3]), false, false, false, false))));
                     } catch (FileNotFoundException e) {
-                        e.printStackTrace();
+                        headPane.setBackground(new Background(new BackgroundFill(Color.TRANSPARENT, new CornerRadii(10), Insets.EMPTY)));
                     }
+                } else {
+                    headPane.setBackground(new Background(new BackgroundFill(Color.TRANSPARENT, new CornerRadii(10), Insets.EMPTY)));
                 }
             } else {
                 // 填充背景颜色
-                headPane.setBackground(new Background(new BackgroundFill(Color.valueOf(headArr[5]), CornerRadii.EMPTY, Insets.EMPTY)));
+                headPane.setBackground(new Background(new BackgroundFill(Color.valueOf(headArr[5]), new CornerRadii(10), Insets.EMPTY)));
             }
 
             head.setLayoutX(Integer.parseInt(headArr[0]));
@@ -238,7 +240,7 @@ public class Model3 implements ReloadPane {
             StackPane stackPane = new StackPane();
             Text title = new Text(children.get(i).getName());
             stackPane.getChildren().add(title);
-            stackPane.setBackground(new Background(new BackgroundFill(Color.YELLOW, CornerRadii.EMPTY, Insets.EMPTY)));
+            stackPane.setBackground(new Background(new BackgroundFill(Color.YELLOW, new CornerRadii(10), Insets.EMPTY)));
             stackPane.setLayoutX(DEFAULT_X);
             stackPane.setLayoutY(DEFAULT_Y);
             stackPane.setPrefWidth(DEFAULT_W);
@@ -289,12 +291,14 @@ public class Model3 implements ReloadPane {
                                     BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT, BackgroundPosition.DEFAULT,
                                     new BackgroundSize(Integer.parseInt(titleArr[2]), Integer.parseInt(titleArr[3]), false, false, false, false))));
                         } catch (FileNotFoundException e) {
-                            e.printStackTrace();
+                            stackPane.setBackground(new Background(new BackgroundFill(Color.TRANSPARENT, new CornerRadii(10), Insets.EMPTY)));
                         }
+                    } else {
+                        stackPane.setBackground(new Background(new BackgroundFill(Color.TRANSPARENT, new CornerRadii(10), Insets.EMPTY)));
                     }
                 } else {
                     // 填充背景颜色
-                    stackPane.setBackground(new Background(new BackgroundFill(Color.valueOf(titleArr[5]), CornerRadii.EMPTY, Insets.EMPTY)));
+                    stackPane.setBackground(new Background(new BackgroundFill(Color.valueOf(titleArr[5]),new CornerRadii(10), Insets.EMPTY)));
                 }
 
                 title.setLayoutX(Integer.parseInt(titleArr[0]));
@@ -331,7 +335,7 @@ public class Model3 implements ReloadPane {
                     item.setVisible(true);
                 }
                 text.setFill(Color.BLACK);
-                item.setBackground(new Background(new BackgroundFill(Color.YELLOW, CornerRadii.EMPTY, Insets.EMPTY)));
+                item.setBackground(new Background(new BackgroundFill(Color.YELLOW, new CornerRadii(10), Insets.EMPTY)));
                 // 默认值
                 questionGrid.setLayoutX(DEFAULT_X + DEFAULT_W + 50);
                 questionGrid.setLayoutY(DEFAULT_Y);
@@ -363,12 +367,14 @@ public class Model3 implements ReloadPane {
                                         BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT, BackgroundPosition.DEFAULT,
                                         new BackgroundSize(Integer.parseInt(detailArr[2]), Integer.parseInt(detailArr[3]), false, false, false, false))));
                             } catch (FileNotFoundException e) {
-                                e.printStackTrace();
+                                item.setBackground(new Background(new BackgroundFill(Color.TRANSPARENT, new CornerRadii(10), Insets.EMPTY)));
                             }
+                        } else {
+                            item.setBackground(new Background(new BackgroundFill(Color.TRANSPARENT, new CornerRadii(10), Insets.EMPTY)));
                         }
                     } else {
                         // 填充背景颜色
-                        item.setBackground(new Background(new BackgroundFill(Color.valueOf(detailArr[5]), CornerRadii.EMPTY, Insets.EMPTY)));
+                        item.setBackground(new Background(new BackgroundFill(Color.valueOf(detailArr[5]), new CornerRadii(10), Insets.EMPTY)));
                     }
 
 

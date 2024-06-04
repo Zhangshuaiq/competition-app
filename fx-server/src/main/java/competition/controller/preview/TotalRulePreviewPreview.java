@@ -8,8 +8,10 @@ import competition.controller.match.TotalRulePreview;
 import competition.entity.Configs;
 import competition.mapper.ConfigsMapper;
 import competition.util.*;
+import competition.ws.WsMessageHandler;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
+import javafx.geometry.Insets;
 import javafx.scene.image.Image;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
@@ -41,6 +43,10 @@ public class TotalRulePreviewPreview extends PreviewPane {
 
     @Resource
     private ControlPane controlPane;
+    
+    @Resource
+    private WsMessageHandler messageHandler;
+    
 
 
     @FXML
@@ -75,7 +81,7 @@ public class TotalRulePreviewPreview extends PreviewPane {
                     new BackgroundSize(Navigator.getWidth(), Navigator.getHeight(), false, false, false, false)
             )));
         } catch (FileNotFoundException e) {
-            e.printStackTrace();
+            container.setBackground(new Background(new BackgroundFill(Color.TRANSPARENT, new CornerRadii(10), Insets.EMPTY)));
         }
         container.getChildren().clear();
         final Configs ruleConfig = configsMapper.selectById(5);
@@ -117,7 +123,7 @@ public class TotalRulePreviewPreview extends PreviewPane {
             text.setWrappingWidth(Integer.parseInt(cfgArr[2]));
             container.getChildren().add(text);
         }
-        
+        messageHandler.notifyPage("rule" , ruleContent );
 
     }
 

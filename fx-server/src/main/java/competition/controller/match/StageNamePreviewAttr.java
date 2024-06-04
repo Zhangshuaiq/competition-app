@@ -200,8 +200,6 @@ public class StageNamePreviewAttr {
                 ;
         stages.setStyle(detail);
         stagesMapper.updateById(stages);
-        Stage stage = (Stage) ((Node)xInput).getScene().getWindow();
-        stage.close();
         if (reloadPane != null) {
             reloadPane.reload();
         }

@@ -92,7 +92,7 @@ public class StageRulePreview implements ReloadPane{
                     new BackgroundSize(Navigator.getWidth(), Navigator.getHeight(), false, false, false, false)
             )));
         } catch (FileNotFoundException e) {
-            e.printStackTrace();
+            container.setBackground(new Background(new BackgroundFill(Color.TRANSPARENT, new CornerRadii(10), Insets.EMPTY)));
         }
 
         container.getChildren().clear();
@@ -117,7 +117,7 @@ public class StageRulePreview implements ReloadPane{
             titlePane.setLayoutY(TITLE_Y);
             titlePane.setPrefWidth(TITLE_W);
             titlePane.setPrefHeight(TITLE_H);
-            titlePane.setBackground(new Background(new BackgroundFill(Color.YELLOW, CornerRadii.EMPTY, Insets.EMPTY)));
+            titlePane.setBackground(new Background(new BackgroundFill(Color.YELLOW,  new CornerRadii(10), Insets.EMPTY)));
 
             title.setX(TITLE_X);
             title.setY(TITLE_Y);
@@ -146,12 +146,14 @@ public class StageRulePreview implements ReloadPane{
                                 BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT, BackgroundPosition.DEFAULT,
                                 new BackgroundSize(Integer.parseInt(cfgArr[2]), Integer.parseInt(cfgArr[3]), false, false, false, false))));
                     } catch (FileNotFoundException e) {
-                        e.printStackTrace();
+                        titlePane.setBackground(new Background(new BackgroundFill(Color.TRANSPARENT, new CornerRadii(10), Insets.EMPTY)));
                     }
+                } else {
+                    titlePane.setBackground(new Background(new BackgroundFill(Color.TRANSPARENT, new CornerRadii(10), Insets.EMPTY)));
                 }
             } else {
                 // 填充背景颜色
-                titlePane.setBackground(new Background(new BackgroundFill(Color.valueOf(cfgArr[5]), CornerRadii.EMPTY, Insets.EMPTY)));
+                titlePane.setBackground(new Background(new BackgroundFill(Color.valueOf(cfgArr[5]),  new CornerRadii(10), Insets.EMPTY)));
             }
 
             Font font = Font.font(FontMap.getFont(cfgArr[7]), FontWeight.NORMAL, FontPosture.REGULAR, Double.parseDouble(cfgArr[8]));
@@ -189,7 +191,7 @@ public class StageRulePreview implements ReloadPane{
         textPane.setLayoutY(Integer.parseInt(cfgArr[2]));
         textPane.setPrefWidth(Integer.parseInt(cfgArr[3]));
         textPane.setPrefHeight(Integer.parseInt(cfgArr[4]));
-        textPane.setBackground(new Background(new BackgroundFill(Color.YELLOW, CornerRadii.EMPTY, Insets.EMPTY)));
+        textPane.setBackground(new Background(new BackgroundFill(Color.YELLOW,  new CornerRadii(10), Insets.EMPTY)));
 
         text.setX(Integer.parseInt(cfgArr[1]));
         text.setY(Integer.parseInt(cfgArr[2]));
@@ -218,12 +220,14 @@ public class StageRulePreview implements ReloadPane{
                                 BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT, BackgroundPosition.DEFAULT,
                                 new BackgroundSize(Integer.parseInt(cfgArr[2]), Integer.parseInt(cfgArr[3]), false, false, false, false))));
                     } catch (FileNotFoundException e) {
-                        e.printStackTrace();
+                        textPane.setBackground(new Background(new BackgroundFill(Color.TRANSPARENT, new CornerRadii(10), Insets.EMPTY)));
                     }
+                } else {
+                    textPane.setBackground(new Background(new BackgroundFill(Color.TRANSPARENT, new CornerRadii(10), Insets.EMPTY)));
                 }
             } else {
                 // 填充背景颜色
-                textPane.setBackground(new Background(new BackgroundFill(Color.valueOf(cfgArr[5]), CornerRadii.EMPTY, Insets.EMPTY)));
+                textPane.setBackground(new Background(new BackgroundFill(Color.valueOf(cfgArr[5]),  new CornerRadii(10), Insets.EMPTY)));
             }
 
             Font font = Font.font(FontMap.getFont(cfgArr[7]), FontWeight.NORMAL, FontPosture.REGULAR, Integer.parseInt(cfgArr[8]));

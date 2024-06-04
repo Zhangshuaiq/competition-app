@@ -191,9 +191,6 @@ public class RulePreviewAttr {
         configs.setConfig(huanjieVal);
         configs.setDetails(detail);
         configsMapper.updateById(configs);
-
-        Stage stage = (Stage) ((Node)xInput).getScene().getWindow();
-        stage.close();
         controlPane.getPreviewPane().reload();
     }
 }

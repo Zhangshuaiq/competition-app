@@ -15,6 +15,7 @@ import javafx.fxml.FXML;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Label;
+import javafx.scene.image.Image;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseButton;
@@ -27,6 +28,8 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
 import javax.annotation.Resource;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.util.*;
 
 @Component
@@ -99,6 +102,15 @@ public class MemberRankPreview extends PreviewPane{
     }
 
     private void showData() {
+
+        try {
+            container.setBackground(new Background(new BackgroundImage(
+                    new Image(new FileInputStream(ImageResource.选手排名背景())), BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT, BackgroundPosition.DEFAULT,
+                    new BackgroundSize(Navigator.getWidth(), Navigator.getHeight(), false, false, false, false)
+            )));
+        } catch (FileNotFoundException e) {
+            container.setBackground(new Background(new BackgroundFill(Color.TRANSPARENT, new CornerRadii(10), Insets.EMPTY)));
+        }
 
         RankStyle rankStyle = rankStyleMapper.selectById(3);
         String rankConfig = rankStyle.getRankConfig();
@@ -237,7 +249,7 @@ public class MemberRankPreview extends PreviewPane{
         
 
         HBox title = new HBox();
-        title.setBackground(new Background(new BackgroundFill(Color.RED, CornerRadii.EMPTY, Insets.EMPTY)));
+        title.setBackground(new Background(new BackgroundFill(Color.RED,  new CornerRadii(10), Insets.EMPTY)));
         title.setPrefWidth(rankBox.getPrefWidth());
         Label rankL = new Label("排名");
         rankL.setTextFill(fcolor);
@@ -268,7 +280,7 @@ public class MemberRankPreview extends PreviewPane{
         timeL.setFont(Font.font(font, size));
 
         title.getChildren().addAll(rankL, teamL, timeL, scoreL);
-        title.setBackground(new Background(new BackgroundFill(bgcolor, CornerRadii.EMPTY, Insets.EMPTY)));
+        title.setBackground(new Background(new BackgroundFill(bgcolor,  new CornerRadii(10), Insets.EMPTY)));
         rankBox.getChildren().add(title);
 
         
@@ -284,7 +296,7 @@ public class MemberRankPreview extends PreviewPane{
             } else  if (i == 2) {
                 c = color3;
             }
-            itemRow.setBackground(new Background(new BackgroundFill(c, CornerRadii.EMPTY, Insets.EMPTY)));
+            itemRow.setBackground(new Background(new BackgroundFill(c,  new CornerRadii(10), Insets.EMPTY)));
             itemRow.setPrefWidth(rankBox.getPrefWidth());
             Label rankD = new Label((rankData.getRank()) + "");
             rankD.setTextFill(fcolor);
