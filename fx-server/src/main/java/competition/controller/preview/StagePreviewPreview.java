@@ -165,8 +165,8 @@ public class StagePreviewPreview extends PreviewPane {
                     stageContainer.setLayoutX(ScreenAdapter.calculateMainX(Integer.parseInt(detailArr[0])));
                     stageContainer.setLayoutY(ScreenAdapter.calculateMainY(Integer.parseInt(detailArr[1])));
                     stageContainer.prefWidth(ScreenAdapter.calculateMainW(Integer.parseInt(detailArr[2])));
-                    stageContainer.setVgap(Integer.parseInt(detailArr[14]));
-                    stageContainer.setHgap(Integer.parseInt(detailArr[14]));
+                    stageContainer.setVgap(ScreenAdapter.calculateMainH(Integer.parseInt(detailArr[14])));
+                    stageContainer.setHgap(ScreenAdapter.calculateMainW(Integer.parseInt(detailArr[14])));
                     stageContainer.setAlignment(AlignmentUtil.getAlign(detailArr[13]));
                 }
 
@@ -187,7 +187,10 @@ public class StagePreviewPreview extends PreviewPane {
                                 try {
                                     stageNamePane.setBackground(new Background(new BackgroundImage(new Image(new FileInputStream(detailArr[6])),
                                             BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT, BackgroundPosition.CENTER,
-                                            new BackgroundSize(Integer.parseInt(detailArr[2]), Integer.parseInt(detailArr[3]), false, false, false, false))));
+                                            new BackgroundSize(
+                                                    ScreenAdapter.calculateMainW(Integer.parseInt(detailArr[2])),
+                                                    ScreenAdapter.calculateMainH(Integer.parseInt(detailArr[3])), 
+                                                    false, false, false, false))));
                                 } catch (FileNotFoundException e) {
                                     stageNamePane.setBackground(new Background(new BackgroundFill(Color.TRANSPARENT, new CornerRadii(10), Insets.EMPTY)));
                                 }
@@ -200,7 +203,8 @@ public class StagePreviewPreview extends PreviewPane {
                         }
                     }
                     if (detailArr.length > 0) {
-                        Font font = Font.font(FontMap.getFont(detailArr[7]), FontWeight.NORMAL, FontPosture.REGULAR, Integer.parseInt(detailArr[8]));
+                        Font font = Font.font(FontMap.getFont(detailArr[7]), FontWeight.NORMAL, FontPosture.REGULAR, 
+                                ScreenAdapter.calculateMainW(Integer.parseInt(detailArr[8])));
                         stageName.setFont(font);
                         if (Boolean.valueOf(detailArr[10])) {
                             stageName.setStroke(stageName.getFill());
