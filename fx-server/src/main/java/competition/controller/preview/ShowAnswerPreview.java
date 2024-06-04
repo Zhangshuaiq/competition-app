@@ -100,27 +100,27 @@ public class ShowAnswerPreview extends PreviewPane {
         AnswerStyle answerStyle = answerStyleMapper.selectById(1);
 
         int col = 1;
-        int rowSpace = 0;
-        int colSpace = 0;
-        int x = 50;
-        int y = 50;
-        int width = 500;
-        int height = 50;
+        double rowSpace = 0;
+        double colSpace = 0;
+        double x = ScreenAdapter.calculateMainX(50);
+        double y = ScreenAdapter.calculateMainY(50);
+        double width = ScreenAdapter.calculateMainW(500);
+        double height = ScreenAdapter.calculateMainH(50);
         if (!StringUtils.isEmpty(answerStyle.getStyle1())) {
             String[] split = answerStyle.getStyle1().split(ConfigSpliter.SPLITER);
             col = Integer.parseInt(split[0]);
-            rowSpace = Integer.parseInt(split[2]);
-            colSpace = Integer.parseInt(split[1]);
-            x = Integer.parseInt(split[3]);
-            y = Integer.parseInt(split[4]);
-            width = Integer.parseInt(split[5]);
-            height = Integer.parseInt(split[6]);
+            rowSpace = ScreenAdapter.calculateMainH(Integer.parseInt(split[2]));
+            colSpace = ScreenAdapter.calculateMainW(Integer.parseInt(split[1]));
+            x = ScreenAdapter.calculateMainX(Integer.parseInt(split[3]));
+            y = ScreenAdapter.calculateMainY(Integer.parseInt(split[4]));
+            width = ScreenAdapter.calculateMainW(Integer.parseInt(split[5]));
+            height = ScreenAdapter.calculateMainH(Integer.parseInt(split[6]));
         }
 
         Font defaultFont = Font.getDefault();
 
         String f1Font = defaultFont.getName();
-        int f1Size = (int) defaultFont.getSize();
+        double f1Size = ScreenAdapter.calculateMainW(defaultFont.getSize());
         String f1l = "居中对齐";
         Color f1Color = Color.BLACK;
         boolean f1DL= false, f1IT= false, f1BD= false, f1UD = false, f1Fill = false;
@@ -132,7 +132,7 @@ public class ShowAnswerPreview extends PreviewPane {
             f1Font = (split[0]);
             f1Color = (Color.valueOf(split[1]));
             f1l = (split[2]);
-            f1Size = Integer.parseInt(split[3]);
+            f1Size = ScreenAdapter.calculateMainW(Integer.parseInt(split[3]));
             f1DL = (Boolean.valueOf(split[4]));
             f1IT = (Boolean.valueOf(split[5]));
             f1BD = (Boolean.valueOf(split[6]));
@@ -145,7 +145,7 @@ public class ShowAnswerPreview extends PreviewPane {
         }
 
         String f2Font = defaultFont.getName();
-        int f2Size = (int) defaultFont.getSize();
+        double f2Size = ScreenAdapter.calculateMainW(defaultFont.getSize());
         String f2l = "居中对齐";
         Color f2Color = Color.BLACK;
         boolean f2DL = false, f2IT = false, f2BD = false, f2UD = false, f2Fill = false;
@@ -157,7 +157,7 @@ public class ShowAnswerPreview extends PreviewPane {
             f2Font = (split[0]);
             f2Color = (Color.valueOf(split[1]));
             f2l = (split[2]);
-            f2Size = Integer.parseInt(split[3]);
+            f2Size = ScreenAdapter.calculateMainW(Integer.parseInt(split[3]));
             f2DL = (Boolean.valueOf(split[4]));
             f2IT = (Boolean.valueOf(split[5]));
             f2BD = (Boolean.valueOf(split[6]));
@@ -170,7 +170,7 @@ public class ShowAnswerPreview extends PreviewPane {
         }
 
         String f3Font = defaultFont.getName();
-        int f3Size = (int) defaultFont.getSize();
+        double f3Size = ScreenAdapter.calculateMainW(defaultFont.getSize());
         String f3l = "居中对齐";
         Color f3Color = Color.BLACK;
         boolean f3DL = false, f3IT = false, f3BD = false, f3UD = false, f3Fill = false;
@@ -182,7 +182,7 @@ public class ShowAnswerPreview extends PreviewPane {
             f3Font = (split[0]);
             f3Color = (Color.valueOf(split[1]));
             f3l = (split[2]);
-            f3Size = Integer.parseInt(split[3]);
+            f3Size = ScreenAdapter.calculateMainW(Integer.parseInt(split[3]));
             f3DL = (Boolean.valueOf(split[4]));
             f3IT = (Boolean.valueOf(split[5]));
             f3BD = (Boolean.valueOf(split[6]));
@@ -196,7 +196,7 @@ public class ShowAnswerPreview extends PreviewPane {
 
 
         String f4Font = defaultFont.getName();
-        int f4Size = (int) defaultFont.getSize();
+        double f4Size = ScreenAdapter.calculateMainW(defaultFont.getSize());
         String f4l = "居中对齐";
         Color f4Color = Color.BLACK;
         boolean f4DL = false, f4IT = false, f4BD = false, f4UD = false, f4Fill = false;
@@ -209,7 +209,7 @@ public class ShowAnswerPreview extends PreviewPane {
             f4Font = (split[0]);
             f4Color = (Color.valueOf(split[1]));
             f4l = (split[2]);
-            f4Size = Integer.parseInt(split[3]);
+            f4Size = ScreenAdapter.calculateMainW(Integer.parseInt(split[3]));
             f4DL = (Boolean.valueOf(split[4]));
             f4IT = (Boolean.valueOf(split[5]));
             f4BD = (Boolean.valueOf(split[6]));
@@ -222,7 +222,7 @@ public class ShowAnswerPreview extends PreviewPane {
         }
 
         String f5Font = defaultFont.getName();
-        int f5Size = (int) defaultFont.getSize();
+        double f5Size = ScreenAdapter.calculateMainW(defaultFont.getSize());
         String f5l = "居中对齐";
         Color f5Color = Color.BLACK;
         boolean f5DL = false, f5IT = false, f5BD = false, f5UD = false, f5Fill = false;
@@ -234,7 +234,7 @@ public class ShowAnswerPreview extends PreviewPane {
             f5Font = (split[0]);
             f5Color = (Color.valueOf(split[1]));
             f5l = (split[2]);
-            f5Size = Integer.parseInt(split[3]);
+            f5Size = ScreenAdapter.calculateMainW(Integer.parseInt(split[3]));
             f5DL = (Boolean.valueOf(split[4]));
             f5IT = (Boolean.valueOf(split[5]));
             f5BD = (Boolean.valueOf(split[6]));

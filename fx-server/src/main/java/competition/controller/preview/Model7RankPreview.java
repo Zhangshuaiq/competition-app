@@ -128,37 +128,37 @@ public class Model7RankPreview extends PreviewPane {
         String[] cfgArr = config.split(ConfigSpliter.SPLITER);
 
 
-        int x = Integer.parseInt(cfgArr[9]);
-        int y = Integer.parseInt(cfgArr[10]);
-        int width = Integer.parseInt(cfgArr[11]);
-        int height = Integer.parseInt(cfgArr[12]);
+        double x = ScreenAdapter.calculateMainX(Integer.parseInt(cfgArr[9]));
+        double y = ScreenAdapter.calculateMainY(Integer.parseInt(cfgArr[10]));
+        double width = ScreenAdapter.calculateMainW(Integer.parseInt(cfgArr[11]));
+        double height = ScreenAdapter.calculateMainH(Integer.parseInt(cfgArr[12]));
 
         int count = 8;
-        int rowSpace = 10;
+        double rowSpace = ScreenAdapter.calculateMainH(10);
         String font = competitionLab.getFont().getName();
-        int size = (int) competitionLab.getFont().getSize();
+        double size = ScreenAdapter.calculateMainW(competitionLab.getFont().getSize());
         if (!StringUtils.isEmpty(rankConfig)) {
             String[] split = rankConfig.split(ConfigSpliter.SPLITER);
-            x = Integer.parseInt(split[0]);
-            y = Integer.parseInt(split[1]);
-            width = Integer.parseInt(split[2]);
-            height = Integer.parseInt(split[3]);
-            rowSpace = Integer.parseInt(split[6]);
+            x = ScreenAdapter.calculateMainX(Integer.parseInt(split[0]));
+            y = ScreenAdapter.calculateMainY(Integer.parseInt(split[1]));
+            width = ScreenAdapter.calculateMainW(Integer.parseInt(split[2]));
+            height = ScreenAdapter.calculateMainH(Integer.parseInt(split[3]));
+            rowSpace = ScreenAdapter.calculateMainH(Integer.parseInt(split[6]));
             font = FontMap.getFont(split[5]);
-            size = Integer.parseInt(split[4]);
+            size = ScreenAdapter.calculateMainW(Integer.parseInt(split[4]));
             count = Integer.parseInt(split[7]);
         }
 
         if (!StringUtils.isEmpty(headConfig)) {
             String[] split = headConfig.split(ConfigSpliter.SPLITER);
-            competitionLab.setLayoutX(Integer.parseInt(split[0]));
-            competitionLab.setLayoutY(Integer.parseInt(split[1]));
-            competitionLab.setPrefWidth(Integer.parseInt(split[2]));
-            competitionLab.setPrefHeight(Integer.parseInt(split[3]));
+            competitionLab.setLayoutX(ScreenAdapter.calculateMainX(Integer.parseInt(split[0])));
+            competitionLab.setLayoutY(ScreenAdapter.calculateMainY(Integer.parseInt(split[1])));
+            competitionLab.setPrefWidth(ScreenAdapter.calculateMainW(Integer.parseInt(split[2])));
+            competitionLab.setPrefHeight(ScreenAdapter.calculateMainH(Integer.parseInt(split[3])));
             int fs = Integer.parseInt(split[5]);
             Color color = Color.valueOf(split[4]);
             String fn = split[6];
-            Font f = Font.font(fn, fs);
+            Font f = Font.font(fn, ScreenAdapter.calculateMainW(fs));
             competitionLab.setFont(f);
             competitionLab.setTextFill(color);
         }
@@ -207,7 +207,6 @@ public class Model7RankPreview extends PreviewPane {
                     return;
                 }
 
-
                 List<Model7RankData> memeryData = new ArrayList<>();
                 for (List<Model60RuntimeData.ModelData> modelDataList : runtimeData60) {
                     for (Model60RuntimeData.ModelData modelData : modelDataList) {
@@ -215,7 +214,7 @@ public class Model7RankPreview extends PreviewPane {
                         if (modelData.getAnswer().equals(modelData.getUserSelect())) {
                             rankData.setScore(modelData.getScore());
                         } else {
-                            rankData.setScore(0);
+                            rankData.setScore(-controlPane.getCurrentStage().getDesValue());
                         }
 
                         if (countType) {
@@ -258,7 +257,7 @@ public class Model7RankPreview extends PreviewPane {
                         if (modelData.getAnswer().equals(modelData.getUserSelect())) {
                             rankData.setScore(modelData.getScore());
                         } else {
-                            rankData.setScore(0);
+                            rankData.setScore(-controlPane.getCurrentStage().getDesValue());
                         }
 
                         if (countType) {

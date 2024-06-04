@@ -201,23 +201,23 @@ public class Model3Preview extends PreviewPane{
         Text head = new Text(stages.getName());
         headPane.getChildren().add(head);
         headPane.setBackground(new Background(new BackgroundFill(Color.YELLOW,  new CornerRadii(10), Insets.EMPTY)));
-        headPane.setLayoutX(HEAD_X);
-        headPane.setLayoutY(HEAD_Y);
-        headPane.setPrefWidth(HEAD_W);
-        headPane.setPrefHeight(HEAD_H);
+        headPane.setLayoutX(ScreenAdapter.calculateMainX(HEAD_X));
+        headPane.setLayoutY(ScreenAdapter.calculateMainY(HEAD_Y));
+        headPane.setPrefWidth(ScreenAdapter.calculateMainW(HEAD_W));
+        headPane.setPrefHeight(ScreenAdapter.calculateMainH(HEAD_H));
 
         head.setFill(Color.BLACK);
-        head.setLayoutX(HEAD_X);
-        head.setLayoutY(HEAD_Y);
-        head.prefWidth(HEAD_W);
-        head.prefHeight(HEAD_H);
+        head.setLayoutX(ScreenAdapter.calculateMainX(HEAD_X));
+        head.setLayoutY(ScreenAdapter.calculateMainY(HEAD_Y));
+        head.prefWidth(ScreenAdapter.calculateMainW(HEAD_W));
+        head.prefHeight(ScreenAdapter.calculateMainH(HEAD_H));
         
         // 显示标题
         if (headArr.length > 0) {
-            headPane.setLayoutX(Integer.parseInt(headArr[0]));
-            headPane.setLayoutY(Integer.parseInt(headArr[1]));
-            headPane.setPrefWidth(Integer.parseInt(headArr[2]));
-            headPane.setPrefHeight(Integer.parseInt(headArr[3]));
+            headPane.setLayoutX(ScreenAdapter.calculateMainX(Integer.parseInt(headArr[0])));
+            headPane.setLayoutY(ScreenAdapter.calculateMainY(Integer.parseInt(headArr[1])));
+            headPane.setPrefWidth(ScreenAdapter.calculateMainW(Integer.parseInt(headArr[2])));
+            headPane.setPrefHeight(ScreenAdapter.calculateMainH(Integer.parseInt(headArr[3])));
             headPane.setAlignment(AlignmentUtil.getAlign(headArr[13]));
 
             if (Boolean.valueOf(headArr[4])) {
@@ -226,7 +226,10 @@ public class Model3Preview extends PreviewPane{
                     try {
                         headPane.setBackground(new Background(new BackgroundImage(new Image(new FileInputStream(headArr[6])),
                                 BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT, BackgroundPosition.DEFAULT,
-                                new BackgroundSize(Integer.parseInt(headArr[2]), Integer.parseInt(headArr[3]), false, false, false, false))));
+                                new BackgroundSize(
+                                        ScreenAdapter.calculateMainW(Integer.parseInt(headArr[2])),
+                                        ScreenAdapter.calculateMainH(Integer.parseInt(headArr[3])), 
+                                        false, false, false, false))));
                     } catch (FileNotFoundException e) {
                         headPane.setBackground(new Background(new BackgroundFill(Color.TRANSPARENT, new CornerRadii(10), Insets.EMPTY)));
                     }
@@ -238,12 +241,12 @@ public class Model3Preview extends PreviewPane{
                 headPane.setBackground(new Background(new BackgroundFill(Color.valueOf(headArr[5]), CornerRadii.EMPTY, Insets.EMPTY)));
             }
 
-            head.setLayoutX(Integer.parseInt(headArr[0]));
-            head.setLayoutY(Integer.parseInt(headArr[1]));
-            head.prefWidth(Integer.parseInt(headArr[2]));
-            head.prefHeight(Integer.parseInt(headArr[3]));
+            head.setLayoutX(ScreenAdapter.calculateMainX(Integer.parseInt(headArr[0])));
+            head.setLayoutY(ScreenAdapter.calculateMainY(Integer.parseInt(headArr[1])));
+            head.prefWidth(ScreenAdapter.calculateMainW(Integer.parseInt(headArr[2])));
+            head.prefHeight(ScreenAdapter.calculateMainH(Integer.parseInt(headArr[3])));
             head.setTextAlignment(AlignmentUtil.getTextAlign(headArr[13]));
-            Font font = Font.font(FontMap.getFont(headArr[7]), FontWeight.NORMAL, FontPosture.REGULAR, Integer.parseInt(headArr[8]));
+            Font font = Font.font(FontMap.getFont(headArr[7]), FontWeight.NORMAL, FontPosture.REGULAR, ScreenAdapter.calculateMainW(Integer.parseInt(headArr[8])));
             head.setFont(font);
             // 字体颜色
             head.setFill(Color.valueOf(headArr[15]));
@@ -260,20 +263,20 @@ public class Model3Preview extends PreviewPane{
             Text title = new Text(children.get(i).getName());
             stackPane.getChildren().add(title);
             stackPane.setBackground(new Background(new BackgroundFill(Color.YELLOW,  new CornerRadii(10), Insets.EMPTY)));
-            stackPane.setLayoutX(DEFAULT_X);
-            stackPane.setLayoutY(DEFAULT_Y);
-            stackPane.setPrefWidth(DEFAULT_W);
-            stackPane.setPrefHeight(DEFAULT_H);
-            titleBox.setLayoutX(DEFAULT_X);
-            titleBox.setLayoutY(DEFAULT_Y);
-            titleBox.setPrefWidth(DEFAULT_W);
+            stackPane.setLayoutX(ScreenAdapter.calculateMainX(DEFAULT_X));
+            stackPane.setLayoutY(ScreenAdapter.calculateMainY(DEFAULT_Y));
+            stackPane.setPrefWidth(ScreenAdapter.calculateMainW(DEFAULT_W));
+            stackPane.setPrefHeight(ScreenAdapter.calculateMainH(DEFAULT_H));
+            titleBox.setLayoutX(ScreenAdapter.calculateMainX(DEFAULT_X));
+            titleBox.setLayoutY(ScreenAdapter.calculateMainY(DEFAULT_Y));
+            titleBox.setPrefWidth(ScreenAdapter.calculateMainW(DEFAULT_W));
             titleBox.setSpacing(0);
 
             title.setFill(Color.BLACK);
-            title.setLayoutX(DEFAULT_X);
-            title.setLayoutY(DEFAULT_Y);
-            title.prefWidth(DEFAULT_W);
-            title.prefHeight(DEFAULT_H);
+            title.setLayoutX(ScreenAdapter.calculateMainX(DEFAULT_X));
+            title.setLayoutY(ScreenAdapter.calculateMainY(DEFAULT_Y));
+            title.prefWidth(ScreenAdapter.calculateMainW(DEFAULT_W));
+            title.prefHeight(ScreenAdapter.calculateMainH(DEFAULT_H));
             
             if(titleArr.length > 0) {
                 //  String detail = x + ConfigSpliter.SPLITER
@@ -292,15 +295,15 @@ public class Model3Preview extends PreviewPane{
                 //                    + alignValue + ConfigSpliter.SPLITER
                 //                    + (StringUtils.isEmpty(nameSpaceInput.getText())?"0":nameSpaceInput.getText());
 
-                stackPane.setLayoutX(Integer.parseInt(titleArr[0]));
-                stackPane.setLayoutY(Integer.parseInt(titleArr[1]));
-                stackPane.setPrefWidth(Integer.parseInt(titleArr[2]));
-                stackPane.setPrefHeight(Integer.parseInt(titleArr[3]));
+                stackPane.setLayoutX(ScreenAdapter.calculateMainX(Integer.parseInt(titleArr[0])) );
+                stackPane.setLayoutY(ScreenAdapter.calculateMainY(Integer.parseInt(titleArr[1])));
+                stackPane.setPrefWidth(ScreenAdapter.calculateMainW(Integer.parseInt(titleArr[2])));
+                stackPane.setPrefHeight(ScreenAdapter.calculateMainH(Integer.parseInt(titleArr[3])));
                 stackPane.setAlignment(AlignmentUtil.getAlign(titleArr[13]));
-                titleBox.setLayoutX(Integer.parseInt(titleArr[0]));
-                titleBox.setLayoutY(Integer.parseInt(titleArr[1]));
-                titleBox.setPrefWidth(Integer.parseInt(titleArr[2]));
-                titleBox.setSpacing(Integer.parseInt(titleArr[14]));
+                titleBox.setLayoutX(ScreenAdapter.calculateMainX(Integer.parseInt(titleArr[0])));
+                titleBox.setLayoutY(ScreenAdapter.calculateMainY(Integer.parseInt(titleArr[1])));
+                titleBox.setPrefWidth(ScreenAdapter.calculateMainW(Integer.parseInt(titleArr[2])));
+                titleBox.setSpacing(ScreenAdapter.calculateMainH(Integer.parseInt(titleArr[14])));
 
                 if (Boolean.valueOf(titleArr[4])) {
                     // 填充背景图片
@@ -308,7 +311,10 @@ public class Model3Preview extends PreviewPane{
                         try {
                             stackPane.setBackground(new Background(new BackgroundImage(new Image(new FileInputStream(titleArr[6])),
                                     BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT, BackgroundPosition.DEFAULT,
-                                    new BackgroundSize(Integer.parseInt(titleArr[2]), Integer.parseInt(titleArr[3]), false, false, false, false))));
+                                    new BackgroundSize(
+                                            ScreenAdapter.calculateMainW(Integer.parseInt(titleArr[2])),
+                                            ScreenAdapter.calculateMainH(Integer.parseInt(titleArr[3])), 
+                                            false, false, false, false))));
                         } catch (FileNotFoundException e) {
                             stackPane.setBackground(new Background(new BackgroundFill(Color.TRANSPARENT, new CornerRadii(10), Insets.EMPTY)));
                         }
@@ -320,12 +326,15 @@ public class Model3Preview extends PreviewPane{
                     stackPane.setBackground(new Background(new BackgroundFill(Color.valueOf(titleArr[5]), CornerRadii.EMPTY, Insets.EMPTY)));
                 }
 
-                title.setLayoutX(Integer.parseInt(titleArr[0]));
-                title.setLayoutY(Integer.parseInt(titleArr[1]));
-                title.prefWidth(Integer.parseInt(titleArr[2]));
-                title.prefHeight(Integer.parseInt(titleArr[3]));
+                title.setLayoutX(ScreenAdapter.calculateMainX(Integer.parseInt(titleArr[0])) );
+                title.setLayoutY(ScreenAdapter.calculateMainY(Integer.parseInt(titleArr[1])));
+                title.prefWidth(ScreenAdapter.calculateMainW(Integer.parseInt(titleArr[2])));
+                title.prefHeight(ScreenAdapter.calculateMainH(Integer.parseInt(titleArr[3])));
+               
                 title.setTextAlignment(AlignmentUtil.getTextAlign(titleArr[13]));
-                Font font = Font.font(FontMap.getFont(titleArr[7]), FontWeight.NORMAL, FontPosture.REGULAR, Integer.parseInt(titleArr[8]));
+                Font font = Font.font(FontMap.getFont(titleArr[7]), FontWeight.NORMAL, FontPosture.REGULAR,
+                        ScreenAdapter.calculateMainW(Integer.parseInt(titleArr[8]))
+                );
                 title.setFont(font);
                 // 字体颜色
                 title.setFill(Color.valueOf(titleArr[15]));
@@ -356,35 +365,39 @@ public class Model3Preview extends PreviewPane{
                 text.setFill(Color.BLACK);
                 item.setBackground(new Background(new BackgroundFill(Color.YELLOW, CornerRadii.EMPTY, Insets.EMPTY)));
                 // 默认值
-                questionGrid.setLayoutX(DEFAULT_X + DEFAULT_W + 50);
-                questionGrid.setLayoutY(DEFAULT_Y);
-                questionGrid.setHgap(10);
+                questionGrid.setLayoutX(ScreenAdapter.calculateMainX(DEFAULT_X + DEFAULT_W + 50));
+                questionGrid.setLayoutY(ScreenAdapter.calculateMainY(DEFAULT_Y));
+                questionGrid.setHgap(ScreenAdapter.calculateMainH(10));
                 questionGrid.setVgap(0);
 
-                questionBox.setLayoutX(DEFAULT_X + DEFAULT_W + 50);
-                questionBox.setLayoutY(DEFAULT_Y);
+                questionBox.setLayoutX(ScreenAdapter.calculateMainX(DEFAULT_X + DEFAULT_W + 50));
+                questionBox.setLayoutY(ScreenAdapter.calculateMainY(DEFAULT_Y));
                 questionBox.setSpacing(0);
 
                 int cols = 6;
                 if (qArr.length > 0) {
                     String[] detailArr = qArr;
 
-                    questionBox.setLayoutX(Integer.parseInt(detailArr[0]));
-                    questionBox.setLayoutY(Integer.parseInt(detailArr[1]));
-                    item.setPrefSize(Integer.parseInt(detailArr[2]), Integer.parseInt(detailArr[3]));
+                    questionBox.setLayoutX(ScreenAdapter.calculateMainX(Integer.parseInt(detailArr[0])));
+                    questionBox.setLayoutY(ScreenAdapter.calculateMainY(Integer.parseInt(detailArr[1])));
+                    
+                    item.setPrefSize(ScreenAdapter.calculateMainW(Integer.parseInt(detailArr[2])),  ScreenAdapter.calculateMainH(Integer.parseInt(detailArr[3])));
                     item.setAlignment(AlignmentUtil.getAlign(detailArr[13]));
-                    item.setLayoutX(Integer.parseInt(detailArr[0]));
-                    item.setLayoutY(Integer.parseInt(detailArr[1]));
-                    questionGrid.setVgap(Integer.parseInt(detailArr[14]));
-                    questionGrid.setHgap(Integer.parseInt(detailArr[16]));
-                    questionBox.setSpacing(Integer.parseInt(detailArr[14]));
+                    item.setLayoutX(ScreenAdapter.calculateMainX(Integer.parseInt(detailArr[0])));
+                    item.setLayoutY(ScreenAdapter.calculateMainY(Integer.parseInt(detailArr[1])));
+                    questionGrid.setVgap(ScreenAdapter.calculateMainH(Integer.parseInt(detailArr[14])));
+                    questionGrid.setHgap(ScreenAdapter.calculateMainW(Integer.parseInt(detailArr[16])));
+                    questionBox.setSpacing(ScreenAdapter.calculateMainH(Integer.parseInt(detailArr[14])));
                     if (Boolean.valueOf(detailArr[4])) {
                         // 填充背景图片
                         if (!StringUtils.isEmpty(detailArr[6])) {
                             try {
                                 item.setBackground(new Background(new BackgroundImage(new Image(new FileInputStream(detailArr[6])),
                                         BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT, BackgroundPosition.DEFAULT,
-                                        new BackgroundSize(Integer.parseInt(detailArr[2]), Integer.parseInt(detailArr[3]), false, false, false, false))));
+                                        new BackgroundSize(
+                                                ScreenAdapter.calculateMainW(Integer.parseInt(detailArr[2])),
+                                                ScreenAdapter.calculateMainH(Integer.parseInt(detailArr[3])), 
+                                                false, false, false, false))));
                             } catch (FileNotFoundException e) {
                                 item.setBackground(new Background(new BackgroundFill(Color.TRANSPARENT, new CornerRadii(10), Insets.EMPTY)));
                             }
@@ -397,7 +410,8 @@ public class Model3Preview extends PreviewPane{
                     }
 
 
-                    Font font = Font.font(FontMap.getFont(detailArr[7]), FontWeight.NORMAL, FontPosture.REGULAR, Integer.parseInt(detailArr[8]));
+                    Font font = Font.font(FontMap.getFont(detailArr[7]), FontWeight.NORMAL, FontPosture.REGULAR, 
+                            ScreenAdapter.calculateMainW(Integer.parseInt(detailArr[8])));
                     text.setFont(font);
                     if (Boolean.valueOf(detailArr[10])) {
                         text.setStroke(text.getFill());

@@ -93,24 +93,24 @@ public class Model7Preview extends PreviewPane {
         Model3Style model3Style = model3Mapper.selectById(2);
         String titleStyle = model3Style.getTitleStyle();
 
-        int vgap = 20;
-        int hgap = 20;
-        int x = 10;
-        int y = 0;
-        int width = (int) ((Navigator.getWidth() - 40) / 4);
-        int height = 287;
+        double vgap = ScreenAdapter.calculateMainH(20);
+        double hgap = ScreenAdapter.calculateMainW(20);
+        double x = ScreenAdapter.calculateMainX(10);
+        double y = 0;
+        double width = ScreenAdapter.calculateMainW((int) ((Navigator.getWidth() - 40) / 4));
+        double height = ScreenAdapter.calculateMainH(287);
         int col = 4;
 
         if (!StringUtils.isEmpty(titleStyle)) {
             String[] split = titleStyle.split(ConfigSpliter.SPLITER);
             col = Integer.parseInt(split[0]);
-            x = Integer.parseInt(split[5]);
-            y = Integer.parseInt(split[6]);
+            x = ScreenAdapter.calculateMainX(Integer.parseInt(split[5]));
+            y = ScreenAdapter.calculateMainY(Integer.parseInt(split[6]));
             
-            width = Integer.parseInt(split[3]);
-            height = Integer.parseInt(split[4]);
-            vgap = Integer.parseInt(split[1]);
-            hgap = Integer.parseInt(split[2]);
+            width = ScreenAdapter.calculateMainW(Integer.parseInt(split[3]));
+            height = ScreenAdapter.calculateMainH(Integer.parseInt(split[4]));
+            vgap = ScreenAdapter.calculateMainH(Integer.parseInt(split[1]));
+            hgap = ScreenAdapter.calculateMainW(Integer.parseInt(split[2]));
         }
         container.setPadding(new Insets(y, 0, 0, x));
         if (ExtendedScreen.hasShow()) {
@@ -119,7 +119,7 @@ public class Model7Preview extends PreviewPane {
             if (res != null) {
                 controlPane.setQuestionPreview((Model7) res);
             }
-            container.setPrefWidth(ExtendedScreen.getWidth());
+            container.setPrefWidth(Navigator.getWidth());
         }
         container.getChildren().clear();
         container.setVgap(vgap);
@@ -137,12 +137,12 @@ public class Model7Preview extends PreviewPane {
             VBox upArea = new VBox();
             upArea.setMinWidth(0);
             upArea.setMaxWidth(Double.MAX_VALUE);
-            upArea.setLayoutY(10);
+            upArea.setLayoutY(ScreenAdapter.calculateMainY(10));
             anchorPane.getChildren().add(upArea);
             upArea.setPrefWidth(anchorPane.getPrefWidth());
             // 背景颜色
             upArea.setBackground(new Background(new BackgroundFill(Color.BLUE, new CornerRadii(10), Insets.EMPTY)));
-            upArea.setPrefHeight(37);
+            upArea.setPrefHeight(ScreenAdapter.calculateMainY(37));
 
             // 第二行
             HBox row2 = new HBox();
@@ -155,7 +155,7 @@ public class Model7Preview extends PreviewPane {
             int finish = 0;
             for (Questions questions : CurrentQuestions.getQuestionList()) {
                 Circle c = new Circle();
-                c.setRadius(radius);
+                c.setRadius(ScreenAdapter.calculateMainW(radius));
                 c.setStroke(Color.BLACK);
                 c.setFill(Color.WHITE);
                 row2.getChildren().add(c);
@@ -202,8 +202,8 @@ public class Model7Preview extends PreviewPane {
             if (!GlobalCache.model7Hide) {
                 anchorPane.getChildren().add(downArea);
             }
-            downArea.setLayoutY(52);
-            downArea.setPrefHeight(height - 37);
+            downArea.setLayoutY(ScreenAdapter.calculateMainY(52));
+            downArea.setPrefHeight(height - ScreenAdapter.calculateMainH(37));
 
             // 回答完毕
             if (Model7RuntimeData.getFinished().get(i)) {
@@ -211,7 +211,7 @@ public class Model7Preview extends PreviewPane {
                 endLab.setPrefWidth(downArea.getPrefWidth());
                 endLab.setPrefHeight(downArea.getPrefHeight() / 5);
                 endLab.setLayoutY(downArea.getPrefHeight() / 5);
-                endLab.setFont(Font.font(32));
+                endLab.setFont(Font.font(ScreenAdapter.calculateMainW(32)));
                 endLab.setAlignment(Pos.CENTER);
                 endLab.setTextAlignment(TextAlignment.CENTER);
 
@@ -219,7 +219,7 @@ public class Model7Preview extends PreviewPane {
                 scoreLab.setPrefWidth(downArea.getPrefWidth());
                 scoreLab.setPrefHeight(downArea.getPrefHeight() / 5);
                 scoreLab.setLayoutY(downArea.getPrefHeight() * 0.4);
-                scoreLab.setFont(Font.font(32));
+                scoreLab.setFont(Font.font(ScreenAdapter.calculateMainW(32)));
                 scoreLab.setTextAlignment(TextAlignment.CENTER);
                 scoreLab.setAlignment(Pos.CENTER);
                 List<String> fts = Model7RuntimeData.getFts();
@@ -227,7 +227,7 @@ public class Model7Preview extends PreviewPane {
                 timeLab.setPrefWidth(downArea.getPrefWidth());
                 timeLab.setPrefHeight(downArea.getPrefHeight() / 5);
                 timeLab.setLayoutY(downArea.getPrefHeight() * 0.6);
-                timeLab.setFont(Font.font(32));
+                timeLab.setFont(Font.font(ScreenAdapter.calculateMainW(32)));
                 timeLab.setTextAlignment(TextAlignment.CENTER);
                 timeLab.setAlignment(Pos.CENTER);
                 downArea.getChildren().addAll(endLab, scoreLab, timeLab);
@@ -237,7 +237,7 @@ public class Model7Preview extends PreviewPane {
                     Label waitLab = new Label("等待答题");
                     waitLab.setPrefWidth(downArea.getPrefWidth());
                     waitLab.setPrefHeight(downArea.getPrefHeight());
-                    waitLab.setFont(Font.font(32));
+                    waitLab.setFont(Font.font(ScreenAdapter.calculateMainW(32)));
                     waitLab.setTextAlignment(TextAlignment.CENTER);
                     waitLab.setAlignment(Pos.CENTER);
                     downArea.getChildren().add(waitLab);
@@ -245,7 +245,7 @@ public class Model7Preview extends PreviewPane {
                     VBox vbx = new VBox();
                     // 设置边距
                     vbx.setPadding(new Insets(1, 5, 1, 5));
-                    vbx.setSpacing(2);
+                    vbx.setSpacing(ScreenAdapter.calculateMainH(2));
                     vbx.setPrefWidth(downArea.getPrefWidth());
                     downArea.getChildren().addAll(vbx);
                     Label q = new Label(last.getQuestionNumber() + ". " + last.getQuestion());
@@ -284,14 +284,14 @@ public class Model7Preview extends PreviewPane {
 
                     VBox answerArea = new VBox();
                     answerArea.setAlignment(Pos.CENTER);
-                    answerArea.setLayoutY(190);
+                    answerArea.setLayoutY(ScreenAdapter.calculateMainY(190));
                     answerArea.setPrefWidth(downArea.getPrefWidth());
                     downArea.getChildren().add(answerArea);
-                    answerArea.setSpacing(5);
+                    answerArea.setSpacing(ScreenAdapter.calculateMainY(5));
                     if (last.getUserSelect() != null) {
                         Label select = new Label("回答:" + last.getUserSelect());
                         select.setBackground(new Background(new BackgroundFill(Color.BLUE, new CornerRadii(10), Insets.EMPTY)));
-                        select.setPrefHeight(30);
+                        select.setPrefHeight(ScreenAdapter.calculateMainH(30));
                         select.setTextAlignment(TextAlignment.CENTER);
                         select.setTextFill(Color.WHITE);
                         select.setPrefWidth(answerArea.getPrefWidth());
@@ -304,7 +304,7 @@ public class Model7Preview extends PreviewPane {
                             status.setText("错误");
                             status.setBackground(new Background(new BackgroundFill(Color.RED, new CornerRadii(10), Insets.EMPTY)));
                         }
-                        status.setPrefHeight(30);
+                        status.setPrefHeight(ScreenAdapter.calculateMainH(30));
                         status.setAlignment(Pos.CENTER);
                         status.setTextAlignment(TextAlignment.CENTER);
                         status.setTextFill(Color.WHITE);
