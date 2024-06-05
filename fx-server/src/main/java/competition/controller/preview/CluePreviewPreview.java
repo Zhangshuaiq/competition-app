@@ -152,7 +152,7 @@ public class CluePreviewPreview extends PreviewPane{
 
             tiganBox.getChildren().add(tiganLabel);
 
-            tiganBox.setLayoutY(ScreenAdapter.calculateMainX(Integer.parseInt(split[5])));
+            tiganBox.setLayoutX(ScreenAdapter.calculateMainX(Integer.parseInt(split[5])));
             tiganBox.setLayoutY( ScreenAdapter.calculateMainY(Integer.parseInt(split[6])));
             tiganBox.setPrefWidth(ScreenAdapter.calculateMainW(Integer.parseInt(split[7])));
             tiganBox.setPrefHeight(ScreenAdapter.calculateMainH(Integer.parseInt(split[8])));
@@ -248,7 +248,7 @@ public class CluePreviewPreview extends PreviewPane{
             // 答案
             daanLabel.setText(split[4] + " " + inner.getAnswer());
             backPane.setLayoutX((int) tiganBox.getLayoutX());
-            backPane.setLayoutY((int) (tiganBox.getLayoutX() + tiganBox.getPrefHeight() + 10));
+            backPane.setLayoutY((int) (tiganBox.getLayoutY() + tiganBox.getPrefHeight() + ScreenAdapter.calculateMainH(10)));
             // 答案颜色
             daanLabel.setFill(Color.valueOf(split[1]));
 

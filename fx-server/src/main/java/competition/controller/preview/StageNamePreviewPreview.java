@@ -137,24 +137,24 @@ public class StageNamePreviewPreview extends PreviewPane {
         final String config = stageConfig.getConfig();
         final String[] huanjieArr = config.split(ConfigSpliter.SPLITER);
         if (StringUtils.isEmpty(style)) {
-            box.setLayoutX(ConfigSpliter.DEFAULT_X);
-            box.setLayoutY(ConfigSpliter.DEFAULT_Y);
-            box.setPrefWidth(ConfigSpliter.DEFAULT_W);
-            box.setPrefHeight(ConfigSpliter.DEFAULT_H);
+            box.setLayoutX(ScreenAdapter.calculateMainX(ConfigSpliter.DEFAULT_X));
+            box.setLayoutY(ScreenAdapter.calculateMainY(ConfigSpliter.DEFAULT_Y));
+            box.setPrefWidth(ScreenAdapter.calculateMainW(ConfigSpliter.DEFAULT_W));
+            box.setPrefHeight(ScreenAdapter.calculateMainH(ConfigSpliter.DEFAULT_H));
             box.setBackground(new Background(new BackgroundFill(Color.valueOf(huanjieArr[3]),  new CornerRadii(10), Insets.EMPTY)));
 
             Text title = new Text(stages.getName());
-            title.prefWidth(ConfigSpliter.DEFAULT_W);
-            title.prefHeight(ConfigSpliter.DEFAULT_H);
+            title.prefWidth(ScreenAdapter.calculateMainW(ConfigSpliter.DEFAULT_W));
+            title.prefHeight(ScreenAdapter.calculateMainH(ConfigSpliter.DEFAULT_H));
             title.setTextAlignment(TextAlignment.CENTER);
             title.setStyle("-fx-fill: " + huanjieArr[2].replace("0x", "#"));
             box.getChildren().add(title);
         } else {
             String[] detailArr = style.split(ConfigSpliter.SPLITER);
-            box.setLayoutX(Integer.parseInt(detailArr[0]));
-            box.setLayoutY(Integer.parseInt(detailArr[1]));
-            box.setPrefWidth(Integer.parseInt(detailArr[2]));
-            box.setPrefHeight(Integer.parseInt(detailArr[3]));
+            box.setLayoutX(ScreenAdapter.calculateMainX(Integer.parseInt(detailArr[0])));
+            box.setLayoutY(ScreenAdapter.calculateMainY(Integer.parseInt(detailArr[1])));
+            box.setPrefWidth(ScreenAdapter.calculateMainW(Integer.parseInt(detailArr[2])));
+            box.setPrefHeight(ScreenAdapter.calculateMainH(Integer.parseInt(detailArr[3])));
 
             if (Boolean.valueOf(detailArr[4])) {
                 // 填充背景图片
@@ -162,7 +162,7 @@ public class StageNamePreviewPreview extends PreviewPane {
                     try {
                         box.setBackground(new Background(new BackgroundImage(new Image(new FileInputStream(detailArr[6])),
                                 BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT, BackgroundPosition.DEFAULT,
-                                new BackgroundSize(Integer.parseInt(detailArr[2]), Integer.parseInt(detailArr[3]), false, false, false, false))));
+                                new BackgroundSize(ScreenAdapter.calculateMainW(Integer.parseInt(detailArr[2])), ScreenAdapter.calculateMainH(Integer.parseInt(detailArr[3])), false, false, false, false))));
                     } catch (FileNotFoundException e) {
                         box.setBackground(new Background(new BackgroundFill(Color.TRANSPARENT, new CornerRadii(10), Insets.EMPTY)));
                     }
@@ -176,12 +176,12 @@ public class StageNamePreviewPreview extends PreviewPane {
             Text title = new Text(stages.getName());
             title.setTextAlignment(AlignmentUtil.getTextAlign(detailArr[13]));
             box.setAlignment(AlignmentUtil.getAlign(detailArr[13]));
-            title.prefWidth(Integer.parseInt(detailArr[2]));
-            title.prefHeight(Integer.parseInt(detailArr[3]));
+            title.prefWidth(ScreenAdapter.calculateMainW(Integer.parseInt(detailArr[2])));
+            title.prefHeight(ScreenAdapter.calculateMainH(Integer.parseInt(detailArr[3])));
             title.setStyle("-fx-fill: " + huanjieArr[2].replace("0x", "#"));
 
 
-            Font font = Font.font(FontMap.getFont(detailArr[7]), FontWeight.NORMAL, FontPosture.REGULAR, Integer.parseInt(detailArr[8]));
+            Font font = Font.font(FontMap.getFont(detailArr[7]), FontWeight.NORMAL, FontPosture.REGULAR, ScreenAdapter.calculateMainW(Integer.parseInt(detailArr[8])));
             title.setFont(font);
             if (Boolean.valueOf(detailArr[10])) {
                 title.setStroke(title.getFill());

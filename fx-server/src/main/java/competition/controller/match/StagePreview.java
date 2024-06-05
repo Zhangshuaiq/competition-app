@@ -39,9 +39,6 @@ import java.util.List;
 public class StagePreview implements ReloadPane {
 
 
-    @Resource
-    private ControlPane controlPane;
-
     @FXML
     private AnchorPane container;
 
@@ -80,7 +77,7 @@ public class StagePreview implements ReloadPane {
         try {
             container.setBackground(new Background(new BackgroundImage(
                     new Image(new FileInputStream(ImageResource.环节背景())), BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT, BackgroundPosition.CENTER,
-                    new BackgroundSize(Navigator.getWidth(), Navigator.getHeight(), false, false, false, false)
+                    new BackgroundSize(ExtendedScreen.getWidth(), ExtendedScreen.getHeight(), false, false, false, false)
             )));
         } catch (FileNotFoundException e) {
             container.setBackground(new Background(new BackgroundFill(Color.TRANSPARENT, new CornerRadii(10), Insets.EMPTY)));
@@ -121,10 +118,10 @@ public class StagePreview implements ReloadPane {
                 if (stagesStyle != null) {
                     detailArr = stagesStyle.getStyle().split(ConfigSpliter.SPLITER);
                 }
-                int x = Integer.parseInt(split[4]);
-                int y = Integer.parseInt(split[5]);
-                int width = Integer.parseInt(split[6]);
-                int height = Integer.parseInt(split[7]);
+                double x = ScreenAdapter.calculateExX(Integer.parseInt(split[4]));
+                double y = ScreenAdapter.calculateExY(Integer.parseInt(split[5]));
+                double width = ScreenAdapter.calculateExW(Integer.parseInt(split[6]));
+                double height = ScreenAdapter.calculateExH(Integer.parseInt(split[7]));
 
                 GridPane stageContainer = new GridPane();
                 stageContainer.setLayoutX(x);
@@ -133,11 +130,11 @@ public class StagePreview implements ReloadPane {
                 // stageContainer.height
 
                 if (detailArr.length > 0) {
-                    stageContainer.setLayoutX(Integer.parseInt(detailArr[0]));
-                    stageContainer.setLayoutY(Integer.parseInt(detailArr[1]));
-                    stageContainer.prefWidth(Integer.parseInt(detailArr[2]));
-                    stageContainer.setVgap(Integer.parseInt(detailArr[14]));
-                    stageContainer.setHgap(Integer.parseInt(detailArr[14]));
+                    stageContainer.setLayoutX(ScreenAdapter.calculateExX(Integer.parseInt(detailArr[0])));
+                    stageContainer.setLayoutY(ScreenAdapter.calculateExY(Integer.parseInt(detailArr[1])));
+                    stageContainer.prefWidth(ScreenAdapter.calculateExW(Integer.parseInt(detailArr[2])));
+                    stageContainer.setVgap(ScreenAdapter.calculateExH(Integer.parseInt(detailArr[14])));
+                    stageContainer.setHgap(ScreenAdapter.calculateExW(Integer.parseInt(detailArr[14])));
                     stageContainer.setAlignment(AlignmentUtil.getAlign(detailArr[13]));
                 }
 
@@ -158,7 +155,9 @@ public class StagePreview implements ReloadPane {
                                 try {
                                     stageNamePane.setBackground(new Background(new BackgroundImage(new Image(new FileInputStream(detailArr[6])),
                                             BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT, BackgroundPosition.CENTER,
-                                            new BackgroundSize(Integer.parseInt(detailArr[2]), Integer.parseInt(detailArr[3]), false, false, false, false))));
+                                            new BackgroundSize(
+                                                ScreenAdapter.calculateExW(Integer.parseInt(detailArr[2])),
+                                                ScreenAdapter.calculateExH(Integer.parseInt(detailArr[3])), false, false, false, false))));
                                 } catch (FileNotFoundException e) {
                                     stageNamePane.setBackground(new Background(new BackgroundFill(Color.TRANSPARENT, new CornerRadii(10), Insets.EMPTY)));
                                 }
@@ -171,7 +170,8 @@ public class StagePreview implements ReloadPane {
                         }
                     }
                     if (detailArr.length > 0) {
-                        Font font = Font.font(FontMap.getFont(detailArr[7]), FontWeight.NORMAL, FontPosture.REGULAR, Integer.parseInt(detailArr[8]));
+                        Font font = Font.font(FontMap.getFont(detailArr[7]), FontWeight.NORMAL, FontPosture.REGULAR,
+                            ScreenAdapter.calculateExW(Integer.parseInt(detailArr[8])));
                         stageName.setFont(font);
                         if (Boolean.valueOf(detailArr[10])) {
                             stageName.setStroke(stageName.getFill());

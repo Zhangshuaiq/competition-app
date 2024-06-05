@@ -91,21 +91,23 @@ public class TotalRulePreviewPreview extends PreviewPane {
         Text text = new Text(ruleContent);
         if (StringUtils.isEmpty(details)) {
             final String[] cfgArr = config.split(ConfigSpliter.SPLITER);
-            text.setX(Integer.parseInt(cfgArr[1]));
-            text.setY(Integer.parseInt(cfgArr[2]));
-            text.prefWidth(Integer.parseInt(cfgArr[3]));
-            text.prefHeight(Integer.parseInt(cfgArr[4]));
+            text.setX(ScreenAdapter.calculateMainX(Integer.parseInt(cfgArr[1])));
+            text.setY(ScreenAdapter.calculateMainY(Integer.parseInt(cfgArr[2])));
+            text.prefWidth(ScreenAdapter.calculateMainW(Integer.parseInt(cfgArr[3])));
+            text.prefHeight(ScreenAdapter.calculateMainH(Integer.parseInt(cfgArr[4])));
             text.setFill(Color.valueOf(cfgArr[0]));
-            text.setWrappingWidth(Integer.parseInt(cfgArr[3]));
+            text.setWrappingWidth(ScreenAdapter.calculateMainW(Integer.parseInt(cfgArr[3])));
             container.getChildren().add(text);
         } else {
             final String[] cfgArr = details.split(ConfigSpliter.SPLITER);
-            text.setX(Integer.parseInt(cfgArr[0]));
-            text.setY(Integer.parseInt(cfgArr[1]));
-            text.prefWidth(Integer.parseInt(cfgArr[2]));
-            text.prefHeight(Integer.parseInt(cfgArr[3]));
+            text.setX(ScreenAdapter.calculateMainX(Integer.parseInt(cfgArr[0])));
+            text.setY(ScreenAdapter.calculateMainY(Integer.parseInt(cfgArr[1])));
+            text.prefWidth(ScreenAdapter.calculateMainW(Integer.parseInt(cfgArr[2])));
+            text.prefHeight(ScreenAdapter.calculateMainH(Integer.parseInt(cfgArr[3])));
             text.setFill(Color.valueOf(cfgArr[5]));
-            Font font = Font.font(FontMap.getFont(cfgArr[7]), FontWeight.NORMAL, FontPosture.REGULAR, Integer.parseInt(cfgArr[8]));
+            Font font = Font.font(FontMap.getFont(cfgArr[7]), FontWeight.NORMAL, FontPosture.REGULAR,
+                ScreenAdapter.calculateMainW(Integer.parseInt(cfgArr[8]))
+            );
             text.setFont(font);
             if (Boolean.valueOf(cfgArr[10])) {
                 text.setStroke(text.getFill());
@@ -119,8 +121,8 @@ public class TotalRulePreviewPreview extends PreviewPane {
             text.setUnderline(Boolean.valueOf(cfgArr[12]));
             text.setStrikethrough(Boolean.valueOf(cfgArr[9]));
             text.setTextAlignment(AlignmentUtil.getTextAlign(cfgArr[13]));
-            text.setLineSpacing(Integer.parseInt(cfgArr[14]));
-            text.setWrappingWidth(Integer.parseInt(cfgArr[2]));
+            text.setLineSpacing(ScreenAdapter.calculateMainH(Integer.parseInt(cfgArr[14])));
+            text.setWrappingWidth(ScreenAdapter.calculateMainW(Integer.parseInt(cfgArr[2])));
             container.getChildren().add(text);
         }
         messageHandler.notifyPage("rule" , ruleContent );

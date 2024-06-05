@@ -366,8 +366,8 @@ public class QuestionPreviewPreview extends PreviewPane {
             
             // 答案
             daanLabel.setText(split[4] + " " + inner.getAnswer());
-            backPane.setLayoutX(ScreenAdapter.calculateMainX(tiganBox.getLayoutX()));
-            backPane.setLayoutY(ScreenAdapter.calculateMainY(tiganBox.getLayoutX() + tiganBox.getPrefHeight() + 10));
+            backPane.setLayoutX((tiganBox.getLayoutX()));
+            backPane.setLayoutY(tiganBox.getLayoutY() + tiganBox.getPrefHeight() + ScreenAdapter.calculateMainY(10));
             // 答案颜色
             daanLabel.setFill(Color.valueOf(split[1]));
 

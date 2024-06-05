@@ -81,12 +81,12 @@ public class StageNamePreview implements ReloadPane{
             if (img != null) {
                 container.setBackground(new Background(new BackgroundImage(
                         new Image(new FileInputStream(img)), BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT, BackgroundPosition.DEFAULT,
-                        new BackgroundSize(Navigator.getWidth(), Navigator.getHeight(), false, false, false, false)
+                        new BackgroundSize(ExtendedScreen.getWidth(), ExtendedScreen.getHeight(), false, false, false, false)
                 )));
             } else {
                 container.setBackground(new Background(new BackgroundImage(
                         new Image(new FileInputStream(ImageResource.环节名称背景())), BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT, BackgroundPosition.DEFAULT,
-                        new BackgroundSize(Navigator.getWidth(), Navigator.getHeight(), false, false, false, false)
+                        new BackgroundSize(ExtendedScreen.getWidth(), ExtendedScreen.getHeight(), false, false, false, false)
                 )));
             }
 
@@ -112,24 +112,24 @@ public class StageNamePreview implements ReloadPane{
         final String config = stageConfig.getConfig();
         final String[] huanjieArr = config.split(ConfigSpliter.SPLITER);
         if (StringUtils.isEmpty(style)) {
-            box.setLayoutX(ConfigSpliter.DEFAULT_X);
-            box.setLayoutY(ConfigSpliter.DEFAULT_Y);
-            box.setPrefWidth(ConfigSpliter.DEFAULT_W);
-            box.setPrefHeight(ConfigSpliter.DEFAULT_H);
+            box.setLayoutX(ScreenAdapter.calculateExX(ConfigSpliter.DEFAULT_X));
+            box.setLayoutY(ScreenAdapter.calculateExY(ConfigSpliter.DEFAULT_Y));
+            box.setPrefWidth(ScreenAdapter.calculateExW(ConfigSpliter.DEFAULT_W));
+            box.setPrefHeight(ScreenAdapter.calculateExH(ConfigSpliter.DEFAULT_H));
             box.setBackground(new Background(new BackgroundFill(Color.valueOf(huanjieArr[3]), new CornerRadii(10), Insets.EMPTY)));
 
             Text title = new Text(stages.getName());
-            title.prefWidth(ConfigSpliter.DEFAULT_W);
-            title.prefHeight(ConfigSpliter.DEFAULT_H);
+            title.prefWidth(ScreenAdapter.calculateExW(ConfigSpliter.DEFAULT_W));
+            title.prefHeight(ScreenAdapter.calculateExH(ConfigSpliter.DEFAULT_H));
             title.setTextAlignment(TextAlignment.CENTER);
             title.setStyle("-fx-fill: " + huanjieArr[2].replace("0x", "#"));
             box.getChildren().add(title);
         } else {
             String[] detailArr = style.split(ConfigSpliter.SPLITER);
-            box.setLayoutX(Integer.parseInt(detailArr[0]));
-            box.setLayoutY(Integer.parseInt(detailArr[1]));
-            box.setPrefWidth(Integer.parseInt(detailArr[2]));
-            box.setPrefHeight(Integer.parseInt(detailArr[3]));
+            box.setLayoutX(ScreenAdapter.calculateExX(Integer.parseInt(detailArr[0])));
+            box.setLayoutY(ScreenAdapter.calculateExY(Integer.parseInt(detailArr[1])));
+            box.setPrefWidth(ScreenAdapter.calculateExW(Integer.parseInt(detailArr[2])));
+            box.setPrefHeight(ScreenAdapter.calculateExH(Integer.parseInt(detailArr[3])));
 
             if (Boolean.valueOf(detailArr[4])) {
                 // 填充背景图片
@@ -137,7 +137,9 @@ public class StageNamePreview implements ReloadPane{
                     try {
                         box.setBackground(new Background(new BackgroundImage(new Image(new FileInputStream(detailArr[6])),
                                 BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT, BackgroundPosition.DEFAULT,
-                                new BackgroundSize(Integer.parseInt(detailArr[2]), Integer.parseInt(detailArr[3]), false, false, false, false))));
+                                new BackgroundSize(
+                                    ScreenAdapter.calculateExW(Integer.parseInt(detailArr[2])),
+                                    ScreenAdapter.calculateExH(Integer.parseInt(detailArr[3])), false, false, false, false))));
                     } catch (FileNotFoundException e) {
                         box.setBackground(new Background(new BackgroundFill(Color.TRANSPARENT, new CornerRadii(10), Insets.EMPTY)));
                     }
@@ -151,12 +153,13 @@ public class StageNamePreview implements ReloadPane{
             Text title = new Text(stages.getName());
             title.setTextAlignment(AlignmentUtil.getTextAlign(detailArr[13]));
             box.setAlignment(AlignmentUtil.getAlign(detailArr[13]));
-            title.prefWidth(Integer.parseInt(detailArr[2]));
-            title.prefHeight(Integer.parseInt(detailArr[3]));
+            title.prefWidth(ScreenAdapter.calculateExW(Integer.parseInt(detailArr[2])));
+            title.prefHeight(ScreenAdapter.calculateExH(Integer.parseInt(detailArr[3])));
             title.setStyle("-fx-fill: " + huanjieArr[2].replace("0x", "#"));
 
 
-            Font font = Font.font(FontMap.getFont(detailArr[7]), FontWeight.NORMAL, FontPosture.REGULAR, Integer.parseInt(detailArr[8]));
+            Font font = Font.font(FontMap.getFont(detailArr[7]), FontWeight.NORMAL, FontPosture.REGULAR,
+                ScreenAdapter.calculateExW(Integer.parseInt(detailArr[8])));
             title.setFont(font);
             if (Boolean.valueOf(detailArr[10])) {
                 title.setStroke(title.getFill());

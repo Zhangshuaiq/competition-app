@@ -98,7 +98,7 @@ public class CluePreview implements ReloadPane {
         try {
             container.setBackground(new Background(new BackgroundImage(
                     new Image(new FileInputStream(ImageResource.答题背景())), BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT, BackgroundPosition.DEFAULT,
-                    new BackgroundSize(Navigator.getWidth(), Navigator.getHeight(), false, false, false, false)
+                    new BackgroundSize(ExtendedScreen.getWidth(), ExtendedScreen.getHeight(), false, false, false, false)
             )));
         } catch (FileNotFoundException e) {
             container.setBackground(new Background(new BackgroundFill(Color.TRANSPARENT, new CornerRadii(10), Insets.EMPTY)));
@@ -114,24 +114,24 @@ public class CluePreview implements ReloadPane {
             // 题干颜色
             tiganLabel.setFill(Color.valueOf(split[0]));
             // 题目行距
-            tiganLabel.setWrappingWidth(Integer.parseInt(split[7]));
-            tiganLabel.setLineSpacing(Integer.parseInt(split[3]));
+            tiganLabel.setWrappingWidth(ScreenAdapter.calculateExW(Integer.parseInt(split[7])));
+            tiganLabel.setLineSpacing(ScreenAdapter.calculateExH(Integer.parseInt(split[3])));
             // 题目位置和大小
-            tiganLabel.prefWidth(Integer.parseInt(split[7]));
+            tiganLabel.prefWidth(ScreenAdapter.calculateExW(Integer.parseInt(split[7])));
 
 
             tiganBox.getChildren().add(tiganLabel);
 
-            tiganBox.setLayoutY(Integer.parseInt(split[5]));
-            tiganBox.setLayoutY(Integer.parseInt(split[6]));
-            tiganBox.setPrefWidth(Integer.parseInt(split[7]));
-            tiganBox.setPrefHeight(Integer.parseInt(split[8]));
-            tiganBox.setSpacing(Integer.parseInt(split[3]));
+            tiganBox.setLayoutX(ScreenAdapter.calculateExX(Integer.parseInt(split[5])));
+            tiganBox.setLayoutY(ScreenAdapter.calculateExY(Integer.parseInt(split[6])));
+            tiganBox.setPrefWidth(ScreenAdapter.calculateExW(Integer.parseInt(split[7])));
+            tiganBox.setPrefHeight(ScreenAdapter.calculateExH(Integer.parseInt(split[8])));
+            tiganBox.setSpacing(ScreenAdapter.calculateExH(Integer.parseInt(split[3])));
 
             // 选项
             if (!StringUtils.isEmpty(inner.getChoiceA())) {
                 Text chA = new Text(inner.getChoiceA());
-                chA.prefWidth(Integer.parseInt(split[7]));
+                chA.prefWidth(ScreenAdapter.calculateExW(Integer.parseInt(split[7])));
                 chA.setFill(Color.valueOf(split[0]));
                 chA.setVisible(false);
                 tiganBox.getChildren().add(chA);
@@ -139,7 +139,7 @@ public class CluePreview implements ReloadPane {
 
             if (!StringUtils.isEmpty(inner.getChoiceB())) {
                 Text chB = new Text(inner.getChoiceB());
-                chB.prefWidth(Integer.parseInt(split[7]));
+                chB.prefWidth(ScreenAdapter.calculateExW(Integer.parseInt(split[7])));
                 chB.setFill(Color.valueOf(split[0]));
                 chB.setVisible(false);
                 tiganBox.getChildren().add(chB);
@@ -147,7 +147,7 @@ public class CluePreview implements ReloadPane {
 
             if (!StringUtils.isEmpty(inner.getChoiceC())) {
                 Text chA = new Text(inner.getChoiceC());
-                chA.prefWidth(Integer.parseInt(split[7]));
+                chA.prefWidth(ScreenAdapter.calculateExW(Integer.parseInt(split[7])));
                 chA.setFill(Color.valueOf(split[0]));
                 chA.setVisible(false);
                 tiganBox.getChildren().add(chA);
@@ -155,7 +155,7 @@ public class CluePreview implements ReloadPane {
 
             if (!StringUtils.isEmpty(inner.getChoiceD())) {
                 Text chA = new Text(inner.getChoiceD());
-                chA.prefWidth(Integer.parseInt(split[7]));
+                chA.prefWidth(ScreenAdapter.calculateExW(Integer.parseInt(split[7])));
                 chA.setFill(Color.valueOf(split[0]));
                 chA.setVisible(false);
                 tiganBox.getChildren().add(chA);
@@ -163,7 +163,7 @@ public class CluePreview implements ReloadPane {
 
             if (!StringUtils.isEmpty(inner.getChoiceE())) {
                 Text chA = new Text(inner.getChoiceE());
-                chA.prefWidth(Integer.parseInt(split[7]));
+                chA.prefWidth(ScreenAdapter.calculateExW(Integer.parseInt(split[7])));
                 chA.setFill(Color.valueOf(split[0]));
                 chA.setVisible(false);
                 tiganBox.getChildren().add(chA);
@@ -171,7 +171,7 @@ public class CluePreview implements ReloadPane {
 
             if (!StringUtils.isEmpty(inner.getChoiceF())) {
                 Text chA = new Text(inner.getChoiceF());
-                chA.prefWidth(Integer.parseInt(split[7]));
+                chA.prefWidth(ScreenAdapter.calculateExW(Integer.parseInt(split[7])));
                 chA.setFill(Color.valueOf(split[0]));
                 chA.setVisible(false);
                 tiganBox.getChildren().add(chA);
@@ -218,7 +218,7 @@ public class CluePreview implements ReloadPane {
             // 答案
             daanLabel.setText(split[4] + " " + inner.getAnswer());
             backPane.setLayoutX((int) tiganBox.getLayoutX());
-            backPane.setLayoutY((int) (tiganBox.getLayoutX() + tiganBox.getPrefHeight() + 10));
+            backPane.setLayoutY((int) (tiganBox.getLayoutY() + tiganBox.getPrefHeight() + ScreenAdapter.calculateExH(10)));
             // 答案颜色
             daanLabel.setFill(Color.valueOf(split[1]));
 
@@ -231,10 +231,10 @@ public class CluePreview implements ReloadPane {
 
                         String[] split1 = style1.split(ConfigSpliter.SPLITER);
 
-                        tiganBox.setLayoutX(Integer.parseInt(split1[0]));
-                        tiganBox.setLayoutY(Integer.parseInt(split1[1]));
-                        tiganBox.setPrefWidth(Integer.parseInt(split1[2]));
-                        tiganBox.setPrefHeight(Integer.parseInt(split1[3]));
+                        tiganBox.setLayoutX(ScreenAdapter.calculateExX(Integer.parseInt(split1[0])));
+                        tiganBox.setLayoutY(ScreenAdapter.calculateExY(Integer.parseInt(split1[1])));
+                        tiganBox.setPrefWidth(ScreenAdapter.calculateExW(Integer.parseInt(split1[2])));
+                        tiganBox.setPrefHeight(ScreenAdapter.calculateExH(Integer.parseInt(split1[3])));
                         if (split1.length >= 16) {
                             int wordSpace = Integer.parseInt(split1[15]);
                             if (wordSpace > 0) {
@@ -265,7 +265,8 @@ public class CluePreview implements ReloadPane {
                                 try {
                                     tiganBox.setBackground(new Background(new BackgroundImage(new Image(new FileInputStream(split1[6])),
                                             BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT, BackgroundPosition.DEFAULT,
-                                            new BackgroundSize(Integer.parseInt(split1[2]), Integer.parseInt(split1[3]), false, false, false, false))));
+                                            new BackgroundSize(ScreenAdapter.calculateExW(Integer.parseInt(split1[2])),
+                                                ScreenAdapter.calculateExH(Integer.parseInt(split1[3])), false, false, false, false))));
                                 } catch (FileNotFoundException e) {
                                     tiganBox.setBackground(new Background(new BackgroundFill(Color.TRANSPARENT,  new CornerRadii(10), Insets.EMPTY)));
                                     //e.printStackTrace();
@@ -278,8 +279,10 @@ public class CluePreview implements ReloadPane {
                             tiganBox.setBackground(new Background(new BackgroundFill(Color.valueOf(split1[5]),  new CornerRadii(10), Insets.EMPTY)));
                         }
 
-                        tiganBox.setSpacing(Integer.parseInt(split1[14]));
-                        Font font = Font.font(FontMap.getFont(split1[7]), FontWeight.NORMAL, FontPosture.REGULAR, Integer.parseInt(split1[8]));
+                        tiganBox.setSpacing(ScreenAdapter.calculateExH(Integer.parseInt(split1[14])));
+                        Font font = Font.font(FontMap.getFont(split1[7]), FontWeight.NORMAL, FontPosture.REGULAR,
+                            ScreenAdapter.calculateExW(Integer.parseInt(split1[8]))
+                        );
                         tiganLabel.setFont(font);
                         tiganLabel.setUnderline(Boolean.valueOf(split1[12]));
                         tiganLabel.setStrikethrough(Boolean.valueOf(split1[9]));
@@ -294,13 +297,13 @@ public class CluePreview implements ReloadPane {
                             tiganLabel.getTransforms().add(new Shear(-0.3, 0));
                         }
                         tiganLabel.setTextAlignment(AlignmentUtil.getTextAlign(split1[13]));
-                        tiganLabel.setLineSpacing(Integer.parseInt(split1[14]));
+                        tiganLabel.setLineSpacing(ScreenAdapter.calculateExH(Integer.parseInt(split1[14])));
 
                         for (Node child : tiganBox.getChildren()) {
-                            child.prefWidth(Integer.parseInt(split1[2]));
+                            child.prefWidth(ScreenAdapter.calculateExW(Integer.parseInt(split1[2])));
                             if (child instanceof Text) {
                                 Text ch = (Text) child;
-                                ch.setWrappingWidth(Integer.parseInt(split1[2]));
+                                ch.setWrappingWidth(ScreenAdapter.calculateExW(Integer.parseInt(split1[2])));
                                 ch.setFont(font);
                                 ch.setUnderline(Boolean.valueOf(split1[12]));
                                 ch.setStrikethrough(Boolean.valueOf(split1[9]));
@@ -315,7 +318,7 @@ public class CluePreview implements ReloadPane {
                                     ch.getTransforms().add(new Shear(-0.3, 0));
                                 }
                                 ch.setTextAlignment(AlignmentUtil.getTextAlign(split1[13]));
-                                ch.setLineSpacing(Integer.parseInt(split1[14]));
+                                ch.setLineSpacing(ScreenAdapter.calculateExH(Integer.parseInt(split1[14])));
                             }
                         }
                     }
@@ -326,10 +329,10 @@ public class CluePreview implements ReloadPane {
 
                         String[] split1 = style2.split(ConfigSpliter.SPLITER);
 
-                        backPane.setLayoutX(Integer.parseInt(split1[0]));
-                        backPane.setLayoutY(Integer.parseInt(split1[1]));
-                        backPane.prefWidth(Integer.parseInt(split1[2]));
-                        backPane.prefHeight(Integer.parseInt(split1[3]));
+                        backPane.setLayoutX(ScreenAdapter.calculateExX(Integer.parseInt(split1[0])));
+                        backPane.setLayoutY(ScreenAdapter.calculateExY(Integer.parseInt(split1[1])));
+                        backPane.prefWidth(ScreenAdapter.calculateExW(Integer.parseInt(split1[2])));
+                        backPane.prefHeight(ScreenAdapter.calculateExH(Integer.parseInt(split1[3])));
 
 
                         if (Boolean.valueOf(split1[4])) {
@@ -338,7 +341,7 @@ public class CluePreview implements ReloadPane {
                                 try {
                                     backPane.setBackground(new Background(new BackgroundImage(new Image(new FileInputStream(split1[6])),
                                             BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT, BackgroundPosition.DEFAULT,
-                                            new BackgroundSize(Integer.parseInt(split1[2]), Integer.parseInt(split1[3]), false, false, false, false))));
+                                            new BackgroundSize(ScreenAdapter.calculateExW(Integer.parseInt(split1[2])), ScreenAdapter.calculateExH(Integer.parseInt(split1[3])), false, false, false, false))));
                                 } catch (FileNotFoundException e) {
                                     backPane.setBackground(new Background(new BackgroundFill(Color.TRANSPARENT, new CornerRadii(10), Insets.EMPTY)));
                                 }
@@ -351,9 +354,11 @@ public class CluePreview implements ReloadPane {
                         }
 
 
-                        daanLabel.setWrappingWidth(Integer.parseInt(split1[2]));
-                        daanLabel.setLineSpacing(Integer.parseInt(split1[14]));
-                        Font font = Font.font(FontMap.getFont(split1[7]), FontWeight.NORMAL, FontPosture.REGULAR, Integer.parseInt(split1[8]));
+                        daanLabel.setWrappingWidth(ScreenAdapter.calculateExW(Integer.parseInt(split1[2])));
+                        daanLabel.setLineSpacing(ScreenAdapter.calculateExH(Integer.parseInt(split1[14])));
+                        Font font = Font.font(FontMap.getFont(split1[7]), FontWeight.NORMAL, FontPosture.REGULAR,
+                            ScreenAdapter.calculateExW(Integer.parseInt(split1[8]))
+                        );
                         daanLabel.setFont(font);
                         daanLabel.setUnderline(Boolean.valueOf(split1[12]));
                         daanLabel.setStrikethrough(Boolean.valueOf(split1[9]));
@@ -367,7 +372,7 @@ public class CluePreview implements ReloadPane {
                             daanLabel.getTransforms().add(new Shear(-0.3, 0));
                         }
                         daanLabel.setTextAlignment(AlignmentUtil.getTextAlign(split1[13]));
-                        daanLabel.setLineSpacing(Integer.parseInt(split1[14]));
+                        daanLabel.setLineSpacing(ScreenAdapter.calculateExH(Integer.parseInt(split1[14])));
                     }
 
 
@@ -380,10 +385,10 @@ public class CluePreview implements ReloadPane {
                         if (!StringUtils.isEmpty(style3)) {
                             String[] split1 = style3.split(ConfigSpliter.SPLITER);
 
-                            stagePane.setLayoutX(Integer.parseInt(split1[0]));
-                            stagePane.setLayoutY(Integer.parseInt(split1[1]));
-                            stagePane.setPrefWidth(Integer.parseInt(split1[2]));
-                            stagePane.setPrefHeight(Integer.parseInt(split1[3]));
+                            stagePane.setLayoutX(ScreenAdapter.calculateExX(Integer.parseInt(split1[0])));
+                            stagePane.setLayoutY(ScreenAdapter.calculateExY(Integer.parseInt(split1[1])));
+                            stagePane.setPrefWidth(ScreenAdapter.calculateExW(Integer.parseInt(split1[2])));
+                            stagePane.setPrefHeight(ScreenAdapter.calculateExH(Integer.parseInt(split1[3])));
 
 
                             if (Boolean.valueOf(split1[4])) {
@@ -392,7 +397,7 @@ public class CluePreview implements ReloadPane {
                                     try {
                                         stagePane.setBackground(new Background(new BackgroundImage(new Image(new FileInputStream(split1[6])),
                                                 BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT, BackgroundPosition.DEFAULT,
-                                                new BackgroundSize(Integer.parseInt(split1[2]), Integer.parseInt(split1[3]), false, false, false, false))));
+                                                new BackgroundSize(ScreenAdapter.calculateExW(Integer.parseInt(split1[2])), ScreenAdapter.calculateExH(Integer.parseInt(split1[3])), false, false, false, false))));
                                     } catch (FileNotFoundException e) {
                                         stagePane.setBackground(new Background(new BackgroundFill(Color.TRANSPARENT, new CornerRadii(10), Insets.EMPTY)));
                                     }
@@ -405,9 +410,9 @@ public class CluePreview implements ReloadPane {
                             }
 
 
-                            stageLabel.setWrappingWidth(Integer.parseInt(split1[2]));
+                            stageLabel.setWrappingWidth(ScreenAdapter.calculateExW(Integer.parseInt(split1[2])));
                             if (split1.length >= 15) {
-                                stageLabel.setLineSpacing(Integer.parseInt(split1[14]));
+                                stageLabel.setLineSpacing(ScreenAdapter.calculateExH(Integer.parseInt(split1[14])));
                             }
                             Font font = Font.font(FontMap.getFont(split1[7]), FontWeight.NORMAL, FontPosture.REGULAR, Integer.parseInt(split1[8]));
                             stageLabel.setFont(font);
@@ -423,7 +428,7 @@ public class CluePreview implements ReloadPane {
                                 stageLabel.getTransforms().add(new Shear(-0.3, 0));
                             }
                             stageLabel.setTextAlignment(AlignmentUtil.getTextAlign(split1[13]));
-                            stageLabel.setLineSpacing(Integer.parseInt(split1[14]));
+                            stageLabel.setLineSpacing(ScreenAdapter.calculateExH(Integer.parseInt(split1[14])));
                         }
                     }
 

@@ -129,7 +129,7 @@ public class MemberRankPreview extends PreviewPane{
         double rowSpace = 10 ;
 
         String font = competitionLab.getFont().getName();
-        int size = (int) competitionLab.getFont().getSize();
+        double size = competitionLab.getFont().getSize();
 
         if (!StringUtils.isEmpty(rankConfig)) {
             String[] split = rankConfig.split(ConfigSpliter.SPLITER);

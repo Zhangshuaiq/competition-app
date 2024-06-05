@@ -135,29 +135,29 @@ public class StageRulePreviewPreview extends PreviewPane{
         titlePane.getChildren().add(title);
         if (trsArr.length <= 0) {
 
-            titlePane.setLayoutX(TITLE_X);
-            titlePane.setLayoutY(TITLE_Y);
-            titlePane.setPrefWidth(TITLE_W);
-            titlePane.setPrefHeight(TITLE_H);
+            titlePane.setLayoutX(ScreenAdapter.calculateMainX(TITLE_X));
+            titlePane.setLayoutY(ScreenAdapter.calculateMainY(TITLE_Y));
+            titlePane.setPrefWidth(ScreenAdapter.calculateMainW(TITLE_W));
+            titlePane.setPrefHeight(ScreenAdapter.calculateMainH(TITLE_H));
             titlePane.setBackground(new Background(new BackgroundFill(Color.YELLOW, CornerRadii.EMPTY, Insets.EMPTY)));
 
-            title.setX(TITLE_X);
-            title.setY(TITLE_Y);
-            title.prefWidth(TITLE_W);
-            title.prefHeight(TITLE_H);
+            title.setX(ScreenAdapter.calculateMainX(TITLE_X));
+            title.setY(ScreenAdapter.calculateMainY(TITLE_Y));
+            title.prefWidth(ScreenAdapter.calculateMainW(TITLE_W));
+            title.prefHeight(ScreenAdapter.calculateMainH(TITLE_H));
             title.setFill(Color.BLACK);
         } else {
             final String[] cfgArr = trsArr;
-            title.setX(Integer.parseInt(cfgArr[0]));
-            title.setY(Integer.parseInt(cfgArr[1]));
-            title.prefWidth(Integer.parseInt(cfgArr[2]));
-            title.prefHeight(Integer.parseInt(cfgArr[3]));
+            title.setX(ScreenAdapter.calculateMainX(Integer.parseInt(cfgArr[0])));
+            title.setY(ScreenAdapter.calculateMainY(Integer.parseInt(cfgArr[1])));
+            title.prefWidth(ScreenAdapter.calculateMainW(Integer.parseInt(cfgArr[2])));
+            title.prefHeight(ScreenAdapter.calculateMainH(Integer.parseInt(cfgArr[3])));
             title.setFill(Color.valueOf(cfgArr[15]));
 
-            titlePane.setLayoutX(Integer.parseInt(cfgArr[0]));
-            titlePane.setLayoutY(Integer.parseInt(cfgArr[1]));
-            titlePane.setPrefWidth(Integer.parseInt(cfgArr[2]));
-            titlePane.setPrefHeight(Integer.parseInt(cfgArr[3]));
+            titlePane.setLayoutX(ScreenAdapter.calculateMainX(Integer.parseInt(cfgArr[0])));
+            titlePane.setLayoutY(ScreenAdapter.calculateMainY(Integer.parseInt(cfgArr[1])));
+            titlePane.setPrefWidth(ScreenAdapter.calculateMainW(Integer.parseInt(cfgArr[2])));
+            titlePane.setPrefHeight(ScreenAdapter.calculateMainH(Integer.parseInt(cfgArr[3])));
 
 
             if (Boolean.valueOf(cfgArr[4])) {
@@ -166,7 +166,7 @@ public class StageRulePreviewPreview extends PreviewPane{
                     try {
                         titlePane.setBackground(new Background(new BackgroundImage(new Image(new FileInputStream(cfgArr[6])),
                                 BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT, BackgroundPosition.DEFAULT,
-                                new BackgroundSize(Integer.parseInt(cfgArr[2]), Integer.parseInt(cfgArr[3]), false, false, false, false))));
+                                new BackgroundSize(ScreenAdapter.calculateMainW(Integer.parseInt(cfgArr[2])), ScreenAdapter.calculateMainH(Integer.parseInt(cfgArr[3])), false, false, false, false))));
                     } catch (FileNotFoundException e) {
                         titlePane.setBackground(new Background(new BackgroundFill(Color.TRANSPARENT, new CornerRadii(10), Insets.EMPTY)));
                     }
@@ -178,7 +178,9 @@ public class StageRulePreviewPreview extends PreviewPane{
                 titlePane.setBackground(new Background(new BackgroundFill(Color.valueOf(cfgArr[5]), CornerRadii.EMPTY, Insets.EMPTY)));
             }
 
-            Font font = Font.font(FontMap.getFont(cfgArr[7]), FontWeight.NORMAL, FontPosture.REGULAR, Double.parseDouble(cfgArr[8]));
+            Font font = Font.font(FontMap.getFont(cfgArr[7]), FontWeight.NORMAL, FontPosture.REGULAR,
+               ScreenAdapter.calculateMainW(Double.parseDouble(cfgArr[8]))
+            );
             title.setFont(font);
             if (Boolean.valueOf(cfgArr[10])) {
                 title.setStroke(title.getFill());
@@ -192,8 +194,8 @@ public class StageRulePreviewPreview extends PreviewPane{
             title.setUnderline(Boolean.valueOf(cfgArr[12]));
             title.setStrikethrough(Boolean.valueOf(cfgArr[9]));
             title.setTextAlignment(AlignmentUtil.getTextAlign(cfgArr[13]));
-            title.setLineSpacing(Integer.parseInt(cfgArr[14]));
-            title.setWrappingWidth(Integer.parseInt(cfgArr[2]));
+            title.setLineSpacing(ScreenAdapter.calculateMainH(Integer.parseInt(cfgArr[14])));
+            title.setWrappingWidth(ScreenAdapter.calculateMainW(Integer.parseInt(cfgArr[2])));
         }
         container.getChildren().add(titlePane);
 
@@ -209,30 +211,30 @@ public class StageRulePreviewPreview extends PreviewPane{
 
         String[] cfgArr = config.split(ConfigSpliter.SPLITER);
 
-        textPane.setLayoutX(Integer.parseInt(cfgArr[1]));
-        textPane.setLayoutY(Integer.parseInt(cfgArr[2]));
-        textPane.setPrefWidth(Integer.parseInt(cfgArr[3]));
-        textPane.setPrefHeight(Integer.parseInt(cfgArr[4]));
+        textPane.setLayoutX(ScreenAdapter.calculateMainX(Integer.parseInt(cfgArr[1])));
+        textPane.setLayoutY(ScreenAdapter.calculateMainY(Integer.parseInt(cfgArr[2])));
+        textPane.setPrefWidth(ScreenAdapter.calculateMainW(Integer.parseInt(cfgArr[3])));
+        textPane.setPrefHeight(ScreenAdapter.calculateMainH(Integer.parseInt(cfgArr[4])));
         textPane.setBackground(new Background(new BackgroundFill(Color.YELLOW, CornerRadii.EMPTY, Insets.EMPTY)));
 
-        text.setX(Integer.parseInt(cfgArr[1]));
-        text.setY(Integer.parseInt(cfgArr[2]));
-        text.prefWidth(Integer.parseInt(cfgArr[3]));
-        text.prefHeight(Integer.parseInt(cfgArr[4]));
+        text.setX(ScreenAdapter.calculateMainX(Integer.parseInt(cfgArr[1])));
+        text.setY(ScreenAdapter.calculateMainY(Integer.parseInt(cfgArr[2])));
+        text.prefWidth(ScreenAdapter.calculateMainW(Integer.parseInt(cfgArr[3])));
+        text.prefHeight(ScreenAdapter.calculateMainH(Integer.parseInt(cfgArr[4])));
         text.setFill(Color.valueOf(cfgArr[0]));
-        text.setWrappingWidth(Integer.parseInt(cfgArr[3]));
+        text.setWrappingWidth(ScreenAdapter.calculateMainW(Integer.parseInt(cfgArr[3])));
         if (StringUtils.isEmpty(details)) {
         } else {
             cfgArr = details.split(ConfigSpliter.SPLITER);
-            text.setX(Integer.parseInt(cfgArr[0]));
-            text.setY(Integer.parseInt(cfgArr[1]));
-            text.prefWidth(Integer.parseInt(cfgArr[2]));
-            text.prefHeight(Integer.parseInt(cfgArr[3]));
+            text.setX(ScreenAdapter.calculateMainX(Integer.parseInt(cfgArr[0])));
+            text.setY(ScreenAdapter.calculateMainY(Integer.parseInt(cfgArr[1])));
+            text.prefWidth(ScreenAdapter.calculateMainW(Integer.parseInt(cfgArr[2])));
+            text.prefHeight(ScreenAdapter.calculateMainH(Integer.parseInt(cfgArr[3])));
 
-            textPane.setLayoutX(Integer.parseInt(cfgArr[0]));
-            textPane.setLayoutY(Integer.parseInt(cfgArr[1]));
-            textPane.setPrefWidth(Integer.parseInt(cfgArr[2]));
-            textPane.setPrefHeight(Integer.parseInt(cfgArr[3]));
+            textPane.setLayoutX(ScreenAdapter.calculateMainX(Integer.parseInt(cfgArr[0])));
+            textPane.setLayoutY(ScreenAdapter.calculateMainY(Integer.parseInt(cfgArr[1])));
+            textPane.setPrefWidth(ScreenAdapter.calculateMainW(Integer.parseInt(cfgArr[2])));
+            textPane.setPrefHeight(ScreenAdapter.calculateMainH(Integer.parseInt(cfgArr[3])));
 
             if (Boolean.valueOf(cfgArr[4])) {
                 // 填充背景图片
@@ -240,7 +242,7 @@ public class StageRulePreviewPreview extends PreviewPane{
                     try {
                         textPane.setBackground(new Background(new BackgroundImage(new Image(new FileInputStream(cfgArr[6])),
                                 BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT, BackgroundPosition.DEFAULT,
-                                new BackgroundSize(Integer.parseInt(cfgArr[2]), Integer.parseInt(cfgArr[3]), false, false, false, false))));
+                                new BackgroundSize(ScreenAdapter.calculateMainW(Integer.parseInt(cfgArr[2])), ScreenAdapter.calculateMainH(Integer.parseInt(cfgArr[3])), false, false, false, false))));
                     } catch (FileNotFoundException e) {
                         textPane.setBackground(new Background(new BackgroundFill(Color.TRANSPARENT, new CornerRadii(10), Insets.EMPTY)));
                     }
@@ -273,8 +275,8 @@ public class StageRulePreviewPreview extends PreviewPane{
             text.setUnderline(Boolean.valueOf(cfgArr[12]));
             text.setStrikethrough(Boolean.valueOf(cfgArr[9]));
             text.setTextAlignment(AlignmentUtil.getTextAlign(cfgArr[13]));
-            text.setLineSpacing(Integer.parseInt(cfgArr[14]));
-            text.setWrappingWidth(Integer.parseInt(cfgArr[2]));
+            text.setLineSpacing(ScreenAdapter.calculateMainH(Integer.parseInt(cfgArr[14])));
+            text.setWrappingWidth(ScreenAdapter.calculateMainW(Integer.parseInt(cfgArr[2])));
           
         }
         container.getChildren().add(textPane);
