@@ -45,8 +45,10 @@ import java.util.Map;
 public class CluePreviewPreview extends PreviewPane{
 
 
+    
+    
     @FXML
-    private StackPane backPane, stagePane;
+    private StackPane backPane, stagePane, buttonPane;
 
     @FXML
     private Text daanLabel, stageLabel;
@@ -89,7 +91,9 @@ public class CluePreviewPreview extends PreviewPane{
     @FXML
     public void initialize() {
         inner = current;
-
+        buttonPane.prefWidth(Navigator.getWidth());
+        buttonPane.setPrefWidth(Navigator.getWidth());
+        buttonPane.setLayoutY(ScreenAdapter.calculateMainY(buttonPane.getLayoutY()));
         PreviewStack.addPreview(this);
         container.setOnMouseClicked(new EventHandler<MouseEvent>() {
             @Override
