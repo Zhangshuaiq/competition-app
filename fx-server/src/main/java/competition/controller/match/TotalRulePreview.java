@@ -55,7 +55,7 @@ public class TotalRulePreview implements ReloadPane {
         try {
             container.setBackground(new Background(new BackgroundImage(
                     new Image(new FileInputStream(ImageResource.总规则背景())), BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT, BackgroundPosition.CENTER,
-                    new BackgroundSize(Navigator.getWidth(), Navigator.getHeight(), false, false, false, false)
+                    new BackgroundSize(ExtendedScreen.getWidth(), ExtendedScreen.getHeight(), false, false, false, false)
             )));
         } catch (FileNotFoundException e) {
             container.setBackground(new Background(new BackgroundFill(Color.TRANSPARENT, new CornerRadii(10), Insets.EMPTY)));
@@ -68,21 +68,22 @@ public class TotalRulePreview implements ReloadPane {
         Text text = new Text(ruleContent);
         if (StringUtils.isEmpty(details)) {
             final String[] cfgArr = config.split(ConfigSpliter.SPLITER);
-            text.setX(Integer.parseInt(cfgArr[1]));
-            text.setY(Integer.parseInt(cfgArr[2]));
-            text.prefWidth(Integer.parseInt(cfgArr[3]));
-            text.prefHeight(Integer.parseInt(cfgArr[4]));
+            text.setX(ScreenAdapter.calculateExX(Integer.parseInt(cfgArr[1])));
+            text.setY(ScreenAdapter.calculateExY(Integer.parseInt(cfgArr[2])));
+            text.prefWidth(ScreenAdapter.calculateExW(Integer.parseInt(cfgArr[3])));
+            text.prefHeight(ScreenAdapter.calculateExH(Integer.parseInt(cfgArr[4])));
             text.setFill(Color.valueOf(cfgArr[0]));
-            text.setWrappingWidth(Integer.parseInt(cfgArr[3]));
+            text.setWrappingWidth(ScreenAdapter.calculateExW(Integer.parseInt(cfgArr[3])));
             container.getChildren().add(text);
         } else {
             final String[] cfgArr = details.split(ConfigSpliter.SPLITER);
-            text.setX(Integer.parseInt(cfgArr[0]));
-            text.setY(Integer.parseInt(cfgArr[1]));
-            text.prefWidth(Integer.parseInt(cfgArr[2]));
-            text.prefHeight(Integer.parseInt(cfgArr[3]));
+            text.setX(ScreenAdapter.calculateExX(Integer.parseInt(cfgArr[0])));
+            text.setY(ScreenAdapter.calculateExY(Integer.parseInt(cfgArr[1])));
+            text.prefWidth(ScreenAdapter.calculateExW(Integer.parseInt(cfgArr[2])));
+            text.prefHeight(ScreenAdapter.calculateExH(Integer.parseInt(cfgArr[3])));
             text.setFill(Color.valueOf(cfgArr[5]));
-            Font font = Font.font(FontMap.getFont(cfgArr[7]), FontWeight.NORMAL, FontPosture.REGULAR, Integer.parseInt(cfgArr[8]));
+            Font font = Font.font(FontMap.getFont(cfgArr[7]), FontWeight.NORMAL, FontPosture.REGULAR,
+                ScreenAdapter.calculateExW(Integer.parseInt(cfgArr[8])));
             text.setFont(font);
             if (Boolean.valueOf(cfgArr[10])) {
                 text.setStroke(text.getFill());
@@ -96,8 +97,8 @@ public class TotalRulePreview implements ReloadPane {
             text.setUnderline(Boolean.valueOf(cfgArr[12]));
             text.setStrikethrough(Boolean.valueOf(cfgArr[9]));
             text.setTextAlignment(AlignmentUtil.getTextAlign(cfgArr[13]));
-            text.setLineSpacing(Integer.parseInt(cfgArr[14]));
-            text.setWrappingWidth(Integer.parseInt(cfgArr[2]));
+            text.setLineSpacing(ScreenAdapter.calculateExH(Integer.parseInt(cfgArr[14])));
+            text.setWrappingWidth(ScreenAdapter.calculateExW(Integer.parseInt(cfgArr[2])));
             container.getChildren().add(text);
         }
     }

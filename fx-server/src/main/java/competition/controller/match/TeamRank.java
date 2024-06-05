@@ -75,7 +75,7 @@ public class TeamRank implements ReloadPane {
         try {
             container.setBackground(new Background(new BackgroundImage(
                     new Image(new FileInputStream(ImageResource.团队排名背景())), BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT, BackgroundPosition.DEFAULT,
-                    new BackgroundSize(Navigator.getWidth(), Navigator.getHeight(), false, false, false, false)
+                    new BackgroundSize(ExtendedScreen.getWidth(), ExtendedScreen.getHeight(), false, false, false, false)
             )));
         } catch (FileNotFoundException e) {
             container.setBackground(new Background(new BackgroundFill(Color.TRANSPARENT, new CornerRadii(10), Insets.EMPTY)));
@@ -89,36 +89,36 @@ public class TeamRank implements ReloadPane {
         String[] cfgArr = config.split(ConfigSpliter.SPLITER);
         
 
-        int x = Integer.parseInt(cfgArr[8]);
-        int y = Integer.parseInt(cfgArr[9]);
-        int width = Integer.parseInt(cfgArr[10]);
-        int height = Integer.parseInt(cfgArr[11]);
+        double x = ScreenAdapter.calculateExX(Integer.parseInt(cfgArr[8]));
+        double y = ScreenAdapter.calculateExY(Integer.parseInt(cfgArr[9]));
+        double width = ScreenAdapter.calculateExW(Integer.parseInt(cfgArr[10]));
+        double height = ScreenAdapter.calculateExH(Integer.parseInt(cfgArr[11]));
 
         int count = 8;
-        int rowSpace = 10;
+        double rowSpace = ScreenAdapter.calculateExH(10);
         
         String font = competitionLab.getFont().getName();
-        int size = (int) competitionLab.getFont().getSize();
+        double size = ScreenAdapter.calculateExW(competitionLab.getFont().getSize());
 
         if (!StringUtils.isEmpty(rankConfig)) {
             String[] split = rankConfig.split(ConfigSpliter.SPLITER);
-            x = Integer.parseInt(split[0]);
-            y = Integer.parseInt(split[1]);
-            width = Integer.parseInt(split[2]);
-            height = Integer.parseInt(split[3]);
-            rowSpace = Integer.parseInt(split[6]);
+            x = ScreenAdapter.calculateExX(Integer.parseInt(split[0]));
+            y = ScreenAdapter.calculateExY(Integer.parseInt(split[1]));
+            width = ScreenAdapter.calculateExW(Integer.parseInt(split[2]));
+            height = ScreenAdapter.calculateExH(Integer.parseInt(split[3]));
+            rowSpace = ScreenAdapter.calculateExH(Integer.parseInt(split[6]));
             font = FontMap.getFont(split[5]);
-            size = Integer.parseInt(split[4]);
+            size = ScreenAdapter.calculateExW(Integer.parseInt(split[4]));
             count = Integer.parseInt(split[7]);
         }
 
         if (!StringUtils.isEmpty(headConfig)) {
             String[] split = headConfig.split(ConfigSpliter.SPLITER);
-            competitionLab.setLayoutX(Integer.parseInt(split[0]));
-            competitionLab.setLayoutY(Integer.parseInt(split[1]));
-            competitionLab.setPrefWidth(Integer.parseInt(split[2]));
-            competitionLab.setPrefHeight(Integer.parseInt(split[3]));
-            int fs = Integer.parseInt(split[5]);
+            competitionLab.setLayoutX(ScreenAdapter.calculateExX(Integer.parseInt(split[0])));
+            competitionLab.setLayoutY(ScreenAdapter.calculateExY(Integer.parseInt(split[1])));
+            competitionLab.setPrefWidth(ScreenAdapter.calculateExW(Integer.parseInt(split[2])));
+            competitionLab.setPrefHeight(ScreenAdapter.calculateExH(Integer.parseInt(split[3])));
+            double fs = ScreenAdapter.calculateExW(Integer.parseInt(split[5]));
             Color color = Color.valueOf(split[4]);
             String fn = split[6];
             Font f = Font.font(fn, fs);
