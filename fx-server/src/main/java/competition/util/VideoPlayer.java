@@ -33,15 +33,12 @@ public class VideoPlayer {
         // 自适应窗体大小
         mediaView.setPreserveRatio(true);
         mediaView.fitWidthProperty().bind(primaryStage.widthProperty());
-        mediaView.fitHeightProperty().bind(primaryStage.heightProperty().subtract(50));  // 留空间给控制面板
+        mediaView.fitHeightProperty().bind(primaryStage.heightProperty());  // 留空间给控制面板
 
         // 控制面板
         BorderPane root = new BorderPane();
         root.setCenter(mediaView);
 
-        // 全屏切换按钮
-        Button fullScreenButton = new Button("Full Screen");
-        fullScreenButton.setOnAction(e -> primaryStage.setFullScreen(!primaryStage.isFullScreen()));
 
         // 创建场景
 

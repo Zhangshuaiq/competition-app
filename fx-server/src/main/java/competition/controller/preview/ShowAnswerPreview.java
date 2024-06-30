@@ -261,6 +261,7 @@ public class ShowAnswerPreview extends PreviewPane {
         
         if (f1BD) {
             correctText.setStroke(f1Color);
+            correctText.setStrokeWidth(1);
         } else {
             correctText.setStroke(null);
 
@@ -326,6 +327,7 @@ public class ShowAnswerPreview extends PreviewPane {
 
                 if (f2BD) {
                     memberResult.setStroke(f2Color);
+                    memberResult.setStrokeWidth(1);
                 } else {
                     memberResult.setStroke(null);
 
@@ -370,6 +372,7 @@ public class ShowAnswerPreview extends PreviewPane {
 
                     if (f3BD) {
                         ut.setStroke(f3Color);
+                        ut.setStrokeWidth(1);
                     } else {
                         ut.setStroke(null);
 
@@ -406,6 +409,7 @@ public class ShowAnswerPreview extends PreviewPane {
 
                     if (f4BD) {
                         ut.setStroke(f4Color);
+                        ut.setStrokeWidth(1);
                     } else {
                         ut.setStroke(null);
 
@@ -443,6 +447,7 @@ public class ShowAnswerPreview extends PreviewPane {
 
                     if (f5BD) {
                         ut.setStroke(f5Color);
+                        ut.setStrokeWidth(1);
                     } else {
                         ut.setStroke(null);
 

@@ -1,0 +1,128 @@
+<template>
+  <div class="scoreboard">
+    <el-row>
+      <el-col v-for="(item, index) in teamList" :key="item.id" span="2">
+        <div style="margin-bottom: 5px">
+          <el-row>
+            <el-col span="10">
+              <div class="round-board-item">
+                {{index + 1}}
+              </div>
+            </el-col>
+            <el-col span="12">
+              <div class="board-item" >
+                {{item.currentScore}}
+              </div>
+            </el-col>
+          </el-row>
+          <div v-if="showStatus">
+            <div v-if="showMember" >
+              <el-row>
+                <el-col span="6" v-for="(st, index) in item.statusList" :key="index">
+                  <div class="status-item" :style="{backgroundColor: statusColor[st]}">
+                    {{index + 1}}
+                  </div>
+                </el-col>
+              </el-row>
+            </div>
+            <div v-else>
+              <el-row>
+                <el-col span="22">
+                  <div class="board-item" :style="{backgroundColor: statusColor[item.status]}">
+                    <div v-if="item.status === 2 || item.status === 3">
+                      {{item.teamSelect}}
+                    </div>
+                  </div>
+                </el-col>
+              </el-row>
+            </div>
+            
+          </div>
+        </div>
+      </el-col>
+    </el-row>
+  </div>
+</template>
+
+<script>
+ export default {
+   name: "ScoreBoard",
+   data() {
+     return  {
+       teamList: [],
+       showStatus: false,
+       showMember: false,
+       statusColor: ['#FFFFFF', '#0070C0', '#00B050', '#FF0000'],
+       questionItem: sessionStorage.getItem('questionItem') || {}
+     }
+   },
+
+   beforeRouteUpdate(to, from, next) {
+     const data = this.$store.state.teams
+     this.teamList = data
+     console.log(this.teamList)
+     next();
+   },
+
+   watch: {
+     '$store.state.teams': function (newStatus) {
+       this.teamList = newStatus
+       this.questionItem = JSON.parse(sessionStorage.getItem('questionItem'))
+       console.log("1572910872933333")
+       console.log(this.questionItem)
+     },
+
+     questionItem(newVal, oldVal) {
+       // 当 mySessionData 变化时执行操作
+       console.log(oldVal)
+       console.log('sessionStorage myKey changed:', newVal);
+     }
+   },
+
+   mounted() {
+     const data = this.$store.state.teams
+     console.log(data)
+     this.teamList = data
+     if (this.$store.state.currentRoute === 'model61') {
+       this.showStatus = true
+       this.showMember = true
+     } else if (this.$store.state.currentRoute === 'model60') {
+       this.showStatus = true
+       this.showMember = false
+     }
+   }
+ }
+
+</script>
+
+<style scoped>
+
+.status-item {
+  width: 20px;
+  height: 30px;
+  line-height: 30px;
+  text-align: center;
+  font-size: larger;
+  color: white;
+}
+
+.round-board-item {
+  width: 100%;
+  height: 30px;
+  line-height: 30px;
+  text-align: center;
+  font-size: smaller;
+  color: white;
+  background-color: #FFC000;
+}
+
+.board-item {
+  width: 100%;
+  height: 30px;
+  line-height: 30px;
+  text-align: center;
+  font-size: smaller;
+  color: white;
+  background-color: #C40000;
+}
+</style>

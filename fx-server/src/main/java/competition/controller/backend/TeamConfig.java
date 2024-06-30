@@ -1,9 +1,11 @@
 package competition.controller.backend;
 
+import com.alibaba.excel.EasyExcel;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import competition.controller.ControlPane;
 import competition.entity.Teams;
 import competition.mapper.TeamsMapper;
+import competition.util.ExcelParser;
 import competition.util.Information;
 import competition.util.ScoreSaver;
 import competition.util.TeamRuntime;
@@ -21,11 +23,13 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
+import javafx.stage.FileChooser;
 import org.apache.logging.log4j.util.Strings;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
 import javax.annotation.Resource;
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -216,7 +220,33 @@ public class TeamConfig {
     
     @FXML
     public void importTeam(){
-        
+        //EasyExcel.
+        //file
+        // 创建FileChooser实例
+        FileChooser fileChooser = new FileChooser();
+
+        // 设置文件选择器的标题
+        fileChooser.setTitle("Select Excel File");
+
+        // 设置初始目录(可选)
+        fileChooser.setInitialDirectory(new File(System.getProperty("user.home")));
+
+        // 添加文件过滤器以只显示Excel文件
+        FileChooser.ExtensionFilter extFilter =
+                new FileChooser.ExtensionFilter("Excel files (*.xls, *.xlsx)", "*.xls", "*.xlsx");
+        fileChooser.getExtensionFilters().add(extFilter);
+
+        File selectedFile = fileChooser.showOpenDialog(null);
+        if (selectedFile != null) {
+            List<Teams> teamsList = ExcelParser.parse(selectedFile.getAbsolutePath(), Teams.class);
+            // 删除旧的内容
+            teamsMapper.delete(new LambdaQueryWrapper<>());
+            for (Teams teams : teamsList) {
+                teamsMapper.insert(teams);
+            }
+        }
+        // 显示最新的队伍信息
+        showTeam();
     }
     
     
@@ -270,6 +300,8 @@ public class TeamConfig {
             team.setMemberScore(Integer.parseInt(text));
             teamsMapper.updateById(team);
         }
+
+        teams.sort(Comparator.comparingInt(o -> Integer.parseInt(o.getCode())));
         
         for (Teams team : teams) {
             team.setCurrentScore(team.getTeamScore());

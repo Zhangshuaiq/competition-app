@@ -1,6 +1,11 @@
-// const host = window.location.hostname;
-// const port = window.location.port ? `:${window.location.port}` : ':8080';
-// // 构建WebSocket的URL
-// const baseUrl = `http://${host}${port}`
-const baseUrl = `http://192.168.1.5:8080`;
-export default baseUrl
+let baseUrl;
+
+if (process.env.NODE_ENV === 'development') {
+    baseUrl = process.env.VUE_APP_BASE_URL;
+} else {
+    const host = window.location.hostname;
+    const port = window.location.port ? `:${window.location.port}` : ':8080';
+    baseUrl = `http://${host}${port}`;
+}
+
+export default baseUrl;

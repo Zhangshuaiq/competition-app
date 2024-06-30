@@ -1,18 +1,9 @@
 import axios from "axios";
 import baseUrl from "@/config";
 
-<<<<<<< HEAD
-// const axiosInstance = axios.create({
-//     baseURL: "http://192.168.1.11:8080"
-// });
-=======
 const axiosInstance = axios.create({
     baseURL: baseUrl
 });
->>>>>>> 8612ba1b (前端添加登陆验证)
-
-const axiosInstance = axios.create();
-
 // axiosInstance.interceptors.request.use((config) => {
 //     let token =  window.sessionStorage.getItem('token')
 //     if (token) {

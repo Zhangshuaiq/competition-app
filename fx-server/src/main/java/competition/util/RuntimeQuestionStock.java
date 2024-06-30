@@ -14,6 +14,29 @@ public class RuntimeQuestionStock {
     
     private static Map<String, List<Questions>> quesMap = new HashMap<>();
     
+    public static void loadQuestion(String path) {
+        questions =  ExcelParser.parse(path, Questions.class);
+        List<QuestionStyle> styleList = ExcelParser.parse(ExcelParser.S_PATH, QuestionStyle.class);
+        for (int i = 0; i < questions.size(); i++) {
+            questions.get(i).setSort(i);
+            if (i < styleList.size()) {
+                styleList.get(i).setStageNo(questions.get(i).getStageNumber());
+            }
+        }
+
+        if (styleList.size() < questions.size()) {
+            int i = styleList.size();
+            for (; i < questions.size(); i++) {
+                QuestionStyle questionStyle = new QuestionStyle();
+                questionStyle.setStageNo(questions.get(i).getStageNumber());
+                styleList.add(questionStyle);
+            }
+        }
+
+        ExcelParser.write(ExcelParser.S_PATH, styleList, QuestionStyle.class);
+        quesMap = questions.stream().collect(Collectors.groupingBy(Questions::getStageNumber));
+    }
+    
     static {
         // 修复样式和问题的数量不一致
         List<QuestionStyle> styleList = ExcelParser.parse(ExcelParser.S_PATH, QuestionStyle.class);

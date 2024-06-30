@@ -85,7 +85,7 @@ public class Model3 implements ReloadPane {
         
         try {
             container.setBackground(new Background(new BackgroundImage(
-                    new Image(new FileInputStream(ImageResource.选题背景())), BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT, BackgroundPosition.DEFAULT,
+                    new Image(new FileInputStream(ImageResource.风险环节背景())), BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT, BackgroundPosition.DEFAULT,
                     new BackgroundSize(ExtendedScreen.getWidth(), ExtendedScreen.getHeight(), false, false, false, false)
             )));
         } catch (FileNotFoundException e) {
@@ -156,20 +156,27 @@ public class Model3 implements ReloadPane {
         String titleStyle = model3Style.getTitleStyle();
         String qStyle = model3Style.getQStyle();
         String headStyle = model3Style.getHeadStyle();
-        
+
         String [] headArr = {};
         if (!StringUtils.isEmpty(headStyle)) {
             headArr = headStyle.split(ConfigSpliter.SPLITER);
+        } else {
+            headArr = "750%%150%%400%%100%%false%%0x990000ff%%%%黑体%%40%%false%%false%%false%%false%%居中对齐%%0%%0xffffffff".split(ConfigSpliter.SPLITER);
         }
-        
+
         String [] titleArr = {};
         if (!StringUtils.isEmpty(titleStyle)) {
             titleArr = titleStyle.split(ConfigSpliter.SPLITER);
+        } else {
+            titleArr = "250%%300%%150%%150%%false%%0x990000ff%%%%微软雅黑%%32%%false%%false%%false%%false%%居中对齐%%30%%0xffffffff"
+                    .split(ConfigSpliter.SPLITER);
         }
 
         String [] qArr = {};
         if (!StringUtils.isEmpty(qStyle)) {
             qArr = qStyle.split(ConfigSpliter.SPLITER);
+        } else {
+            qArr = "500%%300%%60%%60%%false%%0x990000ff%%%%楷体%%36%%false%%false%%false%%false%%居中对齐%%30%%8%%40%%0xffffffff".split(ConfigSpliter.SPLITER);
         }
 
         Text head = new Text(stages.getName());
@@ -225,6 +232,12 @@ public class Model3 implements ReloadPane {
             head.setFont(font);
             // 字体颜色
             head.setFill(Color.valueOf(headArr[15]));
+            if (Boolean.valueOf(headArr[10])) {
+                head.setStroke(head.getFill());
+                head.setStrokeWidth(1);
+            } else {
+                head.setStroke(null);
+            }
             head.getTransforms().clear();
             if (Boolean.valueOf(headArr[11])) {
                 head.getTransforms().add(new Shear(-0.3, 0));
@@ -313,6 +326,13 @@ public class Model3 implements ReloadPane {
                 // 字体颜色
                 title.setFill(Color.valueOf(titleArr[15]));
                 title.getTransforms().clear();
+                if (Boolean.valueOf(titleArr[10])) {
+                    title.setStroke(Color.valueOf(titleArr[15]));
+                    title.setStrokeWidth(1);
+                } else {
+                    title.setStroke(null);
+                }
+                
                 if (Boolean.valueOf(titleArr[11])) {
                     title.getTransforms().add(new Shear(-0.3, 0));
                 }
@@ -359,7 +379,7 @@ public class Model3 implements ReloadPane {
                     item.setAlignment(AlignmentUtil.getAlign(detailArr[13]));
                     item.setLayoutX(ScreenAdapter.calculateExX(Integer.parseInt(detailArr[0])));
                     item.setLayoutY(ScreenAdapter.calculateExY(Integer.parseInt(detailArr[1])));
-                    questionGrid.setVgap(ScreenAdapter.calculateExH(Integer.parseInt(detailArr[14])));
+                    questionGrid.setVgap(ScreenAdapter.calculateExH(10));
                     questionGrid.setHgap(ScreenAdapter.calculateExW(Integer.parseInt(detailArr[16])));
                     questionBox.setSpacing(ScreenAdapter.calculateExH(Integer.parseInt(detailArr[14])));
                     if (Boolean.valueOf(detailArr[4])) {
@@ -387,8 +407,10 @@ public class Model3 implements ReloadPane {
                     Font font = Font.font(FontMap.getFont(detailArr[7]), FontWeight.NORMAL, FontPosture.REGULAR,
                         ScreenAdapter.calculateExW(Integer.parseInt(detailArr[8])));
                     text.setFont(font);
+                    text.setFill(Color.valueOf(detailArr[17]));
                     if (Boolean.valueOf(detailArr[10])) {
                         text.setStroke(text.getFill());
+                        text.setStrokeWidth(1);
                     } else {
                         text.setStroke(null);
 
@@ -397,7 +419,6 @@ public class Model3 implements ReloadPane {
                     if (Boolean.valueOf(detailArr[11])) {
                         text.getTransforms().add(new Shear(-0.3, 0));
                     }
-                    text.setFill(Color.valueOf(detailArr[17]));
                     text.setUnderline(Boolean.valueOf(detailArr[12]));
                     text.setStrikethrough(Boolean.valueOf(detailArr[9]));
                     cols = Integer.parseInt(detailArr[15]);

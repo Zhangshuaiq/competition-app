@@ -21,16 +21,21 @@ public class PreviewStack {
         returnedStack.add(pane);
     }
 
-    public static final PreviewPane removePreview() {
-        if (returnedStack.isEmpty()) {
-            return null;
+    public static final void removePreview() {
+        if (previewStack.isEmpty()) {
+            return ;
         }
-        PreviewPane pop = returnedStack.pop();
-        if (returnedStack.isEmpty()) {
-            returnedStack.add(pop);
+        previewStack.pop();
+    }
+    
+    
+    
+    public static final void reloadStyle(){
+        if (previewStack.isEmpty()) {
+            return ;
         }
-        pop.reload();
-        return pop; 
+        PreviewPane pop = previewStack.peek();
+        pop.reloadStyle();
     }
 
     public static final void reload() {

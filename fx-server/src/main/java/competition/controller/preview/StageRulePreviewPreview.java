@@ -139,7 +139,7 @@ public class StageRulePreviewPreview extends PreviewPane{
             titlePane.setLayoutY(ScreenAdapter.calculateMainY(TITLE_Y));
             titlePane.setPrefWidth(ScreenAdapter.calculateMainW(TITLE_W));
             titlePane.setPrefHeight(ScreenAdapter.calculateMainH(TITLE_H));
-            titlePane.setBackground(new Background(new BackgroundFill(Color.YELLOW, CornerRadii.EMPTY, Insets.EMPTY)));
+            titlePane.setBackground(new Background(new BackgroundFill(Color.YELLOW, new CornerRadii(10), Insets.EMPTY)));
 
             title.setX(ScreenAdapter.calculateMainX(TITLE_X));
             title.setY(ScreenAdapter.calculateMainY(TITLE_Y));
@@ -175,7 +175,7 @@ public class StageRulePreviewPreview extends PreviewPane{
                 }
             } else {
                 // 填充背景颜色
-                titlePane.setBackground(new Background(new BackgroundFill(Color.valueOf(cfgArr[5]), CornerRadii.EMPTY, Insets.EMPTY)));
+                titlePane.setBackground(new Background(new BackgroundFill(Color.valueOf(cfgArr[5]), new CornerRadii(10), Insets.EMPTY)));
             }
 
             Font font = Font.font(FontMap.getFont(cfgArr[7]), FontWeight.NORMAL, FontPosture.REGULAR,
@@ -184,6 +184,7 @@ public class StageRulePreviewPreview extends PreviewPane{
             title.setFont(font);
             if (Boolean.valueOf(cfgArr[10])) {
                 title.setStroke(title.getFill());
+                title.setStrokeWidth(1);
             } else {
                 title.setStroke(null);
             }
@@ -215,7 +216,7 @@ public class StageRulePreviewPreview extends PreviewPane{
         textPane.setLayoutY(ScreenAdapter.calculateMainY(Integer.parseInt(cfgArr[2])));
         textPane.setPrefWidth(ScreenAdapter.calculateMainW(Integer.parseInt(cfgArr[3])));
         textPane.setPrefHeight(ScreenAdapter.calculateMainH(Integer.parseInt(cfgArr[4])));
-        textPane.setBackground(new Background(new BackgroundFill(Color.YELLOW, CornerRadii.EMPTY, Insets.EMPTY)));
+        textPane.setBackground(new Background(new BackgroundFill(Color.YELLOW, new CornerRadii(10), Insets.EMPTY)));
 
         text.setX(ScreenAdapter.calculateMainX(Integer.parseInt(cfgArr[1])));
         text.setY(ScreenAdapter.calculateMainY(Integer.parseInt(cfgArr[2])));
@@ -251,7 +252,7 @@ public class StageRulePreviewPreview extends PreviewPane{
                 }
             } else {
                 // 填充背景颜色
-                textPane.setBackground(new Background(new BackgroundFill(Color.valueOf(cfgArr[5]), CornerRadii.EMPTY, Insets.EMPTY)));
+                textPane.setBackground(new Background(new BackgroundFill(Color.valueOf(cfgArr[5]), new CornerRadii(10), Insets.EMPTY)));
             }
             
             Font font = Font.font(FontMap.getFont(cfgArr[7]), FontWeight.NORMAL, FontPosture.REGULAR, Integer.parseInt(cfgArr[8]));
@@ -265,6 +266,7 @@ public class StageRulePreviewPreview extends PreviewPane{
            
             if (Boolean.valueOf(cfgArr[10])) {
                 text.setStroke(text.getFill());
+                text.setStrokeWidth(1);
             } else {
                 text.setStroke(null);
             }
@@ -280,6 +282,10 @@ public class StageRulePreviewPreview extends PreviewPane{
           
         }
         container.getChildren().add(textPane);
+    }
 
+    @Override
+    public void reloadStyle() {
+        this.reload();
     }
 }

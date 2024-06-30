@@ -4,6 +4,7 @@ import competition.JavaFxApplication;
 import competition.controller.ControlPane;
 import competition.entity.Questions;
 import competition.entity.Teams;
+import competition.service.ScoreService;
 import competition.util.TeamRuntime;
 import javafx.application.Platform;
 import lombok.Data;
@@ -35,7 +36,7 @@ public class Model60RuntimeData {
 //        if (!runtimeData.isEmpty()) {
 //            totalData.add(runtimeData);
 //        }
-        forceFinish();
+       // forceFinish();
         runtimeData.clear();
         Model60RuntimeData.teams = teams;
         for (Teams team : teams) {
@@ -84,18 +85,21 @@ public class Model60RuntimeData {
             int i = runtimeData.indexOf(modelData);
             runtimeData.set(i, data);
             // 团队加分,同步到界面
-
+            ControlPane controlPane = JavaFxApplication.getApplicationContext().getBean(ControlPane.class);
+            ScoreService scoreService = JavaFxApplication.getApplicationContext().getBean(ScoreService.class);
             List<Teams> teams = TeamRuntime.getTeams();
             for (Teams team : teams) {
                 if (team.getFullName().equals(data.getTeamName())) {
                     team.setStatus(1);
-                    ControlPane controlPane = JavaFxApplication.getApplicationContext().getBean(ControlPane.class);
 
                     if (data.getUserSelect().equals(data.getAnswer())) {
 
                         // 需要判断是否计入总分
                         if (controlPane.getCurrentStage().getCountTotal() == 1) {
                             team.setNewScore(team.getCurrentScore() + data.getScore());
+
+                            scoreService.addScore(null, team.getFullName(),  controlPane.getCurrentStage().getName(), modelData.getQuestionNumber().toString(),
+                                    modelData.getSecond().toString(),  data.getScore(), team.getNewScore().toString());
                         } else {
                             team.setNewScore(team.getCurrentScore());
                         }
@@ -109,6 +113,9 @@ public class Model60RuntimeData {
                         team.setQScore(-data.getScore());
                         if (controlPane.getCurrentStage().getCountTotal() == 1) {
                             team.setNewScore(team.getCurrentScore() - controlPane.getCurrentStage().getDesValue());
+
+                            scoreService.addScore(null, team.getFullName(),  controlPane.getCurrentStage().getName(), modelData.getQuestionNumber().toString(),
+                                    modelData.getSecond().toString(),  - controlPane.getCurrentStage().getDesValue(), team.getNewScore().toString());
                         } else {
                             team.setNewScore(team.getCurrentScore());
                         }
@@ -129,6 +136,20 @@ public class Model60RuntimeData {
 
     public static void forceFinish(){
         if (!runtimeData.isEmpty()) {
+            ControlPane controlPane = JavaFxApplication.getApplicationContext().getBean(ControlPane.class);
+            ScoreService scoreService = JavaFxApplication.getApplicationContext().getBean(ScoreService.class);
+            for (int i = 0; i < runtimeData.size(); i++) {
+                Teams team = TeamRuntime.getTeams().get(i);
+                ModelData modelData = runtimeData.get(i);
+                if (StringUtils.isEmpty(modelData.getUserSelect())) {
+                    if (controlPane.getCurrentStage().getCountTotal() == 1) {
+                        team.setNewScore(team.getCurrentScore() - controlPane.getCurrentStage().getDesValue());
+
+                        scoreService.addScore(null, team.getFullName(),  controlPane.getCurrentStage().getName(), modelData.getQuestionNumber().toString(),
+                                modelData.getSecond().toString(),  - controlPane.getCurrentStage().getDesValue(), team.getNewScore().toString());
+                    }
+                }
+            }
             String stageNumber = runtimeData.get(0).getStageNumber();
             if (!StringUtils.isEmpty(stageNumber)) {
                 totalData.add(new ArrayList<>(runtimeData));

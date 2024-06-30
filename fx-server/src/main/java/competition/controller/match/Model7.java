@@ -7,24 +7,17 @@ import competition.entity.Teams;
 import competition.mapper.Model3Mapper;
 import competition.util.*;
 import competition.ws.Model7RuntimeData;
-import competition.ws.WsMessageHandler;
-import javafx.animation.KeyFrame;
-import javafx.animation.Timeline;
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
-import javafx.scene.input.MouseButton;
-import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.text.Font;
 import javafx.scene.text.TextAlignment;
-import javafx.util.Duration;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
@@ -151,6 +144,10 @@ public class Model7 implements ReloadPane {
                 }
                 last = m;
             }
+            // 补充未答题的分数扣除
+            if (Model7RuntimeData.getFinished().get(i)) {
+                score -= controlPane.getCurrentStage().getDesValue() * (Model7RuntimeData.totalNumber - modelData.size());
+            }
             // 第一行
             HBox row1 = new HBox();
             row1.setPadding(new Insets(0, 3, 0, 3));
@@ -207,8 +204,7 @@ public class Model7 implements ReloadPane {
                 timeLab.setTextAlignment(TextAlignment.CENTER);
                 timeLab.setAlignment(Pos.CENTER);
                 downArea.getChildren().addAll(endLab, scoreLab, timeLab);
-            }
-            else {
+            } else {
                 if (last == null) {
                     Label waitLab = new Label("等待答题");
                     waitLab.setPrefWidth(downArea.getPrefWidth());
@@ -267,11 +263,11 @@ public class Model7 implements ReloadPane {
                     if (last.getUserSelect() != null) {
                         Label select = new Label("回答:" + last.getUserSelect());
                         select.setBackground(new Background(new BackgroundFill(Color.BLUE, new CornerRadii(10), Insets.EMPTY)));
-                        select.setPrefHeight(ScreenAdapter.calculateExH(30));
+                        select.setPrefHeight(ScreenAdapter.calculateMainH(30));
                         select.setTextAlignment(TextAlignment.CENTER);
                         select.setTextFill(Color.WHITE);
                         select.setPrefWidth(answerArea.getPrefWidth());
-
+                        select.setAlignment(Pos.CENTER);
                         Label status = new Label();
                         if (last.getAnswer().equals(last.getUserSelect())) {
                             status.setText("正确");
@@ -280,7 +276,8 @@ public class Model7 implements ReloadPane {
                             status.setText("错误");
                             status.setBackground(new Background(new BackgroundFill(Color.RED, new CornerRadii(10), Insets.EMPTY)));
                         }
-                        status.setPrefHeight(ScreenAdapter.calculateExH(30));
+                        status.setPrefHeight(ScreenAdapter.calculateMainH(30));
+                        status.setAlignment(Pos.CENTER);
                         status.setTextAlignment(TextAlignment.CENTER);
                         status.setTextFill(Color.WHITE);
                         status.setPrefWidth(answerArea.getPrefWidth());

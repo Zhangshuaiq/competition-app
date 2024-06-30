@@ -160,6 +160,7 @@ public class StageRulePreview implements ReloadPane{
             title.setFont(font);
             if (Boolean.valueOf(cfgArr[10])) {
                 title.setStroke(title.getFill());
+                title.setStrokeWidth(1);
             } else {
                 title.setStroke(null);
             }

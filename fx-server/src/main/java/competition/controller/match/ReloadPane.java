@@ -22,6 +22,16 @@ public interface ReloadPane {
     default void shows(){};
     
     Node getPane();
+    
+    default void reloadStyle(){}
 
     default void hideTime(){}
+    
+    default void scrollUp(){}
+    
+    default void scrollDown(){}
+    
+    default void scrollUpAnswer(){}
+    
+    default void scrollDownAnswer(){}
 }

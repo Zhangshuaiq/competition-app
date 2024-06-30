@@ -5,12 +5,17 @@ import competition.controller.ControlPane;
 import competition.controller.match.ReloadPane;
 import competition.entity.Configs;
 import competition.mapper.ConfigsMapper;
+import competition.mapper.StageMemberScoreMapper;
 import competition.util.ConfigSpliter;
+import competition.util.ExtendedScreen;
+import competition.util.Navigator;
 import competition.util.PreviewStack;
 import javafx.fxml.FXML;
+import javafx.geometry.Rectangle2D;
 import javafx.scene.control.*;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
+import javafx.stage.Screen;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
@@ -25,6 +30,7 @@ public class PageConfig {
     
     @Resource
     private ControlPane controlPane;
+    
     
     @FXML
     RadioButton thq, thh, tgh;
@@ -569,6 +575,8 @@ public class PageConfig {
         final String ztzihao = ztzh.getText();
         final String ztyanse = ztys.getValue().toString();
         
+        
+        
         String datiValue = (!StringUtils.isEmpty(tigan) ? tigan: ConfigSpliter.DIFFER) + ConfigSpliter.SPLITER
                 + (!StringUtils.isEmpty(daan)? daan: ConfigSpliter.DIFFER)  + ConfigSpliter.SPLITER
                 + (!StringUtils.isEmpty(morenzihao)? morenzihao: ConfigSpliter.DIFFER)  + ConfigSpliter.SPLITER
@@ -603,6 +611,19 @@ public class PageConfig {
                 + ztzihao + ConfigSpliter.SPLITER
                 + ztyanse;
 
+
+        double dx = Double.parseDouble(daojishix);
+        double dy = Double.parseDouble(daojishiy);
+
+        Navigator.timeBoardStage.setX(dx);
+        Navigator.timeBoardStage.setY(dy);
+        if (Screen.getScreens().size() > 1 ){
+            Screen extendedScreen = Screen.getScreens().get(1); // 假设扩展屏是列表中的第二个
+            Rectangle2D bounds = extendedScreen.getVisualBounds();
+            ExtendedScreen.timeBoardStage.setX(bounds.getMinX() + dx);
+            ExtendedScreen.timeBoardStage.setY(bounds.getMinY() + dy);
+        }
+        
         // 环节  ------------------------------------------------
         final String huanjiebianhaoyanse = hjbh.getValue().toString();
         final String bianhaobeijing = bhbj.getValue().toString();
@@ -816,7 +837,7 @@ public class PageConfig {
         if (timeBoard != null) {
             timeBoard.reload();
         }
-        PreviewStack.reload();
+        controlPane.getPreviewPane().reload();
     }
     
 }

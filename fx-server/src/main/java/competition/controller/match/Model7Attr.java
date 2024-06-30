@@ -45,12 +45,6 @@ public class Model7Attr {
     @Resource
     private Model3Mapper model3Mapper;
 
-    private static ReloadPane reloadPane;
-
-    public static void setReloadPane(ReloadPane reloadPane) {
-        Model7Attr.reloadPane = reloadPane;
-    }
-    
     
     @FXML
     public void initialize(){
@@ -91,11 +85,8 @@ public class Model7Attr {
         Model3Style model3Style = model3Mapper.selectById(2);
         model3Style.setTitleStyle(value);
         model3Mapper.updateById(model3Style);
-        if (reloadPane != null) {
-            reloadPane.reload();
-        }
         GlobalCache.model7Hide = hideCtl.isSelected();
-        PreviewStack.reload();
+        PreviewStack.reloadStyle();
     }
     
     

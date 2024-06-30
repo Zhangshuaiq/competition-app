@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.image.*?>
+<?import java.lang.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.AnchorPane?>
+
+<AnchorPane prefHeight="827.0" prefWidth="1100.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="competition.controller.backend.PaneConfig">
+   <children>
+      <Label layoutX="132.0" layoutY="109.0" text="选手平板网址：" />
+      <Label layoutX="132.0" layoutY="276.0" text="主持人/评委平板网址：" />
+      <Label layoutX="132.0" layoutY="458.0" text="计分平板网址：" />
+      <TextField fx:id="memberWebsite" layoutX="355.0" layoutY="97.0" prefHeight="45.0" prefWidth="243.0" />
+      <TextField fx:id="holderWebsite" layoutX="355.0" layoutY="264.0" prefHeight="45.0" prefWidth="243.0" />
+      <TextField fx:id="scoreWebsite" layoutX="355.0" layoutY="446.0" prefHeight="45.0" prefWidth="243.0" />
+      <ImageView fx:id="memberQrcode" fitHeight="120.0" fitWidth="120.0" layoutX="855.0" layoutY="69.0" onMouseClicked="#largeMemberQrcode" pickOnBounds="true" preserveRatio="true" />
+      <ImageView fx:id="holderQrcode" fitHeight="120.0" fitWidth="120.0" layoutX="855.0" layoutY="248.0" onMouseClicked="#largeHolderQrcode" pickOnBounds="true" preserveRatio="true" />
+      <ImageView fx:id="scoreQrcode" fitHeight="120.0" fitWidth="120.0" layoutX="855.0" layoutY="424.0" onMouseClicked="#largeScoreQrcode" pickOnBounds="true" preserveRatio="true" />
+      <Button layoutX="762.0" layoutY="104.0" mnemonicParsing="false" onMouseClicked="#update1" text="更新" />
+      <Button layoutX="762.0" layoutY="271.0" mnemonicParsing="false" onMouseClicked="#update2" text="更新" />
+      <Button layoutX="762.0" layoutY="453.0" mnemonicParsing="false" onMouseClicked="#update3" text="更新" />
+      <Label layoutX="299.0" layoutY="109.0" text="http://" />
+      <Label layoutX="606.0" layoutY="109.0" text=":8080/#/" />
+      <Label layoutX="299.0" layoutY="276.0" text="http://" />
+      <Label layoutX="299.0" layoutY="459.0" text="http://" />
+      <Label layoutX="606.0" layoutY="277.0" text=":8080/#/hwait" />
+      <Label layoutX="606.0" layoutY="459.0" text=":8080/#/" />
+   </children>
+</AnchorPane>

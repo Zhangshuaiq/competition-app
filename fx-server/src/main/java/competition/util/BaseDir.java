@@ -12,6 +12,10 @@ public class BaseDir {
 
     public static final String TIKU_DIR = System.getProperty("user.dir") + File.separator + "资源" +  File.separator + "题库" +  File.separator;
 
+
+    public static final String YANGSHI_DIR = System.getProperty("user.dir") + File.separator + "资源" +  File.separator + "样式" +  File.separator;
+
+
     public static final String TIKU_RES_DIR = System.getProperty("user.dir") + File.separator + "资源" +  File.separator + "题库" +  File.separator + "资源" +  File.separator;
 
     public static final String PB_RES_DIR = System.getProperty("user.dir") + File.separator + "资源" +  File.separator + "平板" +  File.separator ;

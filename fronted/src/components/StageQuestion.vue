@@ -1,5 +1,5 @@
 <template>
-  <div class="container">
+  <div class="container" :style="containerBoxStyle">
     <div>
       <ScoreBoard></ScoreBoard>
     </div>
@@ -10,8 +10,8 @@
     </div>
 
     <div id="questionList">
-      <el-row>
-        <el-col span="4" v-for="question in questions" :key="question.questionNumber">
+      <el-row :gutter="20">
+        <el-col span="2.4" v-for="question in questions" :key="question.questionNumber">
           <div class="question-item" :style="{ visibility: question.hasAnswer === true  ? 'hidden' : 'visible' }">
             {{ question.questionNumber }}
           </div>
@@ -23,6 +23,7 @@
 
 <script>
 import ScoreBoard from "@/components/ScoreBoard.vue";
+import baseUrl from "@/config";
 
 export default {
   name: "StageQuestion",
@@ -30,9 +31,29 @@ export default {
 
   data() {
     return {
+      imageUrl: `${baseUrl}/resource/选题背景.jpg?${new Date().getTime()}`,
+      defaultImageUrl: `${baseUrl}/resource/默认背景.jpg?${new Date().getTime()}`,
       stage: {},
       questions: []
     }
+  },
+  computed: {
+    containerBoxStyle() {
+      return {
+        backgroundImage: `url(${this.imageUrl})`,
+        backgroundSize: '100vw 100vh',
+        height: '100vh',
+      };
+    },
+  },
+  
+  methods:{
+    checkImageUrl(url, callback) {
+      const img = new Image();
+      img.onload = () => callback(true);
+      img.onerror = () => callback(false);
+      img.src = url;
+    },
   },
 
   beforeRouteUpdate(to, from, next) {
@@ -44,6 +65,12 @@ export default {
   },
 
   mounted() {
+    this.checkImageUrl(this.imageUrl, (isValid) => {
+      if (!isValid) {
+        console.log("invalid....................")
+        this.imageUrl = this.defaultImageUrl;
+      }
+    });
     const data = this.$store.state.data
     console.log(data)
     this.stage = data.stage
@@ -55,14 +82,14 @@ export default {
 </script>
 
 <style scoped>
-.container {
-  background-image: url("~@/assets/background.png");
-  background-size: 100vw 100vh;
-  height: 100vh;
-  /*display: flex;           !* 启用Flexbox布局 *!*/
-  /*justify-content: center; !* 水平居中 *!*/
-  /*align-items: center;     !* 垂直居中 *!*/
-}
+/*.container {*/
+/*  background-image: url("~@/assets/background.png");*/
+/*  background-size: 100vw 100vh;*/
+/*  height: 100vh;*/
+/*  !*display: flex;           !* 启用Flexbox布局 *!*!*/
+/*  !*justify-content: center; !* 水平居中 *!*!*/
+/*  !*align-items: center;     !* 垂直居中 *!*!*/
+/*}*/
 
 #stageName {
   display: flex; /* 启用Flexbox布局 */
@@ -71,30 +98,33 @@ export default {
 }
 
 #stageName div {
-  width: 500px;
-  height: 80px;
-  line-height: 80px;
+  width: 30%;
+  height: 40px;
+  line-height: 40px;
   text-align: center;
+  padding: 10px 0;
   border-radius: 8px;
-  color: red;
-  background-color: #3397CE;
+  color: white;
+  background-color: #C40000;
   margin-top: 20px;
   font-size: xx-large;
 }
 
 #questionList {
-  padding: 10px 25%;
+  margin-top: 50px;
+  padding: 10px 10%;
 }
 
 .question-item {
-  width: 80px;
-  height: 80px;
-  background-color: dodgerblue;
-  line-height: 80px;
+  width: 60px;
+  height: 60px;
+  background-color: #C40000;
+  line-height: 60px;
   color: white;
   font-size: xx-large;
+  border-radius: 8px;
   text-align: center;
-  margin: 5px;
+  margin: 5px 1px;
 }
 
 </style>

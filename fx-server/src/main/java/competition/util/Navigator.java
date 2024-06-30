@@ -79,7 +79,7 @@ public class Navigator {
             if (hiddenControl) {
                 //previewStage.initStyle(StageStyle.TRANSPARENT);
             }
-            
+            previewScene.setFill(Color.TRANSPARENT);
             previewScene.getStylesheets().add(cssFile); // 应用 CSS
 
             previewStage.setScene(previewScene);

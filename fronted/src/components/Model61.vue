@@ -1,5 +1,5 @@
 <template>
-  <div id="container-box">
+  <div id="container-box" :style="containerBoxStyle">
     <div>
       <ScoreBoard></ScoreBoard>
     </div>
@@ -25,7 +25,7 @@
 
           <!--       图片不区分题目类型。因为图文制作在一起   -->
           <div v-if="questionItem.resourceType === '图片'">
-            <el-image style="width: 100%" :src="resourceUrl" ></el-image>
+            <img :src="resourceUrl" alt="Overlay Image" class="overlay-img">
           </div>
           <!--    音频无需展示      -->
           <!--    视频需要播放      -->
@@ -34,6 +34,12 @@
           <div v-else-if="questionItem.questionType === '单选题' || questionItem.questionType === '多选题' || questionItem.questionType === '不定项选择题'">
             <div id="question-name">
               {{ questionItem.questionNumber }} &nbsp;({{questionItem.questionType}}) &nbsp; {{ questionItem.question }}
+            </div>
+            <div v-if="questionItem.resourceType === '视频'">
+              <video width="320" height="240" controls muted>
+                <source :src="resourceUrl" type="video/mp4">
+                Your browser does not support the video tag.
+              </video>
             </div>
             <div id="answer-selection">
               <div class="selection-item"  v-if="questionItem.choiceA">
@@ -117,12 +123,12 @@
             <div v-else-if="questionItem.questionType === '判断题'">
               <el-row type="flex" justify="center" style="text-align: center">
                 <el-col span="4" class="column-center" >
-                  <div class="answer-item" :class="{ 'blue-background': activeDiv === '正确' }" @click="setActiveDiv('正确')">
+                  <div class="answer-item"  :class="{ 'blue-background': activeDiv === '正确' }" @click="setActiveDiv('正确')">
                     正确
                   </div>
                 </el-col>
                 <el-col span="4" class="column-center">
-                  <div class="answer-item" :class="{ 'blue-background': activeDiv === '错误' }" @click="setActiveDiv('错误')" >
+                  <div class="answer-item"  :class="{ 'blue-background': activeDiv === '错误' }" @click="setActiveDiv('错误')" >
                     错误
                   </div>
                 </el-col>
@@ -176,12 +182,12 @@
               <el-button disabled style="width: 200px; height: 50px; font-size: x-large" type="primary" @click="submitAnswer"> {{btnText}} </el-button>
             </div>
             <div v-else>
-              <el-button :disabled="second <= 0 || showResult || this.activeDiv === ''" style="width: 200px; height: 50px; font-size: x-large" type="primary" @click="submitAnswer"> {{btnText}} </el-button>
+              <el-button :disabled="second <= 0 || showResult || this.activeDiv === ''" style="width: 200px; height: 50px; font-size: x-large; z-index: 2" type="primary" @click="submitAnswer"> {{btnText}} </el-button>
             </div>
           </div>
         </div>
-        <div v-if="showResult" id="answer-info" style="font-size: xx-large; margin-top: 20px; text-align: center;">
-          正确答案: <font color="#cd5c5c">{{questionItem.answer}}</font>
+        <div v-if="showResult" id="answer-info" style="font-size: xx-large; margin-top: 20px; background-color: #C40000; border-radius: 8px;">
+           <font color="white">{{ prefix }} {{questionItem.answer}}</font>
         </div>
       </div>
     </div>
@@ -198,7 +204,7 @@ export default {
     return {
       retryTimer: null, // 用于重试逻辑的计时器
       retryInterval: 500, // 重试间隔时间，例如5秒
-      
+      prefix: '',
       subscription: null,
       questionItem: null,
       activeDiv: '',
@@ -211,12 +217,40 @@ export default {
       stage: '',
       submit : false,
       resourceUrl: '',
+      imageUrl: `${baseUrl}/resource/答题背景.jpg?${new Date().getTime()}`,
+      defaultImageUrl: `${baseUrl}/resource/默认背景.jpg?${new Date().getTime()}`,
     }
   },
+
+  computed: {
+    containerBoxStyle() {
+      return {
+        backgroundImage: `url(${this.imageUrl})`,
+        backgroundSize: '100vw 100vh',
+        height: '100vh',
+      };
+    },
+  },
+  
   methods: {
+
+
+    sortString(input) {
+      // 将字符串转换为字符数组
+      let charArray = input.split('');
+      // 对字符数组进行排序
+      charArray.sort();
+      // 将排序后的字符数组转换回字符串
+      return charArray.join('');
+    },
+    
     submitAnswer(){
       // 提交答案到后台
       console.log(this.activeDiv)
+      if (this.questionItem.questionType === '多选题' || this.questionItem.questionType === '不定项选择题') {
+        // 排序答案
+        this.activeDiv = this.sortString(this.activeDiv)
+      }
       // this.showResult = true;
       const submited = JSON.parse(JSON.stringify(this.questionItem))
 
@@ -277,14 +311,29 @@ export default {
       const item = sessionStorage.getItem("questionItem");
       if (item && item !== 'null') {
         this.questionItem = JSON.parse(item)
-        this.activeDiv = this.questionItem.userSelect
+        this.activeDiv = this.questionItem.userSelect || ''
       }
       console.log(this.questionItem)
+    },
+
+    checkImageUrl(url, callback) {
+      const img = new Image();
+      img.onload = () => callback(true);
+      img.onerror = () => callback(false);
+      img.src = url;
     },
 
 
     setActiveDiv(divNumber) {
       this.activeDiv = divNumber;
+    },
+
+    appendActiveDiv(divNumber) {
+      if (this.activeDiv.indexOf(divNumber) >= 0) {
+        this.activeDiv = this.activeDiv.replace(divNumber, "")
+      } else {
+        this.activeDiv = this.activeDiv + divNumber;
+      }
     },
 
     subscribeQuestion(){
@@ -302,7 +351,7 @@ export default {
           //   // }
           // }
         } else {
-          this.showResult = ! this.showResult
+          this.showResult = message.data
           if (this.questionItem.resourceType === '图片') {
             if (this.showResult) {
               this.resourceUrl = this.resourceUrl = `${baseUrl}/resource/${this.questionItem.answer}`
@@ -339,11 +388,18 @@ export default {
   },
   
   mounted() {
+    this.checkImageUrl(this.imageUrl, (isValid) => {
+      if (!isValid) {
+        console.log("invalid....................")
+        this.imageUrl = this.defaultImageUrl;
+      }
+    });
     const item = sessionStorage.getItem("user");
     if (!item) {
       this.$router.push({name: "contestant"})
       return
     }
+    this.prefix = sessionStorage.getItem('prefix')
     this.teamInfo = JSON.parse(item)
     this.member = sessionStorage.getItem('member')
     this.loadData();
@@ -358,6 +414,8 @@ export default {
         this.questionItem = data
         this.activeDiv = ""
         this.showResult = false
+        this.submit = false;
+        this.btnText = "提 交"
       }
     }
 
@@ -369,6 +427,23 @@ export default {
 
     this.setRetryTimer()
   },
+
+
+  // beforeRouteLeave(to, from, next) {
+  //   console.log(from, to, next)
+  //   // 在这里编写离开页面前需要执行的逻辑
+  //   // 例如，你可以在这里提示用户保存未保存的更改
+  //   if (from.name !== to.name) {
+  //     sessionStorage.removeItem("time")
+  //     sessionStorage.removeItem("score")
+  //     sessionStorage.removeItem("showResult")
+  //     sessionStorage.removeItem("userSelects")
+  //     sessionStorage.removeItem("questionIndex")
+  //     sessionStorage.removeItem("questionItem")
+  //     sessionStorage.removeItem("questionList")
+  //   }
+  //   next()
+  // },
   
 }
 </script>
@@ -381,11 +456,11 @@ export default {
   align-items: center; /* 垂直居中 */
 }
 
-#container-box {
-  background-image: url("~@/assets/background.png");
-  background-size: 100vw 100vh;
-  height: 100vh;
-}
+/*#container-box {*/
+/*  background-image: url("~@/assets/background.png");*/
+/*  background-size: 100vw 100vh;*/
+/*  height: 100vh;*/
+/*}*/
 
 #container {
   padding: 50px 100px;
@@ -393,7 +468,7 @@ export default {
 
 #question-name {
   font-family: "Microsoft YaHei UI";
-  font-size: xx-large;
+  font-size: x-large;
 }
 
 #answer-selection {
@@ -411,16 +486,42 @@ export default {
   width: 60px;
   line-height: 60px;
   text-align: center;
-  font-size: xxx-large;
+  font-size: large;
   background-color: white;
+  border-width: 1px;
+  border-color: black;
+  border-style: outset;
+  border-radius: 8px;
+}
+
+.multi-answer-item {
+  height: 60px;
+  width: 60px;
+  line-height: 60px;
+  text-align: center;
+  font-size: large;
+  background-color: white;
+  border-width: 1px;
+  border-color: black;
+  border-style: solid;
+  border-radius: 8px;
 }
 
 .blue-background {
-  background-color: skyblue;
+  background-color: #4472C4;
 }
 
 .result-info {
   margin: 50px;
   font-size: xx-large;
+}
+
+.overlay-img {
+  all: unset; /* 重置所有样式 */
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
 }
 </style>

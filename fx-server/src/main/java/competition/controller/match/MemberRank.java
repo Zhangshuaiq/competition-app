@@ -191,11 +191,11 @@ public class MemberRank implements ReloadPane {
             HBox itemRow = new HBox();
             // 随机背景色
             Color c = bgcolor;
-            if (i == 0) {
+            if (rankData.getRank() == 1) {
                 c = color1;
-            } else  if (i == 1) {
+            } else  if (rankData.getRank() == 2) {
                 c = color2;
-            } else  if (i == 2) {
+            } else  if (rankData.getRank() == 3) {
                 c = color3;
             }
             itemRow.setBackground(new Background(new BackgroundFill(c,  new CornerRadii(10), Insets.EMPTY)));

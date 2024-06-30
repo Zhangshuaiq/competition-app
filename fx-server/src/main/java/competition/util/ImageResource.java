@@ -20,77 +20,77 @@ public class ImageResource {
         if (new File(res).exists()) {
             return res;
         }
-        return null;
+        return 环节名称背景();
     }
     
     
     public static final String UP(){
-        String res = BaseDir.IMAGE_DIR + File.separator + "up.png";
+        String res = BaseDir.IMAGE_DIR + File.separator + "上.png";
         if (new File(res).exists()) {
             return res;
         }
 
-        res = BaseDir.IMAGE_DIR + File.separator + "up.jpg";
+        res = BaseDir.IMAGE_DIR + File.separator + "上.jpg";
         if (new File(res).exists()) {
             return res;
         }
 
-        res = BaseDir.IMAGE_DIR + File.separator + "up.jpeg";
+        res = BaseDir.IMAGE_DIR + File.separator + "上.jpeg";
         if (new File(res).exists()) {
             return res;
         }
-        
-        return null;
+
+        return 默认背景();
     }
 
     public static final String DOWN(){
-        String res = BaseDir.IMAGE_DIR + File.separator + "down.png";
+        String res = BaseDir.IMAGE_DIR + File.separator + "下.png";
         if (new File(res).exists()) {
             return res;
         }
 
-        res = BaseDir.IMAGE_DIR + File.separator + "down.jpg";
+        res = BaseDir.IMAGE_DIR + File.separator + "下.jpg";
         if (new File(res).exists()) {
             return res;
         }
 
-        res = BaseDir.IMAGE_DIR + File.separator + "down.jpeg";
+        res = BaseDir.IMAGE_DIR + File.separator + "下.jpeg";
         if (new File(res).exists()) {
             return res;
         }
-        return null;
+        return 默认背景();
     }
 
     public static final String DELETE(){
-        String res = BaseDir.IMAGE_DIR + File.separator + "delete.png";
+        String res = BaseDir.IMAGE_DIR + File.separator + "删除.png";
         if (new File(res).exists()) {
             return res;
         }
 
-        res = BaseDir.IMAGE_DIR + File.separator + "delete.jpg";
+        res = BaseDir.IMAGE_DIR + File.separator + "删除.jpg";
         if (new File(res).exists()) {
             return res;
         }
 
-        res = BaseDir.IMAGE_DIR + File.separator + "delete.jpeg";
+        res = BaseDir.IMAGE_DIR + File.separator + "删除.jpeg";
         if (new File(res).exists()) {
             return res;
         }
-        return null;
+        return 默认背景();
     }
 
     public static final String 添加(){
-        String res = BaseDir.IMAGE_DIR  + "add.png";
+        String res = BaseDir.IMAGE_DIR  + "添加.png";
         if (new File(res).exists()) {
             return res;
         }
 
-        res = BaseDir.IMAGE_DIR  + "add.jpg";
+        res = BaseDir.IMAGE_DIR  + "添加.jpg";
         if (new File(res).exists()) {
             return res;
         }
 
-        res = BaseDir.IMAGE_DIR  + "add.jpeg";
+        res = BaseDir.IMAGE_DIR  + "添加.jpeg";
         if (new File(res).exists()) {
             return res;
         }
@@ -112,7 +112,7 @@ public class ImageResource {
         if (new File(res).exists()) {
             return res;
         }
-        return null;
+        return 默认背景();
     }
 
     public static final String 暂停(){
@@ -130,7 +130,7 @@ public class ImageResource {
         if (new File(res).exists()) {
             return res;
         }
-        return null;
+        return 默认背景();
     }
 
     public static final String 快进(){
@@ -148,7 +148,7 @@ public class ImageResource {
         if (new File(res).exists()) {
             return res;
         }
-        return null;
+        return 默认背景();
     }
 
     public static final String 快退(){
@@ -166,10 +166,10 @@ public class ImageResource {
         if (new File(res).exists()) {
             return res;
         }
-        return null;
+        return 默认背景();
     }
 
-    public static final String 风险背景(){
+    public static final String 风险环节背景(){
         String res = BaseDir.IMAGE_DIR + File.separator + "风险环节背景.png";
         if (new File(res).exists()) {
             return res;
@@ -184,7 +184,7 @@ public class ImageResource {
         if (new File(res).exists()) {
             return res;
         }
-        return null;
+        return 默认背景();
     }
 
     public static final String 总规则背景(){
@@ -202,7 +202,7 @@ public class ImageResource {
         if (new File(res).exists()) {
             return res;
         }
-        return null;
+        return 默认背景();
     }
 
     public static final String 环节背景(){
@@ -220,7 +220,7 @@ public class ImageResource {
         if (new File(res).exists()) {
             return res;
         }
-        return null;
+        return 默认背景();
     }
 
     public static final String 环节名称背景(){
@@ -238,7 +238,7 @@ public class ImageResource {
         if (new File(res).exists()) {
             return res;
         }
-        return null;
+        return 默认背景();
     }
 
     public static final String 环节规则背景(){
@@ -256,7 +256,7 @@ public class ImageResource {
         if (new File(res).exists()) {
             return res;
         }
-        return null;
+        return 默认背景();
     }
 
     public static final String 答题背景(){
@@ -274,7 +274,7 @@ public class ImageResource {
         if (new File(res).exists()) {
             return res;
         }
-        return null;
+        return 默认背景();
     }
 
     public static final String 团队排名背景(){
@@ -292,25 +292,25 @@ public class ImageResource {
         if (new File(res).exists()) {
             return res;
         }
-        return null;
+        return 默认背景();
     }
 
     public static final String 环节排名背景(){
-        String res = BaseDir.IMAGE_DIR + File.separator + "竞技模式背景.png";
+        String res = BaseDir.IMAGE_DIR + File.separator + "环节排名背景.png";
         if (new File(res).exists()) {
             return res;
         }
 
-        res = BaseDir.IMAGE_DIR + File.separator + "竞技模式背景.jpg";
+        res = BaseDir.IMAGE_DIR + File.separator + "环节排名背景.jpg";
         if (new File(res).exists()) {
             return res;
         }
 
-        res = BaseDir.IMAGE_DIR + File.separator + "竞技模式背景.jpeg";
+        res = BaseDir.IMAGE_DIR + File.separator + "环节排名背景.jpeg";
         if (new File(res).exists()) {
             return res;
         }
-        return null;
+        return 默认背景();
     }
 
     public static final String 选手排名背景(){
@@ -328,7 +328,7 @@ public class ImageResource {
         if (new File(res).exists()) {
             return res;
         }
-        return null;
+        return 默认背景();
     }
 
     public static final String 竞技模式背景(){
@@ -346,7 +346,7 @@ public class ImageResource {
         if (new File(res).exists()) {
             return res;
         }
-        return null;
+        return 默认背景();
     }
 
     public static final String 选题背景(){
@@ -364,7 +364,7 @@ public class ImageResource {
         if (new File(res).exists()) {
             return res;
         }
-        return null;
+        return 默认背景();
     }
 
     public static final String 滚动抽题背景(){
@@ -382,7 +382,7 @@ public class ImageResource {
         if (new File(res).exists()) {
             return res;
         }
-        return null;
+        return 默认背景();
     }
 
     public static final String 答案背景(){
@@ -397,6 +397,24 @@ public class ImageResource {
         }
 
         res = BaseDir.IMAGE_DIR + File.separator + "答案背景.jpeg";
+        if (new File(res).exists()) {
+            return res;
+        }
+        return 默认背景();
+    }
+
+    public static final String 默认背景(){
+        String res = BaseDir.IMAGE_DIR + File.separator + "默认背景.png";
+        if (new File(res).exists()) {
+            return res;
+        }
+
+        res = BaseDir.IMAGE_DIR + File.separator + "默认背景.jpg";
+        if (new File(res).exists()) {
+            return res;
+        }
+
+        res = BaseDir.IMAGE_DIR + File.separator + "默认背景.jpeg";
         if (new File(res).exists()) {
             return res;
         }

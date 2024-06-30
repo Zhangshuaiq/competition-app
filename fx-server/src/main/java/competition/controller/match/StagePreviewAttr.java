@@ -20,11 +20,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
 import javax.annotation.Resource;
-import javax.swing.*;
-import java.awt.*;
 import java.io.File;
-import java.util.ArrayList;
-import java.util.Arrays;
 
 @Component
 public class StagePreviewAttr {
@@ -84,11 +80,6 @@ public class StagePreviewAttr {
     
     private static Integer level;
     
-    private static ReloadPane reloadPane;
-
-    public static void setReloadPane(ReloadPane reloadPane) {
-        StagePreviewAttr.reloadPane = reloadPane;
-    }
 
     public static void setConfigId(int configId) {
         StagePreviewAttr.configId = configId;
@@ -163,38 +154,41 @@ public class StagePreviewAttr {
                     .eq(StagesStyle::getParentId, level)
             );
         }
+        String defaultStyle = "550%%300%%350%%80%%false%%0xb31a1aff%%%%微软雅黑%%28%%false%%false%%false%%false%%居中对齐%%60%%0%%2";
+        String[] detailArr = defaultStyle.split(ConfigSpliter.SPLITER);
         if (StringUtils.isEmpty(details)) {
-            GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
-            // 获取默认字体
-            Font defaultFont = new JLabel().getFont();
-            fontSelector.setValue(defaultFont.getFamily());
-            fontSize.setText(defaultFont.getSize() + "");
-            iticChoice.setSelected(false);
-            deleteChoice.setSelected(false);
-            spaceInput.setText("0");
+//            GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
+//            // 获取默认字体
+//            Font defaultFont = new JLabel().getFont();
+//            fontSelector.setValue(defaultFont.getFamily());
+//            fontSize.setText(defaultFont.getSize() + "");
+//            iticChoice.setSelected(false);
+//            deleteChoice.setSelected(false);
+//            spaceInput.setText("0");
         } else {
-            final String[] detailArr = details.getStyle().split(ConfigSpliter.SPLITER);
-            widthInput.setText(detailArr[2]);
-            heightInput.setText(detailArr[3]);
-            xInput.setText(detailArr[0]);
-            yInput.setText(detailArr[1]);
-            backgroundChoice.setSelected(Boolean.valueOf(detailArr[4]));
-            colorInput.setValue(Color.valueOf(detailArr[5].replace("0x", "#")));
-            backgroundPath.setText(detailArr[6]);
-            fontSelector.setValue(detailArr[7]);
-            fontSize.setText(Integer.parseInt(detailArr[8]) + "");
-            deleteChoice.setSelected(Boolean.valueOf(detailArr[9]));
-            boldChoice.setSelected(Boolean.valueOf(detailArr[10]));
-            iticChoice.setSelected(Boolean.valueOf(detailArr[11]));
-            underlineChoice.setSelected(Boolean.valueOf(detailArr[12]));
-            textAlignSelector.setValue(detailArr[13]);
-            spaceInput.setText(detailArr[14]);
-            if (detailArr.length >= 16) {
-                wordInput.setText(detailArr[15]);
-            }
-            if (detailArr.length >= 17) {
-                colNumber.setText(detailArr[16]);
-            }
+            detailArr = details.getStyle().split(ConfigSpliter.SPLITER);
+        }
+
+        widthInput.setText(detailArr[2]);
+        heightInput.setText(detailArr[3]);
+        xInput.setText(detailArr[0]);
+        yInput.setText(detailArr[1]);
+        backgroundChoice.setSelected(Boolean.valueOf(detailArr[4]));
+        colorInput.setValue(Color.valueOf(detailArr[5].replace("0x", "#")));
+        backgroundPath.setText(detailArr[6]);
+        fontSelector.setValue(detailArr[7]);
+        fontSize.setText(Integer.parseInt(detailArr[8]) + "");
+        deleteChoice.setSelected(Boolean.valueOf(detailArr[9]));
+        boldChoice.setSelected(Boolean.valueOf(detailArr[10]));
+        iticChoice.setSelected(Boolean.valueOf(detailArr[11]));
+        underlineChoice.setSelected(Boolean.valueOf(detailArr[12]));
+        textAlignSelector.setValue(detailArr[13]);
+        spaceInput.setText(detailArr[14]);
+        if (detailArr.length >= 16) {
+            wordInput.setText(detailArr[15]);
+        }
+        if (detailArr.length >= 17) {
+            colNumber.setText(detailArr[16]);
         }
 
     }
@@ -280,9 +274,6 @@ public class StagePreviewAttr {
         
         configs.setDetails(detail);
         configsMapper.updateById(configs);
-        if (reloadPane != null) {
-            reloadPane.reload();
-        }
-        PreviewStack.reload();
+        PreviewStack.reloadStyle();
     }
 }

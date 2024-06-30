@@ -82,11 +82,6 @@ public class StageNamePreviewAttr {
     
     private static int stageId;
     
-    private static ReloadPane reloadPane;
-
-    public static void setReloadPane(ReloadPane reloadPane) {
-        StageNamePreviewAttr.reloadPane = reloadPane;
-    }
 
     public static void setConfigId(int stageId) {
         StageNamePreviewAttr.stageId = stageId;
@@ -122,38 +117,39 @@ public class StageNamePreviewAttr {
     private void previewData(){
         final Stages stage = stagesMapper.selectById(stageId);
         final String config = stage.getStyle();
+        String[] detailArr = "750%%400%%400%%150%%false%%0x990000ff%%%%Dialog%%40%%false%%false%%false%%false%%居中对齐%%0".split(ConfigSpliter.SPLITER);
         if (!StringUtils.isEmpty(config)) {
-            final String[] detailArr = config.split(ConfigSpliter.SPLITER);
-            xInput.setText(detailArr[0]);
-            yInput.setText(detailArr[1]);
-            widthInput.setText(detailArr[2]);
-            heightInput.setText(detailArr[3]);
-            backgroundChoice.setSelected(Boolean.valueOf(detailArr[4]));
-            colorInput.setValue(Color.valueOf(detailArr[5].replace("0x", "#")));
-            backgroundPath.setText(detailArr[6]);
-            fontSelector.setValue(detailArr[7]);
-            fontSize.setText(Integer.parseInt(detailArr[8]) + "");
-            deleteChoice.setSelected(Boolean.valueOf(detailArr[9]));
-            boldChoice.setSelected(Boolean.valueOf(detailArr[10]));
-            iticChoice.setSelected(Boolean.valueOf(detailArr[11]));
-            underlineChoice.setSelected(Boolean.valueOf(detailArr[12]));
-            textAlignSelector.setValue(detailArr[13]);
-            spaceInput.setText(detailArr[14]);
+            detailArr = config.split(ConfigSpliter.SPLITER);
         } else {
-            GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
-            // 获取默认字体
-            xInput.setText(ConfigSpliter.DEFAULT_X + "");
-            yInput.setText(ConfigSpliter.DEFAULT_Y +"");
-            widthInput.setText(ConfigSpliter.DEFAULT_W +"");
-            heightInput.setText(ConfigSpliter.DEFAULT_H +"");
-            textAlignSelector.setValue(AlignmentUtil.alignNames().get(0));
-            Font defaultFont = new JLabel().getFont();
-            fontSelector.setValue(defaultFont.getFamily());
-            fontSize.setText(defaultFont.getSize() + "");
-            iticChoice.setSelected(false);
-            deleteChoice.setSelected(false);
-            spaceInput.setText("0");
+//            GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
+//            // 获取默认字体
+//            xInput.setText(ConfigSpliter.DEFAULT_X + "");
+//            yInput.setText(ConfigSpliter.DEFAULT_Y +"");
+//            widthInput.setText(ConfigSpliter.DEFAULT_W +"");
+//            heightInput.setText(ConfigSpliter.DEFAULT_H +"");
+//            textAlignSelector.setValue(AlignmentUtil.alignNames().get(0));
+//            Font defaultFont = new JLabel().getFont();
+//            fontSelector.setValue(defaultFont.getFamily());
+//            fontSize.setText(defaultFont.getSize() + "");
+//            iticChoice.setSelected(false);
+//            deleteChoice.setSelected(false);
+//            spaceInput.setText("0");
         }
+        xInput.setText(detailArr[0]);
+        yInput.setText(detailArr[1]);
+        widthInput.setText(detailArr[2]);
+        heightInput.setText(detailArr[3]);
+        backgroundChoice.setSelected(Boolean.valueOf(detailArr[4]));
+        colorInput.setValue(Color.valueOf(detailArr[5].replace("0x", "#")));
+        backgroundPath.setText(detailArr[6]);
+        fontSelector.setValue(detailArr[7]);
+        fontSize.setText(Integer.parseInt(detailArr[8]) + "");
+        deleteChoice.setSelected(Boolean.valueOf(detailArr[9]));
+        boldChoice.setSelected(Boolean.valueOf(detailArr[10]));
+        iticChoice.setSelected(Boolean.valueOf(detailArr[11]));
+        underlineChoice.setSelected(Boolean.valueOf(detailArr[12]));
+        textAlignSelector.setValue(detailArr[13]);
+        spaceInput.setText(detailArr[14]);
     }
 
     public void closeStage(MouseEvent event) {
@@ -200,9 +196,6 @@ public class StageNamePreviewAttr {
                 ;
         stages.setStyle(detail);
         stagesMapper.updateById(stages);
-        if (reloadPane != null) {
-            reloadPane.reload();
-        }
-        PreviewStack.reload();
+        PreviewStack.reloadStyle();
     }
 }

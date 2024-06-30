@@ -10,23 +10,10 @@ import java.util.Map;
 
 public class MusicPlayer {
 
-    private static Map<String, MediaPlayer> musicsMap = new HashMap<>();
+   // private static Map<String, MediaPlayer> musicsMap = new HashMap<>();
+    private static MediaPlayer mediaPlayer; // 单一实例
 
     static {
-        String path = MusicResource.SECOND_PREFIX;
-        File musicDir = new File(path);
-        File[] files = musicDir.listFiles();
-        for (File file : files) {
-           load(file.getAbsolutePath());
-        }
-        path = BaseDir.MUSIC_DIR;
-        musicDir = new File(path);
-        files = musicDir.listFiles();
-        for (File file : files) {
-            if (!file.isDirectory()) {
-                load(file.getAbsolutePath());
-            }
-        }
 //        load(MusicResource.SECOND_5);
 //        load(MusicResource.SECOND_4);
 //        load(MusicResource.SECOND_3);
@@ -38,10 +25,37 @@ public class MusicPlayer {
 
     public static void prePlay(String path) {
         try {
+            if (mediaPlayer != null) {
+                mediaPlayer.stop(); // 如果已有实例在播放，先停止
+                mediaPlayer.dispose(); // 释放旧的资源
+            }
 
             Media media = new Media(new File(path).toURI().toString());
-            MediaPlayer mediaPlayer = new MediaPlayer(media);
+            mediaPlayer = new MediaPlayer(media);
             mediaPlayer.setVolume(0);
+            mediaPlayer.setOnEndOfMedia(() -> {
+                mediaPlayer.stop();
+                mediaPlayer.seek(Duration.ZERO);
+            });
+            mediaPlayer.play();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+
+
+    public static void play(String path) {
+        if (!new File(path).exists()) {
+            return;
+        }
+        if (mediaPlayer != null) {
+            mediaPlayer.stop(); // 如果已有实例在播放，先停止
+            mediaPlayer.dispose(); // 释放旧的资源
+        }
+        try {
+            Media media = new Media(new File(path).toURI().toString());
+            mediaPlayer = new MediaPlayer(media);
             mediaPlayer.play();
             mediaPlayer.setOnEndOfMedia(() -> {
                 mediaPlayer.stop();
@@ -49,45 +63,6 @@ public class MusicPlayer {
             });
         } catch (Exception e) {
             e.printStackTrace();
-        }
-    }
-
-
-    public static void load(String path) {
-        try {
-
-            Media media = new Media(new File(path).toURI().toString());
-            MediaPlayer mediaPlayer = new MediaPlayer(media);
-            mediaPlayer.setOnEndOfMedia(() -> {
-                mediaPlayer.stop();
-                mediaPlayer.seek(Duration.ZERO);
-            });
-            musicsMap.put(path, mediaPlayer);
-            System.out.println("加载音乐:" + path);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-    public static void play(String path) {
-        if (!new File(path).exists()) {
-            return;
-        }
-        MediaPlayer player = musicsMap.get(path);
-        if (player == null) {
-            try {
-                Media media = new Media(new File(path).toURI().toString());
-                MediaPlayer mediaPlayer = new MediaPlayer(media);
-                mediaPlayer.play();
-                mediaPlayer.setOnEndOfMedia(() -> {
-                    mediaPlayer.stop();
-                    mediaPlayer.seek(Duration.ZERO);
-                });
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        } else {
-            player.play();
         }
        
     }

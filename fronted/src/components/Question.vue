@@ -1,5 +1,5 @@
 <template>
-  <div id="container-box">
+  <div id="container-box" :style="containerBoxStyle">
     <div>
       <ScoreBoard></ScoreBoard>
     </div>
@@ -24,7 +24,8 @@
         <div id="question-info"  v-if="questionItem">
           <!--       图片不区分题目类型。因为图文制作在一起   -->
           <div v-if="questionItem.resourceType === '图片'">
-            <el-image style="width: 100%" :src="resourceUrl" ></el-image>
+            <img :src="resourceUrl" alt="Overlay Image" class="overlay-img">
+<!--            <el-image style="width: 100vw; height: 100vh" :src="resourceUrl" ></el-image>-->
           </div>
           <!--    音频无需展示      -->
           <!--    视频需要播放      -->
@@ -81,8 +82,14 @@
 
         </div>
         
-        <div v-if="showResult && this.questionItem.resourceType !== '图片'" id="answer-info" style="font-size: xx-large; margin-top: 20px; text-align: center;">
-          正确答案: <font color="#cd5c5c">{{questionItem.answer}}</font>
+        <div v-if="showResult && this.questionItem.resourceType !== '图片'" id="answer-info" 
+             style="font-size: xx-large; margin-top: 20px;">
+          <div v-if="questionItem.questionType === '简答题'" style="text-align: left; background-color: #C40000; border-radius: 8px;">
+            <font color="white">{{ prefix }} {{questionItem.answer}}</font>
+          </div>
+          <div v-else style="text-align: center; background-color: #C40000; border-radius: 8px;">
+            <font color="white">{{ prefix }} {{questionItem.answer}}</font>
+          </div>
         </div>
 
       </div>
@@ -99,7 +106,6 @@ export default {
 
   data(){
     return {
-      
       retryTimer: null, // 用于重试逻辑的计时器
       retryInterval: 500, // 重试间隔时间，例如5秒
       subscription: null,
@@ -112,9 +118,31 @@ export default {
       member: '',
       stage: {},
       resourceUrl: '',
+      imageUrl: `${baseUrl}/resource/答题背景.jpg?${new Date().getTime()}`,
+      defaultImageUrl: `${baseUrl}/resource/默认背景.jpg?${new Date().getTime()}`,
+      prefix: ''
     }
   },
+
+  computed: {
+    containerBoxStyle() {
+      return {
+        backgroundImage: `url(${this.imageUrl})`,
+        backgroundSize: '100vw 100vh',
+        height: '100vh',
+      };
+    },
+  },
+  
   methods: {
+
+    checkImageUrl(url, callback) {
+      const img = new Image();
+      img.onload = () => callback(true);
+      img.onerror = () => callback(false);
+      img.src = url;
+    },
+    
     setRetryTimer() {
       // 先清除之前的计时器（如果有）
       clearTimeout(this.retryTimer);
@@ -137,7 +165,7 @@ export default {
           console.log(message.data)
           this.second = parseInt(message.data)
         } else {
-          this.showResult = ! this.showResult
+          this.showResult = message.data
           if (this.questionItem.resourceType === '图片') {
             if (this.showResult) {
               this.resourceUrl = this.resourceUrl = `${baseUrl}/resource/${this.questionItem.answer}`
@@ -167,6 +195,13 @@ export default {
   },
 
   mounted() {
+    this.checkImageUrl(this.imageUrl, (isValid) => {
+      if (!isValid) {
+        console.log("invalid....................")
+        this.imageUrl = this.defaultImageUrl;
+      }
+    });
+    this.prefix = sessionStorage.getItem('prefix')
     const item = sessionStorage.getItem("user");
     this.member = sessionStorage.getItem('member')
     if (!item) {
@@ -188,20 +223,13 @@ export default {
 </script>
 
 <style scoped>
-
-#container-box {
-  background-image: url("~@/assets/background.png");
-  background-size: 100vw 100vh;
-  height: 100vh;
-}
-
 #container {
   padding:0 100px;
 }
 
 .question-name {
   font-family: "Microsoft YaHei UI";
-  font-size: xx-large;
+  font-size: x-large;
 }
 
 #answer-selection {
@@ -223,6 +251,7 @@ export default {
   background-color: white;
 }
 
+
 .blue-background {
   background-color: skyblue;
 }
@@ -230,5 +259,14 @@ export default {
 .result-info {
   margin: 50px;
   font-size: xx-large;
+}
+
+.overlay-img {
+  all: unset; /* 重置所有样式 */
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
 }
 </style>

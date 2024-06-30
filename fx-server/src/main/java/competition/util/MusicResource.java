@@ -16,7 +16,7 @@ public class MusicResource {
 
     public static final String SECOND_1 = BaseDir.MUSIC_DIR +  "倒计时" +  File.separator +  "1.mp3";
 
-    public static final String SECOND_0 = BaseDir.MUSIC_DIR + "倒计时" +  File.separator +  "时间到.mp3";
+    public static final String SECOND_0 = BaseDir.MUSIC_DIR +  "倒计时" +  File.separator +  "时间到.mp3";
     
     public static final String ADD_SCORE =  BaseDir.MUSIC_DIR + "加分.mp3";
 

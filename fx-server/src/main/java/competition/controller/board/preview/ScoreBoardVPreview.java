@@ -129,6 +129,7 @@ public class ScoreBoardVPreview extends PreviewPane implements BoardPane {
             teamName.setStrikethrough(Boolean.valueOf(split[2]));
             if (Boolean.valueOf(split[3])) {
                 teamName.setStroke(teamName.getFill());
+                teamName.setStrokeWidth(1);
             } else {
                 teamName.setStroke(null);
 
@@ -156,6 +157,7 @@ public class ScoreBoardVPreview extends PreviewPane implements BoardPane {
             container.setSpacing(Integer.parseInt(split[6]));
             if (Boolean.valueOf(split[3])) {
                 teamScore.setStroke(teamScore.getFill());
+                teamScore.setStrokeWidth(1);
             } else {
                 teamScore.setStroke(null);
 

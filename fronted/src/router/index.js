@@ -14,11 +14,33 @@ import Model61R from "@/components/Model61R.vue";
 import Roll from "@/components/Roll";
 import ClueQuestion from "@/components/ClueQuestion";
 import Rule from "@/components/Rule";
+import StageRank from "@/components/StageRank";
+import TeamRank from "@/components/TeamRank";
+import MemberRank from "@/components/MemberRank";
+
+
+import HWaitStart from "@/components/holder/WaitStart";
+import HModel7 from "@/components/holder/Model7";
+import HModel60 from "@/components/holder/Model60";
+import HModel61 from "@/components/holder/Model61";
+import HStageList from "@/components/holder/StageList";
+import HStageName from "@/components/holder/StageName";
+import HStageQuestion from "@/components/holder/StageQuestion";
+import HQuestion from "@/components/holder/Question";
+import HModel3 from "@/components/holder/Model3";
+import HModel61R from "@/components/holder/Model61R.vue";
+import HRoll from "@/components/holder/Roll";
+import HClueQuestion from "@/components/holder/ClueQuestion";
+import HRule from "@/components/holder/Rule";
+import HStageRank from "@/components/holder/StageRank";
+import HTeamRank from "@/components/holder/TeamRank";
+import HMemberRank from "@/components/holder/MemberRank";
 Vue.use(Router);
 
 export default new Router({
     mode: 'hash', // 使用HTML5 History模式
     routes: [
+         // 选手路由
         {
             path: '/',
             name: 'contestant',
@@ -102,6 +124,121 @@ export default new Router({
             path: '/clue',
             name: 'clue',
             component: ClueQuestion
-        }
+        },
+
+        {
+            path: '/stageRank',
+            name: 'stageRank',
+            component: StageRank
+        },
+        {
+            path: '/teamRank',
+            name: 'teamRank',
+            component: TeamRank
+        },
+
+        {
+            path: '/memberRank',
+            name: 'memberRank',
+            component: MemberRank
+        },
+        
+        // 主持人，评委路由
+
+        {
+            path: '/hwait',
+            name: 'hwait',
+            component: HWaitStart,
+        },
+
+        {
+            path: '/hmodel7',
+            name: 'hmodel7',
+            component: HModel7,
+        },
+
+        {
+            path: '/hmodel60',
+            name: 'hmodel60',
+            component: HModel60,
+        },
+
+        {
+            path: '/hmodel61',
+            name: 'hmodel61',
+            component: HModel61,
+        },
+
+        {
+            path: '/hmodel61R',
+            name: 'hmodel61R',
+            component: HModel61R,
+        },
+
+        {
+            path: '/hstages',
+            name: 'hstages',
+            component: HStageList,
+        },
+
+        {
+            path: '/hstageName',
+            name: 'hstageName',
+            component: HStageName,
+        },
+
+        {
+            path: '/hstageQuestion',
+            name: 'hstageQuestion',
+            component: HStageQuestion,
+        },
+
+
+        {
+            path: '/hquestion',
+            name: 'hquestion',
+            component: HQuestion,
+        },
+
+        {
+            path: '/hmodel3',
+            name: 'hmodel3',
+            component: HModel3
+        },
+
+        {
+            path: '/hrule',
+            name: 'hrule',
+            component: HRule
+        },
+
+        {
+            path: '/hroll',
+            name: 'hroll',
+            component: HRoll
+        },
+
+        {
+            path: '/hclue',
+            name: 'hclue',
+            component: HClueQuestion
+        },
+
+        {
+            path: '/hstageRank',
+            name: 'hstageRank',
+            component: HStageRank
+        },
+        {
+            path: '/hteamRank',
+            name: 'hteamRank',
+            component: HTeamRank
+        },
+
+        {
+            path: '/hmemberRank',
+            name: 'hmemberRank',
+            component: HMemberRank
+        },
     ],
 });

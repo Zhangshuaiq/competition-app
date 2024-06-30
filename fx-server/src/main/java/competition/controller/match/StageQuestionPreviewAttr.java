@@ -7,7 +7,6 @@ import competition.mapper.ConfigsMapper;
 import competition.mapper.StagesMapper;
 import competition.util.*;
 import javafx.collections.FXCollections;
-import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.control.CheckBox;
@@ -25,14 +24,13 @@ import javax.annotation.Resource;
 import javax.swing.*;
 import java.awt.*;
 import java.io.File;
-import java.util.Arrays;
 
 @Component
 public class StageQuestionPreviewAttr {
-    
+
     @FXML
     private TextField colNumber;
-    
+
     @FXML
     private TextField nameWidthInput;
 
@@ -129,16 +127,10 @@ public class StageQuestionPreviewAttr {
 
     @Resource
     private StagesMapper stagesMapper;
-    
-    
+
+
     @Resource
     private ControlPane controlPane;
-
-    private static ReloadPane reloadPane;
-
-    public static void setReloadPane(ReloadPane reloadPane) {
-        StageQuestionPreviewAttr.reloadPane = reloadPane;
-    }
 
     private static Stages currentStage;
 
@@ -148,43 +140,42 @@ public class StageQuestionPreviewAttr {
 
 
     @FXML
-    public void selectNameImg(){
+    public void selectNameImg() {
         FileChooser chooser = new FileChooser();
         chooser.setInitialDirectory(new File(BaseDir.IMAGE_DIR));
         chooser.getExtensionFilters().addAll(
                 new FileChooser.ExtensionFilter("Image Files", "*.png", "*.jpg", "*.gif")
         );
         File file = chooser.showOpenDialog(null);
-        if (file!= null) {
+        if (file != null) {
             nameBackgroundPath.setText(file.getAbsolutePath());
         }
     }
 
 
     @FXML
-    public void cancelNameImg(){
+    public void cancelNameImg() {
         nameBackgroundPath.setText("");
     }
 
     @FXML
-    public void selectCodeImg(){
+    public void selectCodeImg() {
         FileChooser chooser = new FileChooser();
         chooser.setInitialDirectory(new File(BaseDir.IMAGE_DIR));
         chooser.getExtensionFilters().addAll(
                 new FileChooser.ExtensionFilter("Image Files", "*.png", "*.jpg", "*.gif")
         );
         File file = chooser.showOpenDialog(null);
-        if (file!= null) {
+        if (file != null) {
             numberBackgroundPath.setText(file.getAbsolutePath());
         }
     }
 
 
     @FXML
-    public void cancelCodeImg(){
+    public void cancelCodeImg() {
         numberBackgroundPath.setText("");
     }
-
 
 
     @FXML
@@ -235,7 +226,7 @@ public class StageQuestionPreviewAttr {
                     + itic + ConfigSpliter.SPLITER
                     + underlne + ConfigSpliter.SPLITER
                     + alignValue + ConfigSpliter.SPLITER
-                    + (StringUtils.isEmpty(nameSpaceInput.getText())?"0":nameSpaceInput.getText());
+                    + (StringUtils.isEmpty(nameSpaceInput.getText()) ? "0" : nameSpaceInput.getText());
             if (nameArr.length > 1) {
                 detail = detail + ConfigSpliter.DIFFER + nameArr[1];
             } else {
@@ -243,10 +234,7 @@ public class StageQuestionPreviewAttr {
             }
             currentStage.setQuestionStyle(detail);
             stagesMapper.updateById(currentStage);
-            if (reloadPane != null) {
-                reloadPane.reload();
-            }
-          
+
         } else {
             String detail = x + ConfigSpliter.SPLITER
                     + y + ConfigSpliter.SPLITER
@@ -266,16 +254,13 @@ public class StageQuestionPreviewAttr {
             detail = detail + ConfigSpliter.DIFFER + ConfigSpliter.EMPTY;
             currentStage.setQuestionStyle(detail);
             stagesMapper.updateById(currentStage);
-            if (reloadPane != null) {
-                reloadPane.reload();
-            }
         }
         controlPane.reloadStage();
-        PreviewStack.reload();
+        PreviewStack.reloadStyle();
 
     }
 
-    private void closeStage(){
+    private void closeStage() {
         Stage stage = (Stage) (nameXInput.getScene().getWindow());
         stage.close();
     }
@@ -345,9 +330,6 @@ public class StageQuestionPreviewAttr {
                 xuantiConfig.setConfig(join);
                 configsMapper.updateById(xuantiConfig);
             }
-            if (reloadPane != null) {
-                reloadPane.reload();
-            }
         } else {
             String detail = x + ConfigSpliter.SPLITER
                     + y + ConfigSpliter.SPLITER
@@ -364,9 +346,8 @@ public class StageQuestionPreviewAttr {
                     + underlne + ConfigSpliter.SPLITER
                     + alignValue + ConfigSpliter.SPLITER
                     + rowSpace + ConfigSpliter.SPLITER
-                    + colNumber.getText()
-                    ;
-                    
+                    + colNumber.getText();
+
 
             detail = ConfigSpliter.EMPTY + ConfigSpliter.DIFFER + detail;
             currentStage.setQuestionStyle(detail);
@@ -386,17 +367,32 @@ public class StageQuestionPreviewAttr {
                 configsMapper.updateById(xuantiConfig);
             }
 
-            if (reloadPane != null) {
-                reloadPane.reload();
-            }
         }
         controlPane.reloadStage();
-        PreviewStack.reload();
+        PreviewStack.reloadStyle();
     }
 
 
     private void showNumberConfig(Configs configs) {
-        String details = currentStage.getQuestionStyle();
+        String details;
+        if (currentStage.getQuestionType() == 4) {
+            details = "760%%240%%400%%80%%false%%0x9980e6ff%%%%Dialog%%12%%false%%false%%false%%false%%居中对齐%%0###500%%400%%80%%80%%false%%0x664db3ff%%%%Dialog%%36%%false%%false%%false%%false%%居中对齐%%0%%1";
+        } else {
+            details = "760%%240%%400%%80%%false%%0x990000ff%%%%Dialog%%40%%false%%false%%false%%false%%居中对齐%%10###415%%370%%100%%100%%false%%0x990000ff%%%%Dialog%%30%%false%%false%%false%%false%%居中对齐%%10%%10";
+        }
+
+        String[] split = details.split(ConfigSpliter.DIFFER);
+        if (!StringUtils.isEmpty(currentStage.getQuestionStyle())) {
+            //details = currentStage.getQuestionStyle();
+            String[] sps = currentStage.getQuestionStyle().split(ConfigSpliter.DIFFER);
+            if (!ConfigSpliter.EMPTY.equals(sps[0])) {
+                split[0] = sps[0];
+            }
+
+            if (!ConfigSpliter.EMPTY.equals(sps[1])) {
+                split[1] = sps[1];
+            }
+        }
         String config = configs.getConfig();
         if (!StringUtils.isEmpty(config)) {
             String[] cfgArr = config.split(ConfigSpliter.SPLITER);
@@ -413,29 +409,33 @@ public class StageQuestionPreviewAttr {
         numberDeleteChoice.setSelected(false);
         numberSpaceInput.setText("0");
         colNumber.setText("1");
-        if (!StringUtils.isEmpty(details)) {
-            String[] split = details.split(ConfigSpliter.DIFFER);
-            if (split.length > 1) {
-                String numberCfg = split[1];
-                if (!ConfigSpliter.EMPTY.equals(numberCfg)) {
-                    String[] cfgArr = numberCfg.split(ConfigSpliter.SPLITER);
-                    numberBackgroundChoice.setSelected(Boolean.valueOf(cfgArr[4]));
-                    numberColorInput.setValue(Color.valueOf(cfgArr[5].replace("0x", "#")));
-                    numberBackgroundPath.setText(cfgArr[6]);
-                    numberFontSelector.setValue(cfgArr[7]);
-                    numberFontSize.setText(Integer.parseInt(cfgArr[8]) + "");
-                    numberDeleteChoice.setSelected(Boolean.valueOf(cfgArr[9]));
-                    numberBoldChoice.setSelected(Boolean.valueOf(cfgArr[10]));
-                    numberIticChoice.setSelected(Boolean.valueOf(cfgArr[11]));
-                    numberUnderlineChoice.setSelected(Boolean.valueOf(cfgArr[12]));
-                    numberTextAlignSelector.setValue(cfgArr[13]);
-                    numberSpaceInput.setText(cfgArr[14]);
-                    if (cfgArr.length >= 16) {
-                        colNumber.setText(cfgArr[15]);
-                    }
-                }
+        
+       
+        if (split.length > 1) {
+            String numberCfg = split[1];
+            if (!ConfigSpliter.EMPTY.equals(numberCfg)) {
+                String[] cfgArr = numberCfg.split(ConfigSpliter.SPLITER);
 
+                numberXInput.setText(cfgArr[0]);
+                numberYInput.setText(cfgArr[1]);
+                numberWidthInput.setText(cfgArr[2]);
+                numberHeightInput.setText(cfgArr[3]);
+                numberBackgroundChoice.setSelected(Boolean.valueOf(cfgArr[4]));
+                numberColorInput.setValue(Color.valueOf(cfgArr[5].replace("0x", "#")));
+                numberBackgroundPath.setText(cfgArr[6]);
+                numberFontSelector.setValue(cfgArr[7]);
+                numberFontSize.setText(Integer.parseInt(cfgArr[8]) + "");
+                numberDeleteChoice.setSelected(Boolean.valueOf(cfgArr[9]));
+                numberBoldChoice.setSelected(Boolean.valueOf(cfgArr[10]));
+                numberIticChoice.setSelected(Boolean.valueOf(cfgArr[11]));
+                numberUnderlineChoice.setSelected(Boolean.valueOf(cfgArr[12]));
+                numberTextAlignSelector.setValue(cfgArr[13]);
+                numberSpaceInput.setText(cfgArr[14]);
+                if (cfgArr.length >= 16) {
+                    colNumber.setText(cfgArr[15]);
+                }
             }
+
         }
     }
 
@@ -452,29 +452,44 @@ public class StageQuestionPreviewAttr {
         nameWidthInput.setText(ConfigSpliter.DEFAULT_W + "");
         nameHeightInput.setText(ConfigSpliter.DEFAULT_H + "");
 
-        String details = currentStage.getQuestionStyle();
-        if (!StringUtils.isEmpty(details)) {
-            String[] split = details.split(ConfigSpliter.DIFFER);
-            if (split.length > 0 && !ConfigSpliter.EMPTY.equals(split[0])) {
-                String nameCfg = split[0];
-                String[] cfgArr = nameCfg.split(ConfigSpliter.SPLITER);
-                nameXInput.setText(cfgArr[0]);
-                nameYInput.setText(cfgArr[1]);
-                nameWidthInput.setText(cfgArr[2]);
-                nameHeightInput.setText(cfgArr[3]);
-                nameBackgroundChoice.setSelected(Boolean.valueOf(cfgArr[4]));
-                nameColorInput.setValue(Color.valueOf(cfgArr[5]));
-                nameBackgroundPath.setText(cfgArr[6]);
-                nameFontSelector.setValue(cfgArr[7]);
-                nameFontSize.setText(Integer.parseInt(cfgArr[8]) + "");
-                nameDeleteChoice.setSelected(Boolean.valueOf(cfgArr[9]));
-                nameBoldChoice.setSelected(Boolean.valueOf(cfgArr[10]));
-                nameIticChoice.setSelected(Boolean.valueOf(cfgArr[11]));
-                nameUnderlineChoice.setSelected(Boolean.valueOf(cfgArr[12]));
-                nameTextAlignSelector.setValue(cfgArr[13]);
-                nameSpaceInput.setText(cfgArr[14]);
+
+        String details;
+        if (currentStage.getQuestionType() == 4) {
+            details = "760%%240%%400%%80%%false%%0x9980e6ff%%%%Dialog%%12%%false%%false%%false%%false%%居中对齐%%0###500%%400%%80%%80%%false%%0x664db3ff%%%%Dialog%%36%%false%%false%%false%%false%%居中对齐%%0%%1";
+        } else {
+            details = "760%%240%%400%%80%%false%%0x990000ff%%%%Dialog%%40%%false%%false%%false%%false%%居中对齐%%10###415%%370%%100%%100%%false%%0x990000ff%%%%Dialog%%30%%false%%false%%false%%false%%居中对齐%%10%%10";
+        }
+        String[] split = details.split(ConfigSpliter.DIFFER);
+
+        if (!StringUtils.isEmpty(currentStage.getQuestionStyle())) {
+            String[] sps  = currentStage.getQuestionStyle().split(ConfigSpliter.DIFFER);
+            if (!ConfigSpliter.EMPTY.equals(sps[0])) {
+                split[0] = sps[0];
+            }
+
+            if (!ConfigSpliter.EMPTY.equals(sps[1])) {
+                split[1] = sps[1];
             }
         }
+        
+
+        String nameCfg = split[0];
+        String[] cfgArr = nameCfg.split(ConfigSpliter.SPLITER);
+        nameXInput.setText(cfgArr[0]);
+        nameYInput.setText(cfgArr[1]);
+        nameWidthInput.setText(cfgArr[2]);
+        nameHeightInput.setText(cfgArr[3]);
+        nameBackgroundChoice.setSelected(Boolean.valueOf(cfgArr[4]));
+        nameColorInput.setValue(Color.valueOf(cfgArr[5]));
+        nameBackgroundPath.setText(cfgArr[6]);
+        nameFontSelector.setValue(cfgArr[7]);
+        nameFontSize.setText(Integer.parseInt(cfgArr[8]) + "");
+        nameDeleteChoice.setSelected(Boolean.valueOf(cfgArr[9]));
+        nameBoldChoice.setSelected(Boolean.valueOf(cfgArr[10]));
+        nameIticChoice.setSelected(Boolean.valueOf(cfgArr[11]));
+        nameUnderlineChoice.setSelected(Boolean.valueOf(cfgArr[12]));
+        nameTextAlignSelector.setValue(cfgArr[13]);
+        nameSpaceInput.setText(cfgArr[14]);
     }
 
 }

@@ -66,4 +66,8 @@ public class Questions {
     @ExcelIgnore
     private boolean hasAnswer = false;
     
+    // 答错扣分
+    @ExcelIgnore
+    private Integer desValue;
+    
 }

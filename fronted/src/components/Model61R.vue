@@ -1,24 +1,36 @@
 
 
 <template>
-  <div id="container">
+  <div id="container"  :style="containerBoxStyle">
     <div>
-      <ScoreBoard></ScoreBoard>
+<!--      <ScoreBoard></ScoreBoard>-->
     </div>
     <div id="result-box">
       <div id="correct-answer">
-        正确答案: {{resultData.correctAnswer}}
+        {{ prefix }} {{resultData.correctAnswer}}
       </div>
       <div class="member-answer" style="margin-top: 20px">
-        <el-row>
+        <el-row >
           <el-col span="12" v-for="(item, index) in resultData.dataItemList" :key="index">
             <div style="margin: 10px 0">
-              <el-row>
-                <el-col span="20">
-                  <div class="answer-info">团队：{{item.teamName}}  队员：{{item.member}}  回答：{{item.answer}}</div>
+              <el-row type="flex" justify="right">
+                <el-col span="20" :offset="index % 2 ==0?0:2">
+                  <div v-if="item.member" class="answer-info">
+                    <el-row>
+                      <el-col span="6">{{item.teamName}}</el-col>
+                      <el-col span="6">{{item.member}}</el-col>
+                      <el-col span="12"> 回答 ：&nbsp;{{item.answer}}</el-col>
+                    </el-row>
+                      
+                  </div>
+                  <div v-else class="answer-info">
+                    <el-col span="6">{{item.teamName}}</el-col>
+                    <el-col span="18"> 回答 ：&nbsp;{{item.answer}}</el-col>
+                  </div>
                 </el-col>
-                <el-col span="4">
-                  <div class="score-info">{{item.score}}</div>
+                <el-col span="2">
+                  <div class="score-info" v-if="item.answer ===resultData.correctAnswer" style="background-color: green; width: 100%">+{{item.score}}</div>
+                  <div class="score-info" style="width: 100%" v-else>{{item.score}}</div>
                 </el-col>
               </el-row>
             </div>
@@ -33,18 +45,40 @@
 
 <script>
 
-  import ScoreBoard from "@/components/ScoreBoard.vue";
+  // import ScoreBoard from "@/components/ScoreBoard.vue";
+  import baseUrl from "@/config";
 
   export default {
     name: "Model61R",
-    components: {ScoreBoard},
+    components: {},
 
     data(){
       return {
-        resultData: {}
+        prefix: '',
+        resultData: {},
+        imageUrl: `${baseUrl}/resource/答题背景.jpg?${new Date().getTime()}`,
+        defaultImageUrl: `${baseUrl}/resource/默认背景.jpg?${new Date().getTime()}`,
       }
     },
 
+    methods:{
+      checkImageUrl(url, callback) {
+        const img = new Image();
+        img.onload = () => callback(true);
+        img.onerror = () => callback(false);
+        img.src = url;
+      },
+
+    },
+    computed: {
+      containerBoxStyle() {
+        return {
+          backgroundImage: `url(${this.imageUrl})`,
+          backgroundSize: '100vw 100vh',
+          height: '100vh',
+        };
+      },
+    },
 
     beforeRouteUpdate(to, from, next) {
       const data = this.$store.state.data
@@ -53,6 +87,13 @@
     },
 
     mounted() {
+      this.checkImageUrl(this.imageUrl, (isValid) => {
+        if (!isValid) {
+          console.log("invalid....................")
+          this.imageUrl = this.defaultImageUrl;
+        }
+      });
+      this.prefix = sessionStorage.getItem('prefix')
       const data = this.$store.state.data
       this.resultData = data
       console.log(this.resultData)
@@ -80,12 +121,13 @@
 }
 
 #correct-answer {
-  background-color: chartreuse;
+  background-color: #C40000;
   color: white;
   text-align: center;
-  height: 100px;
-  line-height: 100px;
-  font-size: xxx-large;
+  height: 80px;
+  line-height: 80px;
+  font-size: x-large;
+  border-radius: 8px;
 }
 
 
@@ -94,6 +136,9 @@
   color: white;
   height: 60px;
   line-height: 60px;
+  padding-left: 10px;
+  font-weight: bold;
+  border-radius: 8px;
 }
 
 .score-info {
@@ -103,6 +148,8 @@
   width: 60px;
   line-height: 60px;
   text-align: center;
+  border-radius: 8px;
+  font-weight: bold;
 }
 
 </style>

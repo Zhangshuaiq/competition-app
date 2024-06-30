@@ -450,6 +450,23 @@ public class StageConfig {
             List<Stages> collect = filtered.stream().filter(x -> x.getSortVal().compareTo(stages.getSortVal()) < 0).collect(Collectors.toList());
             String sortVal = stages.getSortVal();
             Stages changed = collect.get(collect.size() - 1);
+          
+            // update children's sort value
+
+            List<Stages> nextLevelStages = list.stream().filter(x -> x.getLevel() >= (level + 1)).collect(Collectors.toList());
+            for (Stages levelStage : nextLevelStages) {
+                if (levelStage.getSortVal().startsWith(changed.getSortVal())) {
+                    levelStage.setSortVal(levelStage.getSortVal().replace(changed.getSortVal(), sortVal));
+                    stagesMapper.updateById(levelStage);
+                }
+
+                if (levelStage.getSortVal().startsWith(sortVal)) {
+                    levelStage.setSortVal(levelStage.getSortVal().replace(sortVal, changed.getSortVal()));
+                    stagesMapper.updateById(levelStage);
+                }
+            }
+            
+
             stages.setSortVal(changed.getSortVal());
             changed.setSortVal(sortVal);
             stagesMapper.updateById(changed);
@@ -461,6 +478,20 @@ public class StageConfig {
             List<Stages> collect = filtered.stream().filter(x -> x.getSortVal().compareTo(stages.getSortVal()) > 0).collect(Collectors.toList());
             String sortVal = stages.getSortVal();
             Stages changed = collect.get(0);
+
+            List<Stages> nextLevelStages = list.stream().filter(x -> x.getLevel() >= (level + 1)).collect(Collectors.toList());
+            for (Stages levelStage : nextLevelStages) {
+                if (levelStage.getSortVal().startsWith(changed.getSortVal())) {
+                    levelStage.setSortVal(levelStage.getSortVal().replace(changed.getSortVal(), sortVal));
+                    stagesMapper.updateById(levelStage);
+                }
+
+                if (levelStage.getSortVal().startsWith(sortVal)) {
+                    levelStage.setSortVal(levelStage.getSortVal().replace(sortVal, changed.getSortVal()));
+                    stagesMapper.updateById(levelStage);
+                }
+            }
+            
             stages.setSortVal(changed.getSortVal());
             changed.setSortVal(sortVal);
             stagesMapper.updateById(changed);
@@ -720,7 +751,7 @@ public class StageConfig {
         stages.setDesValue(Integer.parseInt(desValue.getText()));
         stages.setCountTotal(countTotal.isSelected()? 1: 0);
         stages.setAnswerSingle(answerShow.isSelected()?1: 0);
-        current.setOrderVal(timeOrder.isSelected()? 1: 0);
+        stages.setOrderVal(timeOrder.isSelected()? 1: 0);
         if (addLevel == 1) {
                 int size = stagesMapper.selectList(new LambdaQueryWrapper<Stages>()
                         .isNull(Stages::getParentId)).size() + 1;

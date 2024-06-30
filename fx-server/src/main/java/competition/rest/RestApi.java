@@ -1,10 +1,15 @@
 package competition.rest;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import competition.entity.Configs;
+import competition.entity.Stages;
 import competition.entity.Teams;
+import competition.mapper.ConfigsMapper;
+import competition.mapper.StagesMapper;
 import competition.mapper.TeamsMapper;
 import competition.resp.JsonResp;
 import competition.util.BaseDir;
+import competition.util.ConfigSpliter;
 import org.springframework.core.io.UrlResource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -28,6 +33,9 @@ public class RestApi {
     
     @Resource
     private TeamsMapper teamsMapper;
+    
+    @Resource
+    private ConfigsMapper configsMapper;
     
     
     @GetMapping("/teams")
@@ -62,6 +70,25 @@ public class RestApi {
         }
     }
 
+    
+    
+    @GetMapping("/answerPrefix")
+    public JsonResp answerPrefix(){
+        // 0x000000ff
+        // %%0xffffffff
+        // %%1
+        // %%1
+        // %%正确答案:
+        // %%200%%200%%1550%%200%%2%%2%%0xffffffff%%true%%3%%1%%0xffffffff%%0x334db3ff%%200%%5%%100%%40%%0xffffffff%%0xcc3333ff%%0xcc3333ff%%100%%0x664db3ff%%0xb3b3b3ff%%0x4d804dff%%0x990000ff%%1600%%80%%20%%0xe6e6e6ff
+        Configs configs = configsMapper.selectById(1);
+        String config = configs.getConfig();
+        String[] split = config.split(ConfigSpliter.SPLITER);
+        if (split.length > 4) {
+            return JsonResp.success(split[4]);
+        }
+        return JsonResp.success("");
+    }
+    
 
     @GetMapping("/image/{filename:.+}")
     public ResponseEntity<org.springframework.core.io.Resource> getImage(@PathVariable String filename) {

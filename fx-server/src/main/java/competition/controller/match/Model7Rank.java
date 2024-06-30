@@ -158,11 +158,11 @@ public class Model7Rank implements ReloadPane{
 
 
         if (currentStage.getQuestionType() == 6) {
-            competitionLab.setText("答题排行榜");
+            competitionLab.setText("排行榜");
         }
 
         else if (currentStage.getQuestionType() == 7) {
-            competitionLab.setText("竞技排行榜");
+            competitionLab.setText("排行榜");
         }
 
         // sort 根据分数和时间进行排序
@@ -225,11 +225,11 @@ public class Model7Rank implements ReloadPane{
             HBox itemRow = new HBox();
             // 随机背景色
             Color c = bgcolor;
-            if (i == 0) {
+            if (rankData.getRank() == 1) {
                 c = color1;
-            } else  if (i == 1) {
+            } else  if (rankData.getRank() == 2) {
                 c = color2;
-            } else  if (i == 2) {
+            } else  if (rankData.getRank() == 3) {
                 c = color3;
             }
             itemRow.setBackground(new Background(new BackgroundFill(c,  new CornerRadii(10), Insets.EMPTY)));

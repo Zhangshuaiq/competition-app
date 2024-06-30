@@ -60,7 +60,7 @@ public class Model7RankPreview extends PreviewPane {
 
     @Resource
     private RankStyleMapper rankStyleMapper;
-    
+
     @Resource
     private WsMessageHandler messageHandler;
 
@@ -68,7 +68,7 @@ public class Model7RankPreview extends PreviewPane {
 
     @FXML
     public void initialize() {
-
+        PreviewStack.addPreview(this);
         container.setOnMouseClicked(new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent event) {
@@ -95,6 +95,26 @@ public class Model7RankPreview extends PreviewPane {
                 } else if (event.getCode() == KeyCode.DOWN) {
                     // 下
                     page++;
+                    showData();
+                }
+            }
+        });
+
+        ExtendedScreen.extendScreen.addEventFilter(KeyEvent.KEY_PRESSED,new EventHandler<KeyEvent>() {
+            @Override
+            public void handle(KeyEvent event) {
+                if (controlPane.getPreviewPane() != Model7RankPreview.this) {
+                    return;
+                }
+                // 上
+                if (event.getCode() == KeyCode.UP) {
+                    if (page > 0) {
+                        page --;
+                    }
+                    showData();
+                } else if (event.getCode() == KeyCode.DOWN) {
+                    // 下
+                    page ++;
                     showData();
                 }
             }
@@ -179,8 +199,6 @@ public class Model7RankPreview extends PreviewPane {
         Color color3 = Color.valueOf(cfgArr[8]);
 
 
-        // Font font = competitionLab.getFont();
-        //competitionLab.setPrefWidth(width);
         rankBox.setLayoutX(x);
         rankBox.setLayoutY(y);
         rankBox.setPrefWidth(width);
@@ -198,8 +216,8 @@ public class Model7RankPreview extends PreviewPane {
 
         Map<String, Object> mapData = new HashMap<>();
         if (currentStage.getQuestionType() == 6) {
-            mapData.put("title", "答题排行榜");
-            competitionLab.setText("答题排行榜");
+            mapData.put("title", "排行榜");
+            competitionLab.setText("排行榜");
             if (currentStage.getM6() == 0) {
 
                 List<List<Model60RuntimeData.ModelData>> runtimeData60 = Model60RuntimeData.getTotalData();
@@ -289,9 +307,16 @@ public class Model7RankPreview extends PreviewPane {
                 }
 
             }
-        } else if (currentStage.getQuestionType() == 7) {
-            mapData.put("title", "竞技排行榜");
-            competitionLab.setText("竞技排行榜");
+        } 
+        else if (currentStage.getQuestionType() == 7) 
+        {
+            boolean finish = true;
+            List<Boolean> finished = Model7RuntimeData.getFinished();
+            for (Boolean b : finished) {
+                finish = finish & b;
+            }
+            mapData.put("title", "排行榜");
+            competitionLab.setText("排行榜");
             // 获取竞技排名
             List<List<Model7RuntimeData.ModelData>> runtimeData = Model7RuntimeData.getRuntimeData();
             List<String> timeData = Model7RuntimeData.getFts();
@@ -299,14 +324,26 @@ public class Model7RankPreview extends PreviewPane {
             for (int i = 0; i < runtimeData.size(); i++) {
                 List<Model7RuntimeData.ModelData> questionList = runtimeData.get(i);
                 int score = 0;
-                String team = Model7RuntimeData.getTeams().get(i).getShortName();
-                for (Model7RuntimeData.ModelData data : questionList) {
-                    if (data.getUserSelect() != null && data.getUserSelect().equals(data.getAnswer())) {
-                        score += data.getScore();
-                    } else {
-                        score -= controlPane.getCurrentStage().getDesValue();
+                if (finish) {
+                    for (Model7RuntimeData.ModelData data : questionList) {
+                        if (data.getUserSelect() != null && data.getUserSelect().equals(data.getAnswer())) {
+                            score += data.getScore();
+                        } else {
+                            score -= controlPane.getCurrentStage().getDesValue();
+                        }
+                    }
+                    score = score - ((Model7RuntimeData.totalNumber - questionList.size()) * controlPane.getCurrentStage().getDesValue());
+                } else {
+                    for (Model7RuntimeData.ModelData data : questionList) {
+                        if (data.getUserSelect() != null && data.getUserSelect().equals(data.getAnswer())) {
+                            score += data.getScore();
+                        } else {
+                            score -= controlPane.getCurrentStage().getDesValue();
+                        }
                     }
                 }
+                String team = Model7RuntimeData.getTeams().get(i).getShortName();
+                
                 String time = timeData.get(i);
 
                 Model7RankData rankData = new Model7RankData();
@@ -319,16 +356,13 @@ public class Model7RankPreview extends PreviewPane {
         }
 
         // sort 根据分数和时间进行排序
-        rankList.sort(new Comparator<Model7RankData>() {
-            @Override
-            public int compare(Model7RankData o1, Model7RankData o2) {
-                if (o1.getScore() < o2.getScore()) {
-                    return 1;
-                } else if (o1.getScore() > o2.getScore()) {
-                    return -1;
-                } else {
-                    return o1.getSecond().compareTo(o2.getSecond());
-                }
+        rankList.sort((o1, o2) -> {
+            if (o1.getScore() < o2.getScore()) {
+                return 1;
+            } else if (o1.getScore() > o2.getScore()) {
+                return -1;
+            } else {
+                return o1.getSecond().compareTo(o2.getSecond());
             }
         });
 
@@ -408,11 +442,11 @@ public class Model7RankPreview extends PreviewPane {
             HBox itemRow = new HBox();
             // 随机背景色
             Color c = bgcolor;
-            if (i == 0) {
+            if (rankData.getRank() == 1) {
                 c = color1;
-            } else if (i == 1) {
+            } else if (rankData.getRank() == 2) {
                 c = color2;
-            } else if (i == 2) {
+            } else if (rankData.getRank() == 3) {
                 c = color3;
             }
             itemRow.setBackground(new Background(new BackgroundFill(c, new CornerRadii(10), Insets.EMPTY)));
@@ -449,9 +483,24 @@ public class Model7RankPreview extends PreviewPane {
             itemRow.getChildren().addAll(rankD, teamD, scoreD, timeD);
             rankBox.getChildren().add(itemRow);
         }
-       
-        mapData.put("rank", rankList.subList(start, end));
-        messageHandler.notifyPage("stageRank", mapData);
+
+        // 需要判断答题进程， 如果答题未结束，则不应该向网页端发送展示排行的指令
+        boolean finish = true;
+        if (currentStage.getQuestionType() == 7) {
+            List<Boolean> finished = Model7RuntimeData.getFinished();
+            for (Boolean b : finished) {
+                finish = finish & b;
+            }
+        }
+
+        messageHandler.notifyPage("hmodel7", mapData);
+
+        if (finish) {
+            mapData.put("rank", rankList.subList(start, end));
+            messageHandler.notifyPage("stageRank", mapData);
+        }
+        
+
         if (ExtendedScreen.hasShow()) {
             Model7Rank.setRankList(rankList.subList(start, end));
             // 进入比赛
@@ -460,6 +509,11 @@ public class Model7RankPreview extends PreviewPane {
                 controlPane.setQuestionPreview((Model7Rank) res);
             }
         }
+    }
+
+    @Override
+    public void reload(int time, String timeTxt) {
+        showData();
     }
 
     @Override

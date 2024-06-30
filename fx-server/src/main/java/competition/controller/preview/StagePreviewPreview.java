@@ -87,7 +87,6 @@ public class StagePreviewPreview extends PreviewPane {
                 if (event.getButton() == MouseButton.SECONDARY) {
                     StagePreviewAttr.setConfigId(2);
                     StagePreviewAttr.setLevel(innerStageID);
-                    StagePreviewAttr.setReloadPane(controlPane.getQuestionPreview());
                     Navigator.navigatorTo("/view/match/StagePreviewAttr.fxml", "", "/view/style.css", false, false);
                 }
             }
@@ -95,6 +94,10 @@ public class StagePreviewPreview extends PreviewPane {
         showView();
     }
 
+    @Override
+    public void reloadStyle() {
+        this.reload();
+    }
 
     private void showView() {
         if (ExtendedScreen.hasShow()) {
@@ -145,8 +148,8 @@ public class StagePreviewPreview extends PreviewPane {
                 messageHandler.notifyPage("stages", stages);
               
                 
-                
-                String[] detailArr = {};
+                String defaultStyle = "550%%300%%350%%80%%false%%0xb31a1aff%%%%微软雅黑%%28%%false%%false%%false%%false%%居中对齐%%60%%0%%2";
+                String[] detailArr = defaultStyle.split(ConfigSpliter.SPLITER);
                 if (stagesStyle != null) {
                     detailArr = stagesStyle.getStyle().split(ConfigSpliter.SPLITER);
                 }
@@ -172,11 +175,22 @@ public class StagePreviewPreview extends PreviewPane {
 
                 int count = 0;
                 for (Stages stage : stages) {
+                    if (stage.getShow() == 1) {
+                        if (stage.getSelectGrey() == 1) {
+                            if (GlobalCache.isRecord(stage.getId())) {
+                                continue;
+                            } 
+                        }
+                    } else {
+                        continue;
+                    }
+                    
+                    
                     HBox box = new HBox();
                     StackPane stageNamePane = new StackPane();
                     Text stageName = new Text(stage.getName());
                     stageName.setTextAlignment(TextAlignment.CENTER);
-                    stageName.setStyle("-fx-fill: " + split[2].replace("0x", "#"));
+                    stageName.setFill(Color.valueOf(split[2]));
                     stageNamePane.getChildren().add(stageName);
                     stageNamePane.setPrefSize(width, height);
                     
@@ -208,6 +222,7 @@ public class StagePreviewPreview extends PreviewPane {
                         stageName.setFont(font);
                         if (Boolean.valueOf(detailArr[10])) {
                             stageName.setStroke(stageName.getFill());
+                            stageName.setStrokeWidth(1);
                         } else {
                             stageName.setStroke(null);
                         }
@@ -244,17 +259,16 @@ public class StagePreviewPreview extends PreviewPane {
                             if (event.getButton() != MouseButton.PRIMARY) {
                                 return;
                             }
-//                            StageNamePreview.setStageId(stage.getId());
-//                            ExtendedScreen.showWithControl("/view/match/StageNamePreview.fxml");
 
                             // 内屏
                             StageNamePreviewPreview.setStageId(stage.getId());
+                            controlPane.setCurrentStage(stage);
                             controlPane.setPreviewPane(
                                     Navigator.preview("/view/preview/StageNamePreview.fxml", "", "/view/style.css", true, true)
                             );
                             GlobalCache.recordStage(stage.getId());
                             // 更新控制面板的分数和时间
-                            controlPane.setCurrentStage(stage);
+                           
                         }
                     });
                     int cols = 1;
@@ -264,19 +278,7 @@ public class StagePreviewPreview extends PreviewPane {
                     int row = count / cols;
                     int col = count % cols;
                     // 是否展示环节
-                    if (stage.getShow() == 1) {
-                        if (stage.getSelectGrey() == 1) {
-                            if (GlobalCache.isRecord(stage.getId())) {
-                                box.setVisible(false);
-                            } else {
-                                box.setVisible(true);
-                            }
-                        } else {
-                            box.setVisible(true);
-                        }
-                    } else {
-                        box.setVisible(false);
-                    }
+                    
                     stageContainer.add(box, col, row);
                     count ++;
 

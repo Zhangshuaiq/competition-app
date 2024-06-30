@@ -87,6 +87,7 @@ public class TotalRulePreview implements ReloadPane {
             text.setFont(font);
             if (Boolean.valueOf(cfgArr[10])) {
                 text.setStroke(text.getFill());
+                text.setStrokeWidth(1);
             } else {
                 text.setStroke(null);
             }

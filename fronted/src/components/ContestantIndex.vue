@@ -1,6 +1,6 @@
 <!--  选手页面 -->
 <template>
-  <div id="container-box">
+  <div id="container-box" :style="containerBoxStyle">
     <div id="container">
       <el-row>
         <el-col v-for="(item, index) in teamList"
@@ -41,7 +41,8 @@
 </template>
 
 <script>
-import {queryTeams} from "@/api";
+import {answerPrefix, queryTeams} from "@/api";
+import baseUrl from "@/config";
 
 export default {
   name: "ContestantIndex",
@@ -54,8 +55,20 @@ export default {
       teamList: [],
       dialogFormVisible: false,
       teamItem: '',
-      member: ''
+      member: '',
+      imageUrl: `${baseUrl}/resource/登录背景.jpg?${new Date().getTime()}`,
+      defaultImageUrl: `${baseUrl}/resource/默认背景.jpg?${new Date().getTime()}`,
     }
+  },
+
+  computed: {
+    containerBoxStyle() {
+      return {
+        backgroundImage: `url(${this.imageUrl})`,
+        backgroundSize: '100vw 100vh',
+        height: '100vh',
+      };
+    },
   },
   
   methods: {
@@ -66,6 +79,13 @@ export default {
           this.teamList = res.data
         }
       })
+    },
+
+    checkImageUrl(url, callback) {
+      const img = new Image();
+      img.onload = () => callback(true);
+      img.onerror = () => callback(false);
+      img.src = url;
     },
 
     validPassword(){
@@ -90,12 +110,24 @@ export default {
       sessionStorage.setItem("member", member)
       console.log(teamItem)
       this.$router.push({name: "wait"});
+    },
+
+    queryPrefix() {
+      answerPrefix().then(res => {
+        sessionStorage.setItem("prefix", res.data)
+      })
     }
   },
   
   mounted() {
     sessionStorage.clear()
     this.queryTeamList()
+    this.checkImageUrl(this.imageUrl, (isValid) => {
+      if (!isValid) {
+        console.log("invalid....................")
+        this.imageUrl = this.defaultImageUrl;
+      }
+    });
   }
 
 
@@ -103,12 +135,6 @@ export default {
 </script>
 
 <style scoped>
-
-#container-box {
-  background-image: url("~@/assets/background.png");
-  background-size: 100vw 100vh;
-  height: 100vh;
-}
 
 #container {
   padding: 100px;

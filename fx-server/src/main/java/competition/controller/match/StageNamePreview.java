@@ -111,70 +111,72 @@ public class StageNamePreview implements ReloadPane{
         final String style = stages.getStyle();
         final String config = stageConfig.getConfig();
         final String[] huanjieArr = config.split(ConfigSpliter.SPLITER);
+        String[] detailArr = "750%%400%%400%%150%%false%%0x990000ff%%%%Dialog%%40%%false%%false%%false%%false%%居中对齐%%0".split(ConfigSpliter.SPLITER);
         if (StringUtils.isEmpty(style)) {
-            box.setLayoutX(ScreenAdapter.calculateExX(ConfigSpliter.DEFAULT_X));
-            box.setLayoutY(ScreenAdapter.calculateExY(ConfigSpliter.DEFAULT_Y));
-            box.setPrefWidth(ScreenAdapter.calculateExW(ConfigSpliter.DEFAULT_W));
-            box.setPrefHeight(ScreenAdapter.calculateExH(ConfigSpliter.DEFAULT_H));
-            box.setBackground(new Background(new BackgroundFill(Color.valueOf(huanjieArr[3]), new CornerRadii(10), Insets.EMPTY)));
-
-            Text title = new Text(stages.getName());
-            title.prefWidth(ScreenAdapter.calculateExW(ConfigSpliter.DEFAULT_W));
-            title.prefHeight(ScreenAdapter.calculateExH(ConfigSpliter.DEFAULT_H));
-            title.setTextAlignment(TextAlignment.CENTER);
-            title.setStyle("-fx-fill: " + huanjieArr[2].replace("0x", "#"));
-            box.getChildren().add(title);
+//            box.setLayoutX(ScreenAdapter.calculateExX(ConfigSpliter.DEFAULT_X));
+//            box.setLayoutY(ScreenAdapter.calculateExY(ConfigSpliter.DEFAULT_Y));
+//            box.setPrefWidth(ScreenAdapter.calculateExW(ConfigSpliter.DEFAULT_W));
+//            box.setPrefHeight(ScreenAdapter.calculateExH(ConfigSpliter.DEFAULT_H));
+//            box.setBackground(new Background(new BackgroundFill(Color.valueOf(huanjieArr[3]), new CornerRadii(10), Insets.EMPTY)));
+//
+//            Text title = new Text(stages.getName());
+//            title.prefWidth(ScreenAdapter.calculateExW(ConfigSpliter.DEFAULT_W));
+//            title.prefHeight(ScreenAdapter.calculateExH(ConfigSpliter.DEFAULT_H));
+//            title.setTextAlignment(TextAlignment.CENTER);
+//            title.setFill(Color.valueOf(huanjieArr[2]));
+//            box.getChildren().add(title);
         } else {
-            String[] detailArr = style.split(ConfigSpliter.SPLITER);
-            box.setLayoutX(ScreenAdapter.calculateExX(Integer.parseInt(detailArr[0])));
-            box.setLayoutY(ScreenAdapter.calculateExY(Integer.parseInt(detailArr[1])));
-            box.setPrefWidth(ScreenAdapter.calculateExW(Integer.parseInt(detailArr[2])));
-            box.setPrefHeight(ScreenAdapter.calculateExH(Integer.parseInt(detailArr[3])));
+            detailArr = style.split(ConfigSpliter.SPLITER);
+        }
 
-            if (Boolean.valueOf(detailArr[4])) {
-                // 填充背景图片
-                if (!StringUtils.isEmpty(detailArr[6])) {
-                    try {
-                        box.setBackground(new Background(new BackgroundImage(new Image(new FileInputStream(detailArr[6])),
-                                BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT, BackgroundPosition.DEFAULT,
-                                new BackgroundSize(
+        box.setLayoutX(ScreenAdapter.calculateExX(Integer.parseInt(detailArr[0])));
+        box.setLayoutY(ScreenAdapter.calculateExY(Integer.parseInt(detailArr[1])));
+        box.setPrefWidth(ScreenAdapter.calculateExW(Integer.parseInt(detailArr[2])));
+        box.setPrefHeight(ScreenAdapter.calculateExH(Integer.parseInt(detailArr[3])));
+
+        if (Boolean.valueOf(detailArr[4])) {
+            // 填充背景图片
+            if (!StringUtils.isEmpty(detailArr[6])) {
+                try {
+                    box.setBackground(new Background(new BackgroundImage(new Image(new FileInputStream(detailArr[6])),
+                            BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT, BackgroundPosition.DEFAULT,
+                            new BackgroundSize(
                                     ScreenAdapter.calculateExW(Integer.parseInt(detailArr[2])),
                                     ScreenAdapter.calculateExH(Integer.parseInt(detailArr[3])), false, false, false, false))));
-                    } catch (FileNotFoundException e) {
-                        box.setBackground(new Background(new BackgroundFill(Color.TRANSPARENT, new CornerRadii(10), Insets.EMPTY)));
-                    }
-                } else {
+                } catch (FileNotFoundException e) {
                     box.setBackground(new Background(new BackgroundFill(Color.TRANSPARENT, new CornerRadii(10), Insets.EMPTY)));
                 }
             } else {
-                // 填充背景颜色
-                box.setBackground(new Background(new BackgroundFill(Color.valueOf(detailArr[5]),  new CornerRadii(10), Insets.EMPTY)));
+                box.setBackground(new Background(new BackgroundFill(Color.TRANSPARENT, new CornerRadii(10), Insets.EMPTY)));
             }
-            Text title = new Text(stages.getName());
-            title.setTextAlignment(AlignmentUtil.getTextAlign(detailArr[13]));
-            box.setAlignment(AlignmentUtil.getAlign(detailArr[13]));
-            title.prefWidth(ScreenAdapter.calculateExW(Integer.parseInt(detailArr[2])));
-            title.prefHeight(ScreenAdapter.calculateExH(Integer.parseInt(detailArr[3])));
-            title.setStyle("-fx-fill: " + huanjieArr[2].replace("0x", "#"));
-
-
-            Font font = Font.font(FontMap.getFont(detailArr[7]), FontWeight.NORMAL, FontPosture.REGULAR,
-                ScreenAdapter.calculateExW(Integer.parseInt(detailArr[8])));
-            title.setFont(font);
-            if (Boolean.valueOf(detailArr[10])) {
-                title.setStroke(title.getFill());
-            } else {
-                title.setStroke(null);
-
-            }
-            title.getTransforms().clear();
-            if (Boolean.valueOf(detailArr[11])) {
-                title.getTransforms().add(new Shear(-0.3, 0));
-            }
-            title.setUnderline(Boolean.valueOf(detailArr[12]));
-            title.setStrikethrough(Boolean.valueOf(detailArr[9]));
-            box.getChildren().add(title);
+        } else {
+            // 填充背景颜色
+            box.setBackground(new Background(new BackgroundFill(Color.valueOf(detailArr[5]),  new CornerRadii(10), Insets.EMPTY)));
         }
+        Text title = new Text(stages.getName());
+        title.setTextAlignment(AlignmentUtil.getTextAlign(detailArr[13]));
+        box.setAlignment(AlignmentUtil.getAlign(detailArr[13]));
+        title.prefWidth(ScreenAdapter.calculateExW(Integer.parseInt(detailArr[2])));
+        title.prefHeight(ScreenAdapter.calculateExH(Integer.parseInt(detailArr[3])));
+        title.setFill(Color.valueOf(huanjieArr[2]));
+        Font font = Font.font(FontMap.getFont(detailArr[7]), FontWeight.NORMAL, FontPosture.REGULAR,
+                ScreenAdapter.calculateExW(Integer.parseInt(detailArr[8])));
+        title.setFont(font);
+        if (Boolean.valueOf(detailArr[10])) {
+            title.setStroke(title.getFill());
+            title.setStrokeWidth(1);
+        } else {
+            title.setStroke(null);
+
+        }
+        title.getTransforms().clear();
+        if (Boolean.valueOf(detailArr[11])) {
+            title.getTransforms().add(new Shear(-0.3, 0));
+        }
+        title.setUnderline(Boolean.valueOf(detailArr[12]));
+        title.setStrikethrough(Boolean.valueOf(detailArr[9]));
+        box.getChildren().add(title);
+        
     }
 
     public Integer getInnerStageId() {

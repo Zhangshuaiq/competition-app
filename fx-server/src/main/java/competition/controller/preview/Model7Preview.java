@@ -8,6 +8,7 @@ import competition.entity.Model3Style;
 import competition.entity.Questions;
 import competition.entity.Teams;
 import competition.mapper.Model3Mapper;
+import competition.modal.Model7RankData;
 import competition.util.*;
 import competition.ws.Model7RuntimeData;
 import competition.ws.WsMessageHandler;
@@ -32,7 +33,10 @@ import org.springframework.util.StringUtils;
 import javax.annotation.Resource;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 // 竞技模式显示控制
 @Component
@@ -64,18 +68,89 @@ public class Model7Preview extends PreviewPane {
 
     @FXML
     public void initialize() {
+
+        calculatePW();
         messageHandler.notifyPage("model7", CurrentQuestions.getQuestionList());
+
+        Model7RuntimeData.totalNumber = CurrentQuestions.getQuestionList().size();
         PreviewStack.addPreview(this);
         container.setOnMouseClicked(new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent event) {
                 if (event.getButton() == MouseButton.SECONDARY) {
-                    Model7Attr.setReloadPane(controlPane.getQuestionPreview());
                     Navigator.navigatorTo("/view/match/Model7Attr.fxml", "", "/view/style.css", false, false);
                 }
             }
         });
         reload();
+    }
+    
+    private void calculatePW(){
+        // 评委端数据
+        List<Model7RankData> rankList = new ArrayList<>();
+        List<List<Model7RuntimeData.ModelData>> runtimeData = Model7RuntimeData.getRuntimeData();
+        List<String> timeData = Model7RuntimeData.getFts();
+        List<Integer> seconds = Model7RuntimeData.getSeconds();
+        boolean finish = true;
+        List<Boolean> finished = Model7RuntimeData.getFinished();
+        for (Boolean b : finished) {
+            finish = finish & b;
+        }
+        for (int i = 0; i < runtimeData.size(); i++) {
+            List<Model7RuntimeData.ModelData> questionList = runtimeData.get(i);
+            int score = 0;
+            if (finish) {
+                for (Model7RuntimeData.ModelData data : questionList) {
+                    if (data.getUserSelect() != null && data.getUserSelect().equals(data.getAnswer())) {
+                        score += data.getScore();
+                    } else {
+                        score -= controlPane.getCurrentStage().getDesValue();
+                    }
+                }
+                score = score - ((Model7RuntimeData.totalNumber - questionList.size()) * controlPane.getCurrentStage().getDesValue());
+            } else {
+                for (Model7RuntimeData.ModelData data : questionList) {
+                    if (data.getUserSelect() != null && data.getUserSelect().equals(data.getAnswer())) {
+                        score += data.getScore();
+                    } else {
+                        score -= controlPane.getCurrentStage().getDesValue();
+                    }
+                }
+            }
+            String team = Model7RuntimeData.getTeams().get(i).getShortName();
+
+            String time = timeData.get(i);
+
+            Model7RankData rankData = new Model7RankData();
+            rankData.setScore(score);
+            rankData.setSecond(seconds.get(i));
+            rankData.setTeam(team);
+            rankData.setTime(time);
+            rankList.add(rankData);
+        }
+        
+        rankList.sort((o1, o2) -> {
+            if (o1.getScore() < o2.getScore()) {
+                return 1;
+            } else if (o1.getScore() > o2.getScore()) {
+                return -1;
+            } else {
+                return o1.getSecond().compareTo(o2.getSecond());
+            }
+        });
+
+        int rank = 1;
+        Model7RankData first = rankList.get(0);
+        for (Model7RankData rankData : rankList) {
+            if (first.compareTo(rankData) < 0) {
+                rank++;
+            }
+            rankData.setRank(rank);
+            first = rankData;
+        }
+        Map<String, Object> mapData = new HashMap<>();
+        mapData.put("rank", rankList);
+        messageHandler.notifyPage("hmodel7", mapData);
     }
 
 
@@ -89,7 +164,7 @@ public class Model7Preview extends PreviewPane {
         } catch (FileNotFoundException e) {
             container.setBackground(new Background(new BackgroundFill(Color.TRANSPARENT, new CornerRadii(10), Insets.EMPTY)));
         }
-        
+        calculatePW();
         Model3Style model3Style = model3Mapper.selectById(2);
         String titleStyle = model3Style.getTitleStyle();
 
@@ -115,12 +190,24 @@ public class Model7Preview extends PreviewPane {
         container.setPadding(new Insets(y, 0, 0, x));
         if (ExtendedScreen.hasShow()) {
             // 进入比赛
-            Object res = ExtendedScreen.showWithControl("/view/match/Model7.fxml");
-            if (res != null) {
-                controlPane.setQuestionPreview((Model7) res);
+            ReloadPane questionPreview = controlPane.getQuestionPreview();
+            if (questionPreview != null) {
+                if (questionPreview instanceof Model7) {
+                    questionPreview.reload(1, this.timeValue);
+                } else {
+                    Object res = ExtendedScreen.showWithControl("/view/match/Model7.fxml");
+                    if (res != null) {
+                        controlPane.setQuestionPreview((Model7) res);
+                    }
+                }
+            } else {
+                Object res = ExtendedScreen.showWithControl("/view/match/Model7.fxml");
+                if (res != null) {
+                    controlPane.setQuestionPreview((Model7) res);
+                }
             }
-            container.setPrefWidth(Navigator.getWidth());
         }
+        container.setPrefWidth(Navigator.getWidth());
         container.getChildren().clear();
         container.setVgap(vgap);
         container.setHgap(hgap);
@@ -174,6 +261,11 @@ public class Model7Preview extends PreviewPane {
                     ((Circle) (row2.getChildren().get(i1))).setFill(Color.RED);
                 }
                 last = m;
+            }
+            
+            // 补充未答题的分数扣除
+            if (Model7RuntimeData.getFinished().get(i)) {
+                score -= controlPane.getCurrentStage().getDesValue() * (Model7RuntimeData.totalNumber - modelData.size());
             }
             // 第一行
             HBox row1 = new HBox();
@@ -319,6 +411,10 @@ public class Model7Preview extends PreviewPane {
         }
     }
 
+    @Override
+    public void reloadStyle() {
+        this.reload();
+    }
 
     @Override
     public void reload() {
@@ -331,10 +427,10 @@ public class Model7Preview extends PreviewPane {
         this.timeValue = timeTxt;
         messageHandler.sendModel7Time(time + "");
         showData();
-        ReloadPane questionPreview = controlPane.getQuestionPreview();
-        if (questionPreview != null) {
-            questionPreview.reload(time, timeTxt);
-        }
+//        ReloadPane questionPreview = controlPane.getQuestionPreview();
+//        if (questionPreview != null) {
+//            questionPreview.reload(time, timeTxt);
+//        }
     }
 
 }

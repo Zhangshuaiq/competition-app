@@ -5,34 +5,49 @@
 </template>
 
 <script>
-
 export default {
   name: 'App',
 
-
   mounted() {
+    
+    
     this.$websocket.subscribe('/topic/page', (message) => {
       console.log(message.route);
       //const currentRouteName = this.$router.currentRoute.name;
-      const targetRouteName = message.route;
-
+      let targetRouteName = message.route;
+      const role = sessionStorage.getItem('role');
       if (targetRouteName !== '') {
-        // 如果消息包含数据和路由，更新 Vuex 状态
-        this.$store.commit('setStage', message.stage);
-        this.$store.commit('setCurrentRoute', targetRouteName);
-        this.$store.commit('setAdditionalData', message.data); // 假设 message.data 包含需要的额外数据
-        // 检查当前路由名称与目标路由名称是否相同
-        //if (targetRouteName !== currentRouteName) {
-        this.$router.push(
-            {
-              name: targetRouteName,
-              query: {t: Date.now()}
-            }
-        );
-        //}
-        //else {
-        //  console.log('Attempted to navigate to the same route:', targetRouteName);
-        //}
+        // 竞技模式的情况下评委需要看到的数据
+        if (targetRouteName === 'hmodel7' && role && role === 'holder') {
+          this.$store.commit('setStage', message.stage);
+          this.$store.commit('setCurrentRoute', targetRouteName);
+          this.$store.commit('setAdditionalData', message.data); // 假设 message.data 包含需要的额外数据
+          this.$router.push(
+              {
+                name: targetRouteName,
+                query: {t: Date.now()}
+              }
+          );
+        } else {
+          if (role && role === 'holder') {
+            targetRouteName = 'h' + targetRouteName
+          }
+          
+          if (targetRouteName !== 'hmodel7') {
+            // 如果消息包含数据和路由，更新 Vuex 状态
+            this.$store.commit('setStage', message.stage);
+            this.$store.commit('setCurrentRoute', targetRouteName);
+            this.$store.commit('setAdditionalData', message.data); // 假设 message.data 包含需要的额外数据
+            // 检查当前路由名称与目标路由名称是否相同
+            //if (targetRouteName !== currentRouteName) {
+            this.$router.push(
+                {
+                  name: targetRouteName,
+                  query: {t: Date.now()}
+                }
+            );
+          }
+        }
       }
 
       this.$store.commit('setTeamsData', message.teams)

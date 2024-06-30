@@ -1,5 +1,5 @@
 <template>
-  <div id="container-box">
+  <div id="container-box" :style="containerBoxStyle">
     <div>
       <ScoreBoard></ScoreBoard>
     </div>
@@ -8,12 +8,11 @@
         <el-col span="4"> 组号: {{ teamInfo.shortName }}</el-col>
         <el-col span="4"> 组名: {{ teamInfo.fullName }}</el-col>
         <el-col span="4"> 选手: {{ member }}</el-col>
-        <el-col span="4"> 环节: {{ stage.name}}</el-col>
+        <el-col span="4" v-if="stage"> 环节: {{ stage.name}}</el-col>
       </el-row>
     </div>
     <div id="container">
-      <div  style="padding: 100px; text-align: center">
-        {{rule}}
+      <div  style="padding: 100px; text-align: center; font-size: xx-large" v-html="rule">
       </div>
     </div>
   </div>
@@ -21,6 +20,7 @@
 
 <script>
 import ScoreBoard from "@/components/ScoreBoard.vue";
+import baseUrl from "@/config";
 
 export default {
   name: "QuestionL",
@@ -28,13 +28,31 @@ export default {
 
   data(){
     return {
+      imageUrl: `${baseUrl}/resource/总规则背景.jpg?${new Date().getTime()}`,
+      defaultImageUrl: `${baseUrl}/resource/默认背景.jpg?${new Date().getTime()}`,
       rule: '',
       member: '',
       stage: {},
       teamInfo: {}
     }
   },
+
+  computed: {
+    containerBoxStyle() {
+      return {
+        backgroundImage: `url(${this.imageUrl})`,
+        backgroundSize: '100vw 100vh',
+        height: '100vh',
+      };
+    },
+  },
   methods: {
+    checkImageUrl(url, callback) {
+      const img = new Image();
+      img.onload = () => callback(true);
+      img.onerror = () => callback(false);
+      img.src = url;
+    },
   },
 
   // beforeRouteUpdate(to, from, next) {
@@ -45,6 +63,12 @@ export default {
   // },
 
   mounted() {
+    this.checkImageUrl(this.imageUrl, (isValid) => {
+      if (!isValid) {
+        console.log("invalid....................")
+        this.imageUrl = this.defaultImageUrl;
+      }
+    });
     const item = sessionStorage.getItem("user");
     this.member = sessionStorage.getItem('member')
     if (!item) {
@@ -54,19 +78,14 @@ export default {
     this.teamInfo = JSON.parse(item)
     const data = this.$store.state.data
     this.stage = this.$store.state.stage
-    console.log(this.stage)
     this.rule = data
+    console.log(this.rule)
   },
 }
 </script>
 
 <style scoped>
 
-#container-box {
-  background-image: url("~@/assets/background.png");
-  background-size: 100vw 100vh;
-  height: 100vh;
-}
 
 #container {
   padding:0 100px;

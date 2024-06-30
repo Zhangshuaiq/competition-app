@@ -97,6 +97,27 @@ public class TeamRankPreview extends PreviewPane{
                 }
             }
         });
+
+
+        ExtendedScreen.extendScreen.addEventFilter(KeyEvent.KEY_PRESSED,new EventHandler<KeyEvent>() {
+            @Override
+            public void handle(KeyEvent event) {
+                if (controlPane.getPreviewPane() != TeamRankPreview.this) {
+                    return;
+                }
+                // 上
+                if (event.getCode() == KeyCode.UP) {
+                    if (page > 0) {
+                        page --;
+                    }
+                    showData();
+                } else if (event.getCode() == KeyCode.DOWN) {
+                    // 下
+                    page ++;
+                    showData();
+                }
+            }
+        });
         
         this.showData();
     }
@@ -273,11 +294,11 @@ public class TeamRankPreview extends PreviewPane{
             HBox itemRow = new HBox();
             // 随机背景色
             Color c = bgcolor;
-            if (i == 0) {
+            if (rankData.getRank() == 1) {
                 c = color1;
-            } else  if (i == 1) {
+            } else  if (rankData.getRank() == 2) {
                 c = color2;
-            } else  if (i == 2) {
+            } else  if (rankData.getRank() == 3) {
                 c = color3;
             }
             itemRow.setBackground(new Background(new BackgroundFill(c,  new CornerRadii(10), Insets.EMPTY)));

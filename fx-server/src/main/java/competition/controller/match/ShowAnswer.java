@@ -237,6 +237,7 @@ public class ShowAnswer implements ReloadPane {
         
         if (f1BD) {
             correctText.setStroke(f1Color);
+            correctText.setStrokeWidth(1);
         } else {
             correctText.setStroke(null);
 
@@ -263,7 +264,7 @@ public class ShowAnswer implements ReloadPane {
             }
         } else {
             // 填充背景颜色
-            answerBack.setBackground(new Background(new BackgroundFill(f1BackColor, CornerRadii.EMPTY, Insets.EMPTY)));
+            answerBack.setBackground(new Background(new BackgroundFill(f1BackColor, new CornerRadii(10), Insets.EMPTY)));
         }
 
         if (teamResult != null) {
@@ -304,6 +305,7 @@ public class ShowAnswer implements ReloadPane {
 
                 if (f2BD) {
                     memberResult.setStroke(f2Color);
+                    memberResult.setStrokeWidth(1);
                 } else {
                     memberResult.setStroke(null);
 
@@ -330,7 +332,7 @@ public class ShowAnswer implements ReloadPane {
                     }
                 } else {
                     // 填充背景颜色
-                    itemBox.setBackground(new Background(new BackgroundFill(f2BackColor, CornerRadii.EMPTY, Insets.EMPTY)));
+                    itemBox.setBackground(new Background(new BackgroundFill(f2BackColor, new CornerRadii(10), Insets.EMPTY)));
                 }
                 
                 StackPane rPane = new StackPane();
@@ -348,6 +350,7 @@ public class ShowAnswer implements ReloadPane {
 
                     if (f3BD) {
                         ut.setStroke(f3Color);
+                        ut.setStrokeWidth(1);
                     } else {
                         ut.setStroke(null);
 
@@ -374,7 +377,7 @@ public class ShowAnswer implements ReloadPane {
                         }
                     } else {
                         // 填充背景颜色
-                        rPane.setBackground(new Background(new BackgroundFill(f3BackColor, CornerRadii.EMPTY, Insets.EMPTY)));
+                        rPane.setBackground(new Background(new BackgroundFill(f3BackColor, new CornerRadii(10), Insets.EMPTY)));
                     }
                 } else if (dataItem.getScore() < 0) {
                     rPane.setAlignment(AlignmentUtil.getAlign(f4l));
@@ -410,7 +413,7 @@ public class ShowAnswer implements ReloadPane {
                         }
                     } else {
                         // 填充背景颜色
-                        rPane.setBackground(new Background(new BackgroundFill(f4BackColor, CornerRadii.EMPTY, Insets.EMPTY)));
+                        rPane.setBackground(new Background(new BackgroundFill(f4BackColor, new CornerRadii(10), Insets.EMPTY)));
                     }
                 } else {
                     rPane.setAlignment(AlignmentUtil.getAlign(f5l));
@@ -447,7 +450,7 @@ public class ShowAnswer implements ReloadPane {
                         }
                     } else {
                         // 填充背景颜色
-                        rPane.setBackground(new Background(new BackgroundFill(f5BackColor, CornerRadii.EMPTY, Insets.EMPTY)));
+                        rPane.setBackground(new Background(new BackgroundFill(f5BackColor, new CornerRadii(10), Insets.EMPTY)));
                     }
                 }
 

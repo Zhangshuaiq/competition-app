@@ -15,11 +15,11 @@
             <Font size="10.0" />
          </font>
       </Label>
-      <ScrollPane layoutY="27.0" prefHeight="205.0" prefWidth="339.0">
+      <ScrollPane fx:id="scrollPane" layoutY="27.0" prefHeight="205.0" prefWidth="339.0" >
          <content>
             <AnchorPane>
-               <VBox fx:id="stageList" layoutY="27.0" prefHeight="205.0" prefWidth="339.0" spacing="5" visible="false" />
-               <VBox fx:id="stageChildList" layoutY="27.0" prefHeight="205.0" prefWidth="339.0" spacing="5" visible="false" />
+               <VBox fx:id="stageList" layoutY="5.0"  prefWidth="339.0" spacing="5" visible="false" />
+               <VBox fx:id="stageChildList" layoutY="5.0"  prefWidth="339.0" spacing="5" visible="false" />
             </AnchorPane>
          </content>
       </ScrollPane>
@@ -60,12 +60,12 @@
                   <Font size="10.0" />
                </font>
             </Button>
-            <Button layoutX="246.0" layoutY="41.0" mnemonicParsing="false" onMouseClicked="#lastQuestion" prefHeight="25.0" prefWidth="80.0" text="上一题">
+            <Button fx:id="lastQBtn" layoutX="246.0" layoutY="41.0" mnemonicParsing="false" onMouseClicked="#lastQuestion" prefHeight="25.0" prefWidth="80.0" text="上一题">
                <font>
                   <Font size="10.0" />
                </font>
             </Button>
-            <Button layoutX="246.0" layoutY="71.0" mnemonicParsing="false" onMouseClicked="#nextQuestion" prefHeight="25.0" prefWidth="80.0" text="下一题">
+            <Button fx:id="nextQBtn" layoutX="246.0" layoutY="71.0" mnemonicParsing="false" onMouseClicked="#nextQuestion" prefHeight="25.0" prefWidth="80.0" text="下一题">
                <font>
                   <Font size="10.0" />
                </font>

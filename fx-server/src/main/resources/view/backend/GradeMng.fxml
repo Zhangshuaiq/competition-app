@@ -8,18 +8,18 @@
     <children>
         <Button layoutX="411.0" layoutY="48.0" mnemonicParsing="false" text="清除数据" onMouseClicked="#clearData"/>
         <Button layoutX="605.0" layoutY="48.0" mnemonicParsing="false" text="导出 Excel"/>
-        <TableView layoutX="59.0" layoutY="89.0" prefHeight="665.0" prefWidth="996.0">
+        <TableView fx:id="tableView" layoutX="59.0" layoutY="89.0" prefHeight="665.0" prefWidth="996.0">
             <columns>
-                <TableColumn prefWidth="150.0" text="队伍"/>
-                <TableColumn prefWidth="150.0" text="环节"/>
-                <TableColumn prefWidth="75.0" text="分组"/>
-                <TableColumn prefWidth="150.0" text="队员"/>
-                <TableColumn prefWidth="75.0" text="题号"/>
-                <TableColumn prefWidth="75.0" text="用时"/>
-                <TableColumn prefWidth="75.0" text="加分"/>
-                <TableColumn prefWidth="75.0" text="减分"/>
-                <TableColumn prefWidth="75.0" text="环节小计"/>
-                <TableColumn prefWidth="75.0" text="成绩合计"/>
+                <TableColumn fx:id="teamCol" prefWidth="150.0" text="队伍"/>
+                <TableColumn fx:id="stageCol" prefWidth="150.0" text="环节"/>
+                <TableColumn fx:id="groupCol" prefWidth="75.0" text="分组"/>
+                <TableColumn fx:id="memberCol" prefWidth="150.0" text="队员"/>
+                <TableColumn fx:id="questionCol" prefWidth="75.0" text="题号"/>
+                <TableColumn fx:id="timeCol" prefWidth="75.0" text="用时"/>
+                <TableColumn fx:id="addScoreCol" prefWidth="75.0" text="加分"/>
+                <TableColumn fx:id="desScoreCol" prefWidth="75.0" text="减分"/>
+                <TableColumn fx:id="stageScoreCol" prefWidth="75.0" text="环节小计"/>
+                <TableColumn fx:id="teamScoreCol" prefWidth="75.0" text="成绩合计"/>
             </columns>
         </TableView>
     </children>

@@ -1,5 +1,5 @@
 <template>
-  <div id="container-box">
+  <div id="container-box" :style="containerBoxStyle">
     <div id="container">
       <div v-if="rule" style="padding: 100px; text-align: center">
         {{rule}}
@@ -8,12 +8,20 @@
         <div id="status-bar">
           <div style="padding: 10px; color: white">
             <el-row>
-              <el-col span="12">
+              <el-col span="6">
                 {{ teamInfo.fullName }}
+              </el-col>
+              <el-col span="6">
+                {{ score }}  分
               </el-col>
               <el-col  span="12">
                 <div v-if="showResult">
-                  完成{{questionIndex<0?0:questionIndex + 1}}题 | 用时{{ formatTime() }}
+                  <div v-if="questionIndex == questionList.length - 1">
+                    完成{{questionIndex<0?0:questionIndex + 1}}题 | 用时{{ formatTime() }}
+                  </div>
+                  <div v-else>
+                    完成{{questionIndex<0?0:questionIndex}}题 | 用时{{ formatTime() }}
+                  </div>
                 </div>
                 <div v-else>
                   完成{{questionIndex<0?0:questionIndex}}题 | 用时{{ formatTime() }}
@@ -25,8 +33,8 @@
 
           <div v-if="questionItem" style="padding: 10px; color: white">
             <el-row>
-              <el-col v-for="i in 24" :key="i" span="1">
-                <div v-if="i <= questionList.length">
+              <el-col v-for="i in questionList.length" :key="i" span="1">
+                <div v-if="i <= questionList.length" style="padding: 10px 0">
                   <div v-if="i > userSelects.length" style="height: 20px; width: 20px; border-radius: 10px; background-color: white">
 
                   </div>
@@ -44,7 +52,7 @@
         </div>
         <div id="question-info"  v-if="questionItem && !showResult">
           <div id="question-name">
-            {{ questionItem.questionNumber }} &nbsp;&nbsp; {{ questionItem.question }}
+            {{ questionItem.questionNumber }} &nbsp; ({{questionItem.questionType}}) &nbsp; {{ questionItem.question }}
           </div>
           <div id="answer-selection">
             <div class="selection-item"  v-if="questionItem.choiceA">
@@ -72,43 +80,101 @@
             </div>
           </div>
           <br>
-          <div style="margin: 0 25%">
-            <el-row type="flex" justify="center" style="text-align: center">
-              <el-col span="4" class="column-center"  v-if="questionItem.choiceA">
-                <div class="answer-item" :class="{ 'blue-background': activeDiv === 'A' }" @click="setActiveDiv('A')">
-                  A
-                </div>
-              </el-col>
-              <el-col span="4" class="column-center" v-if="questionItem.choiceB">
-                <div class="answer-item" :class="{ 'blue-background': activeDiv === 'B' }" @click="setActiveDiv('B')" >
-                  B
-                </div>
-              </el-col>
-              <el-col span="4" class="column-center" v-if="questionItem.choiceC">
-                <div class="answer-item" :class="{ 'blue-background': activeDiv === 'C' }" @click="setActiveDiv('C')" >
-                  C
-                </div>
 
-              </el-col>
-              <el-col span="4" class="column-center" v-if="questionItem.choiceD">
-                <div class="answer-item" :class="{ 'blue-background': activeDiv === 'D' }" @click="setActiveDiv('D')" >
-                  D
-                </div>
-              </el-col>
-              <el-col span="4" class="column-center" v-if="questionItem.choiceE">
-                <div class="answer-item" :class="{ 'blue-background': activeDiv === 'E' }" @click="setActiveDiv('E')" >
-                  E
-                </div>
-              </el-col>
-              <el-col span="4" class="column-center" v-if="questionItem.choiceF">
-                <div class="answer-item" :class="{ 'blue-background': activeDiv === 'F' }" @click="setActiveDiv('F')" >
-                  F
-                </div>
-              </el-col>
-            </el-row>
+          <div style="margin: 0 25%">
+            <!--    单选题答案只能选择一个       -->
+            <div v-if="questionItem.questionType === '单选题'">
+              <el-row type="flex" justify="center" style="text-align: center">
+                <el-col span="4" class="column-center"  v-if="questionItem.choiceA">
+                  <div class="answer-item" :class="{ 'blue-background': activeDiv === 'A' }" @click="setActiveDiv('A')">
+                    A
+                  </div>
+                </el-col>
+                <el-col span="4" class="column-center" v-if="questionItem.choiceB">
+                  <div class="answer-item" :class="{ 'blue-background': activeDiv === 'B' }" @click="setActiveDiv('B')" >
+                    B
+                  </div>
+                </el-col>
+                <el-col span="4" class="column-center" v-if="questionItem.choiceC">
+                  <div class="answer-item" :class="{ 'blue-background': activeDiv === 'C' }" @click="setActiveDiv('C')" >
+                    C
+                  </div>
+
+                </el-col>
+                <el-col span="4" class="column-center" v-if="questionItem.choiceD">
+                  <div class="answer-item" :class="{ 'blue-background': activeDiv === 'D' }" @click="setActiveDiv('D')" >
+                    D
+                  </div>
+                </el-col>
+                <el-col span="4" class="column-center" v-if="questionItem.choiceE">
+                  <div class="answer-item" :class="{ 'blue-background': activeDiv === 'E' }" @click="setActiveDiv('E')" >
+                    E
+                  </div>
+                </el-col>
+                <el-col span="4" class="column-center" v-if="questionItem.choiceF">
+                  <div class="answer-item" :class="{ 'blue-background': activeDiv === 'F' }" @click="setActiveDiv('F')" >
+                    F
+                  </div>
+                </el-col>
+              </el-row>
+            </div>
+            <div v-else-if="questionItem.questionType === '判断题'">
+              <el-row type="flex" justify="center" style="text-align: center">
+                <el-col span="4" class="column-center" >
+                  <div class="answer-item"   :class="{ 'blue-background': activeDiv === '正确' }" @click="setActiveDiv('正确')">
+                    正确
+                  </div>
+                </el-col>
+                <el-col span="4" class="column-center">
+                  <div class="answer-item"   :class="{ 'blue-background': activeDiv === '错误' }" @click="setActiveDiv('错误')" >
+                    错误
+                  </div>
+                </el-col>
+              </el-row>
+            </div>
+            <div v-else-if="questionItem.questionType === '多选题' || questionItem.questionType === '不定项选择题'">
+              <el-row type="flex" justify="center" style="text-align: center">
+                <el-col span="4" class="column-center"  v-if="questionItem.choiceA">
+                  <div class="multi-answer-item" :class="{ 'blue-background': activeDiv.indexOf('A') >= 0 }" @click="appendActiveDiv('A')">
+                    A
+                  </div>
+                </el-col>
+                <el-col span="4" class="column-center" v-if="questionItem.choiceB">
+                  <div class="multi-answer-item" :class="{ 'blue-background': activeDiv.indexOf('B') >= 0  }" @click="appendActiveDiv('B')" >
+                    B
+                  </div>
+                </el-col>
+                <el-col span="4" class="column-center" v-if="questionItem.choiceC">
+                  <div class="multi-answer-item" :class="{ 'blue-background': activeDiv.indexOf('C') >= 0  }" @click="appendActiveDiv('C')" >
+                    C
+                  </div>
+
+                </el-col>
+                <el-col span="4" class="column-center" v-if="questionItem.choiceD">
+                  <div class="multi-answer-item" :class="{ 'blue-background': activeDiv.indexOf('D') >= 0  }" @click="appendActiveDiv('D')" >
+                    D
+                  </div>
+                </el-col>
+                <el-col span="4" class="column-center" v-if="questionItem.choiceE">
+                  <div class="multi-answer-item" :class="{ 'blue-background': activeDiv.indexOf('E') >= 0  }" @click="appendActiveDiv('E')" >
+                    E
+                  </div>
+                </el-col>
+                <el-col span="4" class="column-center" v-if="questionItem.choiceF">
+                  <div class="multi-answer-item" :class="{ 'blue-background': activeDiv.indexOf('F') >= 0  }" @click="appendActiveDiv('F')" >
+                    F
+                  </div>
+                </el-col>
+              </el-row>
+            </div>
+            <div v-else>
+              <el-row type="flex" justify="center" style="text-align: center">
+                <el-input :disabled="(second <= 0 || showResult)" placeholder="请输入答案" type="textarea" rows="3" v-model="activeDiv"></el-input>
+              </el-row>
+            </div>
           </div>
           <div v-if="questionItem" style="text-align: center; margin-top: 20px">
-            <el-button :disabled="!btnClicked" style="width: 200px; height: 50px; font-size: x-large" type="primary" @click="submitAnswer"> 确 认 </el-button>
+            <el-button :disabled="!btnClicked || this.activeDiv === ''" style="width: 200px; height: 50px; font-size: x-large; z-index: 2" type="primary" @click="submitAnswer"> 确 认 </el-button>
           </div>
         </div>
         <div v-if="showResult" style="text-align: center; padding: 0 100px">
@@ -142,6 +208,8 @@
 </template>
 
 <script>
+import baseUrl from "@/config";
+
 export default {
   name: "Model7M",
   data(){
@@ -166,9 +234,28 @@ export default {
       showResult: false,
       showWait: true,
       rule: '',
+      imageUrl: `${baseUrl}/resource/竞技模式背景.jpg?${new Date().getTime()}`,
+      defaultImageUrl: `${baseUrl}/resource/默认背景.jpg?${new Date().getTime()}`,
     }
-  }, 
+  },
+  computed: {
+    containerBoxStyle() {
+      return {
+        backgroundImage: `url(${this.imageUrl})`,
+        backgroundSize: '100vw 100vh',
+        height: '100vh',
+      };
+    },
+  },
+  
   methods: {
+    checkImageUrl(url, callback) {
+      const img = new Image();
+      img.onload = () => callback(true);
+      img.onerror = () => callback(false);
+      img.src = url;
+    },
+    
     submitAnswer(){
       // 提交答案到后台
       console.log(this.activeDiv)
@@ -177,6 +264,8 @@ export default {
       const selected = this.activeDiv
       if (selected === this.questionItem.answer) {
         this.score = this.score + this.questionItem.score
+      } else {
+        this.score = this.score - this.questionItem.desValue
       }
       this.userSelects.push(selected)
       this.saveData()
@@ -279,6 +368,14 @@ export default {
       this.activeDiv = divNumber;
     },
 
+    appendActiveDiv(divNumber) {
+      if (this.activeDiv.indexOf(divNumber) >= 0) {
+        this.activeDiv = this.activeDiv.replace(divNumber, "")
+      } else {
+        this.activeDiv = this.activeDiv + divNumber;
+      }
+    },
+
     shuffleArray(array) {
       for (let i = array.length - 1; i > 0; i--) {
         const j = Math.floor(Math.random() * (i + 1));
@@ -300,6 +397,12 @@ export default {
           }
           this.saveData()
         } else if (message.type === 'finish') {
+          if (this.questionIndex + 1 === this.questionList.length) {
+            this.score = this.score - ((this.questionList.length - this.questionIndex - 1) * this.questionItem.desValue)
+          } else {
+            this.score = this.score - ((this.questionList.length - this.questionIndex) * this.questionItem.desValue)
+          }
+         
           this.showResult = true
           this.saveData()
         } else {
@@ -327,7 +430,14 @@ export default {
     
   },
   
+  
   mounted() {
+    this.checkImageUrl(this.imageUrl, (isValid) => {
+      if (!isValid) {
+        console.log("invalid....................")
+        this.imageUrl = this.defaultImageUrl;
+      }
+    });
     this.rule = sessionStorage.getItem('rule')
     sessionStorage.setItem('rule', '')
     const item = sessionStorage.getItem("user");
@@ -349,10 +459,14 @@ export default {
     console.log(from, to, next)
     // 在这里编写离开页面前需要执行的逻辑
     // 例如，你可以在这里提示用户保存未保存的更改
-    if (from.name !== to.name) {
+    if (from.name !== to.name && to.name !== 'stageRank') {
       sessionStorage.removeItem("time")
       sessionStorage.removeItem("score")
       sessionStorage.removeItem("showResult")
+      sessionStorage.removeItem("userSelects")
+      sessionStorage.removeItem("questionIndex")
+      sessionStorage.removeItem("questionItem")
+      sessionStorage.removeItem("questionList")
     }
     next()
   },
@@ -374,11 +488,7 @@ export default {
   border-radius: 10px;
 }
 
-#container-box {
-  background-image: url("~@/assets/background.png");
-  background-size: 100vw 100vh;
-  height: 100vh;
-}
+
 
 #container {
   padding: 50px 100px;
@@ -386,7 +496,7 @@ export default {
 
 #question-name {
   font-family: "Microsoft YaHei UI";
-  font-size: xx-large;
+  font-size: x-large;
 }
 
 #answer-selection {
@@ -404,12 +514,29 @@ export default {
   width: 60px;
   line-height: 60px;
   text-align: center;
-  font-size: xxx-large;
+  font-size: large;
   background-color: white;
+  border-width: 1px;
+  border-color: black;
+  border-style: solid;
+  border-radius: 8px;
+}
+
+.multi-answer-item {
+  height: 60px;
+  width: 60px;
+  line-height: 60px;
+  text-align: center;
+  font-size: large;
+  background-color: white;
+  border-width: 1px;
+  border-color: black;
+  border-style: solid;
+  border-radius: 8px;
 }
 
 .blue-background {
-  background-color: skyblue;
+  background-color: #4472C4;
 }
 
 .result-info {

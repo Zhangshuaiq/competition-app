@@ -111,6 +111,7 @@ public class TotalRulePreviewPreview extends PreviewPane {
             text.setFont(font);
             if (Boolean.valueOf(cfgArr[10])) {
                 text.setStroke(text.getFill());
+                text.setStrokeWidth(1);
             } else {
                 text.setStroke(null);
             }

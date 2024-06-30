@@ -57,14 +57,14 @@ public class JavaFxApplication extends Application {
         primaryStage.setScene(scene);
         primaryStage.setResizable(false);
         primaryStage.setAlwaysOnTop(true);
-        primaryStage.setTitle("答题竞赛系统");
+        primaryStage.setTitle("答赛答题竞赛系统");
         try {
             primaryStage.getIcons().add(new Image(new FileInputStream(BaseDir.IMAGE_DIR + "图标.jpg")));
         }catch (Exception ex) {
             System.out.println("加载不到图片");
         }
         primaryStage.show();
-        MusicPlayer.prePlay(MusicResource.SECOND_5);
+        MusicPlayer.prePlay(MusicResource.SECOND_0);
 
     }
     

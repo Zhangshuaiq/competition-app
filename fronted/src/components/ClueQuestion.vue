@@ -1,5 +1,5 @@
 <template>
-  <div id="container-box">
+  <div id="container-box" :style="containerBoxStyle">
     <div>
       <ScoreBoard></ScoreBoard>
     </div>
@@ -52,8 +52,8 @@
           </div>
         </div>
         
-        <div v-if="showResult" id="answer-info" style="font-size: xx-large; margin-top: 20px; text-align: center;">
-          正确答案: <font color="#cd5c5c">{{questionItem.answer}}</font>
+        <div v-if="showResult" id="answer-info" style="font-size: xx-large; margin-top: 20px; text-align: center; background-color: #C40000; border-radius: 8px;">
+           <font color="white">{{ prefix }} {{questionItem.answer}}</font>
         </div>
 
       </div>
@@ -63,6 +63,7 @@
 
 <script>
 import ScoreBoard from "@/components/ScoreBoard.vue";
+import baseUrl from "@/config";
 
 export default {
   name: "QuestionL",
@@ -73,7 +74,8 @@ export default {
       
       retryTimer: null, // 用于重试逻辑的计时器
       retryInterval: 500, // 重试间隔时间，例如5秒
-
+      imageUrl: `${baseUrl}/resource/答题背景.jpg?${new Date().getTime()}`,
+      defaultImageUrl: `${baseUrl}/resource/默认背景.jpg?${new Date().getTime()}`,
       subscription: null,
       questionItem: null,
       teamInfo: '',
@@ -82,10 +84,29 @@ export default {
       showWait: true,
       rule: '',
       member: '',
-      stage: {}
+      stage: {},
+      prefix: ''
     }
   },
+  computed: {
+    containerBoxStyle() {
+      return {
+        backgroundImage: `url(${this.imageUrl})`,
+        backgroundSize: '100vw 100vh',
+        height: '100vh',
+      };
+    },
+  },
+  
   methods: {
+
+    checkImageUrl(url, callback) {
+      const img = new Image();
+      img.onload = () => callback(true);
+      img.onerror = () => callback(false);
+      img.src = url;
+    },
+    
     saveData(){
       sessionStorage.setItem("showResult", this.showResult + "")
       sessionStorage.setItem("showWait", this.showWait + "")
@@ -116,7 +137,7 @@ export default {
         } else if (message.type === 'clue'){
           this.questionItem = message.data
         } else {
-          this.showResult = ! this.showResult
+          this.showResult = message.data
         }
 
       })
@@ -132,28 +153,34 @@ export default {
   },
 
   mounted() {
+
+    this.checkImageUrl(this.imageUrl, (isValid) => {
+      if (!isValid) {
+        console.log("invalid....................")
+        this.imageUrl = this.defaultImageUrl;
+      }
+    });
+    
+    this.prefix = sessionStorage.getItem('prefix')
     const item = sessionStorage.getItem("user");
     this.member = sessionStorage.getItem('member')
     if (!item) {
       this.$router.push({name: "contestant"})
       return
     }
+    
+    
     this.teamInfo = JSON.parse(item)
     const data = this.$store.state.data
     this.stage = this.$store.state.stage
     this.questionItem = data
     this.setRetryTimer()
+    
   },
 }
 </script>
 
 <style scoped>
-
-#container-box {
-  background-image: url("~@/assets/background.png");
-  background-size: 100vw 100vh;
-  height: 100vh;
-}
 
 #container {
   padding:0 100px;

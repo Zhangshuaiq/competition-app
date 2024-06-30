@@ -1,36 +1,38 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.text.*?>
-<?import java.lang.*?>
-<?import java.util.*?>
-<?import javafx.scene.*?>
-<?import javafx.scene.control.*?>
-<?import javafx.scene.layout.*?>
-<?import javafx.scene.text.Text?>
-
+<?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.image.ImageView?>
-<AnchorPane fx:id="container" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="competition.controller.match.QuestionPreview">
-   <children>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Text?>
+<AnchorPane fx:id="container" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8"
+            xmlns:fx="http://javafx.com/fxml/1" fx:controller="competition.controller.match.QuestionPreview">
+    <children>
 
-       <ImageView fx:id="imageQ" fitHeight="300.0" fitWidth="517.0" pickOnBounds="true" preserveRatio="true"
-                  visible="false"/>
+        <ImageView fx:id="imageQ" fitHeight="300.0" fitWidth="517.0" pickOnBounds="true" preserveRatio="true"
+                   visible="false"/>
 
 
-       <StackPane fx:id="stagePane" visible="false">
-           <children>
-               <Text fx:id="stageLabel"/>
-           </children>
-       </StackPane>
+        <StackPane fx:id="stagePane" visible="false">
+            <children>
+                <Text fx:id="stageLabel"/>
+            </children>
+        </StackPane>
 
-       <StackPane fx:id="backPane" visible="false">
-           <children>
-               <Text fx:id="daanLabel"/>
-           </children>
-       </StackPane>
-       <VBox fx:id="tiganBox" layoutX="118.0" layoutY="56.0" prefHeight="200.0" prefWidth="310.0">
-           <children>
-               <Text fx:id="tiganLabel" text="" visible="false" wrappingWidth="62.0"/>
-           </children>
-       </VBox>
-   </children>
+
+        <StackPane fx:id="backPane" visible="false">
+            <children>
+                <Text fx:id="daanLabel"/>
+            </children>
+        </StackPane>
+       
+        <ScrollPane fx:id="scrollPane">
+            <VBox fx:id="tiganBox" layoutX="118.0" layoutY="56.0" prefHeight="200.0" prefWidth="310.0">
+                <children>
+                    <Text fx:id="tiganLabel" text="" wrappingWidth="62.0"/>
+                </children>
+            </VBox>
+        </ScrollPane>
+    </children>
 </AnchorPane>

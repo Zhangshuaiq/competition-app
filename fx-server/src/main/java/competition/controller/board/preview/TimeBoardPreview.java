@@ -11,6 +11,7 @@ import competition.ws.Model60RuntimeData;
 import competition.ws.Model61RuntimeData;
 import competition.ws.Model7RuntimeData;
 import competition.ws.WsMessageHandler;
+import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.fxml.FXML;
@@ -110,6 +111,12 @@ public class TimeBoardPreview extends PreviewPane {
 
     @Override
     public void startTiming(boolean order, int time) {
+        // 避免二次运行
+        if (timeline != null) {
+            if (timeline.getStatus() == Animation.Status.RUNNING) {
+                return;
+            }
+        }
         if (order) {
             this.timeVal = 0;
             this.timeValue = format(timeVal);

@@ -7,6 +7,9 @@ import java.util.Map;
 
 public class GlobalCache {
     
+    // 每次滚动偏移量
+    public static final int SCROLL_STEP = 30;
+    
     // 屏幕缩放比
     public static double dpi = Screen.getPrimary().getDpi();
     public static  double scaleFactor = dpi / 96;

@@ -2,15 +2,15 @@
   <div class="scoreboard">
     <el-row>
       <el-col v-for="(item, index) in teamList" :key="item.id" span="2">
-        <div>
+        <div style="margin-bottom: 5px">
           <el-row>
-            <el-col span="6">
-              <div class="round-board-item" style="background-color: #3397CE">
+            <el-col span="10">
+              <div class="round-board-item">
                 {{index + 1}}
               </div>
             </el-col>
-            <el-col span="16">
-              <div class="board-item" style="background-color: palevioletred">
+            <el-col span="12">
+              <div class="board-item" >
                 {{item.currentScore}}
               </div>
             </el-col>
@@ -25,11 +25,18 @@
                 </el-col>
               </el-row>
             </div>
-            <div v-else class="board-item" :style="{backgroundColor: statusColor[item.status]}">
-              <div v-if="item.status === 2 || item.status === 3">
-                {{item.teamSelect}}
-              </div>
+            <div v-else>
+              <el-row>
+                <el-col span="22">
+                  <div class="board-item" :style="{backgroundColor: statusColor[item.status]}">
+                    <div v-if="item.status === 2 || item.status === 3">
+                      {{item.teamSelect}}
+                    </div>
+                  </div>
+                </el-col>
+              </el-row>
             </div>
+            
           </div>
         </div>
       </el-col>
@@ -45,7 +52,7 @@
        teamList: [],
        showStatus: false,
        showMember: false,
-       statusColor: ['black', 'grey', 'green', 'red'],
+       statusColor: ['#FFFFFF', '#0070C0', '#00B050', '#FF0000'],
        questionItem: sessionStorage.getItem('questionItem') || {}
      }
    },
@@ -76,10 +83,10 @@
      const data = this.$store.state.teams
      console.log(data)
      this.teamList = data
-     if (this.$store.state.currentRoute === 'model61' || this.$store.state.currentRoute === 'model61R') {
+     if (this.$store.state.currentRoute.indexOf('model61') >= 0) {
        this.showStatus = true
        this.showMember = true
-     } else if (this.$store.state.currentRoute === 'model60') {
+     } else if (this.$store.state.currentRoute.indexOf('model60') >= 0) {
        this.showStatus = true
        this.showMember = false
      }
@@ -92,31 +99,30 @@
 
 .status-item {
   width: 20px;
-  height: 40px;
-  border-radius: 8px;
-  line-height: 40px;
+  height: 30px;
+  line-height: 30px;
   text-align: center;
   font-size: larger;
   color: white;
 }
 
 .round-board-item {
-  width: 40px;
-  height: 40px;
-  border-radius: 20px;
-  line-height: 40px;
+  width: 100%;
+  height: 30px;
+  line-height: 30px;
   text-align: center;
-  font-size: larger;
+  font-size: smaller;
   color: white;
+  background-color: #FFC000;
 }
 
 .board-item {
   width: 100%;
-  height: 40px;
-  border-radius: 8px;
-  line-height: 40px;
+  height: 30px;
+  line-height: 30px;
   text-align: center;
-  font-size: larger;
+  font-size: smaller;
   color: white;
+  background-color: #C40000;
 }
 </style>

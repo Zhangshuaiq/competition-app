@@ -1,12 +1,9 @@
 package competition.controller.match;
 
 import competition.controller.preview.Model3Preview;
-import competition.entity.Configs;
 import competition.entity.Model3Style;
 import competition.entity.Stages;
-import competition.mapper.ConfigsMapper;
 import competition.mapper.Model3Mapper;
-import competition.mapper.StagesMapper;
 import competition.util.*;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
@@ -187,11 +184,6 @@ public class Model3Attr {
     @Resource
     private Model3Mapper mapper;
 
-    private static ReloadPane reloadPane;
-
-    public static void setReloadPane(ReloadPane reloadPane) {
-        Model3Attr.reloadPane = reloadPane;
-    }
 
     private static Stages currentStage;
 
@@ -269,9 +261,23 @@ public class Model3Attr {
 
         Model3Style model3Style = mapper.selectById(1);
 
-        showNameConfig(model3Style.getTitleStyle());
-        showNumberConfig(model3Style.getQStyle());
-        showHeadConfig(model3Style.getHeadStyle());
+        if (!StringUtils.isEmpty(model3Style.getTitleStyle())) {
+            showNameConfig(model3Style.getTitleStyle());
+        } else {
+            showNameConfig("250%%300%%150%%150%%false%%0x990000ff%%%%微软雅黑%%32%%false%%false%%false%%false%%居中对齐%%30%%0xffffffff");
+        }
+
+        if (!StringUtils.isEmpty(model3Style.getQStyle())) {
+            showNumberConfig(model3Style.getQStyle());
+        } else {
+            showNumberConfig("500%%300%%60%%60%%false%%0x990000ff%%%%楷体%%36%%false%%false%%false%%false%%居中对齐%%30%%8%%40%%0xffffffff");
+        }
+
+        if (!StringUtils.isEmpty(model3Style.getHeadStyle())) {
+            showHeadConfig(model3Style.getHeadStyle());
+        } else {
+            showHeadConfig("750%%150%%400%%100%%false%%0x990000ff%%%%黑体%%40%%false%%false%%false%%false%%居中对齐%%0%%0xffffffff");
+        }
     }
 
 
@@ -314,10 +320,7 @@ public class Model3Attr {
         Model3Style model3Style = mapper.selectById(1);
         model3Style.setHeadStyle(detail);
         mapper.updateById(model3Style);
-        if (reloadPane != null) {
-            reloadPane.reload();
-        }
-        PreviewStack.reload();
+        PreviewStack.reloadStyle();
     }
     
     @FXML
@@ -358,10 +361,7 @@ public class Model3Attr {
         Model3Style model3Style = mapper.selectById(1);
         model3Style.setTitleStyle(detail);
         mapper.updateById(model3Style);
-        if (reloadPane != null) {
-            reloadPane.reload();
-        }
-        PreviewStack.reload();
+        PreviewStack.reloadStyle();
     }
 
     private void closeStage() {
@@ -418,10 +418,7 @@ public class Model3Attr {
         model3Style.setQStyle(detail);
         mapper.updateById(model3Style);
 
-        if (reloadPane != null) {
-            reloadPane.reload();
-        }
-        PreviewStack.reload();
+        PreviewStack.reloadStyle();
     }
 
 
