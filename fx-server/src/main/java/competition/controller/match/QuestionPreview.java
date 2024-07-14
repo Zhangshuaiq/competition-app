@@ -601,13 +601,12 @@ public class QuestionPreview implements ReloadPane{
 
         scrollPane.setLayoutX(tiganBox.getLayoutX());
         scrollPane.setLayoutY(tiganBox.getLayoutY());
-        scrollPane.setPrefWidth(tiganBox.getPrefWidth());
         scrollPane.setFitToWidth(true);
         for (Node child : tiganBox.getChildren()) {
             Text t = (Text) child;
             t.setWrappingWidth(tiganBox.getPrefWidth() - 40);
         }
-        scrollPane.setPrefHeight(tiganBox.getPrefHeight());
+        scrollPane.setFitToHeight(true);
         backPane.setVisible(GlobalCache.showAnswer);
     }
 

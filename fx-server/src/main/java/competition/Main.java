@@ -14,6 +14,7 @@ import javax.swing.*;
 public class Main {
 
     public static void main(String[] args) {
+//        System.out.println(System.currentTimeMillis());
         Application.launch(JavaFxApplication.class, args);
         // 启动 springboot ，主要作为 ws 服务器接收数据
         SpringApplication.run(Main.class, args);

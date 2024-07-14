@@ -5,8 +5,7 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.AnchorPane?>
 
-<AnchorPane prefHeight="827.0" prefWidth="1100.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1"
-            fx:controller="competition.controller.backend.QuestionStock">
+<AnchorPane prefHeight="827.0" prefWidth="1100.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="competition.controller.backend.QuestionStock">
     <children>
         <TableView fx:id="tableView" layoutX="42.0" layoutY="78.0" prefHeight="709.0" prefWidth="1032.0">
             <columns>
@@ -29,7 +28,8 @@
         <Button layoutX="42.0" layoutY="29.0" mnemonicParsing="false" onMouseClicked="#importData" prefHeight="30.0" prefWidth="129.0" text="打开题目文件" />
       <ComboBox fx:id="stockList" layoutX="392.0" layoutY="29.0" prefHeight="30.0" prefWidth="181.0" />
       <Label layoutX="315.0" layoutY="34.0" text="题库列表" />
-      <Button layoutX="606.0" layoutY="29.0" mnemonicParsing="false" text="使用" onMouseClicked="#useStock"/>
+      <Button layoutX="606.0" layoutY="29.0" mnemonicParsing="false" onMouseClicked="#useStock" text="使用" />
+      <Button layoutX="751.0" layoutY="29.0" mnemonicParsing="false" prefHeight="30.0" prefWidth="129.0" text="题号复位" onMouseClicked="#questionReset" />
 <!--      <Button layoutX="201.0" layoutY="29.0" mnemonicParsing="false" onMouseClicked="#openStyleData" prefHeight="30.0" prefWidth="129.0" text="打开样式文件" />-->
 <!--      <Label layoutX="396.0" layoutY="14.0" prefHeight="20.0" prefWidth="531.0" text="样式文件的个数和题目文件应该相同，且所属环节相同才会生效~" textFill="#f50b0b" />-->
 <!--      <Label layoutX="396.0" layoutY="45.0" prefHeight="20.0" prefWidth="73.0" text="当前状态" textFill="#f50b0b" />-->

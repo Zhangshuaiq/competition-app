@@ -1,6 +1,8 @@
 package competition.util;
 
+import competition.JavaFxApplication;
 import competition.entity.Teams;
+import competition.mapper.TeamsMapper;
 
 import java.util.List;
 
@@ -18,9 +20,13 @@ public class TeamRuntime {
     }
 
     public static void updateScore(){
+
+        TeamsMapper teamsMapper = JavaFxApplication.getApplicationContext().getBean(TeamsMapper.class);
+
         for (Teams team : teams) {
             if (team.getNewScore() != null) {
-                team.setCurrentScore(team.getNewScore());
+                team.setTeamScore(team.getNewScore());
+                teamsMapper.updateById(team);
             }
         }
     }

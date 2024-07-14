@@ -1,13 +1,16 @@
 package competition.controller.preview;
 
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import competition.controller.ControlPane;
+import competition.controller.match.Model7;
 import competition.controller.match.StageQuestionPreview;
 import competition.controller.match.StageQuestionPreviewAttr;
 import competition.entity.Configs;
 import competition.entity.Questions;
 import competition.entity.Stages;
 import competition.mapper.ConfigsMapper;
+import competition.mapper.QuestionsMapper;
 import competition.util.*;
 import competition.ws.Model60RuntimeData;
 import competition.ws.Model61RuntimeData;
@@ -54,6 +57,9 @@ public class StageQuestionPreviewPreview extends PreviewPane {
 
     @Resource
     private WsMessageHandler messageHandler;
+    
+    @Resource
+    private QuestionsMapper questionsMapper;
 
 
     private static Stages currentStage;
@@ -72,6 +78,7 @@ public class StageQuestionPreviewPreview extends PreviewPane {
 
     @FXML
     public void initialize() {
+        controlPane.getScoreBoardPreview().getSelected().clear();
         inner = currentStage;
         PreviewStack.addPreview(this);
         PreviewStack.addReturn(this);
@@ -126,13 +133,21 @@ public class StageQuestionPreviewPreview extends PreviewPane {
         String config = configs.getConfig();
         String stageConfigAttr = stageConfig.getConfig();
         String[] stageConfigAttrSplit = stageConfigAttr.split(ConfigSpliter.SPLITER);
-        List<Questions> questionList = CurrentQuestions.getQuestionList();
-        questionList.sort(new Comparator<Questions>() {
-            @Override
-            public int compare(Questions o1, Questions o2) {
-                return o1.getQuestionNumber().compareTo(o2.getQuestionNumber());
-            }
-        });
+        List<Questions> questionList = questionsMapper.selectList(new LambdaQueryWrapper<Questions>()
+                .eq(Questions::getStageNumber, inner.getSortVal())
+                .orderByAsc(Questions::getQuestionNumber)
+        );
+
+        for (Questions q : questionList) {
+            q.setScore(inner.getScorePerQ());
+        }
+                // CurrentQuestions.getQuestionList();
+//        questionList.sort(new Comparator<Questions>() {
+//            @Override
+//            public int compare(Questions o1, Questions o2) {
+//                return o1.getQuestionNumber().compareTo(o2.getQuestionNumber());
+//            }
+//        });
 
         String questionStyle = 
                 "760%%240%%400%%80%%false%%0x990000ff%%%%Dialog%%40%%false%%false%%false%%false%%居中对齐%%10###415%%370%%100%%100%%false%%0x990000ff%%%%Dialog%%30%%false%%false%%false%%false%%居中对齐%%10%%10";
@@ -260,7 +275,7 @@ public class StageQuestionPreviewPreview extends PreviewPane {
             Questions questions = questionList.get(i);
             Text text = new Text(questions.getQuestionNumber().toString());
 
-            if (CurrentQuestions.hasAnswer(questions.getQuestionNumber().toString())) {
+            if (questions.isHasAnswer()) {
                 item.setVisible(false);
             } else {
                 item.setVisible(true);
@@ -328,10 +343,11 @@ public class StageQuestionPreviewPreview extends PreviewPane {
                     }
                     // 给题目设置分值
                     // 扩展屏幕展示并排答题界面（竞技模式）
-                    for (Questions q : CurrentQuestions.getQuestionList()) {
-                        q.setScore(inner.getScorePerQ());
-                    }
+//                    for (Questions q : CurrentQuestions.getQuestionList()) {
+//                        q.setScore(inner.getScorePerQ());
+//                    }
                     if (inner.getQuestionType() == 7) {
+                        Model7Preview.setCurrentStage(inner);
                         Model7RuntimeData.setTeams(TeamRuntime.getTeams());
                         // 发送试题列表给前端
                         controlPane.setPreviewPane(
@@ -346,14 +362,15 @@ public class StageQuestionPreviewPreview extends PreviewPane {
                         TeamRuntime.resetStatus();
                         Integer m6 = inner.getM6();
                         String tihao = questions.getQuestionNumber().toString();
-                        Questions questions = CurrentQuestions.getQ(tihao);
-                        if (questions == null) {
-                            Information.error("请选择题号");
-                            return;
-                        }
+//                        Questions questions = CurrentQuestions.getQ(tihao);
+//                        if (questions == null) {
+//                            Information.error("请选择题号");
+//                            return;
+//                        }
                         if (m6 == 0) {
                             // 答题模式 -- 团队模式
-                            CurrentQuestions.recordAnswer(tihao);
+                            questions.setHasAnswer(true);
+                           // CurrentQuestions.recordAnswer(tihao);
                             // 设置当前需要显示的题目
                             QuestionPreviewPreview.setCurrent(questions);
                             // 设置选手信息
@@ -364,12 +381,13 @@ public class StageQuestionPreviewPreview extends PreviewPane {
                             );
                             //controlPane.setPreviewPane(Navigator.preview("/view/preview/Model60.fxml", "", "/view/style.css", true, true));
                             controlPane.updateScoreBoard();
+                            questionsMapper.updateById(questions);
                             Model60RuntimeData.setRuntimeData(questions);
                             messageHandler.notifyPage("model60", questions);
                             // messageHandler.sendQuestion(questions);
                         } else {
                             // 答题模式 -- 个人模式
-                            CurrentQuestions.recordAnswer(tihao);
+                            questions.setHasAnswer(true);
                             // 设置当前需要显示的题目
                             QuestionPreviewPreview.setCurrent(questions);
                             // 设置选手信息
@@ -379,6 +397,7 @@ public class StageQuestionPreviewPreview extends PreviewPane {
                             );
                             // controlPane.setPreviewPane(Navigator.preview("/view/preview/Model61.fxml", "", "/view/style.css", true, true));
                             controlPane.updateScoreBoard();
+                            questionsMapper.updateById(questions);
                             Model61RuntimeData.setRuntimeData(questions);
                             messageHandler.notifyPage("model61", questions);
                             // messageHandler.sendQuestion(questions);
@@ -386,8 +405,10 @@ public class StageQuestionPreviewPreview extends PreviewPane {
                         controlPane.selectQuestion(tihao);
                     } else {
                         String tihao = questions.getQuestionNumber().toString();
-                        Questions questions = CurrentQuestions.getQ(tihao);
-                        CurrentQuestions.recordAnswer(tihao);
+//                        Questions questions = CurrentQuestions.getQ(tihao);
+//                        CurrentQuestions.recordAnswer(tihao);
+                        questions.setHasAnswer(true);
+                        questionsMapper.updateById(questions);
                         // 设置当前需要显示的题目
                         // 内屏更新
 

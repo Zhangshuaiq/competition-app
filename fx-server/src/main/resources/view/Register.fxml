@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.text.*?>
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<AnchorPane prefHeight="156.0" prefWidth="560.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" 
+            fx:controller="competition.controller.Register">
+   <children>
+      <Text layoutX="51.0" layoutY="64.0" strokeType="OUTSIDE" strokeWidth="0.0" text="激活码：" wrappingWidth="76.0" />
+      <TextField fx:id="field1" layoutX="135.0" layoutY="43.0" prefHeight="30.0" prefWidth="377.0" />
+      <Button fx:id="button" layoutX="200.0" layoutY="98.0" mnemonicParsing="false" prefHeight="30.0" prefWidth="160.0" text="激活" />
+   </children>
+</AnchorPane>

@@ -47,10 +47,13 @@ public class TotalRulePreviewPreview extends PreviewPane {
     @Resource
     private WsMessageHandler messageHandler;
     
+    
+    
 
 
     @FXML
     public void initialize() {
+        controlPane.getScoreBoardPreview().getSelected().clear();
         container.setOnMouseClicked(new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent event) {

@@ -17,14 +17,32 @@
                 <el-col span="20" :offset="index % 2 ==0?0:2">
                   <div v-if="item.member" class="answer-info">
                     <el-row>
-                      <el-col span="6">{{item.teamName}}</el-col>
+                      <el-col span="6">
+                        <div style="width: 100%; /* 根据需要调整宽度 */
+                            height: 60px;
+                            white-space: nowrap;
+                            overflow: hidden;
+                            text-overflow: ellipsis;
+                             /* 确保padding包含在宽度内 */">
+                          {{item.teamName}}
+                        </div>
+                      </el-col>
                       <el-col span="6">{{item.member}}</el-col>
                       <el-col span="12"> 回答 ：&nbsp;{{item.answer}}</el-col>
                     </el-row>
 
                   </div>
                   <div v-else class="answer-info">
-                    <el-col span="6">{{item.teamName}}</el-col>
+                    <el-col span="6">
+                      <div style="width: 100%; /* 根据需要调整宽度 */
+                            height: 60px;
+                            white-space: nowrap;
+                            overflow: hidden;
+                            text-overflow: ellipsis;
+                             /* 确保padding包含在宽度内 */">
+                        {{item.teamName}}
+                      </div>
+                    </el-col>
                     <el-col span="18"> 回答 ：&nbsp;{{item.answer}}</el-col>
                   </div>
                 </el-col>

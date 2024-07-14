@@ -7,6 +7,7 @@ import competition.entity.Configs;
 import competition.entity.Questions;
 import competition.entity.Stages;
 import competition.mapper.ConfigsMapper;
+import competition.mapper.QuestionsMapper;
 import competition.mapper.StagesMapper;
 import competition.util.*;
 import competition.ws.WsMessageHandler;
@@ -49,6 +50,9 @@ public class StageNamePreviewPreview extends PreviewPane {
     private ConfigsMapper configsMapper;
     
     @Resource
+    private QuestionsMapper questionsMapper;
+    
+    @Resource
     private WsMessageHandler messageHandler;
 
     private static Integer stageId;
@@ -69,6 +73,7 @@ public class StageNamePreviewPreview extends PreviewPane {
     
     @FXML
     public void initialize() {
+        controlPane.getScoreBoardPreview().getSelected().clear();
         innerStageId= stageId;
 
         PreviewStack.addPreview(this);
@@ -226,29 +231,36 @@ public class StageNamePreviewPreview extends PreviewPane {
                 }
 
                 if (CollectionUtils.isEmpty(childrenStage)) {
-                    List<Questions> parse = RuntimeQuestionStock.getQuestions();
+                   // List<Questions> parse = RuntimeQuestionStock.getQuestions();
+                    List<Questions> parse =  questionsMapper.selectList(new LambdaQueryWrapper<Questions>().eq(Questions::getStageNumber, stages.getSortVal()));
                     if (!CollectionUtils.isEmpty(parse)) {
-                        parse = parse.stream().filter(x -> !StringUtils.isEmpty(x.getStageNumber()) && x.getStageNumber().equals(stages.getSortVal())).collect(Collectors.toList());
+                       // parse = parse.stream().filter(x -> !StringUtils.isEmpty(x.getStageNumber()) && x.getStageNumber().equals(stages.getSortVal())).collect(Collectors.toList());
                         if (stages.getRandomSort() == 1) {
                             Collections.shuffle(parse);
                         }
                         if (!CollectionUtils.isEmpty(parse)) {
                             for (int i = 0; i < parse.size(); i++) {
-                                parse.get(i).setQuestionNumber(i + 1);
+                                //parse.get(i).setQuestionNumber(i + 1);
                                 parse.get(i).setDesValue(stages.getDesValue());
                             }
                         }
                     }
-                    CurrentQuestions.setQuestions(parse, stages.getId());
+                    //CurrentQuestions.setQuestions(parse, stages.getId());
                     controlPane.showQuestions();
                     // 判断环节出题的类型
                     if (stages.getQuestionType() == 1) {
                         // 连续答题
-                        List<Questions> collect = CurrentQuestions.getQuestionList().stream().filter(x -> !x.isHasAnswer()).collect(Collectors.toList());
+                        List<Questions> collect = questionsMapper.selectList(new LambdaQueryWrapper<Questions>()
+                                .eq(Questions::getStageNumber, stages.getSortVal())
+                                .eq(Questions::isHasAnswer, false)
+                        );
+                        // CurrentQuestions.getQuestionList().stream().filter(x -> !x.isHasAnswer()).collect(Collectors.toList());
                         if (!collect.isEmpty()) {
                             QuestionPreviewPreview.setCurrent(collect.get(0));
                             controlPane.selectQuestion(collect.get(0).getQuestionNumber().toString());
-                            CurrentQuestions.recordAnswer(collect.get(0).getQuestionNumber().toString());
+                            collect.get(0).setHasAnswer(true);
+                            questionsMapper.updateById(collect.get(0));
+                            //CurrentQuestions.recordAnswer(collect.get(0).getQuestionNumber().toString());
                         }
                         
                         controlPane.setPreviewPane(

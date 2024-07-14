@@ -133,6 +133,7 @@ public class StagePreview implements ReloadPane {
                     stageContainer.setLayoutX(ScreenAdapter.calculateExX(Integer.parseInt(detailArr[0])));
                     stageContainer.setLayoutY(ScreenAdapter.calculateExY(Integer.parseInt(detailArr[1])));
                     stageContainer.prefWidth(ScreenAdapter.calculateExW(Integer.parseInt(detailArr[2])));
+                    height =  ScreenAdapter.calculateMainH(Integer.parseInt(detailArr[3]));
                     stageContainer.setVgap(ScreenAdapter.calculateExH(Integer.parseInt(detailArr[14])));
                     stageContainer.setHgap(ScreenAdapter.calculateExW(Integer.parseInt(detailArr[14])));
                     stageContainer.setAlignment(AlignmentUtil.getAlign(detailArr[13]));
@@ -140,17 +141,6 @@ public class StagePreview implements ReloadPane {
 
                 int count = 0;
                 for (Stages stage : stages) {
-
-                    if (stage.getShow() == 1) {
-                        if (stage.getSelectGrey() == 1) {
-                            if (GlobalCache.isRecord(stage.getId())) {
-                                continue;
-                            }
-                        }
-                    } else {
-                        continue;
-                    }
-                    
                     HBox box = new HBox();
                     StackPane stageNamePane = new StackPane();
                     Text stageName = new Text(stage.getName());
@@ -158,6 +148,18 @@ public class StagePreview implements ReloadPane {
                     stageName.setFill(Color.valueOf(split[2]));
                     stageNamePane.getChildren().add(stageName);
                     stageNamePane.setPrefSize(width, height);
+
+                    if (stage.getShow() == 1) {
+                        if (stage.getSelectGrey() == 1) {
+                            if (GlobalCache.isRecord(stage.getId())) {
+                                stageNamePane.setVisible(false);
+                            } else {
+                                stageNamePane.setVisible(true);
+                            }
+                        }
+                    } else {
+                        continue;
+                    }
 
                     if (detailArr.length > 0) {
                         if (Boolean.valueOf(detailArr[4])) {

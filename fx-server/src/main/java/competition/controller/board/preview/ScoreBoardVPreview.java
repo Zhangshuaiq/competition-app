@@ -142,7 +142,7 @@ public class ScoreBoardVPreview extends PreviewPane implements BoardPane {
             box.getChildren().add(stackPane);
 
 
-            Text teamScore = new Text(team.getCurrentScore() + "");
+            Text teamScore = new Text(team.getTeamScore() + "");
             StackPane stackPane1 = new StackPane();
             stackPane1.setPrefSize(Integer.parseInt(cfgArr[19]), Integer.parseInt(cfgArr[20]));
             teamScore.setTextAlignment(TextAlignment.CENTER);

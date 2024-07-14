@@ -290,10 +290,14 @@ public class ShowAnswer implements ReloadPane {
                 itemBox.setPrefWidth(width);
                 itemBox.setPrefHeight(height);
                 TeamResult.DataItem dataItem = dataItemList.get(i);
-                String text = " 团队: " + dataItem.getTeamName() + "  " + dataItem.getMember() + "  回答:" + dataItem.getAnswer();
+
+                String teamName = dataItem.getTeamName().length() > 10? dataItem.getTeamName().substring(0, 10) + " ...... ":dataItem.getTeamName();
+
+                String text = " 团队: " + teamName + "  " + dataItem.getMember() + "  回答:" + dataItem.getAnswer();
                 if (StringUtils.isEmpty(dataItem.getMember())) {
-                    text = " 团队: " + dataItem.getTeamName() + "  " + "  回答:" + dataItem.getAnswer();
+                    text = " 团队: " + teamName + "  " + "  回答:" + dataItem.getAnswer();
                 }
+                
                 Text memberResult = new Text(text);
                 stackPane.getChildren().add(memberResult);
                 stackPane.setAlignment(AlignmentUtil.getAlign(f2l));

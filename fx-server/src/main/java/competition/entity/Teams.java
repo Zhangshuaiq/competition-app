@@ -29,28 +29,27 @@ public class Teams {
 
     @ExcelProperty(index = 3, value="队员")
     private String members;
-
-
+    
     @ExcelIgnore
-    // 出生分数
+    // 团队分数
     private Integer teamScore;
     
     @ExcelIgnore
-    // 初试分数
-    private Integer memberScore;
+    // 成员分数
+    private String memberScore;
 
     @ExcelProperty(index = 4, value="密码")
     // 团队密码
     private String password;
 
-    @ExcelIgnore
-    // 当前分数
-    @TableField(exist = false)
-    private Integer currentScore;
-
-    @ExcelIgnore
-    @TableField(exist = false)
-    private List<Integer> memberScores;
+//    @ExcelIgnore
+//    // 当前分数
+//    @TableField(exist = false)
+//    private Integer currentScore;
+//
+//    @ExcelIgnore
+//    @TableField(exist = false)
+//    private List<Integer> memberScores;
 
     @ExcelIgnore
     @TableField(exist = false)
@@ -79,4 +78,13 @@ public class Teams {
     // 新的分数，用于在展示答案时更新最新的分数
     @TableField(exist = false)
     private Integer newScore;
+
+    public void setTeamScore(Integer teamScore) {
+        this.teamScore = teamScore;
+    }
+
+
+    public void setMemberScore(String memberScore) {
+        this.memberScore = memberScore;
+    }
 }

@@ -538,7 +538,7 @@ public class QuestionPreviewAttr {
     @FXML
     public void updateAnswerText(){
         // 写入（更新）题干内容到 excel 里
-        List<Questions> parse = RuntimeQuestionStock.getQuestions();
+        List<Questions> parse =  ExcelParser.parse(ExcelParser.Q_PATH, Questions.class);
         questions.setAnswer(answerText.getText());
         parse.set(questions.getSort(), questions);
         ExcelParser.write(ExcelParser.Q_PATH, parse, Questions.class);
@@ -548,7 +548,7 @@ public class QuestionPreviewAttr {
     @FXML
     public void updateQuestionContent(){
         // 写入（更新）题干内容到 excel 里
-        List<Questions> parse = RuntimeQuestionStock.getQuestions();
+        List<Questions> parse =  ExcelParser.parse(ExcelParser.Q_PATH, Questions.class);
         String[] split = nameText.getText().split("\n");
         questions.setQuestion(split[0]);
         if (split.length >= 2) {

@@ -77,6 +77,7 @@ public class StageRulePreviewPreview extends PreviewPane{
 
     @FXML
     public void initialize(){
+        controlPane.getScoreBoardPreview().getSelected().clear();
        // PreviewStack.addPreview(this);
         innerStage = currentStage;
         container.setOnMouseClicked(new EventHandler<MouseEvent>() {

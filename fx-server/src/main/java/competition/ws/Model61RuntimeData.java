@@ -1,9 +1,12 @@
 package competition.ws;
 
+import com.alibaba.fastjson2.JSON;
+import com.alibaba.fastjson2.JSONObject;
 import competition.JavaFxApplication;
 import competition.controller.ControlPane;
 import competition.entity.Questions;
 import competition.entity.Teams;
+import competition.mapper.TeamsMapper;
 import competition.service.ScoreService;
 import competition.util.TeamRuntime;
 import javafx.application.Platform;
@@ -66,6 +69,7 @@ public class Model61RuntimeData {
         if (!runtimeData.isEmpty()) {
             ControlPane controlPane = JavaFxApplication.getApplicationContext().getBean(ControlPane.class);
             ScoreService scoreService = JavaFxApplication.getApplicationContext().getBean(ScoreService.class);
+            TeamsMapper teamsMapper = JavaFxApplication.getApplicationContext().getBean(TeamsMapper.class);
             for (int i = 0; i < runtimeData.size(); i++) {
                 ModelData data = runtimeData.get(i);
                 for (Teams team : teams) {
@@ -75,17 +79,20 @@ public class Model61RuntimeData {
                             String[] split = members.split(",");
                             for (int j = 0; j < split.length; j++) {
                                 if (split[j].equals(data.getUserName())) {
+                                    String memberScore = team.getMemberScore();
+                                    JSONObject jsonObject = JSON.parseObject(memberScore);
                                     if (data.getAnswer().equals(data.getUserSelect())) {
                                         // 更新队员获取的总分数
-                                        Integer x = team.getMemberScores().get(j);
-                                        team.getMemberScores().set(j, x + data.getScore());
+                                        jsonObject.put(data.getUserName(), jsonObject.getIntValue(data.getUserName()) + data.getScore());
+                                        team.setMemberScore(JSON.toJSONString(jsonObject));
                                         // 更新队员当前环节的分数
                                         team.getQScores().set(j, data.getScore());
                                     } else {
-                                        Integer x = team.getMemberScores().get(j);
-                                        team.getMemberScores().set(j, x - controlPane.getCurrentStage().getDesValue());
+                                        jsonObject.put(data.getUserName(), jsonObject.getIntValue(data.getUserName()) - controlPane.getCurrentStage().getDesValue());
+                                        team.setMemberScore(JSON.toJSONString(jsonObject));
                                         team.getQScores().set(j, -controlPane.getCurrentStage().getDesValue());
                                     }
+                                    teamsMapper.updateById(team);
                                     // 设置为已经回答完成
                                     //team.getStatusList().set(j, 1);
                                 }
@@ -94,24 +101,24 @@ public class Model61RuntimeData {
                         if (data.getAnswer().equals(data.getUserSelect())) {
                             // 更新队伍分数
                             if (controlPane.getCurrentStage().getCountTotal() == 1) {
-                                team.setNewScore(team.getCurrentScore() + data.getScore());
+                                team.setNewScore(team.getTeamScore() + data.getScore());
 
                                 scoreService.addScore(data.getUserName(), team.getFullName(), controlPane.getCurrentStage().getName(), data.getQuestionNumber().toString(),
                                         data.getSecond().toString(), data.getScore(), team.getNewScore().toString());
                             } else {
-                                team.setNewScore(team.getCurrentScore());
+                                team.setNewScore(team.getTeamScore());
                             }
                             Platform.runLater(() -> {
-                                controlPane.teamScore.setText(team.getCurrentScore().toString());
+                                controlPane.teamScore.setText(team.getTeamScore().toString());
                             });
                         } else {
                             if (controlPane.getCurrentStage().getCountTotal() == 1) {
-                                team.setNewScore(team.getCurrentScore() - controlPane.getCurrentStage().getDesValue());
+                                team.setNewScore(team.getTeamScore() - controlPane.getCurrentStage().getDesValue());
 
                                 scoreService.addScore(data.getUserName(), team.getFullName(), controlPane.getCurrentStage().getName(), data.getQuestionNumber().toString(),
                                         data.getSecond().toString(), -controlPane.getCurrentStage().getDesValue(), team.getNewScore().toString());
                             } else {
-                                team.setNewScore(team.getCurrentScore());
+                                team.setNewScore(team.getTeamScore());
                             }
                         }
                     }
@@ -160,9 +167,10 @@ public class Model61RuntimeData {
             List<Teams> teams = TeamRuntime.getTeams();
             ControlPane controlPane = JavaFxApplication.getApplicationContext().getBean(ControlPane.class);
             ScoreService scoreService = JavaFxApplication.getApplicationContext().getBean(ScoreService.class);
+            TeamsMapper teamsMapper = JavaFxApplication.getApplicationContext().getBean(TeamsMapper.class);
             for (Teams team : teams) {
                 if (team.getFullName().equals(data.getTeamName())) {
-
+                    JSONObject jsonObject = JSON.parseObject(team.getMemberScore());
                     String members = team.getMembers();
                     if (!StringUtils.isEmpty(members)) {
                         String[] split = members.split(",");
@@ -170,8 +178,10 @@ public class Model61RuntimeData {
                             if (split[j].equals(data.getUserName())) {
                                 if (data.getUserSelect().equals(data.getAnswer())) {
                                     // 更新队员获取的总分数
-                                    Integer x = team.getMemberScores().get(j);
-                                    team.getMemberScores().set(j, x + data.getScore());
+                                    Integer x = jsonObject.getIntValue(data.getUserName());
+                                    jsonObject.put(data.getUserName(), x + data.getScore());
+                                    team.setMemberScore(JSON.toJSONString(jsonObject));
+                                    teamsMapper.updateById(team);
                                     // 更新队员当前环节的分数
                                     team.getQScores().set(j, data.getScore());
                                 } else {
@@ -186,24 +196,24 @@ public class Model61RuntimeData {
                     if (data.getUserSelect().equals(data.getAnswer())) {
                         // 更新队伍分数
                         if (controlPane.getCurrentStage().getCountTotal() == 1) {
-                            team.setNewScore(team.getCurrentScore() + data.getScore());
+                            team.setNewScore(team.getTeamScore() + data.getScore());
                             scoreService.addScore(data.getUserName(), team.getFullName(), controlPane.getCurrentStage().getName(), data.getQuestionNumber().toString(),
                                     data.getSecond().toString(), data.getScore(), team.getNewScore().toString());
 
                         } else {
-                            team.setNewScore(team.getCurrentScore());
+                            team.setNewScore(team.getTeamScore());
                         }
                         Platform.runLater(() -> {
-                            controlPane.teamScore.setText(team.getCurrentScore().toString());
+                            controlPane.teamScore.setText(team.getTeamScore().toString());
                         });
                     } else {
                         if (controlPane.getCurrentStage().getCountTotal() == 1) {
-                            team.setNewScore(team.getCurrentScore() - controlPane.getCurrentStage().getDesValue());
+                            team.setNewScore(team.getTeamScore() - controlPane.getCurrentStage().getDesValue());
 
                             scoreService.addScore(data.getUserName(), team.getFullName(), controlPane.getCurrentStage().getName(), data.getQuestionNumber().toString(),
                                     data.getSecond().toString(), -controlPane.getCurrentStage().getDesValue(), team.getNewScore().toString());
                         } else {
-                            team.setNewScore(team.getCurrentScore());
+                            team.setNewScore(team.getTeamScore());
                         }
                     }
                 }

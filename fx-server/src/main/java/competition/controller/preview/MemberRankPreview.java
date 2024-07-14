@@ -1,5 +1,7 @@
 package competition.controller.preview;
 
+import com.alibaba.fastjson2.JSON;
+import com.alibaba.fastjson2.JSONObject;
 import competition.controller.ControlPane;
 import competition.controller.match.MemberRank;
 import competition.entity.Configs;
@@ -61,7 +63,7 @@ public class MemberRankPreview extends PreviewPane{
 
     @FXML
     public void initialize() {
-
+        controlPane.getScoreBoardPreview().getSelected().clear();
         container.setOnMouseClicked(new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent event) {
@@ -206,14 +208,12 @@ public class MemberRankPreview extends PreviewPane{
         for (int i = 0; i < teams.size(); i++) {
             Teams item = teams.get(i);
             String members = item.getMembers();
-            List<Integer> memberScores = item.getMemberScores();
+            String memberScore = item.getMemberScore();
+            JSONObject jsonObject = JSON.parseObject(memberScore);
             String[] mArr = members.split(",");
             for (int j = 0; j < mArr.length; j++) {
                 TeamMemberRankData rankData = new TeamMemberRankData();
-                rankData.setScore(0);
-                if (j < memberScores.size()){
-                    rankData.setScore(memberScores.get(j));
-                }
+                rankData.setScore(jsonObject.getInteger(mArr[j]));
                 rankData.setTeam(item.getFullName());
                 rankData.setMember(mArr[j]);
                 rankList.add(rankData);

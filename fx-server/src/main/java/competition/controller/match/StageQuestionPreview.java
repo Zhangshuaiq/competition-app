@@ -1,11 +1,13 @@
 package competition.controller.match;
 
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import competition.controller.ControlPane;
 import competition.entity.Configs;
 import competition.entity.Questions;
 import competition.entity.Stages;
 import competition.mapper.ConfigsMapper;
+import competition.mapper.QuestionsMapper;
 import competition.util.*;
 import competition.ws.WsMessageHandler;
 import javafx.fxml.FXML;
@@ -44,6 +46,10 @@ public class StageQuestionPreview implements ReloadPane {
     @Resource
     private ControlPane controlPane;
 
+    
+    @Resource
+    private QuestionsMapper questionsMapper;
+    
     @Resource
     private WsMessageHandler messageHandler;
 
@@ -94,13 +100,16 @@ public class StageQuestionPreview implements ReloadPane {
         String config = configs.getConfig();
         String stageConfigAttr = stageConfig.getConfig();
         String[] stageConfigAttrSplit = stageConfigAttr.split(ConfigSpliter.SPLITER);
-        List<Questions> questionList = CurrentQuestions.getQuestionList();
-        questionList.sort(new Comparator<Questions>() {
-            @Override
-            public int compare(Questions o1, Questions o2) {
-                return o1.getQuestionNumber().compareTo(o2.getQuestionNumber());
-            }
-        });
+        List<Questions> questionList = questionsMapper.selectList(new LambdaQueryWrapper<Questions>()
+                .eq(Questions::getStageNumber, inner.getSortVal())
+                .orderByAsc(Questions::getQuestionNumber)
+        );
+//        questionList.sort(new Comparator<Questions>() {
+//            @Override
+//            public int compare(Questions o1, Questions o2) {
+//                return o1.getQuestionNumber().compareTo(o2.getQuestionNumber());
+//            }
+//        });
 
         String questionStyle = "760%%240%%400%%80%%false%%0x990000ff%%%%Dialog%%40%%false%%false%%false%%false%%居中对齐%%10###415%%370%%100%%100%%false%%0x990000ff%%%%Dialog%%30%%false%%false%%false%%false%%居中对齐%%10%%10";
         String[] cfgArr = {};
@@ -229,7 +238,7 @@ public class StageQuestionPreview implements ReloadPane {
             Questions questions = questionList.get(i);
             Text text = new Text(questions.getQuestionNumber().toString());
 
-            if (CurrentQuestions.hasAnswer(questions.getQuestionNumber().toString())) {
+            if (questions.isHasAnswer()) {
                 item.setVisible(false);
             } else {
                 item.setVisible(true);

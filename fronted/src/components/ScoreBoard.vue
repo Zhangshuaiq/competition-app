@@ -11,7 +11,7 @@
             </el-col>
             <el-col span="12">
               <div class="board-item" >
-                {{item.currentScore}}
+                {{item.teamScore}}
               </div>
             </el-col>
           </el-row>

@@ -1,6 +1,8 @@
 package competition;
 
+import competition.controller.ControlPane;
 import competition.util.*;
+import competition.ws.WsMessageHandler;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.event.EventHandler;
@@ -51,7 +53,8 @@ public class JavaFxApplication extends Application {
 //            primaryStage.setY(event.getScreenY() - yOffset);
 //        });
         primaryStage.setOnCloseRequest(event -> {
-            ScoreSaver.saveScore();
+            WsMessageHandler messageHandler = applicationContext.getBean(WsMessageHandler.class);
+            messageHandler.notifyPage("wait", null);
             System.exit(0);
         });
         primaryStage.setScene(scene);

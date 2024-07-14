@@ -398,11 +398,10 @@ export default {
           this.saveData()
         } else if (message.type === 'finish') {
           if (this.questionIndex + 1 === this.questionList.length) {
-            this.score = this.score - ((this.questionList.length - this.questionIndex - 1) * this.questionItem.desValue)
+            this.score = this.score -  this.questionItem.desValue
           } else {
             this.score = this.score - ((this.questionList.length - this.questionIndex) * this.questionItem.desValue)
           }
-         
           this.showResult = true
           this.saveData()
         } else {

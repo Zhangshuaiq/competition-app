@@ -1,6 +1,7 @@
 package competition.controller.preview;
 
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import competition.controller.ControlPane;
 import competition.controller.match.RollPreview;
 import competition.controller.match.StageQuestionPreviewAttr;
@@ -8,6 +9,7 @@ import competition.entity.Configs;
 import competition.entity.Questions;
 import competition.entity.Stages;
 import competition.mapper.ConfigsMapper;
+import competition.mapper.QuestionsMapper;
 import competition.util.*;
 import competition.ws.WsMessageHandler;
 import javafx.animation.AnimationTimer;
@@ -63,6 +65,9 @@ public class RollPreviewPreview extends PreviewPane {
     private AnimationTimer timer;
 
     private Stages inner;
+    
+    @Resource
+    private QuestionsMapper questionsMapper;
 
     public static void setCurrentStage(Stages currentStage) {
         RollPreviewPreview.currentStage = currentStage;
@@ -76,6 +81,7 @@ public class RollPreviewPreview extends PreviewPane {
 
     @FXML
     public void initialize() {
+        controlPane.getScoreBoardPreview().getSelected().clear();
         inner = currentStage;
         PreviewStack.addPreview(this);
         PreviewStack.addReturn(this);
@@ -142,13 +148,16 @@ public class RollPreviewPreview extends PreviewPane {
         String config = configs.getConfig();
         String stageConfigAttr = stageConfig.getConfig();
         String[] stageConfigAttrSplit = stageConfigAttr.split(ConfigSpliter.SPLITER);
-        List<Questions> questionList = CurrentQuestions.getQuestionList();
-        questionList.sort(new Comparator<Questions>() {
-            @Override
-            public int compare(Questions o1, Questions o2) {
-                return o1.getQuestionNumber().compareTo(o2.getQuestionNumber());
-            }
-        });
+        List<Questions> questionList = questionsMapper.selectList(new LambdaQueryWrapper<Questions>()
+                .eq(Questions::getStageNumber, inner.getSortVal())
+                .orderByAsc(Questions::getQuestionNumber)
+        );
+//        questionList.sort(new Comparator<Questions>() {
+//            @Override
+//            public int compare(Questions o1, Questions o2) {
+//                return o1.getQuestionNumber().compareTo(o2.getQuestionNumber());
+//            }
+//        });
         String questionStyle = "560%%240%%800%%100%%false%%0x9980e6ff%%%%Dialog%%12%%false%%false%%false%%false%%居中对齐%%0###500%%400%%80%%80%%false%%0x664db3ff%%%%Dialog%%36%%false%%false%%false%%false%%居中对齐%%0%%1";
         if (!StringUtils.isEmpty(currentStage.getQuestionStyle())) {
             questionStyle = currentStage.getQuestionStyle();
@@ -321,7 +330,10 @@ public class RollPreviewPreview extends PreviewPane {
     }
 
     private void startSelector() {
-        List<Questions> questionList = CurrentQuestions.getQuestionList().stream().filter(x -> !x.isHasAnswer()).collect(Collectors.toList());
+        List<Questions> questionList = questionsMapper.selectList(new LambdaQueryWrapper<Questions>()
+                .eq(Questions::getStageNumber, inner.getSortVal())
+                .eq(Questions::isHasAnswer, false)
+        );
         // 无可选择的题目
         if (questionList.size() <= 0) {
             return;

@@ -131,9 +131,7 @@ export default {
         if (message.type === 'time') {
           console.log(message.data)
           this.second = parseInt(message.data)
-        } else if (message.type === 'clue'){
-          this.questionItem = message.data
-        }
+        } 
 
       })
 

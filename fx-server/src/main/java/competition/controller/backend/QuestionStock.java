@@ -1,28 +1,32 @@
 package competition.controller.backend;
 
 import cn.hutool.core.io.FileUtil;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import competition.entity.QuestionStyle;
 import competition.entity.Questions;
+import competition.mapper.QuestionsMapper;
 import competition.util.BaseDir;
 import competition.util.CurrentQuestions;
 import competition.util.ExcelParser;
 import competition.util.RuntimeQuestionStock;
 import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
-import javafx.scene.control.ComboBox;
+import javafx.scene.control.*;
 import javafx.scene.control.Label;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.paint.Color;
 import javafx.stage.FileChooser;
 import org.springframework.stereotype.Component;
+import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
+import javax.annotation.Resource;
 import java.awt.*;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Component
@@ -35,6 +39,9 @@ public class QuestionStock {
     @FXML
     private ComboBox<String> stockList;
     
+    @Resource
+    private QuestionsMapper questionsMapper;
+    
 
     @FXML
     private TableColumn<Questions, String> stageNumberCol, stageNameCol, questionTypeCol, resourceTypeCol, resourceCol,
@@ -44,6 +51,7 @@ public class QuestionStock {
 
     @FXML
     public void initialize() {
+        tableView.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
         stageNumberCol.setCellValueFactory(new PropertyValueFactory<>("stageNumber"));
         stageNameCol.setCellValueFactory(new PropertyValueFactory<>("stageName"));
         questionTypeCol.setCellValueFactory(new PropertyValueFactory<>("questionType"));
@@ -66,10 +74,16 @@ public class QuestionStock {
             }
             stockList.getItems().add(fileName);
         }
-        
-        if (stockList.getItems().size() > 0) {
-            stockList.setValue(stockList.getItems().get(0));
-            showData();
+
+        List<Questions> questions = questionsMapper.selectList(new LambdaQueryWrapper<>());
+        if (!CollectionUtils.isEmpty(questions)) {
+            tableView.setItems(FXCollections.observableList(questions));
+            stockList.setValue(questions.get(0).getGroup());
+        } else {
+            if (stockList.getItems().size() > 0) {
+                stockList.setValue(stockList.getItems().get(0));
+                showData();
+            }
         }
     }
 
@@ -78,14 +92,35 @@ public class QuestionStock {
         tableView.setItems(FXCollections.observableList(questions));
     }
     
+    
+    @FXML
+    public void questionReset(){
+        ObservableList<Questions> selectedItems = tableView.getSelectionModel().getSelectedItems();
+        for (Questions selectedItem : selectedItems) {
+            selectedItem.setHasAnswer(false);
+            questionsMapper.updateById(selectedItem);
+        }
+    }
+    
+    
     @FXML
     public void useStock(){
         if (StringUtils.isEmpty(stockList.getValue())) {
             return;
         }
         showData();
-        RuntimeQuestionStock.loadQuestion(BaseDir.TIKU_DIR + stockList.getValue());
-        
+        List<Questions> questions = RuntimeQuestionStock.loadQuestion(BaseDir.TIKU_DIR + stockList.getValue());
+        questionsMapper.delete(new LambdaQueryWrapper<>());
+        Map<String, List<Questions>> collect = questions.stream().collect(Collectors.groupingBy(Questions::getStageNumber));
+        for (Map.Entry<String, List<Questions>> entry : collect.entrySet()) {
+            List<Questions> list = entry.getValue();
+            for (int i = 0; i < list.size(); i++) {
+                Questions q = list.get(i);
+                q.setQuestionNumber(i + 1);
+                q.setGroup(stockList.getValue());
+                questionsMapper.insert(q);
+            }
+        }
     }
     
 //    @FXML

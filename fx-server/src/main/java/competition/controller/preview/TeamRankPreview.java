@@ -66,7 +66,7 @@ public class TeamRankPreview extends PreviewPane{
 
     @FXML
     public void initialize() {
-
+        controlPane.getScoreBoardPreview().getSelected().clear();
         container.setOnMouseClicked(new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent event) {
@@ -210,7 +210,7 @@ public class TeamRankPreview extends PreviewPane{
             Teams item = teams.get(i);
             TeamMemberRankData rankData = new TeamMemberRankData();
             rankData.setTeam(item.getFullName());
-            rankData.setScore(item.getCurrentScore());
+            rankData.setScore(item.getTeamScore());
             rankList.add(rankData);
         }
         // sort 根据分数和时间进行排序

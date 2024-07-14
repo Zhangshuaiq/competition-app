@@ -1,13 +1,16 @@
 package competition.controller.preview;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import competition.controller.ControlPane;
 import competition.controller.match.Model7;
 import competition.controller.match.Model7Attr;
 import competition.controller.match.ReloadPane;
 import competition.entity.Model3Style;
 import competition.entity.Questions;
+import competition.entity.Stages;
 import competition.entity.Teams;
 import competition.mapper.Model3Mapper;
+import competition.mapper.QuestionsMapper;
 import competition.modal.Model7RankData;
 import competition.util.*;
 import competition.ws.Model7RuntimeData;
@@ -56,7 +59,17 @@ public class Model7Preview extends PreviewPane {
 
     @Resource
     private Model3Mapper model3Mapper;
+    
+    @Resource
+    private QuestionsMapper questionsMapper;
 
+    private static Stages currentStage;
+    
+    private Stages inner;
+
+    public static void setCurrentStage(Stages currentStage) {
+        Model7Preview.currentStage = currentStage;
+    }
 
     public void stopTiming() {
     }
@@ -68,11 +81,15 @@ public class Model7Preview extends PreviewPane {
 
     @FXML
     public void initialize() {
-
+        controlPane.getScoreBoardPreview().getSelected().clear();
+        inner = currentStage;
         calculatePW();
-        messageHandler.notifyPage("model7", CurrentQuestions.getQuestionList());
+        List<Questions> questions = questionsMapper.selectList(new LambdaQueryWrapper<Questions>()
+                .eq(Questions::getStageNumber, inner.getSortVal())
+        );
+        messageHandler.notifyPage("model7", questions);
 
-        Model7RuntimeData.totalNumber = CurrentQuestions.getQuestionList().size();
+        Model7RuntimeData.totalNumber = questions.size();
         PreviewStack.addPreview(this);
         container.setOnMouseClicked(new EventHandler<MouseEvent>() {
             @Override
@@ -193,14 +210,17 @@ public class Model7Preview extends PreviewPane {
             ReloadPane questionPreview = controlPane.getQuestionPreview();
             if (questionPreview != null) {
                 if (questionPreview instanceof Model7) {
+                    Model7.setCurrentStage(inner);
                     questionPreview.reload(1, this.timeValue);
                 } else {
+                    Model7.setCurrentStage(inner);
                     Object res = ExtendedScreen.showWithControl("/view/match/Model7.fxml");
                     if (res != null) {
                         controlPane.setQuestionPreview((Model7) res);
                     }
                 }
             } else {
+                Model7.setCurrentStage(inner);
                 Object res = ExtendedScreen.showWithControl("/view/match/Model7.fxml");
                 if (res != null) {
                     controlPane.setQuestionPreview((Model7) res);
@@ -240,7 +260,10 @@ public class Model7Preview extends PreviewPane {
             Model7RuntimeData.ModelData last = null;
             int score = 0;
             int finish = 0;
-            for (Questions questions : CurrentQuestions.getQuestionList()) {
+            List<Questions> questions = questionsMapper.selectList(new LambdaQueryWrapper<Questions>()
+                    .eq(Questions::getStageNumber, inner.getSortVal())
+            );            
+            for (Questions q : questions) {
                 Circle c = new Circle();
                 c.setRadius(ScreenAdapter.calculateMainW(radius));
                 c.setStroke(Color.BLACK);
@@ -431,6 +454,10 @@ public class Model7Preview extends PreviewPane {
 //        if (questionPreview != null) {
 //            questionPreview.reload(time, timeTxt);
 //        }
+    }
+    
+    public Integer getInnerId(){
+        return inner.getId();
     }
 
 }

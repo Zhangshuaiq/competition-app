@@ -96,28 +96,28 @@ public class Model60RuntimeData {
 
                         // 需要判断是否计入总分
                         if (controlPane.getCurrentStage().getCountTotal() == 1) {
-                            team.setNewScore(team.getCurrentScore() + data.getScore());
+                            team.setNewScore(team.getTeamScore() + data.getScore());
 
                             scoreService.addScore(null, team.getFullName(),  controlPane.getCurrentStage().getName(), modelData.getQuestionNumber().toString(),
                                     modelData.getSecond().toString(),  data.getScore(), team.getNewScore().toString());
                         } else {
-                            team.setNewScore(team.getCurrentScore());
+                            team.setNewScore(team.getTeamScore());
                         }
                         
                         team.setQScore(data.getScore());
                         
                         Platform.runLater(() -> {
-                            controlPane.teamScore.setText(team.getCurrentScore().toString());
+                            controlPane.teamScore.setText(team.getTeamScore().toString());
                         });
                     } else {
                         team.setQScore(-data.getScore());
                         if (controlPane.getCurrentStage().getCountTotal() == 1) {
-                            team.setNewScore(team.getCurrentScore() - controlPane.getCurrentStage().getDesValue());
+                            team.setNewScore(team.getTeamScore() - controlPane.getCurrentStage().getDesValue());
 
                             scoreService.addScore(null, team.getFullName(),  controlPane.getCurrentStage().getName(), modelData.getQuestionNumber().toString(),
                                     modelData.getSecond().toString(),  - controlPane.getCurrentStage().getDesValue(), team.getNewScore().toString());
                         } else {
-                            team.setNewScore(team.getCurrentScore());
+                            team.setNewScore(team.getTeamScore());
                         }
                     }
                 }
@@ -143,7 +143,7 @@ public class Model60RuntimeData {
                 ModelData modelData = runtimeData.get(i);
                 if (StringUtils.isEmpty(modelData.getUserSelect())) {
                     if (controlPane.getCurrentStage().getCountTotal() == 1) {
-                        team.setNewScore(team.getCurrentScore() - controlPane.getCurrentStage().getDesValue());
+                        team.setNewScore(team.getTeamScore() - controlPane.getCurrentStage().getDesValue());
 
                         scoreService.addScore(null, team.getFullName(),  controlPane.getCurrentStage().getName(), modelData.getQuestionNumber().toString(),
                                 modelData.getSecond().toString(),  - controlPane.getCurrentStage().getDesValue(), team.getNewScore().toString());

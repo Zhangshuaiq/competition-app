@@ -68,6 +68,7 @@ public class Model7RankPreview extends PreviewPane {
 
     @FXML
     public void initialize() {
+        controlPane.getScoreBoardPreview().getSelected().clear();
         PreviewStack.addPreview(this);
         container.setOnMouseClicked(new EventHandler<MouseEvent>() {
             @Override

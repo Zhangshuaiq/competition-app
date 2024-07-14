@@ -295,7 +295,7 @@ public class StageRulePreviewAttr {
         Stages stages = stagesMapper.selectById(stageId);
         stages.setTitleRuleStyle(detail);
         stagesMapper.updateById(stages);
-        PreviewStack.reloadStyle();
+        controlPane.getPreviewPane().reload();
     }
     
     
@@ -346,6 +346,6 @@ public class StageRulePreviewAttr {
         configs.setConfig(huanjieVal);
         configs.setDetails(detail);
         configsMapper.updateById(configs);
-        PreviewStack.reloadStyle();
+        controlPane.getPreviewPane().reload();
     }
 }

@@ -1,11 +1,13 @@
 package competition.controller.match;
 
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import competition.controller.ControlPane;
 import competition.entity.Configs;
 import competition.entity.Questions;
 import competition.entity.Stages;
 import competition.mapper.ConfigsMapper;
+import competition.mapper.QuestionsMapper;
 import competition.util.*;
 import javafx.fxml.FXML;
 import javafx.geometry.Insets;
@@ -40,6 +42,9 @@ public class RollPreview implements ReloadPane {
 
     @Resource
     private ControlPane controlPane;
+    
+    @Resource
+    private QuestionsMapper questionsMapper;
 
 
     @FXML
@@ -93,13 +98,10 @@ public class RollPreview implements ReloadPane {
         String config = configs.getConfig();
         String stageConfigAttr = stageConfig.getConfig();
         String[] stageConfigAttrSplit = stageConfigAttr.split(ConfigSpliter.SPLITER);
-        List<Questions> questionList = CurrentQuestions.getQuestionList();
-        questionList.sort(new Comparator<Questions>() {
-            @Override
-            public int compare(Questions o1, Questions o2) {
-                return o1.getQuestionNumber().compareTo(o2.getQuestionNumber());
-            }
-        });
+        List<Questions> questionList = questionsMapper.selectList(new LambdaQueryWrapper<Questions>()
+                .eq(Questions::getStageNumber, inner.getSortVal())
+                .orderByAsc(Questions::getQuestionNumber)
+        );
 
         String questionStyle = "560%%240%%800%%100%%false%%0x9980e6ff%%%%Dialog%%12%%false%%false%%false%%false%%居中对齐%%0###500%%400%%80%%80%%false%%0x664db3ff%%%%Dialog%%36%%false%%false%%false%%false%%居中对齐%%0%%1";
         if (!StringUtils.isEmpty(currentStage.getQuestionStyle())) {

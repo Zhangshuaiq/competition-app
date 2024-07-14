@@ -9,6 +9,7 @@ import competition.entity.Model3Style;
 import competition.entity.Questions;
 import competition.entity.Stages;
 import competition.mapper.Model3Mapper;
+import competition.mapper.QuestionsMapper;
 import competition.mapper.StagesMapper;
 import competition.util.*;
 import competition.ws.WsMessageHandler;
@@ -67,6 +68,9 @@ public class Model3 implements ReloadPane {
     
     private List<Stages> children;
 
+    
+    @Resource
+    private QuestionsMapper questionsMapper;
 
     public static void setPassedId(Integer passedId) {
         Model3.passedId = passedId;
@@ -126,9 +130,11 @@ public class Model3 implements ReloadPane {
 
         List<List<Questions>> qs = new ArrayList<>();
         for (Stages child : children) {
-            List<Questions> stageQuestions = RuntimeQuestionStock.getStageQuestions(child.getSortVal());
+            List<Questions> stageQuestions = questionsMapper.selectList(new LambdaQueryWrapper<Questions>()
+                    .eq(Questions::getStageNumber, child.getSortVal())
+            );
+//            List<Questions> stageQuestions = RuntimeQuestionStock.getStageQuestions(child.getSortVal());
             for (int i = 0; i < stageQuestions.size(); i++) {
-                stageQuestions.get(i).setQuestionNumber(i + 1);
                 // 每个题目分值
                 stageQuestions.get(i).setScore(child.getScorePerQ());
             }
@@ -144,7 +150,7 @@ public class Model3 implements ReloadPane {
         dataMap.put("pstage", stages);
 
         // 保存到当前的数据中
-        CurrentQuestions.setM3Questions(qs, parentStageId);
+      //  CurrentQuestions.setM3Questions(qs, parentStageId);
         
         // 清除旧的数据
         
@@ -343,15 +349,17 @@ public class Model3 implements ReloadPane {
 
         }
         
-        for (int i = 0; i < CurrentQuestions.getM3Questions().size(); i++) {
-            List<Questions> questionsList = CurrentQuestions.getM3Questions().get(i);
+        for (int i = 0; i < children.size(); i++) {
+            List<Questions> questionsList = questionsMapper.selectList(new LambdaQueryWrapper<Questions>()
+                    .eq(Questions::getStageNumber, children.get(i).getSortVal())
+            );
             GridPane questionGrid = new GridPane();
             for (int i1 = 0; i1 < questionsList.size(); i1++) {
                 StackPane item = new StackPane();
                 item.setPrefSize(50, 50);
                 Questions questions = questionsList.get(i1);
                 Text text = new Text(questions.getQuestionNumber().toString());
-                if (CurrentQuestions.hasAnswer(questions.getStageNumber() + "-" + questions.getQuestionNumber())) {
+                if (questions.isHasAnswer()) {
                     item.setVisible(false);
                 } else {
                     item.setVisible(true);

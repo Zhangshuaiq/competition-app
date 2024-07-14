@@ -27,7 +27,11 @@
                   <div class="score-info">{{item.rank}}</div>
                 </el-col>
                 <el-col span="6">
-                  <div class="score-info">{{item.team}}</div>
+                  <div class="score-info" style="width: 100%; /* 根据需要调整宽度 */
+                            height: 60px;
+                            white-space: nowrap;
+                            overflow: hidden;
+                            text-overflow: ellipsis;">{{item.team}}</div>
                 </el-col>
                 <el-col span="6">
                   <div class="score-info">{{item.score}}</div>

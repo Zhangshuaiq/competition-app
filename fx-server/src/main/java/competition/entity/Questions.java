@@ -2,15 +2,23 @@ package competition.entity;
 
 import com.alibaba.excel.annotation.ExcelIgnore;
 import com.alibaba.excel.annotation.ExcelProperty;
+import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableField;
+import com.baomidou.mybatisplus.annotation.TableId;
+import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
 
 @Data
+@TableName("t_questions")
 public class Questions {
     
-    @ExcelProperty(index = 0, value="阶段编号")
+    @TableId(type = IdType.AUTO)
+    private Integer id;
+    
+    @ExcelProperty(index = 0, value="环节编号")
     private String stageNumber;
 
-    @ExcelProperty(index = 1, value="阶段名称")
+    @ExcelProperty(index = 1, value="环节名称")
     private String stageName;
 
     // 判断题 简答题 填空题 单选题 多选题 不定项选择
@@ -51,7 +59,8 @@ public class Questions {
     @ExcelProperty(index = 13, value="备注")
     private String remark;
 
-    @ExcelProperty(index = 14, value="所属题组")
+    @TableField("`group`")
+    @ExcelIgnore
     private String group;
     
     @ExcelIgnore
@@ -60,13 +69,15 @@ public class Questions {
     @ExcelIgnore
     private Integer sort;
     
+    @TableField(exist = false)
     @ExcelIgnore
     private Integer score;
     
     @ExcelIgnore
     private boolean hasAnswer = false;
-    
+
     // 答错扣分
+    @TableField(exist = false)
     @ExcelIgnore
     private Integer desValue;
     

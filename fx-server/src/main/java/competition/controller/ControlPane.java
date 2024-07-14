@@ -1,14 +1,14 @@
 package competition.controller;
 
+import com.alibaba.fastjson2.JSON;
+import com.alibaba.fastjson2.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import competition.JavaFxApplication;
 import competition.controller.board.BoardPane;
 import competition.controller.match.ReloadPane;
 import competition.controller.preview.*;
 import competition.entity.*;
-import competition.mapper.ConfigsMapper;
-import competition.mapper.StagesMapper;
-import competition.mapper.TeamsMapper;
-import competition.mapper.TimeMapper;
+import competition.mapper.*;
 import competition.modal.TeamResult;
 import competition.service.ScoreService;
 import competition.util.*;
@@ -21,8 +21,11 @@ import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -33,6 +36,7 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
+import javafx.stage.Stage;
 import lombok.SneakyThrows;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
@@ -42,6 +46,7 @@ import javax.annotation.Resource;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -75,6 +80,9 @@ public class ControlPane {
 
     @Resource
     private TimeMapper timeMapper;
+    
+    @Resource
+    private QuestionsMapper questionsMapper;
 
     @FXML
     private Button startAnswerBtn;
@@ -471,7 +479,7 @@ public class ControlPane {
                     memberComBox.setItems(FXCollections.emptyObservableList());
                 }
                 memberComBox.setValue("");
-                teamScore.setText(TeamRuntime.getTeams().get(selectedIndex).getCurrentScore() + "");
+                teamScore.setText(TeamRuntime.getTeams().get(selectedIndex).getTeamScore() + "");
             }
         });
 
@@ -479,10 +487,11 @@ public class ControlPane {
             @Override
             public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
                 int selectedIndex = teamComBox.getSelectionModel().getSelectedIndex();
-                int selectedMemberIndex = memberComBox.getSelectionModel().getSelectedIndex();
-                if (selectedMemberIndex >= 0) {
-                    Integer memScore = TeamRuntime.getTeams().get(selectedIndex).getMemberScores().get(selectedMemberIndex);
-                    memberScore.setText(memScore + "");
+                String selectedMember = memberComBox.getSelectionModel().getSelectedItem();
+                if (selectedMember != null && selectedMember.length() > 0) {
+                    String memberScore = TeamRuntime.getTeams().get(selectedIndex).getMemberScore();
+                    JSONObject jsonObject = JSON.parseObject(memberScore);
+                    ControlPane.this.memberScore.setText(jsonObject.getIntValue(selectedMember) + "");
                 } else {
                     memberScore.setText("0");
                 }
@@ -529,15 +538,20 @@ public class ControlPane {
         for (Teams teamList : teamLists) {
             for (String s : selected) {
                 if (teamList.getShortName().equals(s)) {
-                    teamList.setCurrentScore(teamList.getCurrentScore() + Integer.parseInt(text));
-
+                    teamList.setTeamScore(teamList.getTeamScore() + Integer.parseInt(text));
+                    teamsMapper.updateById(teamList);
                     if (currentStage != null && !StringUtils.isEmpty(questionCombox.getValue())) {
-                        Questions questions = CurrentQuestions.getQuestionList().get(Integer.parseInt(questionCombox.getValue()) - 1);
-                        scoreService.addScore(null, teamList.getFullName(), currentStage.getName(), questions.getQuestionNumber().toString(), null, Integer.parseInt(text), teamList.getCurrentScore().toString());
+                        Questions questions = questionsMapper.selectOne(new LambdaQueryWrapper<Questions>()
+                                .eq(Questions::getQuestionNumber, Integer.parseInt(questionCombox.getValue()) - 1)
+                                .eq(Questions::getStageNumber, currentStage.getSortVal())
+                        );
+                        // currentStage
+                       // Questions questions = CurrentQuestions.getQuestionList().get(Integer.parseInt(questionCombox.getValue()) - 1);
+                        scoreService.addScore(null, teamList.getFullName(), currentStage.getName(), questions.getQuestionNumber().toString(), null, Integer.parseInt(text), teamList.getTeamScore().toString());
                     } else {
-                        scoreService.addScore(null, teamList.getFullName(), null, null, null, Integer.parseInt(text), teamList.getCurrentScore().toString());
+                        scoreService.addScore(null, teamList.getFullName(), null, null, null, Integer.parseInt(text), 
+                                teamList.getTeamScore().toString());
                     }
-
                 }
             }
         }
@@ -553,14 +567,23 @@ public class ControlPane {
             // 添加个人分数
             int selectedIndex1 = memberComBox.getSelectionModel().getSelectedIndex();
             if (selectedIndex1 > -1) {
-                teams.getMemberScores().set(selectedIndex1, teams.getMemberScores().get(selectedIndex1) + Integer.parseInt(text));
-                memberScore.setText(teams.getMemberScores().get(selectedIndex1).toString());
+                String member = memberComBox.getSelectionModel().getSelectedItem();
+                String memberScore = teams.getMemberScore();
+                JSONObject jsonObject = JSON.parseObject(memberScore);
+                jsonObject.put(member, jsonObject.getIntValue(member) + Integer.parseInt(text));
+                teams.setMemberScore(JSON.toJSONString(jsonObject));
+                teamsMapper.updateById(teams);
+                this.memberScore.setText(jsonObject.getIntValue(member) + "");
 
                 if (currentStage != null) {
-                    Questions questions = CurrentQuestions.getQuestionList().get(Integer.parseInt(questionCombox.getValue()) - 1);
-                    scoreService.addScore(memberComBox.getValue(), teams.getFullName(), currentStage.getName(), questions.getQuestionNumber().toString(), null, Integer.parseInt(text), teams.getMemberScores().get(selectedIndex1).toString());
+                    Questions questions = questionsMapper.selectOne(new LambdaQueryWrapper<Questions>()
+                            .eq(Questions::getQuestionNumber, Integer.parseInt(questionCombox.getValue()) - 1)
+                            .eq(Questions::getStageNumber, currentStage.getSortVal())
+                    );
+                   // Questions questions = CurrentQuestions.getQuestionList().get(Integer.parseInt(questionCombox.getValue()) - 1);
+                    scoreService.addScore(memberComBox.getValue(), teams.getFullName(), currentStage.getName(), questions.getQuestionNumber().toString(), null, Integer.parseInt(text), jsonObject.getIntValue(member) + "");
                 } else {
-                    scoreService.addScore(memberComBox.getValue(), teams.getFullName(), null, null, null, Integer.parseInt(text), teams.getMemberScores().get(selectedIndex1).toString());
+                    scoreService.addScore(memberComBox.getValue(), teams.getFullName(), null, null, null, Integer.parseInt(text), jsonObject.getIntValue(member) + "");
                 }
             } else {
                 memberScore.setText("0");
@@ -568,15 +591,20 @@ public class ControlPane {
 
             // 给控制面板内加分，如果已选择则忽略，避免二次加分
             if (!selected.contains(teams.getShortName())) {
-                teams.setCurrentScore(teams.getCurrentScore() + Integer.parseInt(text));
+                teams.setTeamScore(teams.getTeamScore() + Integer.parseInt(text));
+                teamsMapper.updateById(teams);
                 if (currentStage != null) {
-                    Questions questions = CurrentQuestions.getQuestionList().get(Integer.parseInt(questionCombox.getValue()) - 1);
-                    scoreService.addScore(null, teams.getFullName(), currentStage.getName(), questions.getQuestionNumber().toString(), null, Integer.parseInt(text), teams.getCurrentScore().toString());
+                    //Questions questions = CurrentQuestions.getQuestionList().get(Integer.parseInt(questionCombox.getValue()) - 1);
+                    Questions questions = questionsMapper.selectOne(new LambdaQueryWrapper<Questions>()
+                            .eq(Questions::getQuestionNumber, Integer.parseInt(questionCombox.getValue()) - 1)
+                            .eq(Questions::getStageNumber, currentStage.getSortVal())
+                    );
+                    scoreService.addScore(null, teams.getFullName(), currentStage.getName(), questions.getQuestionNumber().toString(), null, Integer.parseInt(text), teams.getTeamScore().toString());
                 } else {
-                    scoreService.addScore(null, teams.getFullName(), null, null, null, Integer.parseInt(text), teams.getCurrentScore().toString());
+                    scoreService.addScore(null, teams.getFullName(), null, null, null, Integer.parseInt(text), teams.getTeamScore().toString());
                 }
             }
-            teamScore.setText(teams.getCurrentScore().toString());
+            teamScore.setText(teams.getTeamScore().toString());
 
 
         }
@@ -617,17 +645,20 @@ public class ControlPane {
         for (Teams teamList : teamLists) {
             for (String s : selected) {
                 if (teamList.getShortName().equals(s)) {
-                    int currScore = teamList.getCurrentScore() - Integer.parseInt(text);
+                    int currScore = teamList.getTeamScore() - Integer.parseInt(text);
 //                    if (currScore < 0) {
 //                        currScore = 0;
 //                    }
-                    teamList.setCurrentScore(currScore);
-
+                    teamList.setTeamScore(currScore);
+                    teamsMapper.updateById(teamList);
                     if (currentStage != null && !StringUtils.isEmpty(questionCombox.getValue())) {
-                        Questions questions = CurrentQuestions.getQuestionList().get(Integer.parseInt(questionCombox.getValue()) - 1);
-                        scoreService.addScore(null, teamList.getFullName(), currentStage.getName(), questions.getQuestionNumber().toString(), null, -Integer.parseInt(text), teamList.getCurrentScore().toString());
+                        //Questions questions = CurrentQuestions.getQuestionList().get(Integer.parseInt(questionCombox.getValue()) - 1);
+                        Questions questions = questionsMapper.selectOne(new LambdaQueryWrapper<Questions>()
+                                .eq(Questions::getQuestionNumber, Integer.parseInt(questionCombox.getValue()) - 1)
+                        );
+                        scoreService.addScore(null, teamList.getFullName(), currentStage.getName(), questions.getQuestionNumber().toString(), null, -Integer.parseInt(text), teamList.getTeamScore().toString());
                     } else {
-                        scoreService.addScore(null, teamList.getFullName(), null, null, null, -Integer.parseInt(text), teamList.getCurrentScore().toString());
+                        scoreService.addScore(null, teamList.getFullName(), null, null, null, -Integer.parseInt(text), teamList.getTeamScore().toString());
                     }
                 }
             }
@@ -643,39 +674,50 @@ public class ControlPane {
             // 减少个人分数
             int selectedIndex1 = memberComBox.getSelectionModel().getSelectedIndex();
             if (selectedIndex1 > -1) {
-                int memItemScore = teams.getMemberScores().get(selectedIndex1) - Integer.parseInt(text);
+                String member = memberComBox.getSelectionModel().getSelectedItem();
+                String memberScore = teams.getMemberScore();
+                JSONObject jsonObject = JSON.parseObject(memberScore);
+                int memItemScore = jsonObject.getIntValue(member) - Integer.parseInt(text);
 //                if (memItemScore < 0) {
 //                    memItemScore = 0;
 //                }
-                teams.getMemberScores().set(selectedIndex1, memItemScore);
+                jsonObject.put(member, memItemScore);
+                teams.setMemberScore(JSON.toJSONString(jsonObject));
+                teamsMapper.updateById(teams);
                 if (currentStage != null) {
-                    Questions questions = CurrentQuestions.getQuestionList().get(Integer.parseInt(questionCombox.getValue()) - 1);
-                    scoreService.addScore(memberComBox.getValue(), teams.getFullName(), currentStage.getName(), questions.getQuestionNumber().toString(), null, -Integer.parseInt(text), teams.getMemberScores().get(selectedIndex1).toString());
+                    //Questions questions = CurrentQuestions.getQuestionList().get(Integer.parseInt(questionCombox.getValue()) - 1);
+                    Questions questions = questionsMapper.selectOne(new LambdaQueryWrapper<Questions>()
+                            .eq(Questions::getQuestionNumber, Integer.parseInt(questionCombox.getValue()) - 1)
+                    );
+                    scoreService.addScore(memberComBox.getValue(), teams.getFullName(), currentStage.getName(), questions.getQuestionNumber().toString(), null, -Integer.parseInt(text), memItemScore + "");
                 } else {
-                    scoreService.addScore(memberComBox.getValue(), teams.getFullName(), null, null, null, -Integer.parseInt(text), teams.getMemberScores().get(selectedIndex1).toString());
+                    scoreService.addScore(memberComBox.getValue(), teams.getFullName(), null, null, null, -Integer.parseInt(text), memItemScore + "");
                 }
-                memberScore.setText(teams.getMemberScores().get(selectedIndex1).toString());
+                this.memberScore.setText(memItemScore + "");
             } else {
                 memberScore.setText("0");
             }
 
 
             if (!selected.contains(teams.getShortName())) {
-                int currScore = teams.getCurrentScore() - Integer.parseInt(text);
+                int currScore = teams.getTeamScore() - Integer.parseInt(text);
 //                if (currScore < 0) {
 //                    currScore = 0;
 //                }
-                teams.setCurrentScore(currScore);
-
+                teams.setTeamScore(currScore);
+                teamsMapper.updateById(teams);
                 if (currentStage != null) {
-                    Questions questions = CurrentQuestions.getQuestionList().get(Integer.parseInt(questionCombox.getValue()) - 1);
-                    scoreService.addScore(null, teams.getFullName(), currentStage.getName(), questions.getQuestionNumber().toString(), null, -Integer.parseInt(text), teams.getCurrentScore().toString());
+                    //Questions questions = CurrentQuestions.getQuestionList().get(Integer.parseInt(questionCombox.getValue()) - 1);
+                    Questions questions = questionsMapper.selectOne(new LambdaQueryWrapper<Questions>()
+                            .eq(Questions::getQuestionNumber, Integer.parseInt(questionCombox.getValue()) - 1)
+                    );
+                    scoreService.addScore(null, teams.getFullName(), currentStage.getName(), questions.getQuestionNumber().toString(), null, -Integer.parseInt(text), teams.getTeamScore().toString());
                 } else {
-                    scoreService.addScore(null, teams.getFullName(), null, null, null, -Integer.parseInt(text), teams.getCurrentScore().toString());
+                    scoreService.addScore(null, teams.getFullName(), null, null, null, -Integer.parseInt(text), teams.getTeamScore().toString());
                 }
             }
 
-            teamScore.setText(teams.getCurrentScore().toString());
+            teamScore.setText(teams.getTeamScore().toString());
 
 
         }
@@ -728,7 +770,15 @@ public class ControlPane {
                     Model7RuntimeData.reset();
                     // 发送试题列表给前端
                     boolean random = currentStage.getrRandomSort() == 1;
-                    messageHandler.sendQuestionGroup(CurrentQuestions.getQuestionList(), random);
+                    List<Questions> questions = questionsMapper.selectList(new LambdaQueryWrapper<Questions>().eq(Questions::getStageNumber, currentStage.getSortVal()));
+                    for (Questions question : questions) {
+                        question.setScore(currentStage.getScorePerQ());
+                        question.setDesValue(controlStage.getDesValue());
+                    }
+                    messageHandler.sendQuestionGroup(
+                            questions, 
+                            random
+                    );
                     startTiming();
                     timeBoardPreview.hideTime();
                     //messageHandler.sendModel7Start();
@@ -858,7 +908,9 @@ public class ControlPane {
     @FXML
     public void showResource() {
         String tihao = questionCombox.getValue();
-        Questions questions = CurrentQuestions.getQ(tihao);
+        Questions questions = questionsMapper.selectOne(new LambdaQueryWrapper<Questions>()
+                .eq(Questions::getQuestionNumber, Integer.parseInt(tihao) - 1)
+        );
         if (questions.getResourceType().equals("视频")) {
             String path = BaseDir.TIKU_RES_DIR + questions.getResource();
             if (!GlobalCache.videoPlay) {
@@ -914,7 +966,7 @@ public class ControlPane {
             // 答题 返回 选题界面
             QuestionPreviewPreview x = (QuestionPreviewPreview) previewPane;
             Questions q = x.getInner();
-            Stages stages = stagesMapper.selectById(CurrentQuestions.getStageId());
+            Stages stages = stagesMapper.selectById(currentStage.getId());
             // 返回关闭计时
             if (timeBoardPreview != null) {
                 timeReset();
@@ -951,7 +1003,8 @@ public class ControlPane {
             }
 
         } else if (last instanceof Model7Preview) {
-            Stages stages = stagesMapper.selectById(CurrentQuestions.getStageId());
+            Model7Preview model7Preview = (Model7Preview) last;
+            Stages stages = stagesMapper.selectById(model7Preview.getInnerId());
             StageQuestionPreviewPreview.setCurrentStage(stages);
             previewPane = Navigator.preview("/view/preview/StageQuestionPreview.fxml", "", "/view/style.css", true, true);
         } else if (last instanceof Model3Preview) {
@@ -1136,7 +1189,18 @@ public class ControlPane {
     }
 
     private void controlResourceBtn(String value) {
-        Questions questions = CurrentQuestions.getQ(value);
+        Questions questions = questionsMapper.selectOne(new LambdaQueryWrapper<Questions>()
+                .eq(Questions::getStageNumber, currentStage.getSortVal())
+                .eq(Questions::getQuestionNumber, Integer.parseInt(value))
+        );
+        if (!StringUtils.isEmpty(questions.getResource())) {
+            showResourceBtn.setDisable(false);
+        } else {
+            showResourceBtn.setDisable(true);
+        }
+    }
+
+    private void controlResourceBtn(Questions questions) {
         if (!StringUtils.isEmpty(questions.getResource())) {
             showResourceBtn.setDisable(false);
         } else {
@@ -1146,7 +1210,9 @@ public class ControlPane {
 
     public void showQuestions() {
         // 显示题目
-        List<Questions> questionList = CurrentQuestions.getQuestionList();
+        List<Questions> questionList = questionsMapper.selectList(new LambdaQueryWrapper<Questions>().
+                eq(Questions::getStageNumber, controlStage.getSortVal())
+        );
         questionList.sort(Comparator.comparing(Questions::getQuestionNumber));
         final List<String> questionKeys = questionList.stream().map(x -> x.getQuestionNumber().toString()).collect(Collectors.toList());
 
@@ -1352,6 +1418,8 @@ public class ControlPane {
     // 进入环节
     public void enterStage() {
         // 外屏和内屏进入对应的环节
+        scoreBoardPreview.getSelected().clear();
+        timeReset();
         if (controlStage != null) {
             boolean last = stagesMapper.selectList(new LambdaQueryWrapper<Stages>()
                     .eq(Stages::getParentId, controlStage.getId())
@@ -1360,27 +1428,29 @@ public class ControlPane {
             if (controlStage.getQuestionType() == 3) {
                 // 风险题 优先级高
                 if (last) {
-                    List<Questions> parse = RuntimeQuestionStock.getQuestions();
+                    List<Questions> parse = questionsMapper.selectList(new LambdaQueryWrapper<Questions>()
+                            .eq(Questions::getStageNumber, controlStage.getSortVal())
+                    );
                     if (!CollectionUtils.isEmpty(parse)) {
-                        for (int i = 0; i < parse.size(); i++) {
-                            parse.get(i).setSort(i);
-                        }
-                        parse = parse.stream().filter(x -> !StringUtils.isEmpty(x.getStageNumber()) && x.getStageNumber().equals(controlStage.getSortVal())).collect(Collectors.toList());
+//                        for (int i = 0; i < parse.size(); i++) {
+//                            parse.get(i).setSort(i);
+//                        }
+//                        parse = parse.stream().filter(x -> !StringUtils.isEmpty(x.getStageNumber()) && x.getStageNumber().equals(controlStage.getSortVal())).collect(Collectors.toList());
                         if (controlStage.getRandomSort() == 1) {
                             Collections.shuffle(parse);
                         }
                         if (!CollectionUtils.isEmpty(parse)) {
                             for (int i = 0; i < parse.size(); i++) {
-                                parse.get(i).setQuestionNumber(i + 1);
+                               // parse.get(i).setQuestionNumber(i + 1);
                                 parse.get(i).setDesValue(controlStage.getDesValue());
                             }
                         }
-                        CurrentQuestions.setQuestions(parse, controlStage.getId());
+                        
+                        //CurrentQuestions.setQuestions(parse, controlStage.getId());
                         //currentStage = controlStage;
                     }
                     controlStage = stagesMapper.selectById(controlStage.getId());
-                    scoreInput.setText(controlStage.getScorePerQ() + "");
-                    timeSecondText.setText(controlStage.getDescTime() + "");
+
                     showQuestions();
                     // 风险题目是最后一级，则只是展示对应的题号，不做任何界面跳转
                     Stages stages = stagesMapper.selectById(controlStage.getParentId());
@@ -1391,43 +1461,53 @@ public class ControlPane {
                     );
                 } else {
                     Model3Preview.setPassedId(controlStage.getId());
+                    currentStage = controlStage;
                     setPreviewPane(
                             Navigator.preview("/view/preview/Model3Preview.fxml", "", "/view/style.css", true, true)
                     );
 
                 }
+                scoreInput.setText(controlStage.getScorePerQ() + "");
+                timeSecondText.setText(controlStage.getDescTime() + "");
                 updateScoreBoard();
                 return;
 
             }
             // 底层环节，展示题目
             if (last) {
-                List<Questions> parse = RuntimeQuestionStock.getQuestions();
+                List<Questions> parse = questionsMapper.selectList(new LambdaQueryWrapper<Questions>()
+                        .eq(Questions::getStageNumber, controlStage.getSortVal())
+                );
+//                List<Questions> parse = RuntimeQuestionStock.getQuestions();
                 if (!CollectionUtils.isEmpty(parse)) {
-                    for (int i = 0; i < parse.size(); i++) {
-                        parse.get(i).setSort(i);
-                    }
-                    parse = parse.stream().filter(x -> !StringUtils.isEmpty(x.getStageNumber()) && x.getStageNumber().equals(controlStage.getSortVal())).collect(Collectors.toList());
+//                    for (int i = 0; i < parse.size(); i++) {
+//                        parse.get(i).setSort(i);
+//                    }
+//                    parse = parse.stream().filter(x -> !StringUtils.isEmpty(x.getStageNumber()) && x.getStageNumber().equals(controlStage.getSortVal())).collect(Collectors.toList());
                     if (controlStage.getRandomSort() == 1) {
                         Collections.shuffle(parse);
                     }
                     if (!CollectionUtils.isEmpty(parse)) {
                         for (int i = 0; i < parse.size(); i++) {
-                            parse.get(i).setQuestionNumber(i + 1);
                             parse.get(i).setDesValue(controlStage.getDesValue());
                         }
                     }
-                    CurrentQuestions.setQuestions(parse, controlStage.getId());
+                   // CurrentQuestions.setQuestions(parse, controlStage.getId());
                     currentStage = controlStage;
                 }
                 controlStage = stagesMapper.selectById(controlStage.getId());
                 showQuestions();
                 if (controlStage.getQuestionType() == 1) {
                     // 连续答题
-                    List<Questions> collect = CurrentQuestions.getQuestionList().stream().filter(x -> !x.isHasAnswer()).collect(Collectors.toList());
+                    List<Questions> collect = questionsMapper.selectList(new LambdaQueryWrapper<Questions>()
+                            .eq(Questions::getStageNumber, controlStage.getSortVal())
+                            .eq(Questions::isHasAnswer, false)
+                    );
+                    
                     if (!collect.isEmpty()) {
                         QuestionPreviewPreview.setCurrent(collect.get(0));
-                        CurrentQuestions.recordAnswer(collect.get(0).getQuestionNumber().toString());
+                       // CurrentQuestions.recordAnswer(collect.get(0).getQuestionNumber().toString());
+                        questionsMapper.updateById(collect.get(0));
                     }
                     previewPane = Navigator.preview("/view/preview/QuestionPreview.fxml", "", "/view/style.css", true, true);
                 } else if (controlStage.getQuestionType() == 2) {
@@ -1465,6 +1545,8 @@ public class ControlPane {
                 previewPane = Navigator.preview("/view/preview/StageNamePreview.fxml", "", "/view/style.css", true, true);
                 previewPane.reload();
             }
+            scoreInput.setText(controlStage.getScorePerQ() + "");
+            timeSecondText.setText(controlStage.getDescTime() + "");
             updateScoreBoard();
         }
     }
@@ -1473,14 +1555,12 @@ public class ControlPane {
     // 显示题目
     @FXML
     public void showQuestion() {
+        GlobalCache.showModel7Rank = false;
         parentPane.requestFocus();
         // 重置答题状态
         // 给题目设置分值
         // 扩展屏幕展示并排答题界面（竞技模式）
         MusicPlayer.play(MusicResource.SHOW_QUESTION);
-        for (Questions q : CurrentQuestions.getQuestionList()) {
-            q.setScore(currentStage.getScorePerQ());
-        }
         if (currentStage.getQuestionType() == (7)) {
             Model7RuntimeData.setTeams(TeamRuntime.getTeams());
             previewPane = Navigator.preview("/view/preview/Model7Preview.fxml", "", "/view/style.css", true, true);
@@ -1488,14 +1568,22 @@ public class ControlPane {
         } else if (currentStage.getQuestionType() == (6)) {
             Integer m6 = currentStage.getM6();
             String tihao = questionCombox.getValue();
-            Questions questions = CurrentQuestions.getQ(tihao);
+            Questions questions =  questionsMapper.selectOne(new LambdaQueryWrapper<Questions>()
+                    .eq(Questions::getStageNumber, currentStage.getSortVal())
+                    .eq(Questions::getQuestionNumber, Integer.parseInt(tihao))
+            );
+            questions.setScore(currentStage.getScorePerQ());
+//                    CurrentQuestions.getQ(tihao);
             if (questions == null) {
                 Information.error("请选择题号");
                 return;
             }
             controlResourceBtn(tihao);
             if (m6 == 0) {
-                CurrentQuestions.recordAnswer(tihao);
+                questions.setHasAnswer(true);
+                
+                questionsMapper.updateById(questions);
+                //CurrentQuestions.recordAnswer(tihao);
                 // 设置当前需要显示的题目
                 QuestionPreviewPreview.setCurrent(questions);
                 // 设置选手信息
@@ -1506,7 +1594,9 @@ public class ControlPane {
                 updateScoreBoard();
             } else {
                 // 答题模式 -- 个人模式
-                CurrentQuestions.recordAnswer(tihao);
+                questions.setHasAnswer(true);
+
+                questionsMapper.updateById(questions);
                 // 设置当前需要显示的题目
                 QuestionPreviewPreview.setCurrent(questions);
                 // 设置选手信息
@@ -1518,14 +1608,20 @@ public class ControlPane {
             }
         } else {
             if (currentStage.getQuestionType() == 3) {
-                String tihao = currentStage.getSortVal() + "-" + questionCombox.getValue();
-                Questions questions = CurrentQuestions.getQ(tihao);
+//                String tihao = currentStage.getSortVal() + "-" + questionCombox.getValue();
+                Questions questions = questionsMapper.selectOne(new LambdaQueryWrapper<Questions>()
+                        .eq(Questions::getStageNumber, controlStage.getSortVal())
+                        .eq(Questions::getQuestionNumber, Integer.parseInt(questionCombox.getValue()))
+                );
+                        
                 if (questions == null) {
                     Information.error("请选择题号!!");
                     return;
                 }
-                controlResourceBtn(tihao);
-                CurrentQuestions.recordAnswer(tihao);
+                controlResourceBtn(questions);
+                questions.setScore(currentStage.getScorePerQ());
+                questions.setHasAnswer(true);
+                questionsMapper.updateById(questions);
                 QuestionPreviewPreview.setCurrent(questions);
                 GlobalCache.showAnswer = false;
                 if (previewPane instanceof QuestionPreviewPreview) {
@@ -1539,13 +1635,18 @@ public class ControlPane {
 
             } else {
                 String tihao = questionCombox.getValue();
-                Questions questions = CurrentQuestions.getQ(tihao);
+                Questions questions = questionsMapper.selectOne(new LambdaQueryWrapper<Questions>().eq(Questions::getStageNumber, currentStage.getSortVal())
+                        .eq(Questions::getQuestionNumber, Integer.parseInt(questionCombox.getValue()))
+                );
                 if (questions == null) {
                     Information.error("请选择题号!!");
                     return;
                 }
                 controlResourceBtn(tihao);
-                CurrentQuestions.recordAnswer(tihao);
+                //CurrentQuestions.recordAnswer(tihao);
+                questions.setHasAnswer(true);
+                questions.setScore(currentStage.getScorePerQ());
+                questionsMapper.updateById(questions);
                 // 内屏更新题目
                 if (currentStage.getQuestionType() == 2 || currentStage.getQuestionType() == 1 || currentStage.getQuestionType() == 4) {
                     if (previewPane instanceof QuestionPreviewPreview) {
@@ -1579,6 +1680,7 @@ public class ControlPane {
     // 答案显示
     @FXML
     public void showAnswer() {
+        scoreBoardPreview.getSelected().clear();
         parentPane.requestFocus();
         if (controlStage == null) {
             return;
@@ -1818,7 +1920,7 @@ public class ControlPane {
 
     @FXML
     public void exitApp() {
-        ScoreSaver.saveScore();
+        messageHandler.notifyPage("wait", null);
         System.exit(0);
     }
 
@@ -1832,40 +1934,23 @@ public class ControlPane {
         teams.sort(Comparator.comparingInt(o -> Integer.parseInt(o.getCode())));
 
         for (Teams team : teams) {
-            team.setCurrentScore(team.getTeamScore());
-            team.setMemberScores(new ArrayList<>());
             team.setQScores(new ArrayList<>());
             team.setStatusList(new ArrayList<>());
             team.setStatus(0);
             if (!StringUtils.isEmpty(team.getMembers())) {
                 String[] split = team.getMembers().split(",");
                 for (String s : split) {
-                    team.getMemberScores().add(team.getMemberScore());
                     team.getStatusList().add(0);
                     team.getQScores().add(0);
                 }
             }
         }
         // 若已有分数，则加载旧的分数
-        List<Teams> existTeams = ScoreSaver.loadScore();
-        if (existTeams.isEmpty()) {
-            existTeams.addAll(teams);
-        } else {
-            for (int i = 0; i < teams.size(); i++) {
-                if (i < existTeams.size()) {
-                    teams.get(i).setCurrentScore(existTeams.get(i).getCurrentScore());
-                    teams.get(i).setTeamScore(existTeams.get(i).getTeamScore());
-                    teams.get(i).setMemberScore(existTeams.get(i).getMemberScore());
-                    teams.get(i).setMemberScores(existTeams.get(i).getMemberScores());
-                }
-            }
-            existTeams = teams;
-        }
-        TeamRuntime.setTeams(existTeams);
+        TeamRuntime.setTeams(teams);
         Model7RuntimeData.setTeams(TeamRuntime.getTeams());
         Model60RuntimeData.setTeams(TeamRuntime.getTeams());
         Model61RuntimeData.setTeams(TeamRuntime.getTeams());
-        teamComBox.setItems(FXCollections.observableList(existTeams.stream().map(x -> x.getShortName()).collect(Collectors.toList())));
+        teamComBox.setItems(FXCollections.observableList(teams.stream().map(x -> x.getShortName()).collect(Collectors.toList())));
         if (!StringUtils.isEmpty(config)) {
             String[] split = config.split(ConfigSpliter.SPLITER);
             String boardLayout = split[14];
@@ -1978,4 +2063,19 @@ public class ControlPane {
         timeSecondText.setText(belongStage.getDescTime().toString());
         scoreInput.setText(belongStage.getScorePerQ().toString());
     }
+    
+    
+    @FXML
+    public void registerSoftware(){
+        try {
+            FXMLLoader loader = new FXMLLoader(Navigator.class.getResource("/view/Register.fxml"));
+            loader.setControllerFactory(JavaFxApplication.getApplicationContext()::getBean);
+            Parent load = loader.load();
+            Navigator.activeStage.setScene(new Scene(load));
+            Navigator.activeStage.show();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+    
 }

@@ -30,6 +30,8 @@ public class Navigator {
     
     public static final Stage backendStage = new Stage();
     
+    public static final Stage activeStage = new Stage();
+    
     
     public static final Stage timeBoardStage = new Stage();
     
@@ -49,6 +51,9 @@ public class Navigator {
                 GlobalCache.backendOpen = false;
             }
         });
+
+        activeStage.setAlwaysOnTop(true);
+        activeStage.setTitle("软件激活");
     }
 
 

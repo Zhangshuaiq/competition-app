@@ -1,10 +1,13 @@
 package competition.controller.match;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import competition.controller.ControlPane;
 import competition.entity.Model3Style;
 import competition.entity.Questions;
+import competition.entity.Stages;
 import competition.entity.Teams;
 import competition.mapper.Model3Mapper;
+import competition.mapper.QuestionsMapper;
 import competition.util.*;
 import competition.ws.Model7RuntimeData;
 import javafx.fxml.FXML;
@@ -42,6 +45,15 @@ public class Model7 implements ReloadPane {
 
     @Resource
     private Model3Mapper model3Mapper;
+
+    private static Stages currentStage;
+    
+    public static void setCurrentStage(Stages stages) {
+        currentStage = stages;
+    }
+    
+    @Resource
+    private QuestionsMapper questionsMapper;
 
 
     public void stopTiming() {
@@ -123,7 +135,10 @@ public class Model7 implements ReloadPane {
             Model7RuntimeData.ModelData last = null;
             int score = 0;
             int finish = 0;
-            for (Questions questions : CurrentQuestions.getQuestionList()) {
+            List<Questions> questionsList = questionsMapper.selectList(new LambdaQueryWrapper<Questions>()
+                    .eq(Questions::getStageNumber, currentStage.getSortVal())
+            );
+            for (Questions questions : questionsList) {
                 Circle c = new Circle();
                 c.setRadius(radius);
                 c.setStroke(Color.BLACK);

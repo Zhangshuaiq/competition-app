@@ -101,6 +101,7 @@ public class QuestionPreviewPreview extends PreviewPane {
     @FXML
     public void initialize() {
         container.toBack();
+        controlPane.getScoreBoardPreview().getSelected().clear();
         scrollPane.addEventFilter(ScrollEvent.SCROLL, event -> {
             if (event.getDeltaY() != 0) {
                 event.consume();
@@ -675,14 +676,14 @@ public class QuestionPreviewPreview extends PreviewPane {
 
         scrollPane.setLayoutX(tiganBox.getLayoutX());
         scrollPane.setLayoutY(tiganBox.getLayoutY());
-        scrollPane.setPrefWidth(tiganBox.getPrefWidth());
+        //scrollPane.setPrefWidth(tiganBox.getPrefWidth());
         scrollPane.setFitToWidth(true);
         for (Node child : tiganBox.getChildren()) {
             Text t = (Text) child;
             t.setWrappingWidth(tiganBox.getPrefWidth() - 40);
         }
         
-        scrollPane.setPrefHeight(tiganBox.getPrefHeight());
+        scrollPane.setFitToHeight(true);
     }
 
 

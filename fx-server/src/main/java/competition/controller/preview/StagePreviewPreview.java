@@ -77,6 +77,7 @@ public class StagePreviewPreview extends PreviewPane {
 
     @FXML
     public void initialize() {
+        controlPane.getScoreBoardPreview().getSelected().clear();
         innerStageID = parentStageId;
         PreviewStack.addPreview(this);
         PreviewStack.addReturn(this);
@@ -168,6 +169,7 @@ public class StagePreviewPreview extends PreviewPane {
                     stageContainer.setLayoutX(ScreenAdapter.calculateMainX(Integer.parseInt(detailArr[0])));
                     stageContainer.setLayoutY(ScreenAdapter.calculateMainY(Integer.parseInt(detailArr[1])));
                     stageContainer.prefWidth(ScreenAdapter.calculateMainW(Integer.parseInt(detailArr[2])));
+                    height =  ScreenAdapter.calculateMainH(Integer.parseInt(detailArr[3]));
                     stageContainer.setVgap(ScreenAdapter.calculateMainH(Integer.parseInt(detailArr[14])));
                     stageContainer.setHgap(ScreenAdapter.calculateMainW(Integer.parseInt(detailArr[14])));
                     stageContainer.setAlignment(AlignmentUtil.getAlign(detailArr[13]));
@@ -175,15 +177,6 @@ public class StagePreviewPreview extends PreviewPane {
 
                 int count = 0;
                 for (Stages stage : stages) {
-                    if (stage.getShow() == 1) {
-                        if (stage.getSelectGrey() == 1) {
-                            if (GlobalCache.isRecord(stage.getId())) {
-                                continue;
-                            } 
-                        }
-                    } else {
-                        continue;
-                    }
                     
                     
                     HBox box = new HBox();
@@ -193,6 +186,17 @@ public class StagePreviewPreview extends PreviewPane {
                     stageName.setFill(Color.valueOf(split[2]));
                     stageNamePane.getChildren().add(stageName);
                     stageNamePane.setPrefSize(width, height);
+                    if (stage.getShow() == 1) {
+                        if (stage.getSelectGrey() == 1) {
+                            if (GlobalCache.isRecord(stage.getId())) {
+                                stageNamePane.setVisible(false);
+                            } else {
+                                stageNamePane.setVisible(true);
+                            }
+                        }
+                    } else {
+                        continue;
+                    }
                     
                     if (detailArr.length > 0) {
                         if (Boolean.valueOf(detailArr[4])) {

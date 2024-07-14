@@ -10,12 +10,12 @@ import java.util.stream.Collectors;
 
 public class RuntimeQuestionStock {
     
-    private static List<Questions> questions =  ExcelParser.parse(ExcelParser.Q_PATH, Questions.class);
+//    private static List<Questions> questions =  ExcelParser.parse(ExcelParser.Q_PATH, Questions.class);
     
     private static Map<String, List<Questions>> quesMap = new HashMap<>();
     
-    public static void loadQuestion(String path) {
-        questions =  ExcelParser.parse(path, Questions.class);
+    public static List<Questions> loadQuestion(String path) {
+        List<Questions>  questions =  ExcelParser.parse(path, Questions.class);
         List<QuestionStyle> styleList = ExcelParser.parse(ExcelParser.S_PATH, QuestionStyle.class);
         for (int i = 0; i < questions.size(); i++) {
             questions.get(i).setSort(i);
@@ -35,9 +35,11 @@ public class RuntimeQuestionStock {
 
         ExcelParser.write(ExcelParser.S_PATH, styleList, QuestionStyle.class);
         quesMap = questions.stream().collect(Collectors.groupingBy(Questions::getStageNumber));
+        return questions;
     }
     
     static {
+        List<Questions> questions =  ExcelParser.parse(ExcelParser.Q_PATH, Questions.class);
         // 修复样式和问题的数量不一致
         List<QuestionStyle> styleList = ExcelParser.parse(ExcelParser.S_PATH, QuestionStyle.class);
         for (int i = 0; i < questions.size(); i++) {
@@ -60,11 +62,11 @@ public class RuntimeQuestionStock {
         quesMap = questions.stream().collect(Collectors.groupingBy(Questions::getStageNumber));
     }
 
-    public static List<Questions> getQuestions() {
-        return questions;
-    }
+//    public static List<Questions> getQuestions() {
+//        return questions;
+//    }
 
-    public static List<Questions> getStageQuestions(String stageNo) {
-        return quesMap.get(stageNo);
-    }
+//    public static List<Questions> getStageQuestions(String stageNo) {
+//        return quesMap.get(stageNo);
+//    }
 }

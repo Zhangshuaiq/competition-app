@@ -1,6 +1,8 @@
 package competition.controller.backend;
 
 import com.alibaba.excel.EasyExcel;
+import com.alibaba.fastjson2.JSON;
+import com.alibaba.fastjson2.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import competition.controller.ControlPane;
 import competition.entity.Teams;
@@ -30,9 +32,7 @@ import org.springframework.util.StringUtils;
 
 import javax.annotation.Resource;
 import java.io.File;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Component
@@ -135,13 +135,17 @@ public class TeamConfig {
 
         List<String> members = new ArrayList<>();
 
+        Map<String, Integer> memberMap = new HashMap<>();
+
         for (int i = 0; i < memberBox.getChildren().size() - 1; i++) {
             HBox box = (HBox) memberBox.getChildren().get(i);
             TextField node = (TextField) box.getChildren().get(1);
             members.add(node.getText());
+            memberMap.put(node.getText(), 0);
         }
         
         final String memberVal = Strings.join(members, ',');
+        final String memberScore = JSON.toJSONString(memberMap);
 
         Teams teams = new Teams();
         teams.setCode(codeVal);
@@ -149,7 +153,7 @@ public class TeamConfig {
         teams.setFullName(fullNameVal);
         teams.setMembers(memberVal);
         teams.setPassword(password);
-        
+        teams.setMemberScore(memberScore);
         teamsMapper.insert(teams);
         showTeam();
     }
@@ -188,13 +192,19 @@ public class TeamConfig {
 
         List<String> members = new ArrayList<>();
 
+        JSONObject jsonObject = JSON.parseObject(selectedItem.getMemberScore());
+
         for (int i = 0; i < memberBox.getChildren().size() - 1; i++) {
             HBox box = (HBox) memberBox.getChildren().get(i);
             TextField node = (TextField) box.getChildren().get(1);
+            if (!jsonObject.containsKey(node.getText())) {
+                jsonObject.put(node.getText(), 0);
+            }
             members.add(node.getText());
         }
 
         final String memberVal = Strings.join(members, ',');
+        final String memberScore = JSON.toJSONString(jsonObject);
 
         Teams teams = new Teams();
         teams.setId(selectedItem.getId());
@@ -203,6 +213,7 @@ public class TeamConfig {
         teams.setFullName(fullNameVal);
         teams.setMembers(memberVal);
         teams.setPassword(password);
+        teams.setMemberScore(memberScore);
         teamsMapper.updateById(teams);
         showTeam();
     }
@@ -263,21 +274,18 @@ public class TeamConfig {
             team.setTeamScore(Integer.parseInt(text));
             teamsMapper.updateById(team);
         }
-        ScoreSaver.clear();
+       // ScoreSaver.clear();
 
         // 排序队伍，按照编码排序
         teams.sort(Comparator.comparingInt(o -> Integer.parseInt(o.getCode())));
 
         for (Teams team : teams) {
-            team.setCurrentScore(team.getTeamScore());
-            team.setMemberScores(new ArrayList<>());
             team.setQScores(new ArrayList<>());
             team.setStatusList(new ArrayList<>());
             team.setStatus(0);
             if (!StringUtils.isEmpty(team.getMembers())) {
                 String[] split = team.getMembers().split(",");
                 for (String s : split) {
-                    team.getMemberScores().add(team.getMemberScore());
                     team.getStatusList().add(0);
                     team.getQScores().add(0);
                 }
@@ -297,22 +305,25 @@ public class TeamConfig {
         }
         List<Teams> teams = teamsMapper.selectList(new LambdaQueryWrapper<>());
         for (Teams team : teams) {
-            team.setMemberScore(Integer.parseInt(text));
+            String members = team.getMembers();
+            String[] memArr = members.split(",");
+            Map<String, Integer> memberMap = new HashMap<>();
+            for (String m : memArr) {
+                memberMap.put(m, Integer.parseInt(text));
+            }
+            team.setMemberScore(JSON.toJSONString(memberMap));
             teamsMapper.updateById(team);
         }
 
         teams.sort(Comparator.comparingInt(o -> Integer.parseInt(o.getCode())));
         
         for (Teams team : teams) {
-            team.setCurrentScore(team.getTeamScore());
-            team.setMemberScores(new ArrayList<>());
             team.setQScores(new ArrayList<>());
             team.setStatusList(new ArrayList<>());
             team.setStatus(0);
             if (!StringUtils.isEmpty(team.getMembers())) {
                 String[] split = team.getMembers().split(",");
                 for (String s : split) {
-                    team.getMemberScores().add(team.getMemberScore());
                     team.getStatusList().add(0);
                     team.getQScores().add(0);
                 }

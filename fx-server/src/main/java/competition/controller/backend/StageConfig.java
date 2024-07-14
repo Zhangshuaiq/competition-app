@@ -1,6 +1,7 @@
 package competition.controller.backend;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import competition.controller.ControlPane;
 import competition.entity.Stages;
 import competition.mapper.StagesMapper;
 import competition.util.ImageResource;
@@ -104,6 +105,8 @@ public class StageConfig {
     @FXML
     CheckBox model6Check;
     
+    @Resource
+    private ControlPane controlPane;
     
     @FXML
     CheckBox timeOrder;
@@ -689,6 +692,7 @@ public class StageConfig {
         secondBox.getChildren().clear();
         thirdBox.getChildren().clear();
         showStageData();
+        controlPane.getPreviewPane().reload();
     }
 
     @FXML

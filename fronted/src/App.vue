@@ -29,7 +29,15 @@ export default {
               }
           );
         } else {
-          if (role && role === 'holder') {
+          
+          if (targetRouteName === 'hclue' && role && role !== 'holder') {
+            return
+          }
+          if (targetRouteName === 'clue' && role && role === 'holder') {
+            return
+          }
+          
+          if (role && role === 'holder' && !targetRouteName.startsWith('h')) {
             targetRouteName = 'h' + targetRouteName
           }
           

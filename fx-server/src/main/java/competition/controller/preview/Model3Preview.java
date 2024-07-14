@@ -9,6 +9,7 @@ import competition.entity.Model3Style;
 import competition.entity.Questions;
 import competition.entity.Stages;
 import competition.mapper.Model3Mapper;
+import competition.mapper.QuestionsMapper;
 import competition.mapper.StagesMapper;
 import competition.util.*;
 import competition.ws.WsMessageHandler;
@@ -59,6 +60,9 @@ public class Model3Preview extends PreviewPane{
     private Model3Mapper mapper;
     
     @Resource
+    private QuestionsMapper questionsMapper;
+    
+    @Resource
     private StagesMapper stagesMapper;
     
     @Resource
@@ -85,6 +89,7 @@ public class Model3Preview extends PreviewPane{
     
     @FXML
     public void initialize(){
+        controlPane.getScoreBoardPreview().getSelected().clear();
         PreviewStack.addPreview(this);
         container.setOnMouseClicked(new EventHandler<MouseEvent>() {
             @Override
@@ -150,9 +155,11 @@ public class Model3Preview extends PreviewPane{
 
         List<List<Questions>> qs = new ArrayList<>();
         for (Stages child : children) {
-            List<Questions> stageQuestions = RuntimeQuestionStock.getStageQuestions(child.getSortVal());
+            //List<Questions> stageQuestions = RuntimeQuestionStock.getStageQuestions(child.getSortVal());
+            List<Questions> stageQuestions = questionsMapper.selectList(new LambdaQueryWrapper<Questions>()
+                    .eq(Questions::getStageNumber, child.getSortVal())
+            );
             for (int i = 0; i < stageQuestions.size(); i++) {
-                stageQuestions.get(i).setQuestionNumber(i + 1);
                 // 每个题目分值
                 stageQuestions.get(i).setScore(child.getScorePerQ());
             }
@@ -169,7 +176,7 @@ public class Model3Preview extends PreviewPane{
         messageHandler.notifyPage("model3", dataMap);
         
         // 保存到当前的数据中
-        CurrentQuestions.setM3Questions(qs, parentStageId);
+       // CurrentQuestions.setM3Questions(qs, parentStageId);
         
         // 清除旧的数据
         
@@ -366,15 +373,18 @@ public class Model3Preview extends PreviewPane{
             titleBox.getChildren().add(stackPane);
         }
         
-        for (int i = 0; i < CurrentQuestions.getM3Questions().size(); i++) {
-            List<Questions> questionsList = CurrentQuestions.getM3Questions().get(i);
+        for (int i = 0; i < children.size(); i++) {
+            List<Questions> questionsList = questionsMapper.selectList(new LambdaQueryWrapper<Questions>()
+                .eq(Questions::getStageNumber, children.get(i).getSortVal())
+            );
+                    //CurrentQuestions.getM3Questions().get(i);
             GridPane questionGrid = new GridPane();
             for (int i1 = 0; i1 < questionsList.size(); i1++) {
                 StackPane item = new StackPane();
                 item.setPrefSize(50, 50);
                 Questions questions = questionsList.get(i1);
                 Text text = new Text(questions.getQuestionNumber().toString());
-                if (CurrentQuestions.hasAnswer(questions.getStageNumber() + "-" + questions.getQuestionNumber())) {
+                if (questions.isHasAnswer()) {
                     item.setVisible(false);
                 } else {
                     item.setVisible(true);
@@ -455,11 +465,13 @@ public class Model3Preview extends PreviewPane{
                         }
                         
                         // 进入题目详情
+                        questions.setHasAnswer(true);
                         String tihao = questions.getStageNumber() + "-" +questions.getQuestionNumber();
-                        Questions questions = CurrentQuestions.getQ(tihao);
-                        CurrentQuestions.recordAnswer(tihao);
+//                        Questions questions = CurrentQuestions.getQ(tihao);
+//                        CurrentQuestions.recordAnswer(tihao);
                         // 设置当前需要显示的题目
                         // 内屏更新
+                        questionsMapper.updateById(questions);
                         QuestionPreviewPreview.setCurrent(questions);
                         controlPane.setPreviewPane(
                                 Navigator.preview("/view/preview/QuestionPreview.fxml", "", "/view/style.css", true, true)
