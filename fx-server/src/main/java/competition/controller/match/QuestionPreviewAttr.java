@@ -7,6 +7,7 @@ import competition.entity.Configs;
 import competition.entity.QuestionStyle;
 import competition.entity.Questions;
 import competition.mapper.ConfigsMapper;
+import competition.mapper.QuestionsMapper;
 import competition.util.*;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
@@ -155,6 +156,8 @@ public class QuestionPreviewAttr {
     private List<QuestionStyle> questionStyleList;
     
 
+    @Resource
+    private QuestionsMapper questionsMapper;
 
 
     private static Questions questions;
@@ -185,7 +188,7 @@ public class QuestionPreviewAttr {
     @FXML
     public void selectStageImg(){
         FileChooser chooser = new FileChooser();
-        chooser.setInitialDirectory(new File(BaseDir.IMAGE_DIR));
+        chooser.setInitialDirectory(new File(BaseDir.BACKGROUND_DIR));
         chooser.getExtensionFilters().addAll(
                 new FileChooser.ExtensionFilter("Image Files", "*.png", "*.jpg", "*.gif")
         );
@@ -203,7 +206,7 @@ public class QuestionPreviewAttr {
     @FXML
     public void selectNameImg(){
         FileChooser chooser = new FileChooser();
-        chooser.setInitialDirectory(new File(BaseDir.IMAGE_DIR));
+        chooser.setInitialDirectory(new File(BaseDir.BACKGROUND_DIR));
         chooser.getExtensionFilters().addAll(
                 new FileChooser.ExtensionFilter("Image Files", "*.png", "*.jpg", "*.gif")
         );
@@ -222,7 +225,7 @@ public class QuestionPreviewAttr {
     @FXML
     public void selectCodeImg(){
         FileChooser chooser = new FileChooser();
-        chooser.setInitialDirectory(new File(BaseDir.IMAGE_DIR));
+        chooser.setInitialDirectory(new File(BaseDir.BACKGROUND_DIR));
         chooser.getExtensionFilters().addAll(
                 new FileChooser.ExtensionFilter("Image Files", "*.png", "*.jpg", "*.gif")
         );
@@ -254,10 +257,10 @@ public class QuestionPreviewAttr {
         stageHeightInput.setText("100");
 
        
-        stageFontSelector.setValue(stageXInput.getFont().getName());
-        stageFontSize.setText((int)stageXInput.getFont().getSize() + "");
+        stageFontSelector.setValue(FontMap.defaultFontName());
+        stageFontSize.setText(12 + "");
 
-        String style1 = "2%%2%%300%%100%%false%%0xb31a1aff%%%%微软雅黑%%24%%false%%false%%false%%false%%居中对齐%%";
+        String style1 = "2%%2%%300%%100%%false%%0xb31a1aff%%%%默认.ttf%%24%%false%%false%%false%%false%%居中对齐%%";
         if (!questionStyleList.isEmpty()) {
             QuestionStyle questionStyle = questionStyleList.get(questions.getSort());
             if (questionStyle != null) {
@@ -296,9 +299,8 @@ public class QuestionPreviewAttr {
         if (!StringUtils.isEmpty(config)) {
             String[] cfgArr = config.split(ConfigSpliter.SPLITER);
             // 默认的字体
-            Font defaultFont = new JLabel().getFont();
-            nameFontSelector.setValue(defaultFont.getFamily());
-            nameFontSize.setText(defaultFont.getSize() + "");
+            nameFontSelector.setValue(FontMap.defaultFontName());
+            nameFontSize.setText(12 + "");
             // x y w h
             nameSpaceInput.setText("0");
             wordSpaceInput.setText("0");
@@ -328,7 +330,7 @@ public class QuestionPreviewAttr {
             nameTextAlignSelector.setValue("左对齐");
             // 根据配置详情设置样式
 
-            String style1 = "200%%200%%1550%%200%%false%%0xffffcc00%%%%Microsoft YaHei%%30%%false%%false%%false%%false%%左对齐%%10%%0";
+            String style1 = "200%%200%%1550%%200%%false%%0xffffcc00%%%%默认.ttf%%30%%false%%false%%false%%false%%左对齐%%10%%0";
             if (!questionStyleList.isEmpty()) {
                 QuestionStyle questionStyle = questionStyleList.get(questions.getSort());
                 if (questionStyle != null) {
@@ -538,17 +540,21 @@ public class QuestionPreviewAttr {
     @FXML
     public void updateAnswerText(){
         // 写入（更新）题干内容到 excel 里
-        List<Questions> parse =  ExcelParser.parse(ExcelParser.Q_PATH, Questions.class);
+        String group = questions.getGroup();
+        List<Questions> parse =  ExcelParser.parse(BaseDir.TIKU_DIR + group, Questions.class);
         questions.setAnswer(answerText.getText());
+        // 更新到数据库
+        questionsMapper.updateById(questions);
         parse.set(questions.getSort(), questions);
-        ExcelParser.write(ExcelParser.Q_PATH, parse, Questions.class);
+        ExcelParser.write(BaseDir.TIKU_DIR + group, parse, Questions.class);
         PreviewStack.reloadStyle();
     }
     
     @FXML
     public void updateQuestionContent(){
         // 写入（更新）题干内容到 excel 里
-        List<Questions> parse =  ExcelParser.parse(ExcelParser.Q_PATH, Questions.class);
+        String group = questions.getGroup();
+        List<Questions> parse =  ExcelParser.parse(BaseDir.TIKU_DIR + group, Questions.class);
         String[] split = nameText.getText().split("\n");
         questions.setQuestion(split[0]);
         if (split.length >= 2) {
@@ -582,7 +588,9 @@ public class QuestionPreviewAttr {
             questions.setChoiceF("");
         }
         parse.set(questions.getSort(), questions);
-        ExcelParser.write(ExcelParser.Q_PATH, parse, Questions.class);
+        // 更新到数据库
+        questionsMapper.updateById(questions);
+        ExcelParser.write(BaseDir.TIKU_DIR + group, parse, Questions.class);
         PreviewStack.reloadStyle();
     }
 
@@ -646,7 +654,6 @@ public class QuestionPreviewAttr {
         questionStyleList.get(questions.getSort()).setStyle2(style1);
         ExcelParser.write(ExcelParser.S_PATH, questionStyleList, QuestionStyle.class);
 
-        
         PreviewStack.reloadStyle();
     }
 
@@ -710,9 +717,8 @@ public class QuestionPreviewAttr {
         if (!StringUtils.isEmpty(config)) {
             String[] cfgArr = config.split(ConfigSpliter.SPLITER);
             // 默认的字体
-            Font defaultFont = new JLabel().getFont();
-            answerFontSelector.setValue(defaultFont.getFamily());
-            answerFontSize.setText(defaultFont.getSize() + "");
+            answerFontSelector.setValue(FontMap.defaultFontName());
+            answerFontSize.setText(12 + "");
             // x y w h
             // 
             PreviewPane previewPane = PreviewStack.getLast();
@@ -732,7 +738,7 @@ public class QuestionPreviewAttr {
             answerHeightInput.setText(cfgArr[8]);
             answerText.setText(questions.getAnswer());
             answerTextAlignSelector.setValue("左对齐");
-            String style1 = "200%%700%%1550%%60%%false%%0x990000ff%%%%Dialog%%36%%false%%false%%false%%false%%居中对齐%%0";
+            String style1 = "200%%700%%1550%%60%%false%%0x990000ff%%%%默认.ttf%%36%%false%%false%%false%%false%%居中对齐%%0";
             // 根据配置详情设置样式
             if (!questionStyleList.isEmpty()) {
                 QuestionStyle questionStyle = questionStyleList.get(questions.getSort());

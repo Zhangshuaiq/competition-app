@@ -1,3 +1,18 @@
+
+/* 默认 Label 样式 */
+.label-hover {
+    -fx-text-fill: black;
+    -fx-background-color: #f4f4f4;
+}
+
+/* 当鼠标悬停时改变样式 */
+.label-hover:hover {
+    -fx-text-fill: white;
+    -fx-background-color: #c42b1c;
+}
+
+
+
 .menu-label {
     -fx-background-color:  #509077;
     -fx-text-fill: #ffffff;

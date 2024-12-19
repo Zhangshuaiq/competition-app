@@ -59,15 +59,29 @@ public class Questions {
     @ExcelProperty(index = 13, value="备注")
     private String remark;
 
+//    @ExcelProperty(index = 13, value="答案类型")
+//    private String answerType;
+
     @TableField("`group`")
     @ExcelIgnore
     private String group;
     
     @ExcelIgnore
     private Integer questionNumber;
-    
+
+    public Integer getQuestionNumber() {
+        return questionNumber;
+    }
+
     @ExcelIgnore
     private Integer sort;
+
+    @TableField(exist = false)
+    @ExcelIgnore
+    private Integer order;
+
+    @ExcelIgnore
+    private Integer viewSort;
     
     @TableField(exist = false)
     @ExcelIgnore
@@ -80,5 +94,10 @@ public class Questions {
     @TableField(exist = false)
     @ExcelIgnore
     private Integer desValue;
+
+    //  题型标注
+    @TableField(exist = false)
+    @ExcelIgnore
+    private String txbz;
     
 }

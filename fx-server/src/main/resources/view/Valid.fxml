@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<AnchorPane prefHeight="163.0" prefWidth="455.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="competition.controller.Valid">
+   <children>
+      <Label fx:id="info" alignment="CENTER" layoutY="54.0" prefHeight="55.0" prefWidth="455.0" text="正在校验软件信息......" />
+      <Button fx:id="activeBtn" layoutX="196.0" layoutY="126.0" mnemonicParsing="false" text="激活软件" />
+   </children>
+</AnchorPane>

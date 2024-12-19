@@ -98,29 +98,47 @@ public class Model61RuntimeData {
                                 }
                             }
                         }
-                        if (data.getAnswer().equals(data.getUserSelect())) {
-                            // 更新队伍分数
-                            if (controlPane.getCurrentStage().getCountTotal() == 1) {
-                                team.setNewScore(team.getTeamScore() + data.getScore());
 
-                                scoreService.addScore(data.getUserName(), team.getFullName(), controlPane.getCurrentStage().getName(), data.getQuestionNumber().toString(),
-                                        data.getSecond().toString(), data.getScore(), team.getNewScore().toString());
-                            } else {
-                                team.setNewScore(team.getTeamScore());
-                            }
-                            Platform.runLater(() -> {
-                                controlPane.teamScore.setText(team.getTeamScore().toString());
-                            });
+
+                        if (controlPane.getCurrentStage().getCountTotal() == 1) {
+                            int scores = team.getQScores().stream().mapToInt(x -> x).sum();
+                            team.setNewScore(team.getTeamScore() + scores);
+
+                            scoreService.addScore(data.getUserName(), team.getFullName(), controlPane.getCurrentStage().getName(), data.getQuestionNumber().toString(),
+                                    data.getSecond().toString(), data.getScore(), team.getNewScore().toString(), data.getUserSelect());
                         } else {
-                            if (controlPane.getCurrentStage().getCountTotal() == 1) {
-                                team.setNewScore(team.getTeamScore() - controlPane.getCurrentStage().getDesValue());
-
-                                scoreService.addScore(data.getUserName(), team.getFullName(), controlPane.getCurrentStage().getName(), data.getQuestionNumber().toString(),
-                                        data.getSecond().toString(), -controlPane.getCurrentStage().getDesValue(), team.getNewScore().toString());
-                            } else {
-                                team.setNewScore(team.getTeamScore());
-                            }
+                            team.setNewScore(team.getTeamScore());
                         }
+                        Platform.runLater(() -> {
+                            controlPane.teamScore.setText(team.getTeamScore().toString());
+                        });
+
+//                        if (data.getAnswer().equals(data.getUserSelect())) {
+//                            // 更新队伍分数
+//                            if (controlPane.getCurrentStage().getCountTotal() == 1) {
+//                                int scores = team.getQScores().stream().mapToInt(x -> x).sum();
+//                                team.setNewScore(team.getTeamScore() + scores);
+//
+//                                scoreService.addScore(data.getUserName(), team.getFullName(), controlPane.getCurrentStage().getName(), data.getQuestionNumber().toString(),
+//                                        data.getSecond().toString(), data.getScore(), team.getNewScore().toString());
+//                            } else {
+//                                team.setNewScore(team.getTeamScore());
+//                            }
+//                            Platform.runLater(() -> {
+//                                controlPane.teamScore.setText(team.getTeamScore().toString());
+//                            });
+//                        } else {
+//                            if (controlPane.getCurrentStage().getCountTotal() == 1) {
+//                                int scores = team.getQScores().stream().mapToInt(x -> x).sum();
+//                                team.setNewScore(team.getTeamScore() + scores);
+//                              //  team.setNewScore(team.getTeamScore() - controlPane.getCurrentStage().getDesValue());
+//
+//                                scoreService.addScore(data.getUserName(), team.getFullName(), controlPane.getCurrentStage().getName(), data.getQuestionNumber().toString(),
+//                                        data.getSecond().toString(), -controlPane.getCurrentStage().getDesValue(), team.getNewScore().toString());
+//                            } else {
+//                                team.setNewScore(team.getTeamScore());
+//                            }
+//                        }
                     }
                 }
             }
@@ -198,7 +216,7 @@ public class Model61RuntimeData {
                         if (controlPane.getCurrentStage().getCountTotal() == 1) {
                             team.setNewScore(team.getTeamScore() + data.getScore());
                             scoreService.addScore(data.getUserName(), team.getFullName(), controlPane.getCurrentStage().getName(), data.getQuestionNumber().toString(),
-                                    data.getSecond().toString(), data.getScore(), team.getNewScore().toString());
+                                    data.getSecond().toString(), data.getScore(), team.getNewScore().toString(), data.getUserSelect());
 
                         } else {
                             team.setNewScore(team.getTeamScore());
@@ -211,7 +229,7 @@ public class Model61RuntimeData {
                             team.setNewScore(team.getTeamScore() - controlPane.getCurrentStage().getDesValue());
 
                             scoreService.addScore(data.getUserName(), team.getFullName(), controlPane.getCurrentStage().getName(), data.getQuestionNumber().toString(),
-                                    data.getSecond().toString(), -controlPane.getCurrentStage().getDesValue(), team.getNewScore().toString());
+                                    data.getSecond().toString(), -controlPane.getCurrentStage().getDesValue(), team.getNewScore().toString(), data.getUserSelect());
                         } else {
                             team.setNewScore(team.getTeamScore());
                         }

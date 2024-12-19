@@ -3,6 +3,7 @@ package competition.ws;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import competition.JavaFxApplication;
 import competition.controller.ControlPane;
+import competition.controller.preview.PreviewPane;
 import competition.entity.Questions;
 import competition.entity.Teams;
 import competition.mapper.QuestionsMapper;
@@ -25,8 +26,8 @@ public class Model7RuntimeData {
     private static List<Teams> teams = new ArrayList<>();
 
     private static List<String> times = new ArrayList<>();
-    
-    private static List<String > fts = new ArrayList<>();
+
+    private static List<String> fts = new ArrayList<>();
 
     private static List<Integer> seconds = new ArrayList<>();
 
@@ -47,9 +48,9 @@ public class Model7RuntimeData {
     public static List<Integer> getSeconds() {
         return seconds;
     }
-    
+
     public static int totalNumber = 0;
-    
+
 
     public static List<Teams> getTeams() {
         return teams;
@@ -78,7 +79,7 @@ public class Model7RuntimeData {
         ControlPane controlPane = JavaFxApplication.getApplicationContext().getBean(ControlPane.class);
         QuestionsMapper questionsMapper = JavaFxApplication.getApplicationContext().getBean(QuestionsMapper.class);
         ScoreService scoreService = JavaFxApplication.getApplicationContext().getBean(ScoreService.class);
-        TeamsMapper teamsMapper = JavaFxApplication.getApplicationContext().getBean(TeamsMapper.class);
+        //TeamsMapper teamsMapper = JavaFxApplication.getApplicationContext().getBean(TeamsMapper.class);
         times.set(i, time);
         seconds.set(i, Integer.parseInt(second));
         if (data == null) {
@@ -97,15 +98,18 @@ public class Model7RuntimeData {
                         for (Teams team : teams) {
                             if (team.getFullName().equals(data.getTeamName())) {
                                 team.setTeamScore(team.getTeamScore() + data.getScore());
-                                teamsMapper.updateById(team);
+                                //teamsMapper.updateById(team);
                                 // 需要更新环节获取分数
-                                scoreService.addScore(null, team.getFullName(),  data.getStageName(), data.getQuestionNumber().toString(), null, 
-                                        data.getScore(), team.getTeamScore().toString());
+                                scoreService.addScore(null, team.getFullName(), controlPane.getCurrentStage().getName(), data.getQuestionNumber().toString(), null,
+                                        data.getScore(), team.getTeamScore().toString(), data.getUserSelect());
                                 Platform.runLater(() -> {
                                     controlPane.teamScore.setText(team.getTeamScore().toString());
-                                    controlPane.getPreviewPane().reload();
+                                    PreviewPane previewPane = controlPane.getPreviewPane();
+                                    if (previewPane != null) {
+                                        previewPane.reload();
+                                    }
                                 });
-                               
+
                             }
                         }
                     }
@@ -121,12 +125,16 @@ public class Model7RuntimeData {
                 for (Teams team : teams) {
                     if (team.getFullName().equals(data.getTeamName())) {
                         team.setTeamScore(team.getTeamScore() + data.getScore());
-                        teamsMapper.updateById(team);
-                        scoreService.addScore(null, team.getFullName(),  data.getStageName(), data.getQuestionNumber().toString(), null,  data.getScore(),
-                                team.getTeamScore().toString());
+                        //teamsMapper.updateById(team);
+                        scoreService.addScore(null, team.getFullName(), controlPane.getCurrentStage().getName(), data.getQuestionNumber().toString(), null, data.getScore(),
+                                team.getTeamScore().toString(), data.getUserSelect());
                         Platform.runLater(() -> {
                             controlPane.teamScore.setText(team.getTeamScore().toString());
-                            controlPane.getPreviewPane().reload();
+                            //controlPane.updateScoreBoard();
+                            PreviewPane previewPane = controlPane.getPreviewPane();
+                            if (previewPane != null) {
+                                previewPane.reload();
+                            }
                         });
 
                     }
@@ -138,11 +146,16 @@ public class Model7RuntimeData {
                     if (team.getFullName().equals(data.getTeamName())) {
                         Integer desValue = controlPane.getCurrentStage().getDesValue();
                         team.setTeamScore(team.getTeamScore() - desValue);
-                        teamsMapper.updateById(team);
-                        scoreService.addScore(null, team.getFullName(),  data.getStageName(), data.getQuestionNumber().toString(), null,  - desValue, team.getTeamScore().toString());
+                        //teamsMapper.updateById(team);
+                        scoreService.addScore(null, team.getFullName(), controlPane.getCurrentStage().getName(), data.getQuestionNumber().toString(),
+                                null, -desValue, team.getTeamScore().toString(), data.getUserSelect());
 
                         Platform.runLater(() -> {
-                            controlPane.getPreviewPane().reload();
+                            //controlPane.updateScoreBoard();
+                            PreviewPane previewPane = controlPane.getPreviewPane();
+                            if (previewPane != null) {
+                                previewPane.reload();
+                            }
                         });
 
                     }
@@ -158,48 +171,60 @@ public class Model7RuntimeData {
             finished.set(i, true);
         }
     }
-    
-    
+
+
     // 强制停止答题
-    public static void forceFinish(){
+    public static void forceFinish() {
         ControlPane controlPane = JavaFxApplication.getApplicationContext().getBean(ControlPane.class);
         ScoreService scoreService = JavaFxApplication.getApplicationContext().getBean(ScoreService.class);
         QuestionsMapper questionsMapper = JavaFxApplication.getApplicationContext().getBean(QuestionsMapper.class);
         TeamsMapper teamsMapper = JavaFxApplication.getApplicationContext().getBean(TeamsMapper.class);
-        
+
         List<Questions> questionList = questionsMapper.selectList(new LambdaQueryWrapper<Questions>()
                 .eq(Questions::getStageNumber, controlPane.getCurrentStage().getSortVal())
         );
-        List<Integer> total = questionList.stream().map(x -> x.getQuestionNumber()).collect(Collectors.toList());
-        for (int i = 0; i < teams.size(); i++) {
-           if (!finished.get(i)) {
-               Teams teams = Model7RuntimeData.teams.get(i);
-               int size = runtimeData.get(i).size();
-               teams.setTeamScore(teams.getTeamScore() - (totalNumber - size) * controlPane.getCurrentStage().getDesValue());
-               teamsMapper.updateById(teams);
-               // 均没回答
-               if (size == 0) {
-                   for (Questions questions : questionList) {
-                       scoreService.addScore(null, teams.getFullName(),  controlPane.getCurrentStage().getName(), questions.getQuestionNumber().toString(), null,  - controlPane.getCurrentStage().getDesValue(), teams.getTeamScore().toString());
-                   }
-               } else {
-                   
-                   // 回答一部分
-                   List<Integer> answered = runtimeData.get(i).stream().map(ModelData::getQuestionNumber).collect(Collectors.toList());
-                   total.removeAll(answered);
-                   for (Integer integer : total) {
-                       scoreService.addScore(null, teams.getFullName(),  controlPane.getCurrentStage().getName(), integer.toString(), null,  
-                               - controlPane.getCurrentStage().getDesValue(), teams.getTeamScore().toString());
-                   }
-               }
 
-               fts.set(i, times.get(i));
-               finished.set(i, true);
-           }
+        for (int i = 0; i < teams.size(); i++) {
+            if (!finished.get(i)) {
+                // 异步操作减少代码执行时间
+                Teams teams = Model7RuntimeData.teams.get(i);
+                List<ModelData> modelData = runtimeData.get(i);
+                int size = modelData.size();
+                teams.setTeamScore(teams.getTeamScore() - (totalNumber - size) * controlPane.getCurrentStage().getDesValue());
+
+                fts.set(i, times.get(i));
+                finished.set(i, true);
+            }
         }
+        new Thread(() -> {
+            for (int i = 0; i < teams.size(); i++) {
+                // 异步操作减少代码执行时间
+                Teams teams = Model7RuntimeData.teams.get(i);
+                List<ModelData> modelData = runtimeData.get(i);
+                int size = modelData.size();
+                teamsMapper.updateById(teams);
+                // 均没回答
+                if (size == 0) {
+                    for (Questions questions : questionList) {
+                        scoreService.addScore(null, teams.getFullName(), controlPane.getCurrentStage().getName(), questions.getQuestionNumber().toString(),
+                                null, -controlPane.getCurrentStage().getDesValue(), teams.getTeamScore().toString(), "");
+                    }
+                } else {
+                    // 回答一部分
+                    List<Integer> total = questionList.stream().map(Questions::getQuestionNumber).collect(Collectors.toList());
+                    List<Integer> answered = modelData.stream().map(ModelData::getQuestionNumber).collect(Collectors.toList());
+                    total.removeAll(answered);
+                    for (Integer integer : total) {
+                        scoreService.addScore(null, teams.getFullName(), controlPane.getCurrentStage().getName(), integer.toString(), null,
+                                -controlPane.getCurrentStage().getDesValue(), teams.getTeamScore().toString(), "");
+                    }
+                }
+
+            }
+        }).start();
     }
-    
-    public static void reset(){
+
+    public static void reset() {
         runtimeData.clear();
         finished.clear();
         times.clear();
@@ -215,7 +240,6 @@ public class Model7RuntimeData {
     }
 
 
-    
     public static List<List<ModelData>> getRuntimeData() {
         return runtimeData;
     }
@@ -265,7 +289,7 @@ public class Model7RuntimeData {
 
         // 选手选项
         private String userSelect;
-        
+
         // 选错扣分
         private Integer desValue;
 

@@ -3,6 +3,7 @@ package competition.controller.preview;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import competition.controller.ControlPane;
+import competition.controller.board.BoardPane;
 import competition.controller.match.RollPreview;
 import competition.controller.match.StageQuestionPreviewAttr;
 import competition.entity.Configs;
@@ -29,6 +30,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
 import javax.annotation.Resource;
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.util.Comparator;
@@ -81,7 +83,11 @@ public class RollPreviewPreview extends PreviewPane {
 
     @FXML
     public void initialize() {
-        controlPane.getScoreBoardPreview().getSelected().clear();
+        GlobalCache.isRolling = false;
+        BoardPane scoreBoardPreview = controlPane.getScoreBoardPreview();
+        if (scoreBoardPreview != null) {
+            scoreBoardPreview.getSelected().clear();
+        }
         inner = currentStage;
         PreviewStack.addPreview(this);
         PreviewStack.addReturn(this);
@@ -158,7 +164,7 @@ public class RollPreviewPreview extends PreviewPane {
 //                return o1.getQuestionNumber().compareTo(o2.getQuestionNumber());
 //            }
 //        });
-        String questionStyle = "560%%240%%800%%100%%false%%0x9980e6ff%%%%Dialog%%12%%false%%false%%false%%false%%居中对齐%%0###500%%400%%80%%80%%false%%0x664db3ff%%%%Dialog%%36%%false%%false%%false%%false%%居中对齐%%0%%1";
+        String questionStyle = "560%%240%%800%%100%%false%%0x990000ff%%%%默认.ttf%%40%%false%%false%%false%%false%%居中对齐%%0###920%%400%%80%%80%%false%%0x990000ff%%%%默认.ttf%%36%%false%%true%%false%%false%%居中对齐%%0%%1";
         if (!StringUtils.isEmpty(currentStage.getQuestionStyle())) {
             questionStyle = currentStage.getQuestionStyle();
         }
@@ -172,20 +178,20 @@ public class RollPreviewPreview extends PreviewPane {
         title.setBackground(new Background(new BackgroundFill(Color.valueOf(stageConfigAttrSplit[3]), new CornerRadii(10), Insets.EMPTY)));
         title.setLayoutX(ScreenAdapter.calculateMainX(ConfigSpliter.DEFAULT_X));
         title.setLayoutY(ScreenAdapter.calculateMainY(ConfigSpliter.DEFAULT_Y));
-        title.setPrefWidth(ScreenAdapter.calculateMainW(ConfigSpliter.DEFAULT_W));
-        title.setPrefHeight(ScreenAdapter.calculateMainH(ConfigSpliter.DEFAULT_H));
+        title.setPrefWidth(ScreenAdapter.calculateMainX(ConfigSpliter.DEFAULT_W));
+        title.setPrefHeight(ScreenAdapter.calculateMainY(ConfigSpliter.DEFAULT_H));
         stageName.setLayoutX(ScreenAdapter.calculateMainX(ConfigSpliter.DEFAULT_X));
         stageName.setLayoutY(ScreenAdapter.calculateMainY(ConfigSpliter.DEFAULT_Y));
-        stageName.prefWidth(ScreenAdapter.calculateMainW(ConfigSpliter.DEFAULT_W));
-        stageName.prefHeight(ScreenAdapter.calculateMainH(ConfigSpliter.DEFAULT_H));
+        stageName.prefWidth(ScreenAdapter.calculateMainX(ConfigSpliter.DEFAULT_W));
+        stageName.prefHeight(ScreenAdapter.calculateMainY(ConfigSpliter.DEFAULT_H));
 
 
         if (styleArr.length > 1 && !ConfigSpliter.EMPTY.equals(styleArr[0])) {
             String[] detailArr = styleArr[0].split(ConfigSpliter.SPLITER);
             title.setLayoutX(ScreenAdapter.calculateMainX(Integer.parseInt(detailArr[0])));
             title.setLayoutY(ScreenAdapter.calculateMainY(Integer.parseInt(detailArr[1])));
-            title.setPrefWidth(ScreenAdapter.calculateMainW(Integer.parseInt(detailArr[2])));
-            title.setPrefHeight(ScreenAdapter.calculateMainH(Integer.parseInt(detailArr[3])));
+            title.setPrefWidth(ScreenAdapter.calculateMainX(Integer.parseInt(detailArr[2])));
+            title.setPrefHeight(ScreenAdapter.calculateMainY(Integer.parseInt(detailArr[3])));
 
             if (Boolean.valueOf(detailArr[4])) {
                 // 填充背景图片
@@ -193,7 +199,7 @@ public class RollPreviewPreview extends PreviewPane {
                     try {
                         title.setBackground(new Background(new BackgroundImage(new Image(new FileInputStream(detailArr[6])),
                                 BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT, BackgroundPosition.DEFAULT,
-                                new BackgroundSize(ScreenAdapter.calculateMainW(Integer.parseInt(detailArr[2])), ScreenAdapter.calculateMainH(Integer.parseInt(detailArr[3])), false, false, false, false))));
+                                new BackgroundSize(ScreenAdapter.calculateMainX(Integer.parseInt(detailArr[2])), ScreenAdapter.calculateMainY(Integer.parseInt(detailArr[3])), false, false, false, false))));
                     } catch (FileNotFoundException e) {
                         title.setBackground(new Background(new BackgroundFill(Color.TRANSPARENT, new CornerRadii(10), Insets.EMPTY)));
                     }
@@ -207,11 +213,11 @@ public class RollPreviewPreview extends PreviewPane {
 
             stageName.setLayoutX(ScreenAdapter.calculateMainX(Integer.parseInt(detailArr[0])));
             stageName.setLayoutY(ScreenAdapter.calculateMainY(Integer.parseInt(detailArr[1])));
-            stageName.prefWidth(ScreenAdapter.calculateMainW(Integer.parseInt(detailArr[2])));
-            stageName.prefHeight(ScreenAdapter.calculateMainH(Integer.parseInt(detailArr[3])));
+            stageName.prefWidth(ScreenAdapter.calculateMainX(Integer.parseInt(detailArr[2])));
+            stageName.prefHeight(ScreenAdapter.calculateMainY(Integer.parseInt(detailArr[3])));
             stageName.setTextAlignment(AlignmentUtil.getTextAlign(detailArr[13]));
             title.setAlignment(AlignmentUtil.getAlign(detailArr[13]));
-            Font font = Font.font(FontMap.getFont(detailArr[7]), FontWeight.NORMAL, FontPosture.REGULAR, ScreenAdapter.calculateMainW(Integer.parseInt(detailArr[8])));
+            Font font = FontMap.load(detailArr[7], ScreenAdapter.calculateMainX(Integer.parseInt(detailArr[8])));
             stageName.setFont(font);
             if (Boolean.valueOf(detailArr[10])) {
                 stageName.setStroke(Color.valueOf(stageConfigAttrSplit[2]));
@@ -241,13 +247,13 @@ public class RollPreviewPreview extends PreviewPane {
         }
 
 
-        backPane.setPrefSize(ScreenAdapter.calculateMainW(Integer.parseInt(cfgArr[5])), ScreenAdapter.calculateMainH(Integer.parseInt(cfgArr[6])));
+        backPane.setPrefSize(ScreenAdapter.calculateMainX(Integer.parseInt(cfgArr[5])), ScreenAdapter.calculateMainY(Integer.parseInt(cfgArr[6])));
 
         if (styleArr.length > 1 && !ConfigSpliter.EMPTY.equals(styleArr[1])) {
             String[] detailArr = styleArr[1].split(ConfigSpliter.SPLITER);
 
 
-            backPane.setPrefSize(ScreenAdapter.calculateMainW(Integer.parseInt(detailArr[2])), ScreenAdapter.calculateMainH(Integer.parseInt(detailArr[3])));
+            backPane.setPrefSize(ScreenAdapter.calculateMainX(Integer.parseInt(detailArr[2])), ScreenAdapter.calculateMainY(Integer.parseInt(detailArr[3])));
             backPane.setAlignment(AlignmentUtil.getAlign(detailArr[13]));
             backPane.setLayoutX(ScreenAdapter.calculateMainX(Integer.parseInt(detailArr[0])));
             backPane.setLayoutY(ScreenAdapter.calculateMainY(Integer.parseInt(detailArr[1])));
@@ -257,7 +263,7 @@ public class RollPreviewPreview extends PreviewPane {
                     try {
                         backPane.setBackground(new Background(new BackgroundImage(new Image(new FileInputStream(detailArr[6])),
                                 BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT, BackgroundPosition.DEFAULT,
-                                new BackgroundSize(ScreenAdapter.calculateMainW(Integer.parseInt(detailArr[2])), ScreenAdapter.calculateMainH(Integer.parseInt(detailArr[3])), false, false, false, false))));
+                                new BackgroundSize(ScreenAdapter.calculateMainX(Integer.parseInt(detailArr[2])), ScreenAdapter.calculateMainY(Integer.parseInt(detailArr[3])), false, false, false, false))));
                     } catch (FileNotFoundException e) {
                         backPane.setBackground(new Background(new BackgroundFill(Color.TRANSPARENT,
                                 new CornerRadii(10), Insets.EMPTY)));
@@ -272,7 +278,8 @@ public class RollPreviewPreview extends PreviewPane {
             }
 
 
-            Font font = Font.font(FontMap.getFont(detailArr[7]), FontWeight.NORMAL, FontPosture.REGULAR, ScreenAdapter.calculateMainW(Integer.parseInt(detailArr[8])));
+            Font font = FontMap.load(detailArr[7], ScreenAdapter.calculateMainX(Integer.parseInt(detailArr[8])));;
+            
             questionText.setFont(font);
             questionText.setFill(Color.valueOf(cfgArr[0]));
             if (Boolean.valueOf(detailArr[10])) {
@@ -319,12 +326,15 @@ public class RollPreviewPreview extends PreviewPane {
 
     }
 
-    private void stopSelector() {
+    public void stopSelector() {
         if (timer != null) {
             timer.stop();
             timer = null;
         }
         String selectedVal = questionText.getText();
+        if (StringUtils.isEmpty(selectedVal)) {
+            return;
+        }
         questionText.setText(selectedVal);
         controlPane.selectQuestion(selectedVal);
     }

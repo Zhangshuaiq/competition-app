@@ -1,6 +1,7 @@
 package competition.controller.match;
 
 import competition.controller.ControlPane;
+import competition.controller.preview.PreviewPane;
 import competition.entity.Configs;
 import competition.entity.RankStyle;
 import competition.mapper.ConfigsMapper;
@@ -9,6 +10,7 @@ import competition.util.ConfigSpliter;
 import competition.util.FontMap;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
+import javafx.scene.control.CheckBox;
 import javafx.scene.control.ColorPicker;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.TextField;
@@ -67,6 +69,9 @@ public class MemberRankPreviewAttr {
 
     @FXML
     private TextField hfsInput;
+
+    @FXML
+    private CheckBox hfBold, rfsBold;
     
     @Resource
     private ControlPane controlPane;
@@ -102,6 +107,7 @@ public class MemberRankPreviewAttr {
             colorInput.setValue(Color.BLACK);
             hfsInput.setText(((int)font.getSize()) + "");
             hfSelector.setValue(font.getName());
+            hfBold.setSelected(false);
         } else {
             String[] split = headConfig.split(ConfigSpliter.SPLITER);
             xInput.setText(split[0]);
@@ -111,6 +117,11 @@ public class MemberRankPreviewAttr {
             colorInput.setValue(Color.valueOf(split[4]));
             hfsInput.setText(split[5]);
             hfSelector.setValue(split[6]);
+            if (split.length >= 8) {
+                hfBold.setSelected(Boolean.parseBoolean(split[7]));
+            } else {
+                hfBold.setSelected(false);
+            }
         }
     }
     
@@ -130,6 +141,7 @@ public class MemberRankPreviewAttr {
             rfSelector.setValue(font.getName());
             srInput.setText("10");
             rowInput.setText("8");
+            rfsBold.setSelected(false);
         } else {
             String[] split = rankConfig.split(ConfigSpliter.SPLITER);
             rxInput.setText(split[0]);
@@ -138,9 +150,18 @@ public class MemberRankPreviewAttr {
             rheightInput.setText(split[3]);
             rfsInput.setText(split[4]);
             rfSelector.setValue(split[5]);
-            if (split.length >= 8) {
+            if (split.length >= 7) {
                 srInput.setText(split[6]);
+            }
+
+            if (split.length >= 8) {
                 rowInput.setText(split[7]);
+            }
+
+            if (split.length >= 9) {
+                rfsBold.setSelected(Boolean.parseBoolean(split[8]));
+            } else {
+                rfsBold.setSelected(false);
             }
 
         }
@@ -155,19 +176,22 @@ public class MemberRankPreviewAttr {
         String color = colorInput.getValue().toString();
         String fontSize = hfsInput.getText();
         String font = hfSelector.getValue();
-        
+        String bold = hfBold.isSelected() + "";
         String configStr = x + ConfigSpliter.SPLITER
                 + y + ConfigSpliter.SPLITER
                 + width + ConfigSpliter.SPLITER
                 + height + ConfigSpliter.SPLITER
                 + color + ConfigSpliter.SPLITER
                 + fontSize + ConfigSpliter.SPLITER
-                + font ;
-
+                + font + ConfigSpliter.SPLITER
+                + bold;
         RankStyle rankStyle = rankStyleMapper.selectById(3);
         rankStyle.setHeadConfig(configStr);
         rankStyleMapper.updateById(rankStyle);
-        controlPane.getPreviewPane().reload();
+        PreviewPane previewPane = controlPane.getPreviewPane();
+        if (previewPane != null) {
+            previewPane.reload();
+        }
     }
 
     @FXML
@@ -180,7 +204,7 @@ public class MemberRankPreviewAttr {
         String font = rfSelector.getValue();
         String rowSpace = srInput.getText();
         String rowCount = rowInput.getText();
-
+        String bold = rfsBold.isSelected() + "";
         String configStr = x + ConfigSpliter.SPLITER
                 + y + ConfigSpliter.SPLITER
                 + width + ConfigSpliter.SPLITER
@@ -188,13 +212,17 @@ public class MemberRankPreviewAttr {
                 + fontSize + ConfigSpliter.SPLITER
                 + font  + ConfigSpliter.SPLITER
                 + rowSpace + ConfigSpliter.SPLITER
-                + rowCount 
+                + rowCount + ConfigSpliter.SPLITER
+                + bold
                 ;
 
         RankStyle rankStyle = rankStyleMapper.selectById(3);
         rankStyle.setRankConfig(configStr);
         rankStyleMapper.updateById(rankStyle);
-        controlPane.getPreviewPane().reload();
+        PreviewPane previewPane = controlPane.getPreviewPane();
+        if (previewPane != null) {
+            previewPane.reload();
+        }
     }
 
     @FXML

@@ -4,6 +4,7 @@ import com.alibaba.fastjson2.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import competition.JavaFxApplication;
 import competition.controller.ControlPane;
+import competition.controller.board.BoardPane;
 import competition.controller.match.Model7;
 import competition.controller.preview.*;
 import competition.entity.Questions;
@@ -99,7 +100,10 @@ public class WsMessageHandler {
         }
         Platform.runLater(() -> {
             ControlPane controlPane = JavaFxApplication.getApplicationContext().getBean(ControlPane.class);
-            controlPane.getPreviewPane().reload();
+            PreviewPane previewPane = controlPane.getPreviewPane();
+            if (previewPane != null) {
+                previewPane.reload();
+            }
         });
     }
     
@@ -117,7 +121,10 @@ public class WsMessageHandler {
         Platform.runLater(() -> {
             ControlPane controlPane = JavaFxApplication.getApplicationContext().getBean(ControlPane.class);
             //controlPane.getPreviewPane().reload();
-            controlPane.getScoreBoardPreview().reload();
+            BoardPane scoreBoardPreview = controlPane.getScoreBoardPreview();
+            if (scoreBoardPreview != null) {
+                scoreBoardPreview.reload();
+            }
         });
     }
 
@@ -132,7 +139,10 @@ public class WsMessageHandler {
         Platform.runLater(() -> {
             ControlPane controlPane = JavaFxApplication.getApplicationContext().getBean(ControlPane.class);
             //controlPane.getPreviewPane().reload();
-            controlPane.getScoreBoardPreview().reload();
+            BoardPane scoreBoardPreview = controlPane.getScoreBoardPreview();
+            if (scoreBoardPreview != null) {
+                scoreBoardPreview.reload();
+            }
         });
     }
     

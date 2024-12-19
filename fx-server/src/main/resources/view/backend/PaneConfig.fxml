@@ -8,23 +8,77 @@
 
 <AnchorPane prefHeight="827.0" prefWidth="1100.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="competition.controller.backend.PaneConfig">
    <children>
-      <Label layoutX="132.0" layoutY="109.0" text="选手平板网址：" />
-      <Label layoutX="132.0" layoutY="276.0" text="主持人/评委平板网址：" />
-      <Label layoutX="132.0" layoutY="458.0" text="计分平板网址：" />
-      <TextField fx:id="memberWebsite" layoutX="355.0" layoutY="97.0" prefHeight="45.0" prefWidth="243.0" />
-      <TextField fx:id="holderWebsite" layoutX="355.0" layoutY="264.0" prefHeight="45.0" prefWidth="243.0" />
-      <TextField fx:id="scoreWebsite" layoutX="355.0" layoutY="446.0" prefHeight="45.0" prefWidth="243.0" />
-      <ImageView fx:id="memberQrcode" fitHeight="120.0" fitWidth="120.0" layoutX="855.0" layoutY="69.0" onMouseClicked="#largeMemberQrcode" pickOnBounds="true" preserveRatio="true" />
-      <ImageView fx:id="holderQrcode" fitHeight="120.0" fitWidth="120.0" layoutX="855.0" layoutY="248.0" onMouseClicked="#largeHolderQrcode" pickOnBounds="true" preserveRatio="true" />
-      <ImageView fx:id="scoreQrcode" fitHeight="120.0" fitWidth="120.0" layoutX="855.0" layoutY="424.0" onMouseClicked="#largeScoreQrcode" pickOnBounds="true" preserveRatio="true" />
-      <Button layoutX="762.0" layoutY="104.0" mnemonicParsing="false" onMouseClicked="#update1" text="更新" />
-      <Button layoutX="762.0" layoutY="271.0" mnemonicParsing="false" onMouseClicked="#update2" text="更新" />
-      <Button layoutX="762.0" layoutY="453.0" mnemonicParsing="false" onMouseClicked="#update3" text="更新" />
-      <Label layoutX="299.0" layoutY="109.0" text="http://" />
-      <Label layoutX="606.0" layoutY="109.0" text=":8080/#/" />
-      <Label layoutX="299.0" layoutY="276.0" text="http://" />
-      <Label layoutX="299.0" layoutY="459.0" text="http://" />
-      <Label layoutX="606.0" layoutY="277.0" text=":8080/#/hwait" />
-      <Label layoutX="606.0" layoutY="459.0" text=":8080/#/" />
+      <Label layoutX="132.0" layoutY="64.0" text="选手平板网址：" />
+      <Label layoutX="132.0" layoutY="130.0" text="主持人/评委平板网址：" />
+      <Label layoutX="132.0" layoutY="201.0" text="团队平板网址：" />
+      <TextField fx:id="memberWebsite" layoutX="355.0" layoutY="52.0" prefHeight="45.0" prefWidth="243.0" />
+      <TextField fx:id="holderWebsite" layoutX="355.0" layoutY="118.0" prefHeight="45.0" prefWidth="243.0" />
+      <TextField fx:id="scoreWebsite" layoutX="355.0" layoutY="189.0" prefHeight="45.0" prefWidth="243.0" />
+      <ImageView fx:id="memberQrcode" fitHeight="54.0" fitWidth="54.0" layoutX="888.0" layoutY="41.0" onMouseClicked="#largeMemberQrcode" pickOnBounds="true" preserveRatio="true" />
+      <ImageView fx:id="holderQrcode" fitHeight="54.0" fitWidth="54.0" layoutX="888.0" layoutY="107.0" onMouseClicked="#largeHolderQrcode" pickOnBounds="true" preserveRatio="true" />
+      <ImageView fx:id="scoreQrcode" fitHeight="54.0" fitWidth="54.0" layoutX="888.0" layoutY="181.0" onMouseClicked="#largeScoreQrcode" pickOnBounds="true" preserveRatio="true" />
+      <Button layoutX="795.0" layoutY="60.0" mnemonicParsing="false" onMouseClicked="#update1" text="更新" />
+      <Button layoutX="795.0" layoutY="126.0" mnemonicParsing="false" onMouseClicked="#update2" text="更新" />
+      <Button layoutX="795.0" layoutY="197.0" mnemonicParsing="false" onMouseClicked="#update3" text="更新" />
+      <Label layoutX="299.0" layoutY="64.0" text="http://" />
+      <Label layoutX="606.0" layoutY="64.0" text=":8080/index.html#/" />
+      <Label layoutX="299.0" layoutY="130.0" text="http://" />
+      <Label layoutX="299.0" layoutY="202.0" text="http://" />
+      <Label layoutX="606.0" layoutY="131.0" text=":8080/index.html#/hwait" />
+      <Label layoutX="606.0" layoutY="202.0" text=":8080/index.html#/allScore" />
+      <Label layoutX="132.0" layoutY="438.0" prefHeight="15.0" prefWidth="84.0" text="个人分数设置：" />
+      <CheckBox fx:id="showCode" layoutX="260.0" layoutY="438.0" mnemonicParsing="false" text="显示编号" />
+      <CheckBox fx:id="showTeam" layoutX="260.0" layoutY="482.0" mnemonicParsing="false" text="显示团队名称" />
+      <ColorPicker fx:id="codeColor" layoutX="447.0" layoutY="431.0" prefHeight="30.0" prefWidth="30.0" />
+      <Label layoutX="393.0" layoutY="440.0" text="颜色" />
+      <Label layoutX="558.0" layoutY="439.0" text="字体大小" />
+      <TextField fx:id="codeSize" layoutX="614.0" layoutY="434.0" prefHeight="23.0" prefWidth="110.0" />
+      <Label layoutX="558.0" layoutY="481.0" text="字体大小" />
+      <Label layoutX="911.0" layoutY="437.0" text="y" />
+      <TextField fx:id="codeY" layoutX="942.0" layoutY="434.0" prefHeight="23.0" prefWidth="48.0" />
+      <TextField fx:id="teamY" layoutX="942.0" layoutY="481.0" prefHeight="23.0" prefWidth="48.0" />
+      <Label layoutX="910.0" layoutY="483.0" text="y" />
+      <TextField fx:id="teamSize" layoutX="614.0" layoutY="478.0" prefHeight="23.0" prefWidth="110.0" />
+      <Label layoutX="393.0" layoutY="482.0" text="颜色" />
+      <ColorPicker fx:id="teamColor" layoutX="447.0" layoutY="475.0" prefHeight="30.0" prefWidth="30.0" />
+      <ColorPicker fx:id="scoreColor" layoutX="447.0" layoutY="516.0" prefHeight="30.0" prefWidth="30.0" />
+      <Label layoutX="393.0" layoutY="524.0" text="颜色" />
+      <Label layoutX="558.0" layoutY="524.0" text="字体大小" />
+      <TextField fx:id="scoreSize" layoutX="614.0" layoutY="520.0" prefHeight="23.0" prefWidth="110.0" />
+      <Label layoutX="910.0" layoutY="524.0" text="y" />
+      <TextField fx:id="scoreY" layoutX="942.0" layoutY="520.0" prefHeight="23.0" prefWidth="48.0" />
+      <Label layoutX="132.0" layoutY="570.0" prefHeight="15.0" prefWidth="84.0" text="整体分数设置：" />
+      <TextField fx:id="size1" layoutX="473.0" layoutY="619.0" prefHeight="23.0" prefWidth="110.0" />
+      <Label layoutX="417.0" layoutY="624.0" text="字体大小" />
+      <Label layoutX="247.0" layoutY="625.0" text="编号颜色" />
+      <ColorPicker fx:id="color1" layoutX="306.0" layoutY="616.0" prefHeight="30.0" prefWidth="30.0" />
+      <TextField fx:id="size2" layoutX="472.0" layoutY="662.0" prefHeight="23.0" prefWidth="110.0" />
+      <Label layoutX="416.0" layoutY="667.0" text="字体大小" />
+      <Label layoutX="248.0" layoutY="668.0" text="名称颜色" />
+      <ColorPicker fx:id="color2" layoutX="305.0" layoutY="659.0" prefHeight="30.0" prefWidth="30.0" />
+      <TextField fx:id="size3" layoutX="472.0" layoutY="704.0" prefHeight="23.0" prefWidth="110.0" />
+      <Label layoutX="416.0" layoutY="709.0" text="字体大小" />
+      <Label layoutX="248.0" layoutY="710.0" text="分数颜色" />
+      <ColorPicker fx:id="color3" layoutX="305.0" layoutY="701.0" prefHeight="30.0" prefWidth="30.0" />
+      <TextField fx:id="rows" layoutX="329.0" layoutY="566.0" prefHeight="23.0" prefWidth="110.0" />
+      <TextField fx:id="cols" layoutX="598.0" layoutY="566.0" prefHeight="23.0" prefWidth="110.0" />
+      <Label layoutX="289.0" layoutY="570.0" text="行" />
+      <Label layoutX="558.0" layoutY="570.0" text="列" />
+      <Button layoutX="435.0" layoutY="772.0" mnemonicParsing="false" onMouseClicked="#updateConfig" prefHeight="23.0" prefWidth="187.0" text="更新配置信息" />
+      <Label layoutX="604.0" layoutY="269.0" text=":8080/index.html#/scoreLogin" />
+      <Label layoutX="297.0" layoutY="269.0" text="http://" />
+      <Button layoutX="795.0" layoutY="265.0" mnemonicParsing="false" onMouseClicked="#update4" text="更新" />
+      <TextField fx:id="scoreWebsite1" layoutX="353.0" layoutY="256.0" prefHeight="45.0" prefWidth="243.0" />
+      <Label layoutX="130.0" layoutY="268.0" text="个人分数网址：" />
+      <ImageView fx:id="scoreQrcode1" fitHeight="54.0" fitWidth="54.0" layoutX="888.0" layoutY="251.0" onMouseClicked="#largeScoreQrcode1" pickOnBounds="true" preserveRatio="true" />
+      <TextField fx:id="y1" layoutX="856.0" layoutY="619.0" prefHeight="23.0" prefWidth="48.0" />
+      <Label layoutX="825.0" layoutY="622.0" text="y" />
+      <TextField fx:id="y2" layoutX="855.0" layoutY="662.0" prefHeight="23.0" prefWidth="48.0" />
+      <Label layoutX="824.0" layoutY="665.0" text="y" />
+      <TextField fx:id="y3" layoutX="854.0" layoutY="703.0" prefHeight="23.0" prefWidth="48.0" />
+      <Label layoutX="823.0" layoutY="706.0" text="y" />
+      <Label layoutX="130.0" layoutY="343.0" text="联系方式:" />
+      <TextArea fx:id="contactText" layoutX="293.0" layoutY="314.0" prefHeight="87.0" prefWidth="482.0" />
+      <Button layoutX="795.0" layoutY="339.0" mnemonicParsing="false" onMouseClicked="#update5" text="更新" />
    </children>
 </AnchorPane>

@@ -37,7 +37,7 @@ public class Backend {
             });
         }
         children.get(0).getStyleClass().add("menu-label-clicked");
-        showContent(((Label)children.get(0)).getText());
+       showContent(((Label)children.get(0)).getText());
     }
     
     
@@ -45,7 +45,8 @@ public class Backend {
         final String backendPath = BackendMap.getBackendPath(text);
         if (backendPath != null) {
             contentPane.getChildren().clear();
-            contentPane.getChildren().add(Navigator.load(backendPath)); 
+            Node load = Navigator.load(backendPath);
+            contentPane.getChildren().add(load); 
         }
     }
 }

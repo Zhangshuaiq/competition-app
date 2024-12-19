@@ -13,6 +13,10 @@ public interface ReloadPane {
     
     default void startTiming(boolean order, int time){};
 
+    default void startBuzz(int time, int limitTime){};
+
+    default   void buzzTiming(int time) {}
+
     default void stopTiming(){};
     
     default void continueTiming(){};

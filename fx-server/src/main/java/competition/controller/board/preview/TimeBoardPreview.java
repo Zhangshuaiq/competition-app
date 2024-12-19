@@ -15,17 +15,22 @@ import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.fxml.FXML;
+import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Label;
-import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
+import javafx.scene.text.Text;
 import javafx.scene.text.TextAlignment;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 
 @Component
 public class TimeBoardPreview extends PreviewPane {
@@ -39,7 +44,9 @@ public class TimeBoardPreview extends PreviewPane {
 
     private int timeVal;
 
-    private Label teamScore = new Label();
+    StackPane stackPane = new StackPane();
+
+    private Text teamScore = new Text();
 
     private ControlPane controlPane;
     
@@ -49,6 +56,68 @@ public class TimeBoardPreview extends PreviewPane {
     
     private WsMessageHandler messageHandler;
 
+
+    @Override
+    public void startBuzz(int time, int limitTime) {
+        // 避免二次运行
+        if (timeline != null) {
+            if (timeline.getStatus() == Animation.Status.RUNNING) {
+                return;
+            }
+        }
+        // 抢答开始等待时间
+        this.timeVal = time;
+        this.timeValue = format(timeVal);
+        messageHandler.sendQuestionTime(this.timeVal + "");
+        teamScore.setVisible(true);
+        teamScore.setText(timeValue);
+        timeline = new Timeline(new KeyFrame(Duration.seconds(1), e -> {
+            int alertValue = Integer.parseInt(controlPane.getAlertTime());
+            timeVal--;
+            if (timeVal == 0) {
+                timeline.stop();
+                timeline = null;
+                MusicPlayer.playWithCallback(MusicResource.BUZZ_START, () -> {
+                    RuntimeUtil.buzzCalculate = System.currentTimeMillis();
+                    buzzTiming(limitTime);
+                });
+
+
+            } else {
+                if (timeVal <= alertValue) {
+                    MusicPlayer.play(MusicResource.SECOND_PREFIX + timeVal + ".mp3");
+                }
+            }
+            this.timeValue = format(timeVal);
+            messageHandler.sendQuestionTime(timeVal + "");
+            messageHandler.sendModel7Time(timeVal + "");
+            for (int i = 0; i < Model7RuntimeData.getSeconds().size(); i++) {
+                Model7RuntimeData.getTimes().set(i, timeValue.replace(":", "分") + "秒");
+                if (!Model7RuntimeData.getFinished().get(i)) {
+                    Model7RuntimeData.getSeconds().set(i, timeVal);
+                    Model7RuntimeData.getFts().set(i, timeValue.replace(":", "分") + "秒");
+                }
+            }
+
+            // 团队模式更新时间数值
+//            Model60RuntimeData.freshTime(timeVal);
+//            Model61RuntimeData.freshTime(timeVal);
+
+            PreviewStack.reload(this.timeVal, this.timeValue);
+            showData();
+        }));
+        ReloadPane timeBoard = controlPane.getTimeBoard();
+        if (timeBoard == null) {
+            timeBoard = (ReloadPane) ExtendedScreen.timeWithPos("/view/board/match/TimeBoard.fxml", "", "/view/style.css", true);
+        }
+        if (timeBoard != null) {
+            controlPane.setTimeBoard(timeBoard);
+            timeBoard.shows();
+            timeBoard.reload(timeVal, timeValue);
+        }
+        timeline.setCycleCount(-1);
+        timeline.playFromStart();
+    }
 
     @Override
     public void hideTime() {
@@ -61,7 +130,8 @@ public class TimeBoardPreview extends PreviewPane {
 
     @FXML
     public void initialize() {
-        container.getChildren().add(teamScore);
+        stackPane.getChildren().add(teamScore);
+        container.getChildren().add(stackPane);
         showData();
     }
 
@@ -78,10 +148,25 @@ public class TimeBoardPreview extends PreviewPane {
         String config = configs.getConfig();
         String[] split = config.split(ConfigSpliter.SPLITER);
         teamScore.setTextAlignment(TextAlignment.CENTER);
-        teamScore.setAlignment(Pos.CENTER);
-        teamScore.setFont(Font.font(Integer.parseInt(split[24])));
-        teamScore.setTextFill(Color.valueOf(split[23]));
+        teamScore.setFont(FontMap.load(split[33], ScreenAdapter.calculateMainX(Integer.parseInt(split[24]))));
+        
+        teamScore.setFill(Color.valueOf(split[23]));
         teamScore.setText(timeValue);
+        if (split.length >= 35) {
+            stackPane.setBackground(new Background(new BackgroundFill(Color.valueOf(split[34]), CornerRadii.EMPTY, Insets.EMPTY)));
+        }
+
+        if (split.length >= 36) {
+            if (Boolean.parseBoolean(split[35])) {
+                teamScore.setStroke(teamScore.getFill());
+                teamScore.setStrokeWidth(1);
+            } else {
+                teamScore.setStroke(null);
+            }
+        }
+
+
+
         ReloadPane timeBoard = controlPane.getTimeBoard();
         if (timeBoard == null) {
             timeBoard = (ReloadPane) ExtendedScreen.timeWithPos("/view/board/match/TimeBoard.fxml", "", "/view/style.css", true);
@@ -95,11 +180,17 @@ public class TimeBoardPreview extends PreviewPane {
     private String format(int timeVal) {
         int minute = timeVal / 60;
         int seconds = timeVal % 60;
-        if (minute > 0) {
+        if (minute > 9) {
             if (seconds >= 10) {
                 return minute + ":" + seconds;
             }
             return minute + ":0" + seconds;
+        }
+        if (minute > 0) {
+            if (seconds >= 10) {
+                return "0" + minute + ":" + seconds;
+            }
+            return "0" + minute + ":0" + seconds;
         } else {
             if (seconds >= 10) {
                 return "00:" + seconds;
@@ -107,6 +198,67 @@ public class TimeBoardPreview extends PreviewPane {
             return "00:0" + seconds;
         }
 
+    }
+
+    public void buzzTiming(int time) {
+        // 避免二次运行
+        if (timeline != null) {
+            if (timeline.getStatus() == Animation.Status.RUNNING) {
+                return;
+            }
+        }
+        this.timeVal = time;
+        this.timeValue = format(timeVal);
+        messageHandler.sendQuestionTime(this.timeVal + "");
+        teamScore.setVisible(true);
+        teamScore.setText(timeValue);
+        timeline = new Timeline(new KeyFrame(Duration.seconds(1), e -> {
+            int alertValue = Integer.parseInt(controlPane.getAlertTime());
+            timeVal--;
+            if (timeVal == 0) {
+//                MusicPlayer.playWithCallback(MusicResource.BUZZ_STOP, () -> {
+//                    controlPane.reloadScoreBoard();
+//                });
+                close();
+                controlPane.resetTimeBtn();
+            } else {
+                if (timeVal <= alertValue) {
+                    MusicPlayer.play(MusicResource.SECOND_PREFIX + timeVal + ".mp3");
+                }
+            }
+            this.timeValue = format(timeVal);
+            messageHandler.sendQuestionTime(timeVal + "");
+            messageHandler.sendModel7Time(timeVal + "");
+//            for (int i = 0; i < Model7RuntimeData.getSeconds().size(); i++) {
+//                Model7RuntimeData.getTimes().set(i, timeValue.replace(":", "分") + "秒");
+//                if (!Model7RuntimeData.getFinished().get(i)) {
+//                    Model7RuntimeData.getSeconds().set(i, timeVal);
+//                    Model7RuntimeData.getFts().set(i, timeValue.replace(":", "分") + "秒");
+//                }
+//            }
+
+            // 团队模式更新时间数值
+           // Model60RuntimeData.freshTime(timeVal);
+           // Model61RuntimeData.freshTime(timeVal);
+
+            // 已结束
+            if(timeline == null) {
+                controlPane.stopOnTime();
+            }
+            PreviewStack.reload(this.timeVal, this.timeValue);
+            showData();
+        }));
+        ReloadPane timeBoard = controlPane.getTimeBoard();
+        if (timeBoard == null) {
+            timeBoard = (ReloadPane) ExtendedScreen.timeWithPos("/view/board/match/TimeBoard.fxml", "", "/view/style.css", true);
+        }
+        if (timeBoard != null) {
+            controlPane.setTimeBoard(timeBoard);
+            timeBoard.shows();
+            timeBoard.reload(timeVal, timeValue);
+        }
+        timeline.setCycleCount(-1);
+        timeline.playFromStart();
     }
 
     @Override

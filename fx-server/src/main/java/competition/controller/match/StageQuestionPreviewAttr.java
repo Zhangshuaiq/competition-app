@@ -142,7 +142,7 @@ public class StageQuestionPreviewAttr {
     @FXML
     public void selectNameImg() {
         FileChooser chooser = new FileChooser();
-        chooser.setInitialDirectory(new File(BaseDir.IMAGE_DIR));
+        chooser.setInitialDirectory(new File(BaseDir.BACKGROUND_DIR));
         chooser.getExtensionFilters().addAll(
                 new FileChooser.ExtensionFilter("Image Files", "*.png", "*.jpg", "*.gif")
         );
@@ -161,7 +161,7 @@ public class StageQuestionPreviewAttr {
     @FXML
     public void selectCodeImg() {
         FileChooser chooser = new FileChooser();
-        chooser.setInitialDirectory(new File(BaseDir.IMAGE_DIR));
+        chooser.setInitialDirectory(new File(BaseDir.BACKGROUND_DIR));
         chooser.getExtensionFilters().addAll(
                 new FileChooser.ExtensionFilter("Image Files", "*.png", "*.jpg", "*.gif")
         );
@@ -376,9 +376,10 @@ public class StageQuestionPreviewAttr {
     private void showNumberConfig(Configs configs) {
         String details;
         if (currentStage.getQuestionType() == 4) {
-            details = "760%%240%%400%%80%%false%%0x9980e6ff%%%%Dialog%%12%%false%%false%%false%%false%%居中对齐%%0###500%%400%%80%%80%%false%%0x664db3ff%%%%Dialog%%36%%false%%false%%false%%false%%居中对齐%%0%%1";
-        } else {
-            details = "760%%240%%400%%80%%false%%0x990000ff%%%%Dialog%%40%%false%%false%%false%%false%%居中对齐%%10###415%%370%%100%%100%%false%%0x990000ff%%%%Dialog%%30%%false%%false%%false%%false%%居中对齐%%10%%10";
+            details = "560%%240%%800%%100%%false%%0x990000ff%%%%默认.ttf%%40%%false%%false%%false%%false%%居中对齐%%0###920%%400%%80%%80%%false%%0x990000ff%%%%默认.ttf%%36%%false%%true%%false%%false%%居中对齐%%0%%1";
+        }
+        else {
+            details = "760%%240%%400%%80%%false%%0x990000ff%%%%默认.ttf%%40%%false%%false%%false%%false%%居中对齐%%10###415%%370%%100%%100%%false%%0x990000ff%%%%默认.ttf%%30%%false%%false%%false%%false%%居中对齐%%10%%10";
         }
 
         String[] split = details.split(ConfigSpliter.DIFFER);
@@ -402,9 +403,8 @@ public class StageQuestionPreviewAttr {
             numberXInput.setText(cfgArr[3]);
             numberYInput.setText(cfgArr[4]);
         }
-        Font defaultFont = new JLabel().getFont();
-        numberFontSelector.setValue(defaultFont.getFamily());
-        numberFontSize.setText(defaultFont.getSize() + "");
+        numberFontSelector.setValue(FontMap.defaultFontName());
+        numberFontSize.setText(12 + "");
         numberIticChoice.setSelected(false);
         numberDeleteChoice.setSelected(false);
         numberSpaceInput.setText("0");
@@ -441,9 +441,8 @@ public class StageQuestionPreviewAttr {
 
 
     private void showNameConfig() {
-        Font defaultFont = new JLabel().getFont();
-        nameFontSelector.setValue(defaultFont.getFamily());
-        nameFontSize.setText(defaultFont.getSize() + "");
+        nameFontSelector.setValue(FontMap.defaultFontName());
+        nameFontSize.setText(12 + "");
         nameIticChoice.setSelected(false);
         nameDeleteChoice.setSelected(false);
         nameSpaceInput.setText("0");
@@ -455,9 +454,9 @@ public class StageQuestionPreviewAttr {
 
         String details;
         if (currentStage.getQuestionType() == 4) {
-            details = "760%%240%%400%%80%%false%%0x9980e6ff%%%%Dialog%%12%%false%%false%%false%%false%%居中对齐%%0###500%%400%%80%%80%%false%%0x664db3ff%%%%Dialog%%36%%false%%false%%false%%false%%居中对齐%%0%%1";
+            details = "560%%240%%800%%100%%false%%0x990000ff%%%%默认.ttf%%40%%false%%false%%false%%false%%居中对齐%%0###920%%400%%80%%80%%false%%0x990000ff%%%%默认.ttf%%36%%false%%true%%false%%false%%居中对齐%%0%%1";
         } else {
-            details = "760%%240%%400%%80%%false%%0x990000ff%%%%Dialog%%40%%false%%false%%false%%false%%居中对齐%%10###415%%370%%100%%100%%false%%0x990000ff%%%%Dialog%%30%%false%%false%%false%%false%%居中对齐%%10%%10";
+            details = "760%%240%%400%%80%%false%%0x990000ff%%%%默认.ttf%%40%%false%%false%%false%%false%%居中对齐%%10###415%%370%%100%%100%%false%%0x990000ff%%%%默认.ttf%%30%%false%%false%%false%%false%%居中对齐%%10%%10";
         }
         String[] split = details.split(ConfigSpliter.DIFFER);
 

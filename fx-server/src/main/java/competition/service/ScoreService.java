@@ -16,7 +16,7 @@ public class ScoreService {
     private StageMemberScoreMapper scoreMapper;
     
     public void addScore(String member, String team, String stage,
-                         String question, String time, int score, String totalScore){
+                         String question, String time, int score, String totalScore, String answerText){
         
         if (member == null) {
             List<StageMemberScore> scores = scoreMapper.selectList(new LambdaQueryWrapper<StageMemberScore>()
@@ -29,6 +29,7 @@ public class ScoreService {
             memberScore.setQuestion(question);
             memberScore.setTime(time);
             memberScore.setTotalScore(totalScore);
+            memberScore.setAnswerText(answerText);
             if (score > 0) {
                 memberScore.setAddScore(score + "");
             } else {
@@ -62,6 +63,7 @@ public class ScoreService {
             memberScore.setStage(stage);
             memberScore.setQuestion(question);
             memberScore.setTime(time);
+            memberScore.setAnswerText(answerText);
             memberScore.setTotalScore(totalScore);
             if (score > 0) {
                 memberScore.setAddScore(score + "");

@@ -23,4 +23,5 @@ public class AnswerStyle {
     private String style5;
 
     private String style6;
+    
 }

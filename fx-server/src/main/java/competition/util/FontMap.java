@@ -1,47 +1,53 @@
 package competition.util;
 
+import cn.hutool.core.io.FileUtil;
 import javafx.scene.text.Font;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.util.*;
 
 public class FontMap {
     
-    private static final  Map<String, String> fonts = new LinkedHashMap<>();
     
-    static {
-        for (String fontName : Font.getFontNames()) {
-            fonts.put(fontName, fontName);
-        }
-
-        // 仿宋 - FangSong
-        // 宋体 - SimSun
-        // 微软雅黑 - Microsoft YaHei
-        // 微软雅黑 Light - Microsoft YaHei Light
-        // 微软雅黑 Bold - Microsoft YaHei Bold
-        // 新宋体 - NSimSun
-        // 楷体 - KaiTi
-        // 黑体 - SimHei
-        // 等线 Bold - DengXian Bold
-        // 等线 Light - DengXian Light
-        // 等线 - DengXian Regular
-        fonts.put("仿宋", "FangSong");
-        fonts.put("宋体", "SimSun");
-        fonts.put("微软雅黑", "Microsoft YaHei");
-        fonts.put("微软雅黑 Light", "Microsoft YaHei Light");
-        fonts.put("微软雅黑 Bold", "Microsoft YaHei Bold");
-        fonts.put("新宋体", "NSimSun");
-        fonts.put("楷体", "KaiTi");
-        fonts.put("黑体", "SimHei");
-        fonts.put("等线", "DengXian Regular");
-        fonts.put("等线 Light", "DengXian Light");
-        fonts.put("等线 Bold", "DengXian Bold");
-    }
+    private static final Map<String, Font> fontCache = new HashMap<>();
     
     public static List<String> fontNames() {
-        return new ArrayList<>(fonts.keySet());
+        List<String> fontNames = FileUtil.listFileNames(BaseDir.FONT_DIR);
+        return fontNames;
     }
     
     public static String getFont(String name) {
-        return fonts.get(name);
+        return BaseDir.FONT_DIR + name;
+    }
+
+    public static String defaultFont() {
+        String font = getFont("默认.ttf");
+        return font;
+    }
+    
+    public static Font load(String name, double size) {
+        String key = name + "=" + size;
+        if (fontCache.containsKey(key)) {
+            return fontCache.get(key);
+        }
+        Font font = null;
+        try {
+            font = Font.loadFont(new FileInputStream(new File(FontMap.getFont(name))), size);
+            fontCache.put(key, font);
+        } catch (FileNotFoundException e) {
+            try {
+                font =  Font.loadFont(new FileInputStream(new File(FontMap.defaultFont())), size);
+                fontCache.put(key, font);
+            } catch (FileNotFoundException ex) {
+                font = Font.font(size);
+            }
+        }
+        return font;
+    }
+
+    public static String defaultFontName() {
+        return "默认.ttf";
     }
 }

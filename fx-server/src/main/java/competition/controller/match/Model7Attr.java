@@ -50,7 +50,7 @@ public class Model7Attr {
     public void initialize(){
         Model3Style model3Style = model3Mapper.selectById(2);
         String titleStyle = model3Style.getTitleStyle();
-        hideCtl.setSelected(GlobalCache.model7Hide);
+        hideCtl.setSelected(Boolean.parseBoolean(model3Style.getHeadStyle()));
         if (StringUtils.isEmpty(titleStyle)) {
             colInput.setText("4");
             srInput.setText("20");
@@ -84,8 +84,8 @@ public class Model7Attr {
         yInput.getText();
         Model3Style model3Style = model3Mapper.selectById(2);
         model3Style.setTitleStyle(value);
+        model3Style.setHeadStyle(hideCtl.isSelected() + "");
         model3Mapper.updateById(model3Style);
-        GlobalCache.model7Hide = hideCtl.isSelected();
         PreviewStack.reloadStyle();
     }
     

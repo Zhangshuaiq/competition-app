@@ -24,6 +24,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
 import javax.annotation.Resource;
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.nio.charset.Charset;
@@ -70,20 +71,19 @@ public class TotalRulePreview implements ReloadPane {
             final String[] cfgArr = config.split(ConfigSpliter.SPLITER);
             text.setX(ScreenAdapter.calculateExX(Integer.parseInt(cfgArr[1])));
             text.setY(ScreenAdapter.calculateExY(Integer.parseInt(cfgArr[2])));
-            text.prefWidth(ScreenAdapter.calculateExW(Integer.parseInt(cfgArr[3])));
-            text.prefHeight(ScreenAdapter.calculateExH(Integer.parseInt(cfgArr[4])));
+            text.prefWidth(ScreenAdapter.calculateExX(Integer.parseInt(cfgArr[3])));
+            text.prefHeight(ScreenAdapter.calculateExY(Integer.parseInt(cfgArr[4])));
             text.setFill(Color.valueOf(cfgArr[0]));
-            text.setWrappingWidth(ScreenAdapter.calculateExW(Integer.parseInt(cfgArr[3])));
+            text.setWrappingWidth(ScreenAdapter.calculateExX(Integer.parseInt(cfgArr[3])));
             container.getChildren().add(text);
         } else {
             final String[] cfgArr = details.split(ConfigSpliter.SPLITER);
             text.setX(ScreenAdapter.calculateExX(Integer.parseInt(cfgArr[0])));
             text.setY(ScreenAdapter.calculateExY(Integer.parseInt(cfgArr[1])));
-            text.prefWidth(ScreenAdapter.calculateExW(Integer.parseInt(cfgArr[2])));
-            text.prefHeight(ScreenAdapter.calculateExH(Integer.parseInt(cfgArr[3])));
+            text.prefWidth(ScreenAdapter.calculateExX(Integer.parseInt(cfgArr[2])));
+            text.prefHeight(ScreenAdapter.calculateExY(Integer.parseInt(cfgArr[3])));
             text.setFill(Color.valueOf(cfgArr[5]));
-            Font font = Font.font(FontMap.getFont(cfgArr[7]), FontWeight.NORMAL, FontPosture.REGULAR,
-                ScreenAdapter.calculateExW(Integer.parseInt(cfgArr[8])));
+            Font font = FontMap.load(cfgArr[7], ScreenAdapter.calculateExX(Integer.parseInt(cfgArr[8])));
             text.setFont(font);
             if (Boolean.valueOf(cfgArr[10])) {
                 text.setStroke(text.getFill());
@@ -98,8 +98,8 @@ public class TotalRulePreview implements ReloadPane {
             text.setUnderline(Boolean.valueOf(cfgArr[12]));
             text.setStrikethrough(Boolean.valueOf(cfgArr[9]));
             text.setTextAlignment(AlignmentUtil.getTextAlign(cfgArr[13]));
-            text.setLineSpacing(ScreenAdapter.calculateExH(Integer.parseInt(cfgArr[14])));
-            text.setWrappingWidth(ScreenAdapter.calculateExW(Integer.parseInt(cfgArr[2])));
+            text.setLineSpacing(ScreenAdapter.calculateExY(Integer.parseInt(cfgArr[14])));
+            text.setWrappingWidth(ScreenAdapter.calculateExX(Integer.parseInt(cfgArr[2])));
             container.getChildren().add(text);
         }
     }

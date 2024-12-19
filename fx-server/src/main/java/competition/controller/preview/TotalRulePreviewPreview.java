@@ -2,6 +2,7 @@ package competition.controller.preview;
 
 import cn.hutool.core.io.FileUtil;
 import competition.controller.ControlPane;
+import competition.controller.board.BoardPane;
 import competition.controller.match.RulePreviewAttr;
 import competition.controller.match.StageQuestionPreviewAttr;
 import competition.controller.match.TotalRulePreview;
@@ -26,6 +27,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
 import javax.annotation.Resource;
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.nio.charset.Charset;
@@ -53,7 +55,10 @@ public class TotalRulePreviewPreview extends PreviewPane {
 
     @FXML
     public void initialize() {
-        controlPane.getScoreBoardPreview().getSelected().clear();
+        BoardPane scoreBoardPreview = controlPane.getScoreBoardPreview();
+        if (scoreBoardPreview != null) {
+            scoreBoardPreview.getSelected().clear();
+        }
         container.setOnMouseClicked(new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent event) {
@@ -96,21 +101,20 @@ public class TotalRulePreviewPreview extends PreviewPane {
             final String[] cfgArr = config.split(ConfigSpliter.SPLITER);
             text.setX(ScreenAdapter.calculateMainX(Integer.parseInt(cfgArr[1])));
             text.setY(ScreenAdapter.calculateMainY(Integer.parseInt(cfgArr[2])));
-            text.prefWidth(ScreenAdapter.calculateMainW(Integer.parseInt(cfgArr[3])));
-            text.prefHeight(ScreenAdapter.calculateMainH(Integer.parseInt(cfgArr[4])));
+            text.prefWidth(ScreenAdapter.calculateMainX(Integer.parseInt(cfgArr[3])));
+            text.prefHeight(ScreenAdapter.calculateMainY(Integer.parseInt(cfgArr[4])));
             text.setFill(Color.valueOf(cfgArr[0]));
-            text.setWrappingWidth(ScreenAdapter.calculateMainW(Integer.parseInt(cfgArr[3])));
+            text.setWrappingWidth(ScreenAdapter.calculateMainX(Integer.parseInt(cfgArr[3])));
             container.getChildren().add(text);
         } else {
             final String[] cfgArr = details.split(ConfigSpliter.SPLITER);
             text.setX(ScreenAdapter.calculateMainX(Integer.parseInt(cfgArr[0])));
             text.setY(ScreenAdapter.calculateMainY(Integer.parseInt(cfgArr[1])));
-            text.prefWidth(ScreenAdapter.calculateMainW(Integer.parseInt(cfgArr[2])));
-            text.prefHeight(ScreenAdapter.calculateMainH(Integer.parseInt(cfgArr[3])));
+            text.prefWidth(ScreenAdapter.calculateMainX(Integer.parseInt(cfgArr[2])));
+            text.prefHeight(ScreenAdapter.calculateMainY(Integer.parseInt(cfgArr[3])));
             text.setFill(Color.valueOf(cfgArr[5]));
-            Font font = Font.font(FontMap.getFont(cfgArr[7]), FontWeight.NORMAL, FontPosture.REGULAR,
-                ScreenAdapter.calculateMainW(Integer.parseInt(cfgArr[8]))
-            );
+            Font font = FontMap.load(cfgArr[7], ScreenAdapter.calculateMainX(Integer.parseInt(cfgArr[8])));
+            
             text.setFont(font);
             if (Boolean.valueOf(cfgArr[10])) {
                 text.setStroke(text.getFill());
@@ -125,8 +129,8 @@ public class TotalRulePreviewPreview extends PreviewPane {
             text.setUnderline(Boolean.valueOf(cfgArr[12]));
             text.setStrikethrough(Boolean.valueOf(cfgArr[9]));
             text.setTextAlignment(AlignmentUtil.getTextAlign(cfgArr[13]));
-            text.setLineSpacing(ScreenAdapter.calculateMainH(Integer.parseInt(cfgArr[14])));
-            text.setWrappingWidth(ScreenAdapter.calculateMainW(Integer.parseInt(cfgArr[2])));
+            text.setLineSpacing(ScreenAdapter.calculateMainY(Integer.parseInt(cfgArr[14])));
+            text.setWrappingWidth(ScreenAdapter.calculateMainX(Integer.parseInt(cfgArr[2])));
             container.getChildren().add(text);
         }
         messageHandler.notifyPage("rule" , ruleContent );

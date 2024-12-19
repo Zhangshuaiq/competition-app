@@ -3,15 +3,18 @@ package competition.controller.backend;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import competition.entity.StageMemberScore;
 import competition.mapper.StageMemberScoreMapper;
-import competition.util.ScoreSaver;
+import competition.util.ExcelParser;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.stage.FileChooser;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
+import java.io.File;
+import java.io.IOException;
 import java.util.List;
 
 @Component
@@ -43,6 +46,9 @@ public class GradeMng {
 
     @FXML
     private TableColumn<StageMemberScore, String> stageCol;
+
+    @FXML
+    private TableColumn<StageMemberScore, String>  userSelectCol;
 
     @FXML
     private TableView<StageMemberScore> tableView;
@@ -85,7 +91,7 @@ public class GradeMng {
         desScoreCol.setCellValueFactory(new PropertyValueFactory<>("desScore"));
         stageScoreCol.setCellValueFactory(new PropertyValueFactory<>("score"));
         teamScoreCol.setCellValueFactory(new PropertyValueFactory<>("totalScore"));
-
+        userSelectCol.setCellValueFactory(new PropertyValueFactory<>("answerText"));
         tableView.setItems(FXCollections.observableList(scoreList));
     }
 
@@ -95,6 +101,22 @@ public class GradeMng {
        // ScoreSaver.clear();
         scoreMapper.delete(new LambdaQueryWrapper<>());
         tableView.setItems(FXCollections.emptyObservableList());
+    }
+
+
+    @FXML
+    public void exportExcel(){
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Excel Files", "*.xlsx"));
+        File file = fileChooser.showSaveDialog(null);
+        if (file != null) {
+            // 如果用户选择了文件，保存Excel文件
+            ExcelParser.write(file.getAbsolutePath(), tableView.getItems(), StageMemberScore.class);
+            System.out.println("导出excel 成功: " + file.getAbsolutePath());
+        } else {
+            System.out.println("导出excel 失败");
+        }
+
     }
     
     

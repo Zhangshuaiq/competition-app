@@ -8,12 +8,14 @@ public class ScreenAdapter {
 
     
     
-    public static double calculateMainH(double value){
 
-         final Rectangle2D screenBounds = Screen.getPrimary().getVisualBounds();
-         final double targetScreenHeight = screenBounds.getHeight();
-         final double originalScreenHeight = 1080.0;
-        
+
+    public static double calculateMainY(double value){
+
+        final Rectangle2D screenBounds = Screen.getPrimary().getVisualBounds();
+        final double targetScreenHeight = screenBounds.getHeight();
+        final double originalScreenHeight = 1080.0;
+
         // 需要映射的绝对值（原始屏幕上的值）
         double originalHeight = value;
 
@@ -24,41 +26,7 @@ public class ScreenAdapter {
         double targetHeight = originalHeight * scaleY;
         return targetHeight;
     }
-
-
-    public static double calculateMainY(double value){
-
-        final Rectangle2D screenBounds = Screen.getPrimary().getVisualBounds();
-        final double targetScreenWidth = screenBounds.getWidth();
-        final double originalScreenWidth = 1920.0;
-
-        // 需要映射的绝对值（原始屏幕上的值）
-        double originalX = value;
-
-        // 计算比例因子
-        double scaleX = targetScreenWidth / originalScreenWidth;
-
-        // 在目标屏幕上计算新的值
-        double targetX = originalX * scaleX;
-        return targetX;
-    }
-
-    public static double calculateMainW(double value){
-
-        final Rectangle2D screenBounds = Screen.getPrimary().getVisualBounds();
-        final double targetScreenWidth = screenBounds.getWidth();
-        final double originalScreenWidth = 1920.0;
-
-        // 需要映射的绝对值（原始屏幕上的值）
-        double originalWidth = value;
-
-        // 计算比例因子
-        double scaleX = targetScreenWidth / originalScreenWidth;
-
-        // 在目标屏幕上计算新的值
-        double targetWidth = originalWidth * scaleX;
-        return targetWidth;
-    }
+    
 
     public static double calculateMainX(double value){
         final Rectangle2D screenBounds = Screen.getPrimary().getVisualBounds();
@@ -73,8 +41,10 @@ public class ScreenAdapter {
         return targetX;
     }
 
+    
 
-    public static double calculateExH(double value){
+    public static double calculateExY(double value){
+
         ObservableList<Screen> screens = Screen.getScreens();
         final Rectangle2D screenBounds = screens.size() > 1? screens.get(1).getVisualBounds(): screens.get(0).getVisualBounds();
         final double targetScreenHeight = screenBounds.getHeight();
@@ -90,44 +60,7 @@ public class ScreenAdapter {
         double targetHeight = originalHeight * scaleY;
         return targetHeight;
     }
-
-
-    public static double calculateExY(double value){
-
-        ObservableList<Screen> screens = Screen.getScreens();
-        final Rectangle2D screenBounds = screens.size() > 1? screens.get(1).getVisualBounds(): screens.get(0).getVisualBounds();
-        final double targetScreenWidth = screenBounds.getWidth();
-        final double originalScreenWidth = 1920.0;
-
-        // 需要映射的绝对值（原始屏幕上的值）
-        double originalX = value;
-
-        // 计算比例因子
-        double scaleX = targetScreenWidth / originalScreenWidth;
-
-        // 在目标屏幕上计算新的值
-        double targetX = originalX * scaleX;
-        return targetX;
-    }
-
-    public static double calculateExW(double value){
-
-        ObservableList<Screen> screens = Screen.getScreens();
-        final Rectangle2D screenBounds = screens.size() > 1? screens.get(1).getVisualBounds(): screens.get(0).getVisualBounds();
-        final double targetScreenWidth = screenBounds.getWidth();
-        final double originalScreenWidth = 1920.0;
-
-        // 需要映射的绝对值（原始屏幕上的值）
-        double originalWidth = value;
-
-        // 计算比例因子
-        double scaleX = targetScreenWidth / originalScreenWidth;
-
-        // 在目标屏幕上计算新的值
-        double targetWidth = originalWidth * scaleX;
-        return targetWidth;
-    }
-
+    
     public static double calculateExX(double value){
         ObservableList<Screen> screens = Screen.getScreens();
         final Rectangle2D screenBounds = screens.size() > 1? screens.get(1).getVisualBounds(): screens.get(0).getVisualBounds();

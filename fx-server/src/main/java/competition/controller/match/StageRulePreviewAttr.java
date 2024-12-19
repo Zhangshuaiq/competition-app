@@ -2,6 +2,7 @@ package competition.controller.match;
 
 
 import competition.controller.ControlPane;
+import competition.controller.preview.PreviewPane;
 import competition.controller.preview.StageRulePreviewPreview;
 import competition.entity.Configs;
 import competition.entity.Stages;
@@ -165,9 +166,8 @@ public class StageRulePreviewAttr {
         final String details = stages.getTitleRuleStyle();
         if (StringUtils.isEmpty(details)) {
 
-            Font defaultFont = headSpaceInput.getFont();
-            headFontSelector.setValue(defaultFont.getFamily());
-            headFontSize.setText(defaultFont.getSize() + "");
+            headFontSelector.setValue(FontMap.defaultFontName());
+            headFontSize.setText(12 + "");
             headIticChoice.setSelected(false);
             headDeleteChoice.setSelected(false);
             headSpaceInput.setText("0");
@@ -224,9 +224,8 @@ public class StageRulePreviewAttr {
         final String details = configs.getDetails();
         if (StringUtils.isEmpty(details)) {
             // 获取默认字体
-            Font defaultFont = xInput.getFont();
-            fontSelector.setValue(defaultFont.getFamily());
-            fontSize.setText(defaultFont.getSize() + "");
+            fontSelector.setValue(FontMap.defaultFontName());
+            fontSize.setText(12 + "");
             iticChoice.setSelected(false);
             deleteChoice.setSelected(false);
             spaceInput.setText("0");
@@ -295,7 +294,10 @@ public class StageRulePreviewAttr {
         Stages stages = stagesMapper.selectById(stageId);
         stages.setTitleRuleStyle(detail);
         stagesMapper.updateById(stages);
-        controlPane.getPreviewPane().reload();
+        PreviewPane previewPane = controlPane.getPreviewPane();
+        if (previewPane != null) {
+            previewPane.reload();
+        }
     }
     
     
@@ -346,6 +348,9 @@ public class StageRulePreviewAttr {
         configs.setConfig(huanjieVal);
         configs.setDetails(detail);
         configsMapper.updateById(configs);
-        controlPane.getPreviewPane().reload();
+        PreviewPane previewPane = controlPane.getPreviewPane();
+        if (previewPane != null) {
+            previewPane.reload();
+        }
     }
 }

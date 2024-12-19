@@ -68,7 +68,7 @@ public class StagePreviewAttr {
     private CheckBox backgroundChoice;
 
     @FXML
-    private TextField spaceInput, wordInput, colNumber;
+    private TextField spaceInput, colSpaceInput, wordInput, colNumber;
     
     @Resource
     private ConfigsMapper configsMapper;
@@ -97,11 +97,11 @@ public class StagePreviewAttr {
         previewData();
     }
     
-    
+
     @FXML
     public void selectImg(){
         FileChooser chooser = new FileChooser();
-        chooser.setInitialDirectory(new File(BaseDir.IMAGE_DIR));
+        chooser.setInitialDirectory(new File(BaseDir.BACKGROUND_DIR));
         chooser.getExtensionFilters().addAll(
                 new FileChooser.ExtensionFilter("Image Files", "*.png", "*.jpg", "*.gif")
         );
@@ -139,6 +139,7 @@ public class StagePreviewAttr {
             colorInput.setValue(Color.valueOf(huanjieArr[3]));
             textAlignSelector.setValue(AlignmentUtil.alignNames().get(0));
             spaceInput.setText("0");
+            colSpaceInput.setText("0");
             wordInput.setText("0");
             colNumber.setText("1");
           //  fontSelector
@@ -154,7 +155,7 @@ public class StagePreviewAttr {
                     .eq(StagesStyle::getParentId, level)
             );
         }
-        String defaultStyle = "550%%300%%350%%80%%false%%0xb31a1aff%%%%微软雅黑%%28%%false%%false%%false%%false%%居中对齐%%60%%0%%2";
+        String defaultStyle = "550%%300%%350%%80%%false%%0xb31a1aff%%%%默认.ttf%%28%%false%%false%%false%%false%%居中对齐%%60%%0%%2";
         String[] detailArr = defaultStyle.split(ConfigSpliter.SPLITER);
         if (StringUtils.isEmpty(details)) {
 //            GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
@@ -190,7 +191,9 @@ public class StagePreviewAttr {
         if (detailArr.length >= 17) {
             colNumber.setText(detailArr[16]);
         }
-
+        if (detailArr.length >= 18) {
+            colSpaceInput.setText(detailArr[17]);
+        }
     }
 
     public void closeStage(MouseEvent event) {
@@ -216,6 +219,7 @@ public class StagePreviewAttr {
         final boolean underlne = underlineChoice.isSelected();
         final String alignValue = textAlignSelector.getValue();
         final String rowSpace = spaceInput.getText();
+        final String colSpace = colSpaceInput.getText();
 
         final Configs configs = configsMapper.selectById(configId);
         final String config = configs.getConfig();
@@ -247,7 +251,8 @@ public class StagePreviewAttr {
                 + alignValue + ConfigSpliter.SPLITER
                 + rowSpace + ConfigSpliter.SPLITER
                 + wordInput.getText() + ConfigSpliter.SPLITER
-                + colNumber.getText()
+                + colNumber.getText() + ConfigSpliter.SPLITER
+                + colSpace
                 ;
         configs.setConfig(huanjieVal);
         

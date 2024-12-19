@@ -6,12 +6,11 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-
 <AnchorPane prefHeight="827.0" prefWidth="1100.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="competition.controller.backend.TerminalConfig">
    <children>
       <Label layoutX="82.0" layoutY="137.0" text="硬件 COM 口：" />
-      <ComboBox layoutX="196.0" layoutY="132.0" prefHeight="30.0" prefWidth="525.0" />
-      <Button layoutX="741.0" layoutY="132.0" mnemonicParsing="false" prefHeight="30.0" prefWidth="106.0" text="打开" />
+      <ComboBox fx:id="portBox" layoutX="196.0" layoutY="132.0" prefHeight="30.0" prefWidth="525.0" />
+      <Button fx:id="connectBtn" layoutX="741.0" layoutY="132.0" mnemonicParsing="false" prefHeight="30.0" prefWidth="106.0" text="打开" onMouseClicked="#controlPort"/>
       <Label layoutX="82.0" layoutY="218.0" text="设置硬件终端" />
       <Label layoutX="214.0" layoutY="286.0" text="主机特征码：" />
       <TextField layoutX="304.0" layoutY="281.0" prefHeight="30.0" prefWidth="118.0" />

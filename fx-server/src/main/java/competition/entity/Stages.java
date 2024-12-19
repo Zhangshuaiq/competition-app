@@ -51,6 +51,9 @@ public class Stages {
     private Integer orderVal;
     
     private Integer m6;
+
+    // 是否开启抢答模式 0 不开启 1 开启
+    private Integer openQd = 0;
     
     // 答错扣除分值
     private Integer desValue;
@@ -63,7 +66,15 @@ public class Stages {
     
     // 答案单独展示
     private Integer answerSingle;
-    
+
+
+    public void setOpenQd(Integer openQd) {
+        this.openQd = openQd;
+    }
+
+    public Integer getOpenQd() {
+        return openQd;
+    }
 
     public void setSortVal(String sortVal) {
         this.sortVal = sortVal;

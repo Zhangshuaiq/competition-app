@@ -2,6 +2,7 @@ package competition.controller.preview;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import competition.controller.ControlPane;
+import competition.controller.board.BoardPane;
 import competition.controller.match.*;
 import competition.entity.Configs;
 import competition.entity.Questions;
@@ -27,9 +28,11 @@ import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
 import javax.annotation.Resource;
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -73,7 +76,10 @@ public class StageNamePreviewPreview extends PreviewPane {
     
     @FXML
     public void initialize() {
-        controlPane.getScoreBoardPreview().getSelected().clear();
+        BoardPane scoreBoardPreview = controlPane.getScoreBoardPreview();
+        if (scoreBoardPreview != null) {
+            scoreBoardPreview.getSelected().clear();
+        }
         innerStageId= stageId;
 
         PreviewStack.addPreview(this);
@@ -146,17 +152,17 @@ public class StageNamePreviewPreview extends PreviewPane {
         final String style = stages.getStyle();
         final String config = stageConfig.getConfig();
         final String[] huanjieArr = config.split(ConfigSpliter.SPLITER);
-        String[] detailArr = "750%%400%%400%%150%%false%%0x990000ff%%%%Dialog%%40%%false%%false%%false%%false%%居中对齐%%0".split(ConfigSpliter.SPLITER);
+        String[] detailArr = "750%%400%%400%%150%%false%%0x990000ff%%%%默认.ttf%%40%%false%%false%%false%%false%%居中对齐%%0".split(ConfigSpliter.SPLITER);
         if (StringUtils.isEmpty(style)) {
 //            box.setLayoutX(ScreenAdapter.calculateMainX(ConfigSpliter.DEFAULT_X));
 //            box.setLayoutY(ScreenAdapter.calculateMainY(ConfigSpliter.DEFAULT_Y));
-//            box.setPrefWidth(ScreenAdapter.calculateMainW(ConfigSpliter.DEFAULT_W));
-//            box.setPrefHeight(ScreenAdapter.calculateMainH(ConfigSpliter.DEFAULT_H));
+//            box.setPrefWidth(ScreenAdapter.calculateMainX(ConfigSpliter.DEFAULT_W));
+//            box.setPrefHeight(ScreenAdapter.calculateMainY(ConfigSpliter.DEFAULT_H));
 //            box.setBackground(new Background(new BackgroundFill(Color.valueOf(huanjieArr[3]),  new CornerRadii(10), Insets.EMPTY)));
 //
 //            Text title = new Text(stages.getName());
-//            title.prefWidth(ScreenAdapter.calculateMainW(ConfigSpliter.DEFAULT_W));
-//            title.prefHeight(ScreenAdapter.calculateMainH(ConfigSpliter.DEFAULT_H));
+//            title.prefWidth(ScreenAdapter.calculateMainX(ConfigSpliter.DEFAULT_W));
+//            title.prefHeight(ScreenAdapter.calculateMainY(ConfigSpliter.DEFAULT_H));
 //            title.setTextAlignment(TextAlignment.CENTER);
 //            title.setFill(Color.valueOf(huanjieArr[2]));
 //            box.getChildren().add(title);
@@ -166,8 +172,8 @@ public class StageNamePreviewPreview extends PreviewPane {
 
         box.setLayoutX(ScreenAdapter.calculateMainX(Integer.parseInt(detailArr[0])));
         box.setLayoutY(ScreenAdapter.calculateMainY(Integer.parseInt(detailArr[1])));
-        box.setPrefWidth(ScreenAdapter.calculateMainW(Integer.parseInt(detailArr[2])));
-        box.setPrefHeight(ScreenAdapter.calculateMainH(Integer.parseInt(detailArr[3])));
+        box.setPrefWidth(ScreenAdapter.calculateMainX(Integer.parseInt(detailArr[2])));
+        box.setPrefHeight(ScreenAdapter.calculateMainY(Integer.parseInt(detailArr[3])));
 
         if (Boolean.valueOf(detailArr[4])) {
             // 填充背景图片
@@ -175,7 +181,7 @@ public class StageNamePreviewPreview extends PreviewPane {
                 try {
                     box.setBackground(new Background(new BackgroundImage(new Image(new FileInputStream(detailArr[6])),
                             BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT, BackgroundPosition.DEFAULT,
-                            new BackgroundSize(ScreenAdapter.calculateMainW(Integer.parseInt(detailArr[2])), ScreenAdapter.calculateMainH(Integer.parseInt(detailArr[3])), false, false, false, false))));
+                            new BackgroundSize(ScreenAdapter.calculateMainX(Integer.parseInt(detailArr[2])), ScreenAdapter.calculateMainY(Integer.parseInt(detailArr[3])), false, false, false, false))));
                 } catch (FileNotFoundException e) {
                     box.setBackground(new Background(new BackgroundFill(Color.TRANSPARENT, new CornerRadii(10), Insets.EMPTY)));
                 }
@@ -189,11 +195,11 @@ public class StageNamePreviewPreview extends PreviewPane {
         Text title = new Text(stages.getName());
         title.setTextAlignment(AlignmentUtil.getTextAlign(detailArr[13]));
         box.setAlignment(AlignmentUtil.getAlign(detailArr[13]));
-        title.prefWidth(ScreenAdapter.calculateMainW(Integer.parseInt(detailArr[2])));
-        title.prefHeight(ScreenAdapter.calculateMainH(Integer.parseInt(detailArr[3])));
+        title.prefWidth(ScreenAdapter.calculateMainX(Integer.parseInt(detailArr[2])));
+        title.prefHeight(ScreenAdapter.calculateMainY(Integer.parseInt(detailArr[3])));
         title.setFill(Color.valueOf(huanjieArr[2]));
 
-        Font font = Font.font(FontMap.getFont(detailArr[7]), FontWeight.NORMAL, FontPosture.REGULAR, ScreenAdapter.calculateMainW(Integer.parseInt(detailArr[8])));
+        Font font = FontMap.load(detailArr[7], ScreenAdapter.calculateMainX(Integer.parseInt(detailArr[8])));
         title.setFont(font);
         if (Boolean.valueOf(detailArr[10])) {
             title.setStroke(title.getFill());
@@ -231,20 +237,32 @@ public class StageNamePreviewPreview extends PreviewPane {
                 }
 
                 if (CollectionUtils.isEmpty(childrenStage)) {
-                   // List<Questions> parse = RuntimeQuestionStock.getQuestions();
-                    List<Questions> parse =  questionsMapper.selectList(new LambdaQueryWrapper<Questions>().eq(Questions::getStageNumber, stages.getSortVal()));
-                    if (!CollectionUtils.isEmpty(parse)) {
-                       // parse = parse.stream().filter(x -> !StringUtils.isEmpty(x.getStageNumber()) && x.getStageNumber().equals(stages.getSortVal())).collect(Collectors.toList());
-                        if (stages.getRandomSort() == 1) {
-                            Collections.shuffle(parse);
+                    List<Questions> parse ;
+                    if (stages.getRandomSort() == 1) {
+                        parse = questionsMapper.selectList(new LambdaQueryWrapper<Questions>()
+                                .eq(Questions::getStageNumber, stages.getSortVal())
+                                .orderByAsc(Questions::getViewSort)
+                        );
+
+                        for (Questions q : parse) {
+                            q.setOrder(q.getViewSort());
                         }
-                        if (!CollectionUtils.isEmpty(parse)) {
-                            for (int i = 0; i < parse.size(); i++) {
-                                //parse.get(i).setQuestionNumber(i + 1);
-                                parse.get(i).setDesValue(stages.getDesValue());
-                            }
+                    } else {
+                        parse = questionsMapper.selectList(new LambdaQueryWrapper<Questions>()
+                                .eq(Questions::getStageNumber, stages.getSortVal())
+                                .orderByAsc(Questions::getQuestionNumber)
+                        );
+
+                        for (Questions q : parse) {
+                            q.setOrder(q.getQuestionNumber());
                         }
                     }
+                    if (!CollectionUtils.isEmpty(parse)) {
+                        for (int i = 0; i < parse.size(); i++) {
+                            parse.get(i).setDesValue(stages.getDesValue());
+                        }
+                    }
+
                     //CurrentQuestions.setQuestions(parse, stages.getId());
                     controlPane.showQuestions();
                     // 判断环节出题的类型
@@ -252,20 +270,34 @@ public class StageNamePreviewPreview extends PreviewPane {
                         // 连续答题
                         List<Questions> collect = questionsMapper.selectList(new LambdaQueryWrapper<Questions>()
                                 .eq(Questions::getStageNumber, stages.getSortVal())
-                                .eq(Questions::isHasAnswer, false)
-                        );
-                        // CurrentQuestions.getQuestionList().stream().filter(x -> !x.isHasAnswer()).collect(Collectors.toList());
+                                .eq(Questions::isHasAnswer, false));
+
                         if (!collect.isEmpty()) {
+
+                            if (stages.getRandomSort() == 1) {
+                                for (Questions questions : collect) {
+                                    questions.setOrder(questions.getViewSort());
+                                }
+                            } else {
+                                for (Questions questions : collect) {
+                                    questions.setOrder(questions.getQuestionNumber());
+                                }
+                            }
+
+                            collect.sort(Comparator.comparingInt(Questions::getOrder));
+
                             QuestionPreviewPreview.setCurrent(collect.get(0));
-                            controlPane.selectQuestion(collect.get(0).getQuestionNumber().toString());
+                            controlPane.selectQuestion(collect.get(0).getOrder().toString());
                             collect.get(0).setHasAnswer(true);
                             questionsMapper.updateById(collect.get(0));
-                            //CurrentQuestions.recordAnswer(collect.get(0).getQuestionNumber().toString());
+                            controlPane.setPreviewPane(
+                                    Navigator.preview("/view/preview/QuestionPreview.fxml", "", "/view/style.css", true, true)
+                            );
+                        } else {
+                            Information.info("此环节题目已完成作答");
                         }
                         
-                        controlPane.setPreviewPane(
-                                Navigator.preview("/view/preview/QuestionPreview.fxml", "", "/view/style.css", true, true)
-                        );
+
                     } else if (stages.getQuestionType() == 2) {
                         // 自选题目
                         StageQuestionPreviewPreview.setCurrentStage(stages);

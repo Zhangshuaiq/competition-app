@@ -7,6 +7,9 @@ import java.util.Map;
 
 public class GlobalCache {
     
+    // 最大团队个数，  小于等于 0 代表未激活
+    public static  int MAX_TEAM_NUMBER  = -10000;
+    
     // 每次滚动偏移量
     public static final int SCROLL_STEP = 30;
     
@@ -15,7 +18,7 @@ public class GlobalCache {
     public static  double scaleFactor = dpi / 96;
     
     // 是否展示竞技比赛的详情
-    public static boolean model7Hide = false;
+//    public static boolean model7Hide = false;
     
     // 竞技排名是否正在显示
     public static boolean showModel7Rank = false;

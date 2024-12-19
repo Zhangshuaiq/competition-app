@@ -1,47 +1,63 @@
 package competition.rest;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import competition.entity.Configs;
-import competition.entity.Stages;
-import competition.entity.Teams;
-import competition.mapper.ConfigsMapper;
-import competition.mapper.StagesMapper;
-import competition.mapper.TeamsMapper;
+import competition.JavaFxApplication;
+import competition.controller.ControlPane;
+import competition.entity.*;
+import competition.mapper.*;
 import competition.resp.JsonResp;
-import competition.util.BaseDir;
-import competition.util.ConfigSpliter;
+import competition.util.*;
+import javafx.application.Platform;
 import org.springframework.core.io.UrlResource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import java.net.MalformedURLException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/rest")
 public class RestApi {
     
-    
+    // 服务联系方式（微信同号）：陈先生 18008320850
     @Resource
     private TeamsMapper teamsMapper;
     
     @Resource
     private ConfigsMapper configsMapper;
     
+    @Resource
+    private ScoreStyleMapper scoreStyleMapper;
+    
+    @Resource
+    private ScoreConfigMapper scoreConfigMapper;
+    
+    @Resource
+    private ScoreConfigMapper1 scoreConfigMapper1;
+
+    @Resource
+    private Model7StatusMapper statusMapper;
+    
+    
     
     @GetMapping("/teams")
     public JsonResp teamList(){
+        // 队伍数量限制
         List<Teams> teams = teamsMapper.selectList(new LambdaQueryWrapper<>());
         teams.sort((o1, o2) -> Integer.parseInt(o1.getCode()) - Integer.parseInt(o2.getCode()));
+        int maxTeamNumber = GlobalCache.MAX_TEAM_NUMBER;
+        if (teams.size() <= maxTeamNumber) {
+            return JsonResp.success(teams);
+        }
+        teams = teams.subList(0, maxTeamNumber);
         return JsonResp.success(teams);
     }
     
@@ -68,6 +84,11 @@ public class RestApi {
             return ResponseEntity.badRequest()
                     .body(null);
         }
+    }
+    
+    @GetMapping("/holderPass")
+    public JsonResp holderPassword(){
+        return JsonResp.success(scoreStyleMapper.selectById(2).getStyles());
     }
 
     
@@ -103,6 +124,68 @@ public class RestApi {
         } catch (Exception e) {
             return ResponseEntity.badRequest().build();
         }
+    }
+    
+    
+    @GetMapping("/scoreConfig")
+    public JsonResp scoreConfig() {
+        List<ScoreConfig> scoreConfigs = scoreConfigMapper.selectList(new LambdaQueryWrapper<>());
+        List<ScoreConfig1> config1List = scoreConfigMapper1.selectList(new LambdaQueryWrapper<>());
+        Map<String, List> result = new HashMap<>();
+        result.put("item", scoreConfigs);
+        result.put("total", config1List);
+        return JsonResp.success(result);
+    }
+    
+    
+    @GetMapping("/score/{teamId}")
+    public JsonResp queryScore(@PathVariable Integer teamId){
+        return JsonResp.success(teamsMapper.selectById(teamId));
+    }
+
+
+
+    @PostMapping("/saveStatus")
+    public JsonResp saveStatus(@RequestBody Model7Status status){
+        // 删除旧的
+        statusMapper.delete(new LambdaQueryWrapper<Model7Status>()
+                .eq(Model7Status::getTeamId, status.getTeamId())
+        );
+        // 加入新的
+        statusMapper.insert(status);
+        return JsonResp.success();
+    }
+
+    @GetMapping("/status/{teamId}")
+    public JsonResp queryStatus(@PathVariable String teamId) {
+        Model7Status model7Status = statusMapper.selectOne(new LambdaQueryWrapper<Model7Status>()
+                .eq(Model7Status::getTeamId, teamId)
+        );
+        return JsonResp.success(model7Status);
+    }
+
+
+    @GetMapping("/contact")
+    public JsonResp contact(){
+        Configs configs = configsMapper.selectById(9);
+        if(configs == null) {
+            return JsonResp.success("");
+        }
+        return JsonResp.success(configs.getConfig());
+    }
+
+
+    // 抢答题目
+    @PostMapping("/quzz")
+    public JsonResp quzzQuestion(@RequestBody Map<String, String> data) {
+
+
+        String team = data.get("team");
+        String member = data.get("username");
+        // 更新数据库的状态，记录抢答的题目和人
+        ControlPane controlPane = JavaFxApplication.getApplicationContext().getBean(ControlPane.class);
+        controlPane.notifyBuzz(team, member);
+        return JsonResp.success("");
     }
     
 }

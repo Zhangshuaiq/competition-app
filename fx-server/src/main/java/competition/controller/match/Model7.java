@@ -26,6 +26,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
 import javax.annotation.Resource;
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.util.List;
@@ -84,12 +85,12 @@ public class Model7 implements ReloadPane {
         Model3Style model3Style = model3Mapper.selectById(2);
         String titleStyle = model3Style.getTitleStyle();
 
-        double vgap = ScreenAdapter.calculateExH(20);
-        double hgap = ScreenAdapter.calculateExW(20);
+        double vgap = ScreenAdapter.calculateExY(20);
+        double hgap = ScreenAdapter.calculateExX(20);
         double x = ScreenAdapter.calculateExX(10);
         double y = 0;
-        double width = ((ExtendedScreen.getWidth() - ScreenAdapter.calculateExW(40)) / 4);
-        double height = ScreenAdapter.calculateExH(287);
+        double width = ((ExtendedScreen.getWidth() - ScreenAdapter.calculateExX(40)) / 4);
+        double height = ScreenAdapter.calculateExY(287);
         int col = 4;
 
         if (!StringUtils.isEmpty(titleStyle)) {
@@ -97,10 +98,10 @@ public class Model7 implements ReloadPane {
             col = Integer.parseInt(split[0]);
             x = ScreenAdapter.calculateExX(Integer.parseInt(split[5]));
             y = ScreenAdapter.calculateExY(Integer.parseInt(split[6]));
-            width = ScreenAdapter.calculateExW(Integer.parseInt(split[3]));
-            height = ScreenAdapter.calculateExH(Integer.parseInt(split[4]));
-            vgap = ScreenAdapter.calculateExH(Integer.parseInt(split[1]));
-            hgap = ScreenAdapter.calculateExW(Integer.parseInt(split[2]));
+            width = ScreenAdapter.calculateExX(Integer.parseInt(split[3]));
+            height = ScreenAdapter.calculateExY(Integer.parseInt(split[4]));
+            vgap = ScreenAdapter.calculateExY(Integer.parseInt(split[1]));
+            hgap = ScreenAdapter.calculateExX(Integer.parseInt(split[2]));
         }
         container.setPadding(new Insets(y, 0, 0, x));
         container.getChildren().clear();
@@ -124,26 +125,33 @@ public class Model7 implements ReloadPane {
             upArea.setPrefWidth(anchorPane.getPrefWidth());
             // 背景颜色
             upArea.setBackground(new Background(new BackgroundFill(Color.BLUE, new CornerRadii(10), Insets.EMPTY)));
-            upArea.setPrefHeight(ScreenAdapter.calculateExH(37));
+            upArea.setPrefHeight(ScreenAdapter.calculateExY(37));
 
             // 第二行
-            HBox row2 = new HBox();
-            row2.setPadding(new Insets(0, 3, 0, 3));
+            GridPane row2 = new GridPane();
+            row2.setPadding(new Insets(2));
             row2.setPrefWidth(anchorPane.getPrefWidth());
             List<Model7RuntimeData.ModelData> modelData = runtimeData.get(i);
-            double radius = ScreenAdapter.calculateExW(5.0);
+            double radius = ScreenAdapter.calculateExX(5.0);
             Model7RuntimeData.ModelData last = null;
             int score = 0;
             int finish = 0;
+            int correct = 0;
             List<Questions> questionsList = questionsMapper.selectList(new LambdaQueryWrapper<Questions>()
                     .eq(Questions::getStageNumber, currentStage.getSortVal())
             );
-            for (Questions questions : questionsList) {
+            int cols = (int) ((anchorPane.getPrefWidth() - 4) / (2 * radius + 1));
+            for (int i1 = 0; i1 < questionsList.size(); i1++) {
                 Circle c = new Circle();
-                c.setRadius(radius);
+                c.setStrokeWidth(1);
+                c.setRadius(ScreenAdapter.calculateMainX(radius));
                 c.setStroke(Color.BLACK);
                 c.setFill(Color.WHITE);
-                row2.getChildren().add(c);
+                int colIndex = i1 % cols;
+                int rowIndex = i1 / cols;
+                System.out.print(colIndex + ",");
+                System.out.println(rowIndex);
+                row2.add(c, colIndex, rowIndex );
             }
             for (int i1 = 0; i1 < modelData.size(); i1++) {
                 Model7RuntimeData.ModelData m = modelData.get(i1);
@@ -153,7 +161,9 @@ public class Model7 implements ReloadPane {
                     finish++;
                     ((Circle) (row2.getChildren().get(i1))).setFill(Color.GREEN);
                     score += m.getScore();
+                    correct ++;
                 } else {
+                    score -= controlPane.getCurrentStage().getDesValue();
                     finish++;
                     ((Circle) (row2.getChildren().get(i1))).setFill(Color.RED);
                 }
@@ -167,16 +177,16 @@ public class Model7 implements ReloadPane {
             HBox row1 = new HBox();
             row1.setPadding(new Insets(0, 3, 0, 3));
             row1.setPrefWidth(anchorPane.getPrefWidth());
-            upArea.setSpacing(ScreenAdapter.calculateExH(5));
+            upArea.setSpacing(ScreenAdapter.calculateExY(5));
             Label label = new Label(teams.get(i).getFullName());
             label.setPrefWidth(anchorPane.getPrefWidth() / 4);
             label.setTextFill(Color.WHITE);
             Label scoreL = new Label(score + "分");
             scoreL.setPrefWidth(anchorPane.getPrefWidth() / 4);
             scoreL.setTextFill(Color.WHITE);
-            Label timeL = new Label("完成" + finish + "题|用时" + timeValue);
+            Label timeL = new Label("完成" + finish + "题 答对" + correct +"题|用时" + timeValue);
             if (Model7RuntimeData.getFinished().get(i)) {
-                timeL.setText("完成" + finish + "题|用时" + Model7RuntimeData.getFts().get(i));
+                timeL.setText("完成" + finish + "题 答对" + correct + "题|用时" + Model7RuntimeData.getFts().get(i));
             }
             timeL.setPrefWidth(anchorPane.getPrefWidth() / 2);
             timeL.setTextFill(Color.WHITE);
@@ -186,20 +196,21 @@ public class Model7 implements ReloadPane {
 
             AnchorPane downArea = new AnchorPane();
             downArea.setPrefWidth(anchorPane.getPrefWidth());
-            downArea.setStyle("-fx-border-color: black; -fx-border-width: 1");
-            if (!GlobalCache.model7Hide) {
+            downArea.setStyle("-fx-border-color: black; -fx-border-width: 1; -fx-background-color: white");
+            if (!Boolean.parseBoolean(model3Style.getHeadStyle())) {
                 anchorPane.getChildren().add(downArea);
             }
             downArea.setLayoutY(ScreenAdapter.calculateExY(52));
-            downArea.setPrefHeight(height - ScreenAdapter.calculateExH(37));
+            downArea.setPrefHeight(height - ScreenAdapter.calculateExY(37));
 
             // 回答完毕
+            Font font = FontMap.load(FontMap.defaultFontName(), ScreenAdapter.calculateExX(32));
             if (Model7RuntimeData.getFinished().get(i)) {
                 Label endLab = new Label("答题结束");
                 endLab.setPrefWidth(downArea.getPrefWidth());
                 endLab.setPrefHeight(downArea.getPrefHeight() / 5);
                 endLab.setLayoutY(downArea.getPrefHeight() / 5);
-                endLab.setFont(Font.font(ScreenAdapter.calculateExW(32)));
+                endLab.setFont(font);
                 endLab.setAlignment(Pos.CENTER);
                 endLab.setTextAlignment(TextAlignment.CENTER);
 
@@ -207,7 +218,7 @@ public class Model7 implements ReloadPane {
                 scoreLab.setPrefWidth(downArea.getPrefWidth());
                 scoreLab.setPrefHeight(downArea.getPrefHeight() / 5);
                 scoreLab.setLayoutY(downArea.getPrefHeight() * 0.4);
-                scoreLab.setFont(Font.font(ScreenAdapter.calculateExW(32)));
+                scoreLab.setFont(font);
                 scoreLab.setTextAlignment(TextAlignment.CENTER);
                 scoreLab.setAlignment(Pos.CENTER);
                 List<String> fts = Model7RuntimeData.getFts();
@@ -215,7 +226,7 @@ public class Model7 implements ReloadPane {
                 timeLab.setPrefWidth(downArea.getPrefWidth());
                 timeLab.setPrefHeight(downArea.getPrefHeight() / 5);
                 timeLab.setLayoutY(downArea.getPrefHeight() * 0.6);
-                timeLab.setFont(Font.font(ScreenAdapter.calculateExW(32)));
+                timeLab.setFont(font);
                 timeLab.setTextAlignment(TextAlignment.CENTER);
                 timeLab.setAlignment(Pos.CENTER);
                 downArea.getChildren().addAll(endLab, scoreLab, timeLab);
@@ -224,7 +235,7 @@ public class Model7 implements ReloadPane {
                     Label waitLab = new Label("等待答题");
                     waitLab.setPrefWidth(downArea.getPrefWidth());
                     waitLab.setPrefHeight(downArea.getPrefHeight());
-                    waitLab.setFont(Font.font(ScreenAdapter.calculateExW(32)));
+                    waitLab.setFont(font);
                     waitLab.setTextAlignment(TextAlignment.CENTER);
                     waitLab.setAlignment(Pos.CENTER);
                     downArea.getChildren().add(waitLab);
@@ -232,7 +243,7 @@ public class Model7 implements ReloadPane {
                     VBox vbx = new VBox();
                     // 设置边距
                     vbx.setPadding(new Insets(1, 5, 1, 5));
-                    vbx.setSpacing(ScreenAdapter.calculateExH(2));
+                    vbx.setSpacing(ScreenAdapter.calculateExY(2));
                     vbx.setPrefWidth(downArea.getPrefWidth());
                     downArea.getChildren().addAll(vbx);
                     Label q = new Label(last.getQuestionNumber() + ". " + last.getQuestion());
@@ -274,11 +285,11 @@ public class Model7 implements ReloadPane {
                     answerArea.setLayoutY(ScreenAdapter.calculateExY(190));
                     answerArea.setPrefWidth(downArea.getPrefWidth());
                     downArea.getChildren().add(answerArea);
-                    answerArea.setSpacing(ScreenAdapter.calculateExH(5));
+                    answerArea.setSpacing(ScreenAdapter.calculateExY(5));
                     if (last.getUserSelect() != null) {
                         Label select = new Label("回答:" + last.getUserSelect());
                         select.setBackground(new Background(new BackgroundFill(Color.BLUE, new CornerRadii(10), Insets.EMPTY)));
-                        select.setPrefHeight(ScreenAdapter.calculateMainH(30));
+                        select.setPrefHeight(ScreenAdapter.calculateExY(30));
                         select.setTextAlignment(TextAlignment.CENTER);
                         select.setTextFill(Color.WHITE);
                         select.setPrefWidth(answerArea.getPrefWidth());
@@ -291,7 +302,7 @@ public class Model7 implements ReloadPane {
                             status.setText("错误");
                             status.setBackground(new Background(new BackgroundFill(Color.RED, new CornerRadii(10), Insets.EMPTY)));
                         }
-                        status.setPrefHeight(ScreenAdapter.calculateMainH(30));
+                        status.setPrefHeight(ScreenAdapter.calculateExY(30));
                         status.setAlignment(Pos.CENTER);
                         status.setTextAlignment(TextAlignment.CENTER);
                         status.setTextFill(Color.WHITE);

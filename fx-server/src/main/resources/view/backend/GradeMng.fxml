@@ -1,25 +1,27 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-
+<?import java.lang.*?>
+<?import javafx.scene.layout.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.AnchorPane?>
-<AnchorPane prefHeight="827.0" prefWidth="1100.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1"
-            fx:controller="competition.controller.backend.GradeMng">
+
+<AnchorPane prefHeight="827.0" prefWidth="1100.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="competition.controller.backend.GradeMng">
     <children>
-        <Button layoutX="411.0" layoutY="48.0" mnemonicParsing="false" text="清除数据" onMouseClicked="#clearData"/>
-        <Button layoutX="605.0" layoutY="48.0" mnemonicParsing="false" text="导出 Excel"/>
+        <Button layoutX="411.0" layoutY="48.0" mnemonicParsing="false" onMouseClicked="#clearData" text="清除数据" />
+        <Button layoutX="605.0" layoutY="48.0" mnemonicParsing="false" onMouseClicked="#exportExcel" text="导出 Excel" />
         <TableView fx:id="tableView" layoutX="59.0" layoutY="89.0" prefHeight="665.0" prefWidth="996.0">
             <columns>
-                <TableColumn fx:id="teamCol" prefWidth="150.0" text="队伍"/>
-                <TableColumn fx:id="stageCol" prefWidth="150.0" text="环节"/>
-                <TableColumn fx:id="groupCol" prefWidth="75.0" text="分组"/>
-                <TableColumn fx:id="memberCol" prefWidth="150.0" text="队员"/>
-                <TableColumn fx:id="questionCol" prefWidth="75.0" text="题号"/>
-                <TableColumn fx:id="timeCol" prefWidth="75.0" text="用时"/>
-                <TableColumn fx:id="addScoreCol" prefWidth="75.0" text="加分"/>
-                <TableColumn fx:id="desScoreCol" prefWidth="75.0" text="减分"/>
-                <TableColumn fx:id="stageScoreCol" prefWidth="75.0" text="环节小计"/>
-                <TableColumn fx:id="teamScoreCol" prefWidth="75.0" text="成绩合计"/>
+                <TableColumn fx:id="teamCol" prefWidth="71.0" text="队伍" />
+                <TableColumn fx:id="stageCol" prefWidth="91.0" text="环节" />
+                <TableColumn fx:id="groupCol" prefWidth="83.0" text="分组" />
+                <TableColumn fx:id="memberCol" prefWidth="155.0" text="队员" />
+                <TableColumn fx:id="questionCol" prefWidth="83.0" text="题号" />
+                <TableColumn fx:id="timeCol" prefWidth="88.0" text="用时" />
+                <TableColumn fx:id="addScoreCol" prefWidth="72.0" text="加分" />
+                <TableColumn fx:id="desScoreCol" prefWidth="75.0" text="减分" />
+                <TableColumn fx:id="stageScoreCol" prefWidth="81.0" text="环节小计" />
+                <TableColumn fx:id="teamScoreCol" prefWidth="87.0" text="成绩合计" />
+                <TableColumn fx:id="userSelectCol" prefWidth="105.0" text="选手答案" />
             </columns>
         </TableView>
     </children>

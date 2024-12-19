@@ -1,8 +1,10 @@
 package competition.controller.preview;
 
+import cn.hutool.core.io.FileUtil;
 import com.alibaba.fastjson2.JSON;
 import com.alibaba.fastjson2.JSONObject;
 import competition.controller.ControlPane;
+import competition.controller.board.BoardPane;
 import competition.controller.match.MemberRank;
 import competition.entity.Configs;
 import competition.entity.RankStyle;
@@ -25,37 +27,44 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
+import javafx.scene.text.Text;
+import javafx.scene.text.TextAlignment;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
 import javax.annotation.Resource;
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.nio.charset.StandardCharsets;
 import java.util.*;
 
 @Component
 @Scope("prototype")
-public class MemberRankPreview extends PreviewPane{
+public class MemberRankPreview extends PreviewPane {
 
     @FXML
     private AnchorPane container;
 
     @FXML
-    private Label competitionLab;
+    private StackPane titleBox;
+
+    @FXML
+    private Text competitionLab;
 
     @FXML
     private VBox rankBox;
-    
+
     @Resource
     private ControlPane controlPane;
-    
-    @Resource 
+
+    @Resource
     private ConfigsMapper configsMapper;
 
     @Resource
     private RankStyleMapper rankStyleMapper;
-    
+
     @Resource
     private WsMessageHandler messageHandler;
 
@@ -63,7 +72,10 @@ public class MemberRankPreview extends PreviewPane{
 
     @FXML
     public void initialize() {
-        controlPane.getScoreBoardPreview().getSelected().clear();
+        BoardPane scoreBoardPreview = controlPane.getScoreBoardPreview();
+        if (scoreBoardPreview != null) {
+            scoreBoardPreview.getSelected().clear();
+        }
         container.setOnMouseClicked(new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent event) {
@@ -74,7 +86,7 @@ public class MemberRankPreview extends PreviewPane{
             }
         });
 
-        Navigator.previewStage.addEventFilter(KeyEvent.KEY_PRESSED,new EventHandler<KeyEvent>() {
+        Navigator.previewStage.addEventFilter(KeyEvent.KEY_PRESSED, new EventHandler<KeyEvent>() {
             @Override
             public void handle(KeyEvent event) {
                 if (controlPane.getPreviewPane() != MemberRankPreview.this) {
@@ -83,18 +95,18 @@ public class MemberRankPreview extends PreviewPane{
                 // 上
                 if (event.getCode() == KeyCode.UP) {
                     if (page > 0) {
-                        page --;
+                        page--;
                     }
                     showData();
                 } else if (event.getCode() == KeyCode.DOWN) {
                     // 下
-                    page ++;
+                    page++;
                     showData();
                 }
             }
         });
 
-        ExtendedScreen.extendScreen.addEventFilter(KeyEvent.KEY_PRESSED,new EventHandler<KeyEvent>() {
+        ExtendedScreen.extendScreen.addEventFilter(KeyEvent.KEY_PRESSED, new EventHandler<KeyEvent>() {
             @Override
             public void handle(KeyEvent event) {
                 if (controlPane.getPreviewPane() != MemberRankPreview.this) {
@@ -103,12 +115,12 @@ public class MemberRankPreview extends PreviewPane{
                 // 上
                 if (event.getCode() == KeyCode.UP) {
                     if (page > 0) {
-                        page --;
+                        page--;
                     }
                     showData();
                 } else if (event.getCode() == KeyCode.DOWN) {
                     // 下
-                    page ++;
+                    page++;
                     showData();
                 }
             }
@@ -148,11 +160,12 @@ public class MemberRankPreview extends PreviewPane{
         int width = Integer.parseInt(cfgArr[11]);
         int height = Integer.parseInt(cfgArr[12]);
         int count = 8;
-        double rowSpace = 10 ;
+        double rowSpace = 10;
 
-        String font = competitionLab.getFont().getName();
-        double size = competitionLab.getFont().getSize();
 
+        double size = 12;
+        Font font = FontMap.load(FontMap.defaultFontName(), 12);
+        boolean rankBold = false;
         if (!StringUtils.isEmpty(rankConfig)) {
             String[] split = rankConfig.split(ConfigSpliter.SPLITER);
             x = Integer.parseInt(split[0]);
@@ -160,25 +173,42 @@ public class MemberRankPreview extends PreviewPane{
             width = Integer.parseInt(split[2]);
             height = Integer.parseInt(split[3]);
             rowSpace = Integer.parseInt(split[6]);
-            font = FontMap.getFont(split[5]);
             size = Integer.parseInt(split[4]);
+            font = FontMap.load(split[5], ScreenAdapter.calculateMainX(size));
             count = Integer.parseInt(split[7]);
+            if (split.length >= 9) {
+                rankBold = Boolean.parseBoolean(split[8]);
+            }
         }
 
         if (!StringUtils.isEmpty(headConfig)) {
             String[] split = headConfig.split(ConfigSpliter.SPLITER);
-            competitionLab.setLayoutX(ScreenAdapter.calculateMainX(Integer.parseInt(split[0])));
-            competitionLab.setLayoutY(ScreenAdapter.calculateMainY(Integer.parseInt(split[1])));
-            competitionLab.setPrefWidth(ScreenAdapter.calculateMainW(Integer.parseInt(split[2])));
-            competitionLab.setPrefHeight(ScreenAdapter.calculateMainH(Integer.parseInt(split[3])));
+            titleBox.setLayoutX(ScreenAdapter.calculateMainX(Integer.parseInt(split[0])));
+            titleBox.setLayoutY(ScreenAdapter.calculateMainY(Integer.parseInt(split[1])));
+            titleBox.setPrefWidth(ScreenAdapter.calculateMainX(Integer.parseInt(split[2])));
+            titleBox.setPrefHeight(ScreenAdapter.calculateMainY(Integer.parseInt(split[3])));
+//            competitionLab.setLayoutX(ScreenAdapter.calculateMainX(Integer.parseInt(split[0])));
+//            competitionLab.setLayoutY(ScreenAdapter.calculateMainY(Integer.parseInt(split[1])));
+//            competitionLab.setPrefWidth(ScreenAdapter.calculateMainX(Integer.parseInt(split[2])));
+//            competitionLab.setPrefHeight(ScreenAdapter.calculateMainY(Integer.parseInt(split[3])));
             int fs = Integer.parseInt(split[5]);
             Color color = Color.valueOf(split[4]);
             String fn = split[6];
-            Font f = Font.font(fn, ScreenAdapter.calculateMainW(fs));
+            Font f = FontMap.load(fn, ScreenAdapter.calculateMainX(fs));
             competitionLab.setFont(f);
-            competitionLab.setTextFill(color);
+            competitionLab.setFill(color);
+            boolean headBold = false;
+            if (split.length >= 8) {
+                headBold = Boolean.parseBoolean(split[7]);
+            }
+            if (headBold) {
+                competitionLab.setStroke(competitionLab.getFill());
+                competitionLab.setStrokeWidth(1);
+            } else {
+                competitionLab.setStroke(null);
+            }
         }
-        
+
         int w0 = Integer.parseInt(cfgArr[0]);
         int w1 = Integer.parseInt(cfgArr[1]);
         int w2 = Integer.parseInt(cfgArr[2]);
@@ -197,9 +227,9 @@ public class MemberRankPreview extends PreviewPane{
 
         rankBox.setLayoutX(ScreenAdapter.calculateMainX(x));
         rankBox.setLayoutY(ScreenAdapter.calculateMainY(y));
-        rankBox.setPrefWidth(ScreenAdapter.calculateMainW(width));
-        rankBox.setPrefHeight(ScreenAdapter.calculateMainH(height * count + (rowSpace) * (count - 1)));
-        rankBox.setSpacing(ScreenAdapter.calculateMainH(rowSpace));
+        rankBox.setPrefWidth(ScreenAdapter.calculateMainX(width));
+        rankBox.setPrefHeight(ScreenAdapter.calculateMainY(height * count + (rowSpace) * (count - 1)));
+        rankBox.setSpacing(ScreenAdapter.calculateMainY(rowSpace));
 
 
         // 获取排名
@@ -227,7 +257,7 @@ public class MemberRankPreview extends PreviewPane{
                     return 1;
                 } else if (o1.getScore() > o2.getScore()) {
                     return -1;
-                } 
+                }
                 return 0;
             }
         });
@@ -235,8 +265,8 @@ public class MemberRankPreview extends PreviewPane{
         int rank = 1;
         TeamMemberRankData first = rankList.get(0);
         for (TeamMemberRankData rankData : rankList) {
-            if (first.compareTo(rankData)> 0) {
-                rank ++;
+            if (first.compareTo(rankData) > 0) {
+                rank++;
             }
             rankData.setRank(rank);
             first = rankData;
@@ -245,7 +275,7 @@ public class MemberRankPreview extends PreviewPane{
         // 分页
         int end = (page + 1) * count;
         int start = page * count;
-        if (end > rankList.size() ) {
+        if (end > rankList.size()) {
             end = rankList.size();
         }
 
@@ -263,47 +293,94 @@ public class MemberRankPreview extends PreviewPane{
         if (start < 0) {
             start = 0;
         }
-        
+
         rankBox.getChildren().clear();
-        
-        
+
+        String path = TextResource.MEMBER_TITLE;
+        List<String> lines = FileUtil.readLines(path, StandardCharsets.UTF_8);
 
         HBox title = new HBox();
-        title.setBackground(new Background(new BackgroundFill(Color.RED,  new CornerRadii(10), Insets.EMPTY)));
+        title.setBackground(new Background(new BackgroundFill(Color.RED, new CornerRadii(10), Insets.EMPTY)));
         title.setPrefWidth(rankBox.getPrefWidth());
-        Label rankL = new Label("排名");
-        rankL.setTextFill(fcolor);
-        rankL.setAlignment(Pos.CENTER);
-        rankL.setPrefHeight(ScreenAdapter.calculateMainH(height));
-        rankL.setFont(Font.font(font, ScreenAdapter.calculateMainW(size)));
-        rankL.setPrefWidth(ScreenAdapter.calculateMainW(w0w));
 
-        Label teamL = new Label("团队");
-        teamL.setTextFill(fcolor);
-        teamL.setPrefHeight(ScreenAdapter.calculateMainH(height));
-        teamL.setPrefWidth(ScreenAdapter.calculateMainW(w1w));
-        teamL.setAlignment(Pos.CENTER);
-        teamL.setFont(Font.font(font, ScreenAdapter.calculateMainW(size)));
+        if (lines.size() > 0) {
+            competitionLab.setText(lines.get(0));
+        }
 
-        Label scoreL = new Label("分数");
-        scoreL.setTextFill(fcolor);
-        scoreL.setPrefHeight(ScreenAdapter.calculateMainH(height));
-        scoreL.setPrefWidth( ScreenAdapter.calculateMainW(w2w));
-        scoreL.setAlignment(Pos.CENTER);
-        scoreL.setFont(Font.font(font, ScreenAdapter.calculateMainW(size)));
+        StackPane rankPane = new StackPane();
+        Text rankL = new Text("排名");
+        if (lines.size() > 1) {
+            rankL.setText(lines.get(1));
+        }
+        rankL.setFill(fcolor);
+        rankL.setTextAlignment(TextAlignment.CENTER);
+        rankL.prefHeight(ScreenAdapter.calculateMainY(height));
+        rankL.setFont(font);
+        rankL.prefWidth(ScreenAdapter.calculateMainX(w0w));
+        rankPane.setPrefWidth(ScreenAdapter.calculateMainX(w0w));
+        rankPane.setPrefHeight(ScreenAdapter.calculateMainY(height));
+        if (rankBold) {
+            rankL.setStroke(rankL.getFill());
+            rankL.setStrokeWidth(1);
+        }
+        rankPane.getChildren().add(rankL);
 
-        Label timeL = new Label("选手");
-        timeL.setTextFill(fcolor);
-        timeL.setPrefHeight(ScreenAdapter.calculateMainH(height));
-        timeL.setPrefWidth( ScreenAdapter.calculateMainW(w3w));
-        timeL.setAlignment(Pos.CENTER);
-        timeL.setFont(Font.font(font, ScreenAdapter.calculateMainW(size)));
+        StackPane teamPane = new StackPane();
+        Text teamL = new Text("团队");
+        if (lines.size() > 2) {
+            teamL.setText(lines.get(2));
+        }
+        teamL.setFill(fcolor);
+        teamL.setTextAlignment(TextAlignment.CENTER);
+        teamL.setFont(font);
 
-        title.getChildren().addAll(rankL, teamL, timeL, scoreL);
-        title.setBackground(new Background(new BackgroundFill(bgcolor,  new CornerRadii(10), Insets.EMPTY)));
+        teamPane.setPrefHeight(ScreenAdapter.calculateMainY(height));
+        teamPane.setPrefWidth(ScreenAdapter.calculateMainX(w1w));
+        if (rankBold) {
+            teamL.setStroke(teamL.getFill());
+            teamL.setStrokeWidth(1);
+        }
+        teamPane.getChildren().add(teamL);
+
+
+        StackPane scorePane = new StackPane();
+        Text scoreL = new Text("分数");
+        if (lines.size() > 4) {
+            scoreL.setText(lines.get(4));
+        }
+        scoreL.setFill(fcolor);
+        scorePane.setPrefHeight(ScreenAdapter.calculateMainY(height));
+        scorePane.setPrefWidth(ScreenAdapter.calculateMainX(w2w));
+        scoreL.setTextAlignment(TextAlignment.CENTER);
+        scoreL.setFont(font);
+        if (rankBold) {
+            scoreL.setStroke(scoreL.getFill());
+            scoreL.setStrokeWidth(1);
+        }
+        scorePane.getChildren().add(scoreL);
+
+
+        StackPane timePane = new StackPane();
+        Text timeL = new Text("选手");
+        if (lines.size() > 3) {
+            timeL.setText(lines.get(3));
+        }
+        timeL.setFill(fcolor);
+        timePane.setPrefHeight(ScreenAdapter.calculateMainY(height));
+        timePane.setPrefWidth(ScreenAdapter.calculateMainX(w3w));
+        timeL.setTextAlignment(TextAlignment.CENTER);
+        timeL.setFont(font);
+        if (rankBold) {
+            timeL.setStroke(timeL.getFill());
+            timeL.setStrokeWidth(1);
+        }
+        timePane.getChildren().add(timeL);
+
+        title.getChildren().addAll(rankPane, teamPane, timePane, scorePane);
+        title.setBackground(new Background(new BackgroundFill(bgcolor, new CornerRadii(10), Insets.EMPTY)));
         rankBox.getChildren().add(title);
 
-        
+
         for (int i = start; i < end; i++) {
             TeamMemberRankData rankData = rankList.get(i);
             HBox itemRow = new HBox();
@@ -311,42 +388,69 @@ public class MemberRankPreview extends PreviewPane{
             Color c = bgcolor;
             if (rankData.getRank() == 1) {
                 c = color1;
-            } else  if (rankData.getRank() == 2) {
+            } else if (rankData.getRank() == 2) {
                 c = color2;
-            } else  if (rankData.getRank() == 3) {
+            } else if (rankData.getRank() == 3) {
                 c = color3;
             }
-            itemRow.setBackground(new Background(new BackgroundFill(c,  new CornerRadii(10), Insets.EMPTY)));
+            itemRow.setBackground(new Background(new BackgroundFill(c, new CornerRadii(10), Insets.EMPTY)));
             itemRow.setPrefWidth(rankBox.getPrefWidth());
-            Label rankD = new Label((rankData.getRank()) + "");
-            rankD.setTextFill(fcolor);
-            rankD.setPrefHeight(ScreenAdapter.calculateMainH(height));
-            rankD.setPrefWidth(ScreenAdapter.calculateMainW( w0w));
-            rankD.setAlignment(Pos.CENTER);
-            rankD.setFont(Font.font(font, ScreenAdapter.calculateMainW(size)));
 
-            Label teamD = new Label(rankData.getTeam());
-            teamD.setTextFill(fcolor);
-            teamD.setPrefHeight(ScreenAdapter.calculateMainH(height));
-            teamD.setPrefWidth(ScreenAdapter.calculateMainW(w1w));
-            teamD.setAlignment(Pos.CENTER);
-            teamD.setFont(Font.font(font, ScreenAdapter.calculateMainW(size)));
+            StackPane rankItemPane = new StackPane();
+            Text rankD = new Text((rankData.getRank()) + "");
+            rankD.setFill(fcolor);
+            rankItemPane.setPrefHeight(ScreenAdapter.calculateMainY(height));
+            rankItemPane.setPrefWidth(ScreenAdapter.calculateMainX(w0w));
+            rankD.setTextAlignment(TextAlignment.CENTER);
+            rankD.setFont(font);
+            if (rankBold) {
+                rankD.setStroke(rankD.getFill());
+                rankD.setStrokeWidth(1);
+            }
+            rankItemPane.getChildren().add(rankD);
 
-            Label scoreD = new Label(rankData.getMember() + "");
-            scoreD.setTextFill(fcolor);
-            scoreD.setPrefHeight(ScreenAdapter.calculateMainH(height));
-            scoreD.setPrefWidth(ScreenAdapter.calculateMainW(w2w));
-            scoreD.setAlignment(Pos.CENTER);
-            scoreD.setFont(Font.font(font, ScreenAdapter.calculateMainW(size)));
+            StackPane teamItemPane = new StackPane();
+            Text teamD = new Text(rankData.getTeam());
+            teamD.setFill(fcolor);
+            teamItemPane.setPrefHeight(ScreenAdapter.calculateMainY(height));
+            teamItemPane.setPrefWidth(ScreenAdapter.calculateMainX(w1w));
+            teamD.setTextAlignment(TextAlignment.CENTER);
+            teamD.setFont(font);
+            if (rankBold) {
+                teamD.setStroke(teamD.getFill());
+                teamD.setStrokeWidth(1);
+            }
 
-            Label timeD = new Label(rankData.getScore() + "");
-            timeD.setTextFill(fcolor);
-            timeD.setPrefHeight(ScreenAdapter.calculateMainH(height));
-            timeD.setPrefWidth(ScreenAdapter.calculateMainW(w3w));
-            timeD.setAlignment(Pos.CENTER);
-            timeD.setFont(Font.font(font, ScreenAdapter.calculateMainW(size)));
+            teamItemPane.getChildren().add(teamD);
 
-            itemRow.getChildren().addAll(rankD, teamD, scoreD, timeD);
+
+            StackPane scoreItemPane = new StackPane();
+            Text scoreD = new Text(rankData.getMember() + "");
+            scoreD.setFill(fcolor);
+            scoreItemPane.setPrefHeight(ScreenAdapter.calculateMainY(height));
+            scoreItemPane.setPrefWidth(ScreenAdapter.calculateMainX(w2w));
+            scoreD.setTextAlignment(TextAlignment.CENTER);
+            scoreD.setFont(font);
+            if (rankBold) {
+                scoreD.setStroke(scoreD.getFill());
+                scoreD.setStrokeWidth(1);
+            }
+            scoreItemPane.getChildren().add(scoreD);
+
+            StackPane timeItemPane = new StackPane();
+            Text timeD = new Text(rankData.getScore() + "");
+            timeD.setFill(fcolor);
+            timeItemPane.setPrefHeight(ScreenAdapter.calculateMainY(height));
+            timeItemPane.setPrefWidth(ScreenAdapter.calculateMainX(w3w));
+            timeD.setTextAlignment(TextAlignment.CENTER);
+            timeD.setFont(font);
+            if (rankBold) {
+                timeD.setStroke(timeD.getFill());
+                timeD.setStrokeWidth(1);
+            }
+            timeItemPane.getChildren().add(timeD);
+
+            itemRow.getChildren().addAll(rankItemPane, teamItemPane, scoreItemPane, timeItemPane);
             rankBox.getChildren().add(itemRow);
         }
 

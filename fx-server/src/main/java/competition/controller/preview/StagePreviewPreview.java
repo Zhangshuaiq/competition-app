@@ -3,6 +3,7 @@ package competition.controller.preview;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import competition.controller.ControlPane;
+import competition.controller.board.BoardPane;
 import competition.controller.match.StageNamePreview;
 import competition.controller.match.StagePreview;
 import competition.controller.match.StagePreviewAttr;
@@ -31,6 +32,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
 import javax.annotation.Resource;
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
@@ -77,7 +79,10 @@ public class StagePreviewPreview extends PreviewPane {
 
     @FXML
     public void initialize() {
-        controlPane.getScoreBoardPreview().getSelected().clear();
+        BoardPane scoreBoardPreview = controlPane.getScoreBoardPreview();
+        if (scoreBoardPreview != null) {
+            scoreBoardPreview.getSelected().clear();
+        }
         innerStageID = parentStageId;
         PreviewStack.addPreview(this);
         PreviewStack.addReturn(this);
@@ -149,15 +154,15 @@ public class StagePreviewPreview extends PreviewPane {
                 messageHandler.notifyPage("stages", stages);
               
                 
-                String defaultStyle = "550%%300%%350%%80%%false%%0xb31a1aff%%%%微软雅黑%%28%%false%%false%%false%%false%%居中对齐%%60%%0%%2";
+                String defaultStyle = "550%%300%%350%%80%%false%%0xb31a1aff%%%%默认.ttf%%28%%false%%false%%false%%false%%居中对齐%%60%%0%%2%%60";
                 String[] detailArr = defaultStyle.split(ConfigSpliter.SPLITER);
                 if (stagesStyle != null) {
                     detailArr = stagesStyle.getStyle().split(ConfigSpliter.SPLITER);
                 }
                 double x = ScreenAdapter.calculateMainX(Integer.parseInt(split[4]));
                 double y =  ScreenAdapter.calculateMainY(Integer.parseInt(split[5]));
-                double width =  ScreenAdapter.calculateMainW(Integer.parseInt(split[6])); 
-                double height =  ScreenAdapter.calculateMainH(Integer.parseInt(split[7]));
+                double width =  ScreenAdapter.calculateMainX(Integer.parseInt(split[6])); 
+                double height =  ScreenAdapter.calculateMainY(Integer.parseInt(split[7]));
 
                 GridPane stageContainer = new GridPane();
                 stageContainer.setLayoutX(x);
@@ -168,10 +173,12 @@ public class StagePreviewPreview extends PreviewPane {
                 if (detailArr.length > 0) {
                     stageContainer.setLayoutX(ScreenAdapter.calculateMainX(Integer.parseInt(detailArr[0])));
                     stageContainer.setLayoutY(ScreenAdapter.calculateMainY(Integer.parseInt(detailArr[1])));
-                    stageContainer.prefWidth(ScreenAdapter.calculateMainW(Integer.parseInt(detailArr[2])));
-                    height =  ScreenAdapter.calculateMainH(Integer.parseInt(detailArr[3]));
-                    stageContainer.setVgap(ScreenAdapter.calculateMainH(Integer.parseInt(detailArr[14])));
-                    stageContainer.setHgap(ScreenAdapter.calculateMainW(Integer.parseInt(detailArr[14])));
+                    stageContainer.prefWidth(ScreenAdapter.calculateMainX(Integer.parseInt(detailArr[2])));
+                    height =  ScreenAdapter.calculateMainY(Integer.parseInt(detailArr[3]));
+                    if (detailArr.length >= 18) {
+                        stageContainer.setHgap(ScreenAdapter.calculateMainY(Integer.parseInt(detailArr[17])));
+                    }
+                    stageContainer.setVgap(ScreenAdapter.calculateMainX(Integer.parseInt(detailArr[14])));
                     stageContainer.setAlignment(AlignmentUtil.getAlign(detailArr[13]));
                 }
 
@@ -206,8 +213,8 @@ public class StagePreviewPreview extends PreviewPane {
                                     stageNamePane.setBackground(new Background(new BackgroundImage(new Image(new FileInputStream(detailArr[6])),
                                             BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT, BackgroundPosition.CENTER,
                                             new BackgroundSize(
-                                                    ScreenAdapter.calculateMainW(Integer.parseInt(detailArr[2])),
-                                                    ScreenAdapter.calculateMainH(Integer.parseInt(detailArr[3])), 
+                                                    ScreenAdapter.calculateMainX(Integer.parseInt(detailArr[2])),
+                                                    ScreenAdapter.calculateMainY(Integer.parseInt(detailArr[3])), 
                                                     false, false, false, false))));
                                 } catch (FileNotFoundException e) {
                                     stageNamePane.setBackground(new Background(new BackgroundFill(Color.TRANSPARENT, new CornerRadii(10), Insets.EMPTY)));
@@ -221,8 +228,7 @@ public class StagePreviewPreview extends PreviewPane {
                         }
                     }
                     if (detailArr.length > 0) {
-                        Font font = Font.font(FontMap.getFont(detailArr[7]), FontWeight.NORMAL, FontPosture.REGULAR, 
-                                ScreenAdapter.calculateMainW(Integer.parseInt(detailArr[8])));
+                        Font font = FontMap.load(detailArr[7], ScreenAdapter.calculateMainX(Integer.parseInt(detailArr[8])));
                         stageName.setFont(font);
                         if (Boolean.valueOf(detailArr[10])) {
                             stageName.setStroke(stageName.getFill());

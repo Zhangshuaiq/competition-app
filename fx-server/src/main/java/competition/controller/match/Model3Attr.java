@@ -194,7 +194,7 @@ public class Model3Attr {
     @FXML
     public void selectHeadImg() {
         FileChooser chooser = new FileChooser();
-        chooser.setInitialDirectory(new File(BaseDir.IMAGE_DIR));
+        chooser.setInitialDirectory(new File(BaseDir.BACKGROUND_DIR));
         chooser.getExtensionFilters().addAll(
                 new FileChooser.ExtensionFilter("Image Files", "*.png", "*.jpg", "*.gif")
         );
@@ -213,7 +213,7 @@ public class Model3Attr {
     @FXML
     public void selectNameImg() {
         FileChooser chooser = new FileChooser();
-        chooser.setInitialDirectory(new File(BaseDir.IMAGE_DIR));
+        chooser.setInitialDirectory(new File(BaseDir.BACKGROUND_DIR));
         chooser.getExtensionFilters().addAll(
                 new FileChooser.ExtensionFilter("Image Files", "*.png", "*.jpg", "*.gif")
         );
@@ -232,7 +232,7 @@ public class Model3Attr {
     @FXML
     public void selectCodeImg() {
         FileChooser chooser = new FileChooser();
-        chooser.setInitialDirectory(new File(BaseDir.IMAGE_DIR));
+        chooser.setInitialDirectory(new File(BaseDir.BACKGROUND_DIR));
         chooser.getExtensionFilters().addAll(
                 new FileChooser.ExtensionFilter("Image Files", "*.png", "*.jpg", "*.gif")
         );
@@ -264,19 +264,19 @@ public class Model3Attr {
         if (!StringUtils.isEmpty(model3Style.getTitleStyle())) {
             showNameConfig(model3Style.getTitleStyle());
         } else {
-            showNameConfig("250%%300%%150%%150%%false%%0x990000ff%%%%微软雅黑%%32%%false%%false%%false%%false%%居中对齐%%30%%0xffffffff");
+            showNameConfig("250%%300%%150%%150%%false%%0x990000ff%%%%默认.ttf%%32%%false%%false%%false%%false%%居中对齐%%30%%0xffffffff");
         }
 
         if (!StringUtils.isEmpty(model3Style.getQStyle())) {
             showNumberConfig(model3Style.getQStyle());
         } else {
-            showNumberConfig("500%%300%%60%%60%%false%%0x990000ff%%%%楷体%%36%%false%%false%%false%%false%%居中对齐%%30%%8%%40%%0xffffffff");
+            showNumberConfig("500%%300%%60%%60%%false%%0x990000ff%%%%默认.ttf%%36%%false%%false%%false%%false%%居中对齐%%30%%8%%40%%0xffffffff");
         }
 
         if (!StringUtils.isEmpty(model3Style.getHeadStyle())) {
             showHeadConfig(model3Style.getHeadStyle());
         } else {
-            showHeadConfig("750%%150%%400%%100%%false%%0x990000ff%%%%黑体%%40%%false%%false%%false%%false%%居中对齐%%0%%0xffffffff");
+            showHeadConfig("750%%150%%400%%100%%false%%0x990000ff%%%%默认.ttf%%40%%false%%false%%false%%false%%居中对齐%%0%%0xffffffff");
         }
     }
 
@@ -424,8 +424,8 @@ public class Model3Attr {
 
     private void showNumberConfig(String config) {
         Font defaultFont = new JLabel().getFont();
-        numberFontSelector.setValue(defaultFont.getFamily());
-        numberFontSize.setText(defaultFont.getSize() + "");
+        numberFontSelector.setValue(FontMap.defaultFontName());
+        numberFontSize.setText(12 + "");
         numberIticChoice.setSelected(false);
         numberDeleteChoice.setSelected(false);
         colNumber.setText("1");
@@ -480,9 +480,8 @@ public class Model3Attr {
 
 
     private void showHeadConfig(String style) {
-        Font defaultFont = new JLabel().getFont();
-        headFontSelector.setValue(defaultFont.getFamily());
-        headFontSize.setText(defaultFont.getSize() + "");
+        headFontSelector.setValue(FontMap.defaultFontName());
+        headFontSize.setText(12 + "");
         headIticChoice.setSelected(false);
         headDeleteChoice.setSelected(false);
         headSpaceInput.setText("0");
@@ -521,9 +520,8 @@ public class Model3Attr {
 
 
     private void showNameConfig(String style) {
-        Font defaultFont = new JLabel().getFont();
-        nameFontSelector.setValue(defaultFont.getFamily());
-        nameFontSize.setText(defaultFont.getSize() + "");
+        nameFontSelector.setValue(FontMap.defaultFontName());
+        nameFontSize.setText(12 + "");
         nameIticChoice.setSelected(false);
         nameDeleteChoice.setSelected(false);
         nameSpaceInput.setText("0");

@@ -25,4 +25,12 @@ public class MusicResource {
     public static final String SHOW_ANSWER = BaseDir.MUSIC_DIR + "答案显示.mp3";
 
     public static final String SHOW_QUESTION = BaseDir.MUSIC_DIR + "试题显示.mp3";
+
+    public static final String BUZZ_SUCCESS = BaseDir.MUSIC_DIR + "抢答" +  File.separator +  "成功.mp3";
+
+    public static final String BUZZ_FAIL = BaseDir.MUSIC_DIR + "抢答" +  File.separator +  "违规.mp3";
+
+    public static final String BUZZ_START = BaseDir.MUSIC_DIR + "抢答" +  File.separator +  "开始抢答.mp3";
+
+    public static final String BUZZ_STOP = BaseDir.MUSIC_DIR + "抢答" +  File.separator +  "抢答结束.mp3";
 }

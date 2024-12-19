@@ -5,12 +5,13 @@ import com.alibaba.fastjson2.JSON;
 import com.alibaba.fastjson2.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import competition.controller.ControlPane;
+import competition.controller.board.BoardPane;
+import competition.entity.ScoreStyle;
 import competition.entity.Teams;
+import competition.mapper.ScoreStyleMapper;
+import competition.mapper.StageMemberScoreMapper;
 import competition.mapper.TeamsMapper;
-import competition.util.ExcelParser;
-import competition.util.Information;
-import competition.util.ScoreSaver;
-import competition.util.TeamRuntime;
+import competition.util.*;
 import javafx.collections.FXCollections;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
@@ -37,7 +38,12 @@ import java.util.stream.Collectors;
 
 @Component
 public class TeamConfig {
+
+    @Resource
+    private StageMemberScoreMapper scoreMapper;
     
+    @FXML
+    private TextField holderPassword;
     
     @FXML
     private VBox memberBox;
@@ -64,14 +70,33 @@ public class TeamConfig {
     @Resource
     private ControlPane controlPane;
     
+    @Resource
+    private ScoreStyleMapper mapper;
+    
     @FXML
     public void initialize(){
+
+
+        ScoreStyle scoreStyle = mapper.selectById(2);
+
+        holderPassword.setText(scoreStyle.getStyles());
+
         codeCol.setCellValueFactory(new PropertyValueFactory<>("code"));
         shortNameCol.setCellValueFactory(new PropertyValueFactory<>("shortName"));
         fullNameCol.setCellValueFactory(new PropertyValueFactory<>("fullName"));
         memberCol.setCellValueFactory(new PropertyValueFactory<>("members"));
         passwordCol.setCellValueFactory(new PropertyValueFactory<>("password"));
         showTeam();
+    }
+    
+    @FXML
+    public void updateHolderPassword(){
+
+        ScoreStyle scoreStyle = mapper.selectById(2);
+
+        String text = holderPassword.getText();
+        scoreStyle.setStyles(text);
+        mapper.updateById(scoreStyle);
     }
     
     @FXML
@@ -128,6 +153,13 @@ public class TeamConfig {
     
     @FXML
     public void addTeamInfo(){
+
+        Long count = teamsMapper.selectCount(new LambdaQueryWrapper<>());
+        if (count >= GlobalCache.MAX_TEAM_NUMBER) {
+            Information.error("团队个数不能超过 " + GlobalCache.MAX_TEAM_NUMBER);
+            return;
+        }
+
         final String codeVal = codeInput.getText();
         final String shortNameVal = shortNameInput.getText();
         final String fullNameVal = fullNameInput.getText();
@@ -250,12 +282,34 @@ public class TeamConfig {
         File selectedFile = fileChooser.showOpenDialog(null);
         if (selectedFile != null) {
             List<Teams> teamsList = ExcelParser.parse(selectedFile.getAbsolutePath(), Teams.class);
+            
             // 删除旧的内容
             teamsMapper.delete(new LambdaQueryWrapper<>());
             for (Teams teams : teamsList) {
+                Long count = teamsMapper.selectCount(new LambdaQueryWrapper<>());
+                if (count >= GlobalCache.MAX_TEAM_NUMBER) {
+                    Information.error("团队个数不能超过 " + GlobalCache.MAX_TEAM_NUMBER);
+                    return;
+                }
+                String members = teams.getMembers();
+                if (StringUtils.isEmpty(members)) {
+                    Information.error("团队至少有一个成员 " + GlobalCache.MAX_TEAM_NUMBER);
+                    return;
+                }
+
+                String[] memberArr = members.split(",");
+                Map<String, Integer> memberScore = new HashMap<>();
+                for (String s : memberArr) {
+                    memberScore.put(s, 0);
+                }
+                final String memberScores = JSON.toJSONString(memberScore);
+                teams.setMemberScore(memberScores);
+                teams.setTeamScore(0);
                 teamsMapper.insert(teams);
             }
+            TeamRuntime.setTeams(teamsList);
         }
+
         // 显示最新的队伍信息
         showTeam();
     }
@@ -292,7 +346,12 @@ public class TeamConfig {
             }
         }
         TeamRuntime.setTeams(teams);
-        controlPane.getScoreBoardPreview().reload();
+        BoardPane scoreBoardPreview = controlPane.getScoreBoardPreview();
+        if (scoreBoardPreview != null) {
+            scoreBoardPreview.reload();
+        }
+
+        scoreMapper.delete(new LambdaQueryWrapper<>());
     }
     
     
@@ -330,7 +389,10 @@ public class TeamConfig {
             }
         }
         TeamRuntime.setTeams(teams);
-        controlPane.getScoreBoardPreview().reload();
+        BoardPane scoreBoardPreview = controlPane.getScoreBoardPreview();
+        if (scoreBoardPreview != null) {
+            scoreBoardPreview.reload();
+        }
     }
     
     

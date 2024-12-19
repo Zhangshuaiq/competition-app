@@ -5,12 +5,15 @@ import competition.controller.preview.PreviewPane;
 import competition.entity.Configs;
 import competition.mapper.ConfigsMapper;
 import javafx.collections.ObservableList;
+import javafx.embed.swing.JFXPanel;
 import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.Button;
+import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
@@ -19,6 +22,9 @@ import javafx.stage.WindowEvent;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.util.StringUtils;
 
+import javax.swing.*;
+import java.awt.peer.ComponentPeer;
+import java.awt.peer.FramePeer;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.concurrent.atomic.AtomicReference;
@@ -52,6 +58,12 @@ public class Navigator {
             }
         });
 
+//        activeStage.setOnCloseRequest(new EventHandler<WindowEvent>() {
+//            @Override
+//            public void handle(WindowEvent event) {
+//                System.exit(0);
+//            }
+//        });
         activeStage.setAlwaysOnTop(true);
         activeStage.setTitle("软件激活");
     }
@@ -291,10 +303,24 @@ public class Navigator {
                 ExtendedScreen.scoreBoardStage.setX(bounds.getMinX() + event.getScreenX() - xOffset.get());
                 ExtendedScreen.scoreBoardStage.setY(bounds.getMinY() +event.getScreenY() - yOffset.get());
             });
-            
+
             
             scene.getStylesheets().add(cssFile); // 应用 CSS
 
+//            SwingUtilities.invokeLater(() -> {
+//                JDialog dialog = new JDialog();
+//                dialog.setUndecorated(true); // 去掉对话框装饰
+//                dialog.setAlwaysOnTop(true); // 可选：保持对话框在最上层
+//                JFXPanel jfxPanel = new JFXPanel();
+//
+//                scene.setFill(null);
+//
+//                jfxPanel.setScene(scene);
+//                dialog.add(jfxPanel);
+//                dialog.setSize(1000, 200);
+//                dialog.setVisible(true);
+//            });
+            
             stage.setScene(scene);
             stage.show();
             return loader.getController();

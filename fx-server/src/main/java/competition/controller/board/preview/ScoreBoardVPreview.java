@@ -32,6 +32,9 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
 import javax.annotation.Resource;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -81,8 +84,7 @@ public class ScoreBoardVPreview extends PreviewPane implements BoardPane {
 
         ScoreStyle scoreStyle = scoreStyleMapper.selectById(1);
         String[] split = scoreStyle.getStyles().split(ConfigSpliter.SPLITER);
-        Font font = Font.font(FontMap.getFont(split[0]), FontWeight.NORMAL, FontPosture.REGULAR, Integer.parseInt(split[1]));
-        
+        Font font = FontMap.load(split[0], ScreenAdapter.calculateMainX(Integer.parseInt(split[1])));
         left = new VBox();
         right = new VBox();
         Configs configs = configsMapper.selectById(1);
@@ -179,8 +181,7 @@ public class ScoreBoardVPreview extends PreviewPane implements BoardPane {
                 statusSize = Integer.parseInt(cfgArr[31]);
                 statusColor = Color.valueOf(cfgArr[32]);
             }
-
-            Font statusFont = Font.font("Microsoft YaHei", statusSize);
+            Font statusFont = FontMap.load(FontMap.defaultFontName(), statusSize);
 
             // 面板分数调整（Model60 模式）
             Stages currentStage = controlPane.getCurrentStage();

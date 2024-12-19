@@ -1,6 +1,7 @@
 package competition.controller.match;
 
 import competition.controller.ControlPane;
+import competition.controller.preview.PreviewPane;
 import competition.entity.AnswerStyle;
 import competition.mapper.AnswerStyleMapper;
 import competition.util.AlignmentUtil;
@@ -283,7 +284,10 @@ public class AnswerAttr {
         answerStyle.setStyle6(style6);
 
         answerStyleMapper.updateById(answerStyle);
-        controlPane.getPreviewPane().reload();
+        PreviewPane previewPane = controlPane.getPreviewPane();
+        if (previewPane != null) {
+            previewPane.reload();
+        }
     }
     
     

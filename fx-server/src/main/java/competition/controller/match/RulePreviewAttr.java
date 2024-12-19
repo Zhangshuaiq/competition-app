@@ -2,6 +2,7 @@ package competition.controller.match;
 
 
 import competition.controller.ControlPane;
+import competition.controller.preview.PreviewPane;
 import competition.entity.Configs;
 import competition.mapper.ConfigsMapper;
 import competition.util.*;
@@ -14,14 +15,12 @@ import javafx.scene.control.ComboBox;
 import javafx.scene.control.TextField;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
+import javafx.scene.text.Font;
 import javafx.stage.Stage;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
 import javax.annotation.Resource;
-import javax.swing.*;
-import java.awt.*;
-import java.util.Arrays;
 
 @Component
 public class RulePreviewAttr {
@@ -113,11 +112,9 @@ public class RulePreviewAttr {
 
         final String details = configs.getDetails();
         if (StringUtils.isEmpty(details)) {
-            GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
             // 获取默认字体
-            Font defaultFont = new JLabel().getFont();
-            fontSelector.setValue(defaultFont.getFamily());
-            fontSize.setText(defaultFont.getSize() + "");
+            fontSelector.setValue(FontMap.defaultFontName());
+            fontSize.setText(12 + "");
             iticChoice.setSelected(false);
             deleteChoice.setSelected(false);
             spaceInput.setText("0");
@@ -191,6 +188,9 @@ public class RulePreviewAttr {
         configs.setConfig(huanjieVal);
         configs.setDetails(detail);
         configsMapper.updateById(configs);
-        controlPane.getPreviewPane().reload();
+        PreviewPane previewPane = controlPane.getPreviewPane();
+        if (previewPane != null) {
+            previewPane.reload();
+        }
     }
 }

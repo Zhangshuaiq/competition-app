@@ -1,6 +1,7 @@
 package competition.controller.preview;
 
 import competition.controller.ControlPane;
+import competition.controller.board.BoardPane;
 import competition.controller.match.RollPreview;
 import competition.controller.match.ShowAnswer;
 import competition.entity.AnswerStyle;
@@ -26,6 +27,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
 import javax.annotation.Resource;
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.util.List;
@@ -63,7 +65,10 @@ public class ShowAnswerPreview extends PreviewPane {
 
     @FXML
     public void initialize() {
-        controlPane.getScoreBoardPreview().getSelected().clear();
+        BoardPane scoreBoardPreview = controlPane.getScoreBoardPreview();
+        if (scoreBoardPreview != null) {
+            scoreBoardPreview.getSelected().clear();
+        }
         //PreviewStack.addPreview(this);
         container.setOnMouseClicked(new EventHandler<MouseEvent>() {
             @Override
@@ -106,23 +111,23 @@ public class ShowAnswerPreview extends PreviewPane {
         double colSpace = 0;
         double x = ScreenAdapter.calculateMainX(50);
         double y = ScreenAdapter.calculateMainY(50);
-        double width = ScreenAdapter.calculateMainW(500);
-        double height = ScreenAdapter.calculateMainH(50);
+        double width = ScreenAdapter.calculateMainX(500);
+        double height = ScreenAdapter.calculateMainY(50);
         if (!StringUtils.isEmpty(answerStyle.getStyle1())) {
             String[] split = answerStyle.getStyle1().split(ConfigSpliter.SPLITER);
             col = Integer.parseInt(split[0]);
-            rowSpace = ScreenAdapter.calculateMainH(Integer.parseInt(split[2]));
-            colSpace = ScreenAdapter.calculateMainW(Integer.parseInt(split[1]));
+            rowSpace = ScreenAdapter.calculateMainY(Integer.parseInt(split[2]));
+            colSpace = ScreenAdapter.calculateMainX(Integer.parseInt(split[1]));
             x = ScreenAdapter.calculateMainX(Integer.parseInt(split[3]));
             y = ScreenAdapter.calculateMainY(Integer.parseInt(split[4]));
-            width = ScreenAdapter.calculateMainW(Integer.parseInt(split[5]));
-            height = ScreenAdapter.calculateMainH(Integer.parseInt(split[6]));
+            width = ScreenAdapter.calculateMainX(Integer.parseInt(split[5]));
+            height = ScreenAdapter.calculateMainY(Integer.parseInt(split[6]));
         }
 
         Font defaultFont = Font.getDefault();
 
         String f1Font = defaultFont.getName();
-        double f1Size = ScreenAdapter.calculateMainW(defaultFont.getSize());
+        double f1Size = ScreenAdapter.calculateMainX(defaultFont.getSize());
         String f1l = "居中对齐";
         Color f1Color = Color.BLACK;
         boolean f1DL= false, f1IT= false, f1BD= false, f1UD = false, f1Fill = false;
@@ -134,7 +139,7 @@ public class ShowAnswerPreview extends PreviewPane {
             f1Font = (split[0]);
             f1Color = (Color.valueOf(split[1]));
             f1l = (split[2]);
-            f1Size = ScreenAdapter.calculateMainW(Integer.parseInt(split[3]));
+            f1Size = ScreenAdapter.calculateMainX(Integer.parseInt(split[3]));
             f1DL = (Boolean.valueOf(split[4]));
             f1IT = (Boolean.valueOf(split[5]));
             f1BD = (Boolean.valueOf(split[6]));
@@ -147,7 +152,7 @@ public class ShowAnswerPreview extends PreviewPane {
         }
 
         String f2Font = defaultFont.getName();
-        double f2Size = ScreenAdapter.calculateMainW(defaultFont.getSize());
+        double f2Size = ScreenAdapter.calculateMainX(defaultFont.getSize());
         String f2l = "居中对齐";
         Color f2Color = Color.BLACK;
         boolean f2DL = false, f2IT = false, f2BD = false, f2UD = false, f2Fill = false;
@@ -159,7 +164,7 @@ public class ShowAnswerPreview extends PreviewPane {
             f2Font = (split[0]);
             f2Color = (Color.valueOf(split[1]));
             f2l = (split[2]);
-            f2Size = ScreenAdapter.calculateMainW(Integer.parseInt(split[3]));
+            f2Size = ScreenAdapter.calculateMainX(Integer.parseInt(split[3]));
             f2DL = (Boolean.valueOf(split[4]));
             f2IT = (Boolean.valueOf(split[5]));
             f2BD = (Boolean.valueOf(split[6]));
@@ -172,7 +177,7 @@ public class ShowAnswerPreview extends PreviewPane {
         }
 
         String f3Font = defaultFont.getName();
-        double f3Size = ScreenAdapter.calculateMainW(defaultFont.getSize());
+        double f3Size = ScreenAdapter.calculateMainX(defaultFont.getSize());
         String f3l = "居中对齐";
         Color f3Color = Color.BLACK;
         boolean f3DL = false, f3IT = false, f3BD = false, f3UD = false, f3Fill = false;
@@ -184,7 +189,7 @@ public class ShowAnswerPreview extends PreviewPane {
             f3Font = (split[0]);
             f3Color = (Color.valueOf(split[1]));
             f3l = (split[2]);
-            f3Size = ScreenAdapter.calculateMainW(Integer.parseInt(split[3]));
+            f3Size = ScreenAdapter.calculateMainX(Integer.parseInt(split[3]));
             f3DL = (Boolean.valueOf(split[4]));
             f3IT = (Boolean.valueOf(split[5]));
             f3BD = (Boolean.valueOf(split[6]));
@@ -198,7 +203,7 @@ public class ShowAnswerPreview extends PreviewPane {
 
 
         String f4Font = defaultFont.getName();
-        double f4Size = ScreenAdapter.calculateMainW(defaultFont.getSize());
+        double f4Size = ScreenAdapter.calculateMainX(defaultFont.getSize());
         String f4l = "居中对齐";
         Color f4Color = Color.BLACK;
         boolean f4DL = false, f4IT = false, f4BD = false, f4UD = false, f4Fill = false;
@@ -211,7 +216,7 @@ public class ShowAnswerPreview extends PreviewPane {
             f4Font = (split[0]);
             f4Color = (Color.valueOf(split[1]));
             f4l = (split[2]);
-            f4Size = ScreenAdapter.calculateMainW(Integer.parseInt(split[3]));
+            f4Size = ScreenAdapter.calculateMainX(Integer.parseInt(split[3]));
             f4DL = (Boolean.valueOf(split[4]));
             f4IT = (Boolean.valueOf(split[5]));
             f4BD = (Boolean.valueOf(split[6]));
@@ -224,7 +229,7 @@ public class ShowAnswerPreview extends PreviewPane {
         }
 
         String f5Font = defaultFont.getName();
-        double f5Size = ScreenAdapter.calculateMainW(defaultFont.getSize());
+        double f5Size = ScreenAdapter.calculateMainX(defaultFont.getSize());
         String f5l = "居中对齐";
         Color f5Color = Color.BLACK;
         boolean f5DL = false, f5IT = false, f5BD = false, f5UD = false, f5Fill = false;
@@ -236,7 +241,7 @@ public class ShowAnswerPreview extends PreviewPane {
             f5Font = (split[0]);
             f5Color = (Color.valueOf(split[1]));
             f5l = (split[2]);
-            f5Size = ScreenAdapter.calculateMainW(Integer.parseInt(split[3]));
+            f5Size = ScreenAdapter.calculateMainX(Integer.parseInt(split[3]));
             f5DL = (Boolean.valueOf(split[4]));
             f5IT = (Boolean.valueOf(split[5]));
             f5BD = (Boolean.valueOf(split[6]));
@@ -258,7 +263,7 @@ public class ShowAnswerPreview extends PreviewPane {
         answerBack.setPrefWidth(width * col + (col - 1) * colSpace);
         answerBack.setAlignment(AlignmentUtil.getAlign(f1l));
 
-        Font font = Font.font(FontMap.getFont(f1Font), FontWeight.NORMAL, FontPosture.REGULAR, f1Size);
+        Font font = FontMap.load(f1Font,  f1Size);;
         correctText.setFont(font);
         
         if (f1BD) {
@@ -301,6 +306,7 @@ public class ShowAnswerPreview extends PreviewPane {
         // 每一个选手回答的样式
         gridPane.setVgap(colSpace);
         gridPane.setHgap(rowSpace);
+        gridPane.getChildren().clear();
         if (teamResult != null) {
             // 显示正确答案
             List<TeamResult.DataItem> dataItemList = teamResult.getDataItemList();
@@ -327,7 +333,7 @@ public class ShowAnswerPreview extends PreviewPane {
 
 
                 memberResult.setFill(f2Color);
-                Font font2 = Font.font(FontMap.getFont(f2Font), FontWeight.NORMAL, FontPosture.REGULAR, f2Size);
+                Font font2 = FontMap.load(f2Font, f2Size);
                 memberResult.setFont(font2);
 
                 if (f2BD) {
@@ -372,7 +378,7 @@ public class ShowAnswerPreview extends PreviewPane {
                     ut.setText("+" + dataItem.getScore());
                     rPane.setAlignment(AlignmentUtil.getAlign(f3l));
                     ut.setFill(f3Color);
-                    Font font3 = Font.font(FontMap.getFont(f3Font), FontWeight.NORMAL, FontPosture.REGULAR, f3Size);
+                    Font font3 = FontMap.load(f3Font,  f3Size);
                     ut.setFont(font3);
 
                     if (f3BD) {
@@ -409,7 +415,7 @@ public class ShowAnswerPreview extends PreviewPane {
                 } else if (dataItem.getScore() < 0) {
                     rPane.setAlignment(AlignmentUtil.getAlign(f4l));
                     ut.setFill(f4Color);
-                    Font font4 = Font.font(FontMap.getFont(f4Font), FontWeight.NORMAL, FontPosture.REGULAR, f4Size);
+                    Font font4 = FontMap.load(f4Font,  f4Size);
                     ut.setFont(font4);
 
                     if (f4BD) {
@@ -447,7 +453,7 @@ public class ShowAnswerPreview extends PreviewPane {
                     rPane.setAlignment(AlignmentUtil.getAlign(f5l));
 
                     ut.setFill(f5Color);
-                    Font font5 = Font.font(FontMap.getFont(f5Font), FontWeight.NORMAL, FontPosture.REGULAR, f5Size);
+                    Font font5 = FontMap.load(f5Font, f5Size);
                     ut.setFont(font5);
 
                     if (f5BD) {

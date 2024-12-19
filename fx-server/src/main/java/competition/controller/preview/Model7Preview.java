@@ -2,8 +2,8 @@ package competition.controller.preview;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import competition.controller.ControlPane;
+import competition.controller.board.BoardPane;
 import competition.controller.match.Model7;
-import competition.controller.match.Model7Attr;
 import competition.controller.match.ReloadPane;
 import competition.entity.Model3Style;
 import competition.entity.Questions;
@@ -27,7 +27,6 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
-import javafx.scene.text.Font;
 import javafx.scene.text.TextAlignment;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -81,7 +80,10 @@ public class Model7Preview extends PreviewPane {
 
     @FXML
     public void initialize() {
-        controlPane.getScoreBoardPreview().getSelected().clear();
+        BoardPane scoreBoardPreview = controlPane.getScoreBoardPreview();
+        if (scoreBoardPreview != null) {
+            scoreBoardPreview.getSelected().clear();
+        }
         inner = currentStage;
         calculatePW();
         List<Questions> questions = questionsMapper.selectList(new LambdaQueryWrapper<Questions>()
@@ -185,12 +187,12 @@ public class Model7Preview extends PreviewPane {
         Model3Style model3Style = model3Mapper.selectById(2);
         String titleStyle = model3Style.getTitleStyle();
 
-        double vgap = ScreenAdapter.calculateMainH(20);
-        double hgap = ScreenAdapter.calculateMainW(20);
+        double vgap = ScreenAdapter.calculateMainY(20);
+        double hgap = ScreenAdapter.calculateMainX(20);
         double x = ScreenAdapter.calculateMainX(10);
         double y = 0;
-        double width = ScreenAdapter.calculateMainW((int) ((Navigator.getWidth() - 40) / 4));
-        double height = ScreenAdapter.calculateMainH(287);
+        double width = ScreenAdapter.calculateMainX((int) ((Navigator.getWidth() - 40) / 4));
+        double height = ScreenAdapter.calculateMainY(287);
         int col = 4;
 
         if (!StringUtils.isEmpty(titleStyle)) {
@@ -199,10 +201,10 @@ public class Model7Preview extends PreviewPane {
             x = ScreenAdapter.calculateMainX(Integer.parseInt(split[5]));
             y = ScreenAdapter.calculateMainY(Integer.parseInt(split[6]));
             
-            width = ScreenAdapter.calculateMainW(Integer.parseInt(split[3]));
-            height = ScreenAdapter.calculateMainH(Integer.parseInt(split[4]));
-            vgap = ScreenAdapter.calculateMainH(Integer.parseInt(split[1]));
-            hgap = ScreenAdapter.calculateMainW(Integer.parseInt(split[2]));
+            width = ScreenAdapter.calculateMainX(Integer.parseInt(split[3]));
+            height = ScreenAdapter.calculateMainY(Integer.parseInt(split[4]));
+            vgap = ScreenAdapter.calculateMainY(Integer.parseInt(split[1]));
+            hgap = ScreenAdapter.calculateMainX(Integer.parseInt(split[2]));
         }
         container.setPadding(new Insets(y, 0, 0, x));
         if (ExtendedScreen.hasShow()) {
@@ -252,24 +254,31 @@ public class Model7Preview extends PreviewPane {
             upArea.setPrefHeight(ScreenAdapter.calculateMainY(37));
 
             // 第二行
-            HBox row2 = new HBox();
-            row2.setPadding(new Insets(0, 3, 0, 3));
+            GridPane row2 = new GridPane();
+            row2.setPadding(new Insets(2));
             row2.setPrefWidth(anchorPane.getPrefWidth());
             List<Model7RuntimeData.ModelData> modelData = runtimeData.get(i);
             double radius = 5.0;
+            
             Model7RuntimeData.ModelData last = null;
             int score = 0;
             int finish = 0;
+            int correct = 0;
             List<Questions> questions = questionsMapper.selectList(new LambdaQueryWrapper<Questions>()
                     .eq(Questions::getStageNumber, inner.getSortVal())
-            );            
-            for (Questions q : questions) {
+            );             
+            int cols = (int) ((anchorPane.getPrefWidth() - 4) / (2 * ScreenAdapter.calculateMainX(radius ) + 1));
+            for (int i1 = 0; i1 < questions.size(); i1++) {
                 Circle c = new Circle();
-                c.setRadius(ScreenAdapter.calculateMainW(radius));
+                c.setStrokeWidth(1);
+                c.setRadius(ScreenAdapter.calculateMainX(radius));
                 c.setStroke(Color.BLACK);
                 c.setFill(Color.WHITE);
-                row2.getChildren().add(c);
+                int colIndex = i1 % cols;
+                int rowIndex = i1 / cols;
+                row2.add(c, colIndex, rowIndex );
             }
+
             for (int i1 = 0; i1 < modelData.size(); i1++) {
                 Model7RuntimeData.ModelData m = modelData.get(i1);
                 if (m.getUserSelect() == null) {
@@ -278,6 +287,7 @@ public class Model7Preview extends PreviewPane {
                     finish++;
                     ((Circle) (row2.getChildren().get(i1))).setFill(Color.GREEN);
                     score += m.getScore();
+                    correct ++;
                 } else {
                     score -= controlPane.getCurrentStage().getDesValue();
                     finish++;
@@ -301,9 +311,9 @@ public class Model7Preview extends PreviewPane {
             Label scoreL = new Label(score + "分");
             scoreL.setPrefWidth(anchorPane.getPrefWidth() / 4);
             scoreL.setTextFill(Color.WHITE);
-            Label timeL = new Label("完成" + finish + "题|用时" + timeValue);
+            Label timeL = new Label("完成" + finish + "题 答对" + correct +"题|用时" + timeValue);
             if (Model7RuntimeData.getFinished().get(i)) {
-                timeL.setText("完成" + finish + "题|用时" + Model7RuntimeData.getFts().get(i));
+                timeL.setText("完成" + finish + "题 答对" + correct + "题|用时" + Model7RuntimeData.getFts().get(i));
             }
             timeL.setPrefWidth(anchorPane.getPrefWidth() / 2);
             timeL.setTextFill(Color.WHITE);
@@ -313,12 +323,12 @@ public class Model7Preview extends PreviewPane {
 
             AnchorPane downArea = new AnchorPane();
             downArea.setPrefWidth(anchorPane.getPrefWidth());
-            downArea.setStyle("-fx-border-color: black; -fx-border-width: 1");
-            if (!GlobalCache.model7Hide) {
+            downArea.setStyle("-fx-border-color: black; -fx-border-width: 1; -fx-background-color: white");
+            if (!Boolean.parseBoolean(model3Style.getHeadStyle())) {
                 anchorPane.getChildren().add(downArea);
             }
             downArea.setLayoutY(ScreenAdapter.calculateMainY(52));
-            downArea.setPrefHeight(height - ScreenAdapter.calculateMainH(37));
+            downArea.setPrefHeight(height - ScreenAdapter.calculateMainY(37));
 
             // 回答完毕
             if (Model7RuntimeData.getFinished().get(i)) {
@@ -326,7 +336,7 @@ public class Model7Preview extends PreviewPane {
                 endLab.setPrefWidth(downArea.getPrefWidth());
                 endLab.setPrefHeight(downArea.getPrefHeight() / 5);
                 endLab.setLayoutY(downArea.getPrefHeight() / 5);
-                endLab.setFont(Font.font(ScreenAdapter.calculateMainW(32)));
+                endLab.setFont(FontMap.load(FontMap.defaultFontName(), ScreenAdapter.calculateMainX(32)));
                 endLab.setAlignment(Pos.CENTER);
                 endLab.setTextAlignment(TextAlignment.CENTER);
 
@@ -334,7 +344,8 @@ public class Model7Preview extends PreviewPane {
                 scoreLab.setPrefWidth(downArea.getPrefWidth());
                 scoreLab.setPrefHeight(downArea.getPrefHeight() / 5);
                 scoreLab.setLayoutY(downArea.getPrefHeight() * 0.4);
-                scoreLab.setFont(Font.font(ScreenAdapter.calculateMainW(32)));
+                scoreLab.setFont(FontMap.load(FontMap.defaultFontName(), ScreenAdapter.calculateMainX(32)));
+                
                 scoreLab.setTextAlignment(TextAlignment.CENTER);
                 scoreLab.setAlignment(Pos.CENTER);
                 List<String> fts = Model7RuntimeData.getFts();
@@ -342,7 +353,7 @@ public class Model7Preview extends PreviewPane {
                 timeLab.setPrefWidth(downArea.getPrefWidth());
                 timeLab.setPrefHeight(downArea.getPrefHeight() / 5);
                 timeLab.setLayoutY(downArea.getPrefHeight() * 0.6);
-                timeLab.setFont(Font.font(ScreenAdapter.calculateMainW(32)));
+                timeLab.setFont(FontMap.load(FontMap.defaultFontName(), ScreenAdapter.calculateMainX(32)));
                 timeLab.setTextAlignment(TextAlignment.CENTER);
                 timeLab.setAlignment(Pos.CENTER);
                 downArea.getChildren().addAll(endLab, scoreLab, timeLab);
@@ -352,7 +363,7 @@ public class Model7Preview extends PreviewPane {
                     Label waitLab = new Label("等待答题");
                     waitLab.setPrefWidth(downArea.getPrefWidth());
                     waitLab.setPrefHeight(downArea.getPrefHeight());
-                    waitLab.setFont(Font.font(ScreenAdapter.calculateMainW(32)));
+                    waitLab.setFont(FontMap.load(FontMap.defaultFontName(), ScreenAdapter.calculateMainX(32)));
                     waitLab.setTextAlignment(TextAlignment.CENTER);
                     waitLab.setAlignment(Pos.CENTER);
                     downArea.getChildren().add(waitLab);
@@ -360,10 +371,13 @@ public class Model7Preview extends PreviewPane {
                     VBox vbx = new VBox();
                     // 设置边距
                     vbx.setPadding(new Insets(1, 5, 1, 5));
-                    vbx.setSpacing(ScreenAdapter.calculateMainH(2));
+                    vbx.setSpacing(ScreenAdapter.calculateMainY(2));
                     vbx.setPrefWidth(downArea.getPrefWidth());
                     downArea.getChildren().addAll(vbx);
                     Label q = new Label(last.getQuestionNumber() + ". " + last.getQuestion());
+                    if (GlobalCache.MAX_TEAM_NUMBER <= 0) {
+                        q.setText(q.getText() + "(未注册)");
+                    }
                     q.setWrapText(true);
                     vbx.getChildren().add(q);
                     if (!StringUtils.isEmpty(last.getChoiceA())) {
@@ -406,7 +420,7 @@ public class Model7Preview extends PreviewPane {
                     if (last.getUserSelect() != null) {
                         Label select = new Label("回答:" + last.getUserSelect());
                         select.setBackground(new Background(new BackgroundFill(Color.BLUE, new CornerRadii(10), Insets.EMPTY)));
-                        select.setPrefHeight(ScreenAdapter.calculateMainH(30));
+                        select.setPrefHeight(ScreenAdapter.calculateMainY(30));
                         select.setTextAlignment(TextAlignment.CENTER);
                         select.setTextFill(Color.WHITE);
                         select.setPrefWidth(answerArea.getPrefWidth());
@@ -419,7 +433,7 @@ public class Model7Preview extends PreviewPane {
                             status.setText("错误");
                             status.setBackground(new Background(new BackgroundFill(Color.RED, new CornerRadii(10), Insets.EMPTY)));
                         }
-                        status.setPrefHeight(ScreenAdapter.calculateMainH(30));
+                        status.setPrefHeight(ScreenAdapter.calculateMainY(30));
                         status.setAlignment(Pos.CENTER);
                         status.setTextAlignment(TextAlignment.CENTER);
                         status.setTextFill(Color.WHITE);

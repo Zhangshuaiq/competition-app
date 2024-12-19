@@ -3,13 +3,12 @@ package competition.controller.backend;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import competition.controller.ControlPane;
 import competition.controller.match.ReloadPane;
+import competition.controller.preview.PreviewPane;
 import competition.entity.Configs;
 import competition.mapper.ConfigsMapper;
 import competition.mapper.StageMemberScoreMapper;
-import competition.util.ConfigSpliter;
-import competition.util.ExtendedScreen;
-import competition.util.Navigator;
-import competition.util.PreviewStack;
+import competition.util.*;
+import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.control.*;
@@ -30,6 +29,16 @@ public class PageConfig {
     
     @Resource
     private ControlPane controlPane;
+    
+    @FXML
+    private ComboBox<String> fontSelector;
+    
+    
+    @FXML
+    private CheckBox djsct;
+
+    @FXML
+    private ColorPicker djsbj;
     
     
     @FXML
@@ -359,6 +368,9 @@ public class PageConfig {
     
     @FXML
     public void initialize(){
+        
+        fontSelector.setItems(FXCollections.observableList(FontMap.fontNames()));
+        fontSelector.setValue(FontMap.defaultFontName());
         txGroup = new ToggleGroup();
         txGroup.getToggles().addAll(thq, thh, tgh);
 
@@ -419,6 +431,20 @@ public class PageConfig {
             if (split.length >= 33) {
                 ztzh.setText(split[31]);
                 ztys.setValue(Color.valueOf(split[32]));
+            }
+            if (split.length >= 34) {
+                fontSelector.setValue(split[33]);
+            }
+            if (split.length >= 35) {
+                djsbj.setValue(Color.valueOf(split[34]));
+            } else {
+                djsbj.setValue(Color.TRANSPARENT);
+            }
+
+            if (split.length >= 36) {
+                djsct.setSelected(Boolean.parseBoolean(split[35]));
+            } else {
+                djsct.setSelected(false);
             }
           
         }
@@ -609,7 +635,11 @@ public class PageConfig {
                 + daojishix  + ConfigSpliter.SPLITER
                 + daojishiy  + ConfigSpliter.SPLITER
                 + ztzihao + ConfigSpliter.SPLITER
-                + ztyanse;
+                + ztyanse + ConfigSpliter.SPLITER
+                + fontSelector.getValue() + ConfigSpliter.SPLITER
+                + djsbj.getValue().toString() + ConfigSpliter.SPLITER
+                + djsct.isSelected()
+                ;
 
 
         double dx = Double.parseDouble(daojishix);
@@ -837,7 +867,10 @@ public class PageConfig {
         if (timeBoard != null) {
             timeBoard.reload();
         }
-        controlPane.getPreviewPane().reload();
+        PreviewPane previewPane = controlPane.getPreviewPane();
+        if (previewPane != null) {
+            previewPane.reload();
+        }
     }
     
 }

@@ -98,7 +98,7 @@ public class StageNamePreviewAttr {
     @FXML
     public void selectImg(){
         FileChooser chooser = new FileChooser();
-        chooser.setInitialDirectory(new File(BaseDir.IMAGE_DIR));
+        chooser.setInitialDirectory(new File(BaseDir.BACKGROUND_DIR));
         chooser.getExtensionFilters().addAll(
                 new FileChooser.ExtensionFilter("Image Files", "*.png", "*.jpg", "*.gif")
         );
@@ -117,7 +117,7 @@ public class StageNamePreviewAttr {
     private void previewData(){
         final Stages stage = stagesMapper.selectById(stageId);
         final String config = stage.getStyle();
-        String[] detailArr = "750%%400%%400%%150%%false%%0x990000ff%%%%Dialog%%40%%false%%false%%false%%false%%居中对齐%%0".split(ConfigSpliter.SPLITER);
+        String[] detailArr = "750%%400%%400%%150%%false%%0x990000ff%%%%默认.ttf%%40%%false%%false%%false%%false%%居中对齐%%0".split(ConfigSpliter.SPLITER);
         if (!StringUtils.isEmpty(config)) {
             detailArr = config.split(ConfigSpliter.SPLITER);
         } else {

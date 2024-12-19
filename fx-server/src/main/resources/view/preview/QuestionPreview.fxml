@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Text?>
-<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.text.TextFlow?>
 <AnchorPane fx:id="container" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8"
             xmlns:fx="http://javafx.com/fxml/1" fx:controller="competition.controller.preview.QuestionPreviewPreview">
     <children>
@@ -20,13 +21,13 @@
         </StackPane>
 
 
-            <StackPane fx:id="backPane" visible="false">
-                <children>
-                    <Text fx:id="daanLabel"/>
-                </children>
-            </StackPane>
-        
-        
+        <StackPane fx:id="backPane" visible="false">
+            <children>
+                <Text fx:id="daanLabel"/>
+            </children>
+        </StackPane>
+
+
         <ScrollPane fx:id="scrollPane">
             <VBox fx:id="tiganBox" layoutX="118.0" layoutY="56.0" prefHeight="200.0" prefWidth="310.0">
                 <children>
@@ -34,6 +35,6 @@
                 </children>
             </VBox>
         </ScrollPane>
-        
+
     </children>
 </AnchorPane>

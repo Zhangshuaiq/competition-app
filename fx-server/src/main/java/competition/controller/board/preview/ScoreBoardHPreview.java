@@ -1,5 +1,6 @@
 package competition.controller.board.preview;
 
+import com.sun.javafx.stage.EmbeddedWindow;
 import competition.controller.ControlPane;
 import competition.controller.board.BoardPane;
 import competition.controller.board.match.ScoreBoardH;
@@ -26,10 +27,14 @@ import javafx.scene.paint.Color;
 import javafx.scene.text.*;
 import javafx.scene.transform.Shear;
 import javafx.stage.Stage;
+import javafx.stage.Window;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
 import javax.annotation.Resource;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -64,6 +69,7 @@ public class ScoreBoardHPreview extends PreviewPane implements BoardPane {
     }
 
     private void show() {
+        
         int count = 2;
         BoardPane scoreBoard = controlPane.getScoreBoard();
         if (scoreBoard == null || !(scoreBoard instanceof ScoreBoardH)) {
@@ -75,8 +81,7 @@ public class ScoreBoardHPreview extends PreviewPane implements BoardPane {
         }
         ScoreStyle scoreStyle = scoreStyleMapper.selectById(1);
         String[] split = scoreStyle.getStyles().split(ConfigSpliter.SPLITER);
-        Font font = Font.font(FontMap.getFont(split[0]), FontWeight.NORMAL, FontPosture.REGULAR, Integer.parseInt(split[1]));
-        
+        Font font = FontMap.load(split[0], ScreenAdapter.calculateMainX(Integer.parseInt(split[1])));
         Configs configs = configsMapper.selectById(1);
         String config = configs.getConfig();
         String[] cfgArr = config.split(ConfigSpliter.SPLITER);
@@ -90,9 +95,8 @@ public class ScoreBoardHPreview extends PreviewPane implements BoardPane {
             statusSize = Integer.parseInt(cfgArr[31]);
             statusColor = Color.valueOf(cfgArr[32]);
         }
-        
-        Font statusFont = Font.font("Microsoft YaHei", statusSize);
-       
+        Font statusFont = FontMap.load(FontMap.defaultFontName(), statusSize);
+
         List<Teams> teams = TeamRuntime.getTeams();
         for (Teams team : teams) {
             VBox box = new VBox();
@@ -115,7 +119,6 @@ public class ScoreBoardHPreview extends PreviewPane implements BoardPane {
                 teamName.setStrokeWidth(1);
             } else {
                 teamName.setStroke(null);
-
             }
             teamName.getTransforms().clear();
             stackPane.getChildren().add(teamName);
@@ -146,6 +149,40 @@ public class ScoreBoardHPreview extends PreviewPane implements BoardPane {
             teamScore.getTransforms().clear();
             stackPane1.getChildren().add(teamScore);
             box.getChildren().add(stackPane1);
+
+
+            // 抢答分时面板
+            if (RuntimeUtil.showBuzzBar) {
+                Long timeVal = RuntimeUtil.buzzTimeMap.get(team.getShortName());
+                Text buzzTime = new Text("0");
+                if (timeVal != null) {
+                    buzzTime.setText(NumberUtil.fix2Point(timeVal * 0.001));
+                }
+                StackPane buzzPane = new StackPane();
+                buzzPane.setPrefSize(Integer.parseInt(cfgArr[19]), Integer.parseInt(cfgArr[20]));
+                buzzTime.setTextAlignment(TextAlignment.CENTER);
+                buzzTime.prefWidth(Integer.parseInt(cfgArr[19]));
+                buzzTime.prefHeight(Integer.parseInt(cfgArr[20]));
+                buzzTime.setFill(Color.valueOf(cfgArr[21]));
+
+                Color color = RuntimeUtil.buzzResult.getOrDefault(team.getShortName(), false)?Color.GREEN: Color.RED;
+                buzzPane.setBackground(new Background(new BackgroundFill(color, new CornerRadii(10), Insets.EMPTY)));
+                buzzTime.setFont(Font.font(12));
+                buzzTime.setUnderline(Boolean.valueOf(split[5]));
+                buzzTime.setStrikethrough(Boolean.valueOf(split[2]));
+                container.setSpacing(Integer.parseInt(split[6]));
+                if (Boolean.valueOf(split[3])) {
+                    buzzTime.setStroke(teamScore.getFill());
+                    buzzTime.setStrokeWidth(1);
+                } else {
+                    buzzTime.setStroke(null);
+
+                }
+                buzzTime.getTransforms().clear();
+                buzzPane.getChildren().add(buzzTime);
+                box.getChildren().add(buzzPane);
+            }
+
 
 
 
@@ -300,7 +337,7 @@ public class ScoreBoardHPreview extends PreviewPane implements BoardPane {
 
     @Override
     public void shows() {
-        Stage stage = (Stage) (container.getScene().getWindow());
+        Stage stage = (Stage) container.getScene().getWindow();
         stage.show();
         BoardPane scoreBoard = controlPane.getScoreBoard();
         if (scoreBoard == null) {

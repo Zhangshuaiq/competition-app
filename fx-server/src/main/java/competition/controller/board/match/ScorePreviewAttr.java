@@ -2,9 +2,9 @@ package competition.controller.board.match;
 
 
 import competition.controller.ControlPane;
+import competition.controller.board.BoardPane;
 import competition.entity.ScoreStyle;
 import competition.mapper.ScoreStyleMapper;
-import competition.util.AlignmentUtil;
 import competition.util.ConfigSpliter;
 import competition.util.ExtendedScreen;
 import competition.util.FontMap;
@@ -13,15 +13,13 @@ import javafx.fxml.FXML;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.TextField;
+import javafx.scene.text.Font;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
 import javax.annotation.Resource;
-import javax.swing.*;
-import java.awt.*;
-import java.util.Arrays;
 
 @Component
 public class ScorePreviewAttr {
@@ -63,9 +61,8 @@ public class ScorePreviewAttr {
     public void initialize(){
         fontSelector.setItems(FXCollections.observableList(FontMap.fontNames()));
         ScoreStyle scoreStyle = scoreStyleMapper.selectById(1);
-        Font defaultFont = new JLabel().getFont();
-        fontSelector.setValue(defaultFont.getFamily());
-        fontSize.setText(defaultFont.getSize() + "");
+        fontSelector.setValue(FontMap.defaultFontName());
+        fontSize.setText(12 + "");
         colSpan.setText("0");
         if (scoreStyle != null) {
             String styles = scoreStyle.getStyles();
@@ -104,8 +101,11 @@ public class ScorePreviewAttr {
                 ExtendedScreen.scoreBoardStage.hide();
             }
         }
-        
-        controlPane.getScoreBoardPreview().reload();
+
+        BoardPane scoreBoardPreview = controlPane.getScoreBoardPreview();
+        if (scoreBoardPreview != null) {
+            scoreBoardPreview.reload();
+        }
     }
     
     @FXML

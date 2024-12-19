@@ -4,7 +4,9 @@ import cn.hutool.core.io.FileUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import competition.entity.QuestionStyle;
 import competition.entity.Questions;
+import competition.entity.Stages;
 import competition.mapper.QuestionsMapper;
+import competition.mapper.StagesMapper;
 import competition.util.BaseDir;
 import competition.util.CurrentQuestions;
 import competition.util.ExcelParser;
@@ -25,6 +27,7 @@ import javax.annotation.Resource;
 import java.awt.*;
 import java.io.File;
 import java.io.IOException;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -42,6 +45,8 @@ public class QuestionStock {
     @Resource
     private QuestionsMapper questionsMapper;
     
+    @Resource 
+    private StagesMapper stagesMapper;
 
     @FXML
     private TableColumn<Questions, String> stageNumberCol, stageNameCol, questionTypeCol, resourceTypeCol, resourceCol,
@@ -114,11 +119,21 @@ public class QuestionStock {
         Map<String, List<Questions>> collect = questions.stream().collect(Collectors.groupingBy(Questions::getStageNumber));
         for (Map.Entry<String, List<Questions>> entry : collect.entrySet()) {
             List<Questions> list = entry.getValue();
+//            Stages stages = stagesMapper.selectOne(new LambdaQueryWrapper<Stages>()
+//                    .eq(Stages::getSortVal, list.get(0).getStageNumber())
+//                    .last(" LIMIT 1 "));
             for (int i = 0; i < list.size(); i++) {
                 Questions q = list.get(i);
                 q.setQuestionNumber(i + 1);
                 q.setGroup(stockList.getValue());
                 questionsMapper.insert(q);
+            }
+            // 乱序
+            Collections.shuffle(list);
+            for (int i = 0; i < list.size(); i++) {
+                Questions q = list.get(i);
+                q.setViewSort(i + 1);
+                questionsMapper.updateById(q);
             }
         }
     }

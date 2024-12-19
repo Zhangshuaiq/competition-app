@@ -2,9 +2,6 @@ package competition.controller.match;
 
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import competition.controller.ControlPane;
-import competition.controller.preview.PreviewPane;
-import competition.controller.preview.QuestionPreviewPreview;
 import competition.entity.Model3Style;
 import competition.entity.Questions;
 import competition.entity.Stages;
@@ -12,19 +9,13 @@ import competition.mapper.Model3Mapper;
 import competition.mapper.QuestionsMapper;
 import competition.mapper.StagesMapper;
 import competition.util.*;
-import competition.ws.WsMessageHandler;
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.geometry.Insets;
 import javafx.scene.Node;
 import javafx.scene.image.Image;
-import javafx.scene.input.MouseButton;
-import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
-import javafx.scene.text.FontPosture;
-import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 import javafx.scene.transform.Shear;
 import org.springframework.context.annotation.Scope;
@@ -34,10 +25,7 @@ import org.springframework.util.StringUtils;
 import javax.annotation.Resource;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 // 风险题
 @Component
@@ -89,7 +77,7 @@ public class Model3 implements ReloadPane {
         
         try {
             container.setBackground(new Background(new BackgroundImage(
-                    new Image(new FileInputStream(ImageResource.风险环节背景())), BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT, BackgroundPosition.DEFAULT,
+                    new Image(new FileInputStream(ImageResource.风险题背景())), BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT, BackgroundPosition.DEFAULT,
                     new BackgroundSize(ExtendedScreen.getWidth(), ExtendedScreen.getHeight(), false, false, false, false)
             )));
         } catch (FileNotFoundException e) {
@@ -167,14 +155,14 @@ public class Model3 implements ReloadPane {
         if (!StringUtils.isEmpty(headStyle)) {
             headArr = headStyle.split(ConfigSpliter.SPLITER);
         } else {
-            headArr = "750%%150%%400%%100%%false%%0x990000ff%%%%黑体%%40%%false%%false%%false%%false%%居中对齐%%0%%0xffffffff".split(ConfigSpliter.SPLITER);
+            headArr = "750%%150%%400%%100%%false%%0x990000ff%%%%默认.ttf%%40%%false%%false%%false%%false%%居中对齐%%0%%0xffffffff".split(ConfigSpliter.SPLITER);
         }
 
         String [] titleArr = {};
         if (!StringUtils.isEmpty(titleStyle)) {
             titleArr = titleStyle.split(ConfigSpliter.SPLITER);
         } else {
-            titleArr = "250%%300%%150%%150%%false%%0x990000ff%%%%微软雅黑%%32%%false%%false%%false%%false%%居中对齐%%30%%0xffffffff"
+            titleArr = "250%%300%%150%%150%%false%%0x990000ff%%%%默认.ttf%%32%%false%%false%%false%%false%%居中对齐%%30%%0xffffffff"
                     .split(ConfigSpliter.SPLITER);
         }
 
@@ -182,7 +170,7 @@ public class Model3 implements ReloadPane {
         if (!StringUtils.isEmpty(qStyle)) {
             qArr = qStyle.split(ConfigSpliter.SPLITER);
         } else {
-            qArr = "500%%300%%60%%60%%false%%0x990000ff%%%%楷体%%36%%false%%false%%false%%false%%居中对齐%%30%%8%%40%%0xffffffff".split(ConfigSpliter.SPLITER);
+            qArr = "500%%300%%60%%60%%false%%0x990000ff%%%%默认.ttf%%36%%false%%false%%false%%false%%居中对齐%%30%%8%%40%%0xffffffff".split(ConfigSpliter.SPLITER);
         }
 
         Text head = new Text(stages.getName());
@@ -190,21 +178,21 @@ public class Model3 implements ReloadPane {
         headPane.setBackground(new Background(new BackgroundFill(Color.YELLOW, new CornerRadii(10), Insets.EMPTY)));
         headPane.setLayoutX(ScreenAdapter.calculateExX(HEAD_X));
         headPane.setLayoutY(ScreenAdapter.calculateExY(HEAD_Y));
-        headPane.setPrefWidth(ScreenAdapter.calculateExW(HEAD_W));
-        headPane.setPrefHeight(ScreenAdapter.calculateExH(HEAD_H));
+        headPane.setPrefWidth(ScreenAdapter.calculateExX(HEAD_W));
+        headPane.setPrefHeight(ScreenAdapter.calculateExY(HEAD_H));
 
         head.setFill(Color.BLACK);
         head.setLayoutX(ScreenAdapter.calculateExX(HEAD_X));
         head.setLayoutY(ScreenAdapter.calculateExY(HEAD_Y));
-        head.prefWidth(ScreenAdapter.calculateExW(HEAD_W));
-        head.prefHeight(ScreenAdapter.calculateExH(HEAD_H));
+        head.prefWidth(ScreenAdapter.calculateExX(HEAD_W));
+        head.prefHeight(ScreenAdapter.calculateExY(HEAD_H));
         
         // 显示标题
         if (headArr.length > 0) {
             headPane.setLayoutX(ScreenAdapter.calculateExX(Integer.parseInt(headArr[0])));
             headPane.setLayoutY(ScreenAdapter.calculateExY(Integer.parseInt(headArr[1])));
-            headPane.setPrefWidth(ScreenAdapter.calculateExW(Integer.parseInt(headArr[2])));
-            headPane.setPrefHeight(ScreenAdapter.calculateExH(Integer.parseInt(headArr[3])));
+            headPane.setPrefWidth(ScreenAdapter.calculateExX(Integer.parseInt(headArr[2])));
+            headPane.setPrefHeight(ScreenAdapter.calculateExY(Integer.parseInt(headArr[3])));
             headPane.setAlignment(AlignmentUtil.getAlign(headArr[13]));
 
             if (Boolean.valueOf(headArr[4])) {
@@ -214,8 +202,8 @@ public class Model3 implements ReloadPane {
                         headPane.setBackground(new Background(new BackgroundImage(new Image(new FileInputStream(headArr[6])),
                                 BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT, BackgroundPosition.DEFAULT,
                                 new BackgroundSize(
-                                    ScreenAdapter.calculateExW(Integer.parseInt(headArr[2])),
-                                    ScreenAdapter.calculateExH(Integer.parseInt(headArr[3])), false, false, false, false))));
+                                    ScreenAdapter.calculateExX(Integer.parseInt(headArr[2])),
+                                    ScreenAdapter.calculateExY(Integer.parseInt(headArr[3])), false, false, false, false))));
                     } catch (FileNotFoundException e) {
                         headPane.setBackground(new Background(new BackgroundFill(Color.TRANSPARENT, new CornerRadii(10), Insets.EMPTY)));
                     }
@@ -229,12 +217,10 @@ public class Model3 implements ReloadPane {
 
             head.setLayoutX(ScreenAdapter.calculateExX(Integer.parseInt(headArr[0])));
             head.setLayoutY(ScreenAdapter.calculateExY(Integer.parseInt(headArr[1])));
-            head.prefWidth(ScreenAdapter.calculateExW(Integer.parseInt(headArr[2])));
-            head.prefHeight(ScreenAdapter.calculateExH(Integer.parseInt(headArr[3])));
+            head.prefWidth(ScreenAdapter.calculateExX(Integer.parseInt(headArr[2])));
+            head.prefHeight(ScreenAdapter.calculateExY(Integer.parseInt(headArr[3])));
             head.setTextAlignment(AlignmentUtil.getTextAlign(headArr[13]));
-            Font font = Font.font(FontMap.getFont(headArr[7]), FontWeight.NORMAL, FontPosture.REGULAR,
-                ScreenAdapter.calculateExW(Integer.parseInt(headArr[8]))
-            );
+            Font font = FontMap.load(headArr[7], ScreenAdapter.calculateExX(Integer.parseInt(headArr[8])));
             head.setFont(font);
             // 字体颜色
             head.setFill(Color.valueOf(headArr[15]));
@@ -259,18 +245,18 @@ public class Model3 implements ReloadPane {
             stackPane.setBackground(new Background(new BackgroundFill(Color.YELLOW, new CornerRadii(10), Insets.EMPTY)));
             stackPane.setLayoutX(ScreenAdapter.calculateExX(DEFAULT_X));
             stackPane.setLayoutY(ScreenAdapter.calculateExY(DEFAULT_Y));
-            stackPane.setPrefWidth(ScreenAdapter.calculateExW(DEFAULT_W));
-            stackPane.setPrefHeight(ScreenAdapter.calculateExH(DEFAULT_H));
+            stackPane.setPrefWidth(ScreenAdapter.calculateExX(DEFAULT_W));
+            stackPane.setPrefHeight(ScreenAdapter.calculateExY(DEFAULT_H));
             titleBox.setLayoutX(ScreenAdapter.calculateExX(DEFAULT_X));
             titleBox.setLayoutY(ScreenAdapter.calculateExY(DEFAULT_Y));
-            titleBox.setPrefWidth(ScreenAdapter.calculateExW(DEFAULT_W));
+            titleBox.setPrefWidth(ScreenAdapter.calculateExX(DEFAULT_W));
             titleBox.setSpacing(0);
 
             title.setFill(Color.BLACK);
             title.setLayoutX(ScreenAdapter.calculateExX(DEFAULT_X));
             title.setLayoutY(ScreenAdapter.calculateExY(DEFAULT_Y));
-            title.prefWidth(ScreenAdapter.calculateExW(DEFAULT_W));
-            title.prefHeight(ScreenAdapter.calculateExH(DEFAULT_H));
+            title.prefWidth(ScreenAdapter.calculateExX(DEFAULT_W));
+            title.prefHeight(ScreenAdapter.calculateExY(DEFAULT_H));
             
             if(titleArr.length > 0) {
                 //  String detail = x + ConfigSpliter.SPLITER
@@ -291,13 +277,13 @@ public class Model3 implements ReloadPane {
 
                 stackPane.setLayoutX( ScreenAdapter.calculateExX(Integer.parseInt(titleArr[0])));
                 stackPane.setLayoutY( ScreenAdapter.calculateExY(Integer.parseInt(titleArr[1])));
-                stackPane.setPrefWidth( ScreenAdapter.calculateExW(Integer.parseInt(titleArr[2])));
-                stackPane.setPrefHeight( ScreenAdapter.calculateExH(Integer.parseInt(titleArr[3])));
+                stackPane.setPrefWidth( ScreenAdapter.calculateExX(Integer.parseInt(titleArr[2])));
+                stackPane.setPrefHeight( ScreenAdapter.calculateExY(Integer.parseInt(titleArr[3])));
                 stackPane.setAlignment(AlignmentUtil.getAlign(titleArr[13]));
                 titleBox.setLayoutX(ScreenAdapter.calculateExX(Integer.parseInt(titleArr[0])));
                 titleBox.setLayoutY(ScreenAdapter.calculateExY(Integer.parseInt(titleArr[1])));
-                titleBox.setPrefWidth(ScreenAdapter.calculateExW(Integer.parseInt(titleArr[2])));
-                titleBox.setSpacing(ScreenAdapter.calculateExH(Integer.parseInt(titleArr[14])));
+                titleBox.setPrefWidth(ScreenAdapter.calculateExX(Integer.parseInt(titleArr[2])));
+                titleBox.setSpacing(ScreenAdapter.calculateExY(Integer.parseInt(titleArr[14])));
 
                 if (Boolean.valueOf(titleArr[4])) {
                     // 填充背景图片
@@ -306,8 +292,8 @@ public class Model3 implements ReloadPane {
                             stackPane.setBackground(new Background(new BackgroundImage(new Image(new FileInputStream(titleArr[6])),
                                     BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT, BackgroundPosition.DEFAULT,
                                     new BackgroundSize(
-                                        ScreenAdapter.calculateExW(Integer.parseInt(titleArr[2])),
-                                        ScreenAdapter.calculateExH(Integer.parseInt(titleArr[3])),
+                                        ScreenAdapter.calculateExX(Integer.parseInt(titleArr[2])),
+                                        ScreenAdapter.calculateExY(Integer.parseInt(titleArr[3])),
                                         false, false, false, false))));
                         } catch (FileNotFoundException e) {
                             stackPane.setBackground(new Background(new BackgroundFill(Color.TRANSPARENT, new CornerRadii(10), Insets.EMPTY)));
@@ -322,12 +308,10 @@ public class Model3 implements ReloadPane {
 
                 title.setLayoutX(ScreenAdapter.calculateExX(Integer.parseInt(titleArr[0])));
                 title.setLayoutY(ScreenAdapter.calculateExY(Integer.parseInt(titleArr[1])));
-                title.prefWidth(ScreenAdapter.calculateExW(Integer.parseInt(titleArr[2])));
-                title.prefHeight(ScreenAdapter.calculateExH(Integer.parseInt(titleArr[3])));
+                title.prefWidth(ScreenAdapter.calculateExX(Integer.parseInt(titleArr[2])));
+                title.prefHeight(ScreenAdapter.calculateExY(Integer.parseInt(titleArr[3])));
                 title.setTextAlignment(AlignmentUtil.getTextAlign(titleArr[13]));
-                Font font = Font.font(FontMap.getFont(titleArr[7]), FontWeight.NORMAL, FontPosture.REGULAR,
-                    ScreenAdapter.calculateExW(Integer.parseInt(titleArr[8]))
-                );
+                Font font = FontMap.load(titleArr[7], ScreenAdapter.calculateExX(Integer.parseInt(titleArr[8])));
                 title.setFont(font);
                 // 字体颜色
                 title.setFill(Color.valueOf(titleArr[15]));
@@ -350,15 +334,26 @@ public class Model3 implements ReloadPane {
         }
         
         for (int i = 0; i < children.size(); i++) {
+            Stages stages1 = children.get(i);
             List<Questions> questionsList = questionsMapper.selectList(new LambdaQueryWrapper<Questions>()
-                    .eq(Questions::getStageNumber, children.get(i).getSortVal())
+                    .eq(Questions::getStageNumber, stages1.getSortVal())
             );
+            if (stages1.getRandomSort() == 1) {
+                for (Questions questions : questionsList) {
+                    questions.setOrder(questions.getViewSort());
+                }
+            } else {
+                for (Questions questions : questionsList) {
+                    questions.setOrder(questions.getQuestionNumber());
+                }
+            }
+            questionsList.sort(Comparator.comparingInt(Questions::getOrder));
             GridPane questionGrid = new GridPane();
             for (int i1 = 0; i1 < questionsList.size(); i1++) {
                 StackPane item = new StackPane();
                 item.setPrefSize(50, 50);
                 Questions questions = questionsList.get(i1);
-                Text text = new Text(questions.getQuestionNumber().toString());
+                Text text = new Text(questions.getOrder().toString());
                 if (questions.isHasAnswer()) {
                     item.setVisible(false);
                 } else {
@@ -369,7 +364,7 @@ public class Model3 implements ReloadPane {
                 // 默认值
                 questionGrid.setLayoutX(ScreenAdapter.calculateExX(DEFAULT_X + DEFAULT_W + 50));
                 questionGrid.setLayoutY(ScreenAdapter.calculateExY(DEFAULT_Y));
-                questionGrid.setHgap(ScreenAdapter.calculateExW(10));
+                questionGrid.setHgap(ScreenAdapter.calculateExX(10));
                 questionGrid.setVgap(0);
 
                 questionBox.setLayoutX(ScreenAdapter.calculateExX(DEFAULT_X + DEFAULT_W + 50));
@@ -382,14 +377,14 @@ public class Model3 implements ReloadPane {
 
                     questionBox.setLayoutX(ScreenAdapter.calculateExX(Integer.parseInt(detailArr[0])));
                     questionBox.setLayoutY(ScreenAdapter.calculateExY(Integer.parseInt(detailArr[1])));
-                    item.setPrefSize(ScreenAdapter.calculateExW(Integer.parseInt(detailArr[2])),
-                        ScreenAdapter.calculateExH(Integer.parseInt(detailArr[3])));
+                    item.setPrefSize(ScreenAdapter.calculateExX(Integer.parseInt(detailArr[2])),
+                        ScreenAdapter.calculateExY(Integer.parseInt(detailArr[3])));
                     item.setAlignment(AlignmentUtil.getAlign(detailArr[13]));
                     item.setLayoutX(ScreenAdapter.calculateExX(Integer.parseInt(detailArr[0])));
                     item.setLayoutY(ScreenAdapter.calculateExY(Integer.parseInt(detailArr[1])));
-                    questionGrid.setVgap(ScreenAdapter.calculateExH(10));
-                    questionGrid.setHgap(ScreenAdapter.calculateExW(Integer.parseInt(detailArr[16])));
-                    questionBox.setSpacing(ScreenAdapter.calculateExH(Integer.parseInt(detailArr[14])));
+                    questionGrid.setVgap(ScreenAdapter.calculateExY(10));
+                    questionGrid.setHgap(ScreenAdapter.calculateExX(Integer.parseInt(detailArr[16])));
+                    questionBox.setSpacing(ScreenAdapter.calculateExY(Integer.parseInt(detailArr[14])));
                     if (Boolean.valueOf(detailArr[4])) {
                         // 填充背景图片
                         if (!StringUtils.isEmpty(detailArr[6])) {
@@ -397,8 +392,8 @@ public class Model3 implements ReloadPane {
                                 item.setBackground(new Background(new BackgroundImage(new Image(new FileInputStream(detailArr[6])),
                                         BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT, BackgroundPosition.DEFAULT,
                                         new BackgroundSize(
-                                            ScreenAdapter.calculateExW(Integer.parseInt(detailArr[2])),
-                                            ScreenAdapter.calculateExH(Integer.parseInt(detailArr[3])),
+                                            ScreenAdapter.calculateExX(Integer.parseInt(detailArr[2])),
+                                            ScreenAdapter.calculateExY(Integer.parseInt(detailArr[3])),
                                             false, false, false, false))));
                             } catch (FileNotFoundException e) {
                                 item.setBackground(new Background(new BackgroundFill(Color.TRANSPARENT, new CornerRadii(10), Insets.EMPTY)));
@@ -412,8 +407,7 @@ public class Model3 implements ReloadPane {
                     }
 
 
-                    Font font = Font.font(FontMap.getFont(detailArr[7]), FontWeight.NORMAL, FontPosture.REGULAR,
-                        ScreenAdapter.calculateExW(Integer.parseInt(detailArr[8])));
+                    Font font = FontMap.load(detailArr[7], ScreenAdapter.calculateExX(Integer.parseInt(detailArr[8])));
                     text.setFont(font);
                     text.setFill(Color.valueOf(detailArr[17]));
                     if (Boolean.valueOf(detailArr[10])) {

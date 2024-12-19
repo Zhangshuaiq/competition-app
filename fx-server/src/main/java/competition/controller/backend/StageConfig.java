@@ -2,8 +2,10 @@ package competition.controller.backend;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import competition.controller.ControlPane;
+import competition.controller.preview.PreviewPane;
 import competition.entity.Stages;
 import competition.mapper.StagesMapper;
+import competition.util.FontMap;
 import competition.util.ImageResource;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -59,6 +61,11 @@ public class StageConfig {
 
     @FXML
     private HBox stageAddress;
+
+
+    // 当前环节是否以抢答模式打开
+    @FXML
+    private CheckBox qdMode;
 
     @FXML
     private ComboBox<String> paChoice, ruleChoice;
@@ -395,6 +402,7 @@ public class StageConfig {
         addLab.setAlignment(Pos.CENTER);
         addLab.setTextFill(Color.BLACK);
         addLab.setFont(Font.font(24));
+        //addLab.setFont(Font.loadFont(FontMap.defaultFont(),24));
         stackPane.getChildren().add(addLab);
         firstBox.getChildren().add(stackPane);
         stackPane.setOnMouseClicked(new EventHandler<MouseEvent>() {
@@ -560,6 +568,7 @@ public class StageConfig {
             stageShow.setSelected(current.getShow() == 1);
             model6Check.setSelected(current.getM6() == 1);
             randomSort2.setSelected(current.getrRandomSort() == 1);
+            qdMode.setSelected(current.getOpenQd() == 1);
             paChoice.setValue(current.getpAType());
             ruleChoice.setValue(current.getRuleType());
             timeOrder.setSelected(current.getOrderVal() == 1);
@@ -652,6 +661,9 @@ public class StageConfig {
         // 抢答方式
         final String paTypeValue = paChoice.getValue();
 
+        //是否开启抢答模式
+        final boolean openQD = qdMode.isSelected();
+
         // 环节规则类型
         final String value = "文字";
         String data = "";
@@ -682,6 +694,7 @@ public class StageConfig {
         current.setRuleType(value);
         current.setRuleContent(data);
         current.setrRandomSort(randomSort2Selected?1:0);
+        current.setOpenQd(openQD?1:0);
         current.setOrderVal(timeOrder.isSelected()? 1: 0);
         current.setDesValue(Integer.parseInt(desValue.getText()));
         current.setCountTotal(countTotal.isSelected()? 1: 0);
@@ -692,7 +705,11 @@ public class StageConfig {
         secondBox.getChildren().clear();
         thirdBox.getChildren().clear();
         showStageData();
-        controlPane.getPreviewPane().reload();
+        PreviewPane previewPane = controlPane.getPreviewPane();
+        if (previewPane != null) {
+            previewPane.reload();
+        }
+
     }
 
     @FXML
@@ -720,6 +737,9 @@ public class StageConfig {
 
         // 抢答方式
         final String paTypeValue = paChoice.getValue();
+
+        //是否开启抢答模式
+        final boolean openQD = qdMode.isSelected();
 
         // 环节规则类型
         final String value = ruleChoice.getValue();
@@ -752,6 +772,7 @@ public class StageConfig {
         stages.setRuleContent(data);
         stages.setM6(model6Check.isSelected()? 1: 0);
         stages.setrRandomSort(randomSort2Selected?1:0);
+        stages.setOpenQd(openQD?1:0);
         stages.setDesValue(Integer.parseInt(desValue.getText()));
         stages.setCountTotal(countTotal.isSelected()? 1: 0);
         stages.setAnswerSingle(answerShow.isSelected()?1: 0);
