@@ -69,8 +69,6 @@ public class ScoreBoardHPreview extends PreviewPane implements BoardPane {
     }
 
     private void show() {
-        
-        int count = 2;
         BoardPane scoreBoard = controlPane.getScoreBoard();
         if (scoreBoard == null || !(scoreBoard instanceof ScoreBoardH)) {
             scoreBoard = (ScoreBoardH) ExtendedScreen.scoreWithPos("/view/board/match/ScoreBoardH.fxml","", "/view/style.css", false);
@@ -99,16 +97,16 @@ public class ScoreBoardHPreview extends PreviewPane implements BoardPane {
 
         List<Teams> teams = TeamRuntime.getTeams();
         for (Teams team : teams) {
+            int count = 2;
             VBox box = new VBox();
             box.setPrefWidth(Integer.parseInt(cfgArr[19]));
             box.setSpacing(1);
             StackPane stackPane = new StackPane();
+
             stackPane.setPrefSize(Integer.parseInt(cfgArr[19]), Integer.parseInt(cfgArr[20]));
-            
+            VBox.setVgrow(stackPane, Priority.NEVER);
             Text teamName = new Text(team.getShortName());
             teamName.setTextAlignment(TextAlignment.CENTER);
-            teamName.prefWidth(Integer.parseInt(cfgArr[19]));
-            teamName.prefHeight(Integer.parseInt(cfgArr[20]));
             teamName.setFill(Color.valueOf(cfgArr[15]));
             stackPane.setBackground(new Background(new BackgroundFill(Color.valueOf(cfgArr[16]), new CornerRadii(10), Insets.EMPTY)));
             teamName.setFont(font);
@@ -129,10 +127,9 @@ public class ScoreBoardHPreview extends PreviewPane implements BoardPane {
 
             Text teamScore = new Text(team.getTeamScore() + "");
             StackPane stackPane1 = new StackPane();
+            VBox.setVgrow(stackPane1, Priority.NEVER);
             stackPane1.setPrefSize(Integer.parseInt(cfgArr[19]), Integer.parseInt(cfgArr[20]));
             teamScore.setTextAlignment(TextAlignment.CENTER);
-            teamScore.prefWidth(Integer.parseInt(cfgArr[19]));
-            teamScore.prefHeight(Integer.parseInt(cfgArr[20]));
             teamScore.setFill(Color.valueOf(cfgArr[21]));
             stackPane1.setBackground(new Background(new BackgroundFill(Color.valueOf(cfgArr[22]), new CornerRadii(10), Insets.EMPTY)));
             teamScore.setFont(font);
@@ -153,16 +150,16 @@ public class ScoreBoardHPreview extends PreviewPane implements BoardPane {
 
             // 抢答分时面板
             if (RuntimeUtil.showBuzzBar) {
+                count ++;
                 Long timeVal = RuntimeUtil.buzzTimeMap.get(team.getShortName());
                 Text buzzTime = new Text("0");
                 if (timeVal != null) {
                     buzzTime.setText(NumberUtil.fix2Point(timeVal * 0.001));
                 }
                 StackPane buzzPane = new StackPane();
+                VBox.setVgrow(buzzPane, Priority.NEVER);
                 buzzPane.setPrefSize(Integer.parseInt(cfgArr[19]), Integer.parseInt(cfgArr[20]));
                 buzzTime.setTextAlignment(TextAlignment.CENTER);
-                buzzTime.prefWidth(Integer.parseInt(cfgArr[19]));
-                buzzTime.prefHeight(Integer.parseInt(cfgArr[20]));
                 buzzTime.setFill(Color.valueOf(cfgArr[21]));
 
                 Color color = RuntimeUtil.buzzResult.getOrDefault(team.getShortName(), false)?Color.GREEN: Color.RED;
@@ -194,15 +191,14 @@ public class ScoreBoardHPreview extends PreviewPane implements BoardPane {
                 if (questionType == 6 && m6 == 0) {
                     List<Model60RuntimeData.ModelData> runtimeData = Model60RuntimeData.getRuntimeData();
                     Map<String, Model60RuntimeData.ModelData> answerMap = runtimeData.stream().collect(Collectors.toMap(x -> x.getTeamName(), x -> x));
-                    count = 3;
+                    count ++;
                     StackPane stackPane2 = new StackPane();
+                    VBox.setVgrow(stackPane2, Priority.NEVER);
                     stackPane2.setPrefSize(Integer.parseInt(cfgArr[19]), Integer.parseInt(cfgArr[20]));
                     Model60RuntimeData.ModelData userData = answerMap.get(team.getFullName());
                     Text userSelect = new Text();
                     // fix bug: 用户未选择答案的情况
                     userSelect.setTextAlignment(TextAlignment.CENTER);
-                    userSelect.prefWidth(Integer.parseInt(cfgArr[19]));
-                    userSelect.prefHeight(Integer.parseInt(cfgArr[20]));
                     userSelect.setFont(statusFont);
                     userSelect.setFill(statusColor);
                     if (team.getStatus() == 1) {
@@ -233,7 +229,7 @@ public class ScoreBoardHPreview extends PreviewPane implements BoardPane {
                 else if (questionType == 6 && m6 == 1) {
                     List<Model61RuntimeData.ModelData> runtimeData = Model61RuntimeData.getRuntimeData();
                     Map<String, Model61RuntimeData.ModelData> dataMap = runtimeData.stream().collect(Collectors.toMap(x -> x.getTeamName() + "-" + x.getUserName(), x -> x));
-                    count = 3;
+                    count ++;
                     HBox memberStatus = new HBox();
                     memberStatus.setSpacing(1);
                     memberStatus.setPadding(new Insets(1, 1, 1,1));
@@ -245,12 +241,11 @@ public class ScoreBoardHPreview extends PreviewPane implements BoardPane {
                         for (int i = 0; i < ms.length; i++) {
                             Model61RuntimeData.ModelData modelData = dataMap.get(team.getFullName() + "-" + ms[i]);
                             StackPane stackPane2 = new StackPane();
+                            VBox.setVgrow(stackPane2, Priority.NEVER);
                             stackPane2.setPrefSize(w, Integer.parseInt(cfgArr[20]));
                             Text l = new Text((i + 1) + "");
                             l.setTextAlignment(TextAlignment.CENTER);
                             stackPane2.getChildren().add(l);
-                            l.prefHeight(Integer.parseInt(cfgArr[20]));
-                            l.prefWidth(w);
                             l.setFont(statusFont);
                             l.setFill(statusColor);
                             if (team.getStatusList().get(i) == 1) {
@@ -281,7 +276,7 @@ public class ScoreBoardHPreview extends PreviewPane implements BoardPane {
                     }
                 }
                 else if (questionType == 7) {
-                    count = 3;
+                    count ++;
                 }
 
             }
@@ -305,7 +300,7 @@ public class ScoreBoardHPreview extends PreviewPane implements BoardPane {
                     
                 }
             });
-            box.setPrefHeight(Integer.parseInt(cfgArr[20]) * count + count * 10);
+            box.setPrefHeight(Integer.parseInt(cfgArr[20]) * count + count - 1);
             container.getChildren().add(box);
         }
 //        CheckBox selectAll = new CheckBox("全选");
@@ -321,7 +316,9 @@ public class ScoreBoardHPreview extends PreviewPane implements BoardPane {
 
         container.setLayoutX(Double.parseDouble(cfgArr[17]));
         container.setLayoutY(Double.parseDouble(cfgArr[18]));
-        container.setPrefWidth((Double.parseDouble(cfgArr[19]) + 20) * teams.size() + 200);
+        container.setPrefWidth((Double.parseDouble(cfgArr[19]) + container.getSpacing()) * teams.size() - container.getSpacing());
+        int size = ((VBox)container.getChildren().get(0)).getChildren().size();
+        container.setPrefHeight(Integer.parseInt(cfgArr[20]) * size + size - 1);
     }
 
 

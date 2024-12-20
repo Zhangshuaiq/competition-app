@@ -62,10 +62,9 @@ public class StageConfig {
     @FXML
     private HBox stageAddress;
 
-
     // 当前环节是否以抢答模式打开
     @FXML
-    private CheckBox qdMode;
+    private CheckBox qdMode, qdDescScore;
 
     @FXML
     private ComboBox<String> paChoice, ruleChoice;
@@ -569,6 +568,7 @@ public class StageConfig {
             model6Check.setSelected(current.getM6() == 1);
             randomSort2.setSelected(current.getrRandomSort() == 1);
             qdMode.setSelected(current.getOpenQd() == 1);
+            qdDescScore.setSelected(current.getQdDesc() == 1);
             paChoice.setValue(current.getpAType());
             ruleChoice.setValue(current.getRuleType());
             timeOrder.setSelected(current.getOrderVal() == 1);
@@ -664,6 +664,8 @@ public class StageConfig {
         //是否开启抢答模式
         final boolean openQD = qdMode.isSelected();
 
+        final boolean qdDesc = qdDescScore.isSelected();
+
         // 环节规则类型
         final String value = "文字";
         String data = "";
@@ -695,6 +697,7 @@ public class StageConfig {
         current.setRuleContent(data);
         current.setrRandomSort(randomSort2Selected?1:0);
         current.setOpenQd(openQD?1:0);
+        current.setQdDesc(qdDesc?1:0);
         current.setOrderVal(timeOrder.isSelected()? 1: 0);
         current.setDesValue(Integer.parseInt(desValue.getText()));
         current.setCountTotal(countTotal.isSelected()? 1: 0);
@@ -773,6 +776,7 @@ public class StageConfig {
         stages.setM6(model6Check.isSelected()? 1: 0);
         stages.setrRandomSort(randomSort2Selected?1:0);
         stages.setOpenQd(openQD?1:0);
+        stages.setQdDesc(qdDescScore.isSelected()?1:0);
         stages.setDesValue(Integer.parseInt(desValue.getText()));
         stages.setCountTotal(countTotal.isSelected()? 1: 0);
         stages.setAnswerSingle(answerShow.isSelected()?1: 0);

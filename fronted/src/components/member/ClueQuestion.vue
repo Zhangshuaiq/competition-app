@@ -23,7 +23,19 @@
       <div v-else>
         <div id="question-info"  v-if="questionItem">
           <div id="question-name">
-            {{ questionItem.order }} &nbsp; ({{questionItem.questionType}}) &nbsp; {{ questionItem.question }}
+            <div v-if="questionItem.txbz === '4'">
+              {{ questionItem.order }} &nbsp; {{ questionItem.question }}
+            </div>
+            <div v-if="questionItem.txbz === '3'">
+              {{ questionItem.order }} &nbsp;&nbsp; {{questionItem.questionType}} &nbsp;&nbsp; {{ questionItem.question }}
+            </div>
+            <div v-if="questionItem.txbz === '2'">
+              {{ questionItem.order }} &nbsp; ({{questionItem.questionType}}) &nbsp; {{ questionItem.question }}
+            </div>
+
+            <div v-if="questionItem.txbz === '1'">
+              {{ questionItem.order }} &nbsp; [{{questionItem.questionType}}] &nbsp; {{ questionItem.question }}
+            </div>
           </div>
           <div id="answer-selection">
             <div class="selection-item"  v-if="questionItem.choiceA">
@@ -106,12 +118,6 @@ export default {
       img.onerror = () => callback(false);
       img.src = url;
     },
-    
-    saveData(){
-      sessionStorage.setItem("showResult", this.showResult + "")
-      sessionStorage.setItem("showWait", this.showWait + "")
-      sessionStorage.setItem("questionItem", JSON.stringify(this.questionItem))
-    },
 
     setRetryTimer() {
       // 先清除之前的计时器（如果有）
@@ -147,13 +153,18 @@ export default {
 
   beforeRouteUpdate(to, from, next) {
     const data = this.$store.state.data
+    data.choiceA = ''
+    data.choiceB = ''
+    data.choiceC = ''
+    data.choiceD = ''
+    data.choiceE = ''
+    data.choiceF = ''
     this.questionItem = data
     this.showResult = false
     next();
   },
 
   mounted() {
-
     this.checkImageUrl(this.imageUrl, (isValid) => {
       if (!isValid) {
         console.log("invalid....................")
@@ -172,10 +183,15 @@ export default {
     
     this.teamInfo = JSON.parse(item)
     const data = this.$store.state.data
+    data.choiceA = ''
+    data.choiceB = ''
+    data.choiceC = ''
+    data.choiceD = ''
+    data.choiceE = ''
+    data.choiceF = ''
     this.stage = this.$store.state.stage
     this.questionItem = data
     this.setRetryTimer()
-    
   },
 }
 </script>

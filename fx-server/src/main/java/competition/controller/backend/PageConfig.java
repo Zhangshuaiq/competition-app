@@ -863,6 +863,8 @@ public class PageConfig {
         configsMapper.updateById(jingji);
 
         controlPane.updateScoreBoard();
+        Navigator.scoreBoardStage.setX(Double.parseDouble(duiwux));
+        Navigator.scoreBoardStage.setY(Double.parseDouble(duiwuy));
         ReloadPane timeBoard = controlPane.getTimeBoardPreview();
         if (timeBoard != null) {
             timeBoard.reload();

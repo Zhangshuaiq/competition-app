@@ -32,7 +32,7 @@
           <!--    文字则正常展示      -->
 
           <div v-else-if="questionItem.questionType === '单选题' || questionItem.questionType === '多选题' || questionItem.questionType === '不定项选择题'">
-            <div id="question-name">
+            <div class="question-name">
               <div v-if="questionItem.txbz === '4'">
                 {{ questionItem.order }} &nbsp; {{ questionItem.question }}
               </div>
@@ -82,7 +82,19 @@
 
           <div v-else-if="questionItem.questionType === '填空题' || questionItem.questionType === '简答题' || questionItem.questionType === '判断题'">
             <div class="question-name">
-              {{ questionItem.order }} &nbsp; ({{questionItem.questionType}}) &nbsp; {{ questionItem.question }}
+              <div v-if="questionItem.txbz === '4'">
+                {{ questionItem.order }} &nbsp; {{ questionItem.question }}
+              </div>
+              <div v-if="questionItem.txbz === '3'">
+                {{ questionItem.order }} &nbsp;&nbsp; {{questionItem.questionType}} &nbsp;&nbsp; {{ questionItem.question }}
+              </div>
+              <div v-if="questionItem.txbz === '2'">
+                {{ questionItem.order }} &nbsp; ({{questionItem.questionType}}) &nbsp; {{ questionItem.question }}
+              </div>
+
+              <div v-if="questionItem.txbz === '1'">
+                {{ questionItem.order }} &nbsp; [{{questionItem.questionType}}] &nbsp; {{ questionItem.question }}
+              </div>
             </div>
             <div v-if="questionItem.resourceType === '视频'">
               <video width="320" height="240" controls muted>
@@ -441,21 +453,21 @@ export default {
   },
 
 
-  // beforeRouteLeave(to, from, next) {
-  //   console.log(from, to, next)
-  //   // 在这里编写离开页面前需要执行的逻辑
-  //   // 例如，你可以在这里提示用户保存未保存的更改
-  //   if (from.name !== to.name) {
-  //     sessionStorage.removeItem("time")
-  //     sessionStorage.removeItem("score")
-  //     sessionStorage.removeItem("showResult")
-  //     sessionStorage.removeItem("userSelects")
-  //     sessionStorage.removeItem("questionIndex")
-  //     sessionStorage.removeItem("questionItem")
-  //     sessionStorage.removeItem("questionList")
-  //   }
-  //   next()
-  // },
+  beforeRouteLeave(to, from, next) {
+    // 在这里编写离开页面前需要执行的逻辑
+    // 例如，你可以在这里提示用户保存未保存的更改
+    if (from.name !== to.name && to.name !== 'stageRank') {
+      sessionStorage.removeItem("time")
+      sessionStorage.removeItem("score")
+      sessionStorage.removeItem("showResult")
+      sessionStorage.removeItem("userSelects")
+      sessionStorage.removeItem("questionIndex")
+      sessionStorage.removeItem("questionItem")
+      sessionStorage.removeItem("questionList")
+      sessionStorage.removeItem("submit")
+    }
+    next()
+  },
   
 }
 </script>
@@ -478,7 +490,7 @@ export default {
   padding: 50px 100px;
 }
 
-#question-name {
+.question-name {
   font-family: "Microsoft YaHei UI";
   font-size: x-large;
 }

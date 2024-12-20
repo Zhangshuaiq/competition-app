@@ -12,7 +12,7 @@
       </el-row>
     </div>
     <div id="container">
-      <div  style="padding: 100px; text-align: center; font-size: xx-large" v-html="rule">
+      <div  style="padding: 100px; text-align: left; font-size: xx-large; white-space: pre-line"  v-html="rule">
       </div>
     </div>
   </div>
@@ -55,12 +55,12 @@ export default {
     },
   },
 
-  // beforeRouteUpdate(to, from, next) {
-  //   const data = this.$store.state.data
-  //   this.questionItem = data
-  //   this.showResult = false
-  //   next();
-  // },
+  beforeRouteUpdate(to, from, next) {
+    const data = this.$store.state.data
+    this.rule = data
+    this.stage = this.$store.state.stage
+    next();
+  },
 
   mounted() {
     this.checkImageUrl(this.imageUrl, (isValid) => {

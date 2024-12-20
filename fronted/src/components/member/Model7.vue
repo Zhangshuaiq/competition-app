@@ -52,7 +52,20 @@
         </div>
         <div id="question-info"  v-if="questionItem && !showResult">
           <div id="question-name">
-            {{ questionItem.questionNumber }} &nbsp; ({{questionItem.questionType}}) &nbsp; {{ questionItem.question }}
+            <div v-if="questionItem.txbz === '4'">
+              {{ questionItem.questionNumber }} &nbsp; {{ questionItem.question }}
+            </div>
+            <div v-if="questionItem.txbz === '3'">
+              {{ questionItem.questionNumber }} &nbsp;&nbsp; {{questionItem.questionType}} &nbsp;&nbsp; {{ questionItem.question }}
+            </div>
+            <div v-if="questionItem.txbz === '2'">
+              {{ questionItem.questionNumber }} &nbsp; ({{questionItem.questionType}}) &nbsp; {{ questionItem.question }}
+            </div>
+
+            <div v-if="questionItem.txbz === '1'">
+              {{ questionItem.questionNumber }} &nbsp; [{{questionItem.questionType}}] &nbsp; {{ questionItem.question }}
+            </div>
+<!--            {{ questionItem.questionNumber }} &nbsp; ({{questionItem.questionType}}) &nbsp; {{ questionItem.question }}-->
           </div>
           <div id="answer-selection">
             <div class="selection-item"  v-if="questionItem.choiceA">
@@ -168,6 +181,7 @@
               </el-row>
             </div>
             <div v-else>
+              {{questionItem.questionType}}
               <el-row type="flex" justify="center" style="text-align: center">
                 <el-input :disabled="(second <= 0 || showResult)" placeholder="请输入答案" type="textarea" rows="3" v-model="activeDiv"></el-input>
               </el-row>
@@ -513,7 +527,6 @@ export default {
   },
 
   beforeRouteLeave(to, from, next) {
-    console.log(from, to, next)
     // 在这里编写离开页面前需要执行的逻辑
     // 例如，你可以在这里提示用户保存未保存的更改
     if (from.name !== to.name && to.name !== 'stageRank') {

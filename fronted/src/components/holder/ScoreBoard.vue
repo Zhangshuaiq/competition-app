@@ -80,6 +80,11 @@
    },
 
    mounted() {
+     const login =  sessionStorage.getItem('login')
+     if (!login || login === 'false') {
+       this.$router.push({name: "hwait"})
+       return
+     }
      const data = this.$store.state.teams
      console.log(data)
      this.teamList = data

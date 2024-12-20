@@ -22,10 +22,14 @@
       </div>
       <div v-else>
         <div id="question-info"  v-if="questionItem">
-
           <!--       图片不区分题目类型。因为图文制作在一起   -->
           <div v-if="questionItem.resourceType === '图片'">
-            <img :src="resourceUrl" alt="Overlay Image" class="overlay-img">
+            <div v-if="isResourceAvailable">
+              <img :src="answerUrl" alt="Overlay Image" class="overlay-img">
+            </div>
+            <div v-else>
+              <img :src="resourceUrl" alt="Overlay Image" class="overlay-img">
+            </div>
           </div>
           <!--    音频无需展示      -->
           <!--    视频需要播放      -->
@@ -33,7 +37,19 @@
 
           <div v-else-if="questionItem.questionType === '单选题' || questionItem.questionType === '多选题' || questionItem.questionType === '不定项选择题'">
             <div class="question-name">
-              {{ questionItem.questionNumber }} &nbsp;({{questionItem.questionType}}) &nbsp; {{ questionItem.question }}
+              <div v-if="questionItem.txbz === '4'">
+                {{ questionItem.order }} &nbsp; {{ questionItem.question }}
+              </div>
+              <div v-if="questionItem.txbz === '3'">
+                {{ questionItem.order }} &nbsp;&nbsp; {{questionItem.questionType}} &nbsp;&nbsp; {{ questionItem.question }}
+              </div>
+              <div v-if="questionItem.txbz === '2'">
+                {{ questionItem.order }} &nbsp; ({{questionItem.questionType}}) &nbsp; {{ questionItem.question }}
+              </div>
+
+              <div v-if="questionItem.txbz === '1'">
+                {{ questionItem.order }} &nbsp; [{{questionItem.questionType}}] &nbsp; {{ questionItem.question }}
+              </div>
             </div>
             <div v-if="questionItem.resourceType === '视频'">
               <video width="320" height="240" controls muted>
@@ -70,7 +86,19 @@
 
           <div v-else-if="questionItem.questionType === '填空题' || questionItem.questionType === '简答题' || questionItem.questionType === '判断题'">
             <div class="question-name">
-              {{ questionItem.questionNumber }} &nbsp; ({{questionItem.questionType}}) &nbsp; {{ questionItem.question }}
+              <div v-if="questionItem.txbz === '4'">
+                {{ questionItem.order }} &nbsp; {{ questionItem.question }}
+              </div>
+              <div v-if="questionItem.txbz === '3'">
+                {{ questionItem.order }} &nbsp;&nbsp; {{questionItem.questionType}} &nbsp;&nbsp; {{ questionItem.question }}
+              </div>
+              <div v-if="questionItem.txbz === '2'">
+                {{ questionItem.order }} &nbsp; ({{questionItem.questionType}}) &nbsp; {{ questionItem.question }}
+              </div>
+
+              <div v-if="questionItem.txbz === '1'">
+                {{ questionItem.order }} &nbsp; [{{questionItem.questionType}}] &nbsp; {{ questionItem.question }}
+              </div>
             </div>
             <div v-if="questionItem.resourceType === '视频'">
               <video width="320" height="240" controls muted>
@@ -84,7 +112,7 @@
           <br>
         </div>
 
-        <div id="answer-info" style="font-size: xx-large; margin-top: 20px; text-align: center; background-color: #C40000; border-radius: 8px;">
+        <div v-if="!isResourceAvailable" id="answer-info" style="font-size: xx-large; margin-top: 20px; text-align: center; background-color: #C40000; border-radius: 8px;">
           <font color="white"> {{ prefix }} {{questionItem.answer}}</font>
         </div>
       </div>
@@ -93,13 +121,14 @@
 </template>
 
 <script>
-import ScoreBoard from "@/components/ScoreBoard";
+import ScoreBoard from "@/components/member/ScoreBoard.vue";
 import baseUrl from "@/config";
 export default {
   name: "Model60M",
   components: {ScoreBoard},
   data(){
     return {
+      isResourceAvailable: false,
       retryTimer: null, // 用于重试逻辑的计时器
       retryInterval: 500, // 重试间隔时间，例如5秒
       prefix: '',
@@ -115,10 +144,28 @@ export default {
       stage: {},
       submit : false,
       resourceUrl: '',
+      answerUrl: '',
       imageUrl: `${baseUrl}/resource/答题背景.jpg?${new Date().getTime()}`,
       defaultImageUrl: `${baseUrl}/resource/默认背景.jpg?${new Date().getTime()}`,
     }
   },
+
+  watch: {
+    answerUrl(newUrl) {
+      if (!newUrl) {
+        this.isResourceAvailable = false;
+        return
+      }
+      this.checkImageUrl(newUrl, (isValid) => {
+        if (isValid) {
+          this.isResourceAvailable = true;
+        } else {
+          this.isResourceAvailable = false;
+        }
+      });
+    }
+  },
+
   computed: {
     containerBoxStyle() {
       return {
@@ -179,49 +226,14 @@ export default {
       }, this.retryInterval);
     },
 
-    loadData(){
-
-      const submit = sessionStorage.getItem("submit")
-      if (submit && submit !== 'null') {
-        this.submit = submit === 'true'
-        if (this.submit) {
-          this.btnText = "已提交"
-        } else {
-          this.btnText = "提 交"
-        }
-      }
-
-      const result = sessionStorage.getItem("showResult")
-      if (result && result !== 'null') {
-        this.showResult = result === 'true'
-      }
-
-      const item = sessionStorage.getItem("questionItem");
-      if (item && item !== 'null') {
-        this.questionItem = JSON.parse(item)
-        console.log(this.questionItem)
-        this.activeDiv = this.questionItem.userSelect || ''
-      }
-    },
 
 
-    setActiveDiv(divNumber) {
-      this.activeDiv = divNumber;
-    },
 
     checkImageUrl(url, callback) {
       const img = new Image();
       img.onload = () => callback(true);
       img.onerror = () => callback(false);
       img.src = url;
-    },
-
-    appendActiveDiv(divNumber) {
-      if (this.activeDiv.indexOf(divNumber) >= 0) {
-        this.activeDiv = this.activeDiv.replace(divNumber, "")
-      } else {
-        this.activeDiv = this.activeDiv + divNumber;
-      }
     },
 
     subscribeQuestion(){
@@ -243,11 +255,8 @@ export default {
         } else {
           this.showResult = message.data
           if (this.questionItem.resourceType === '图片') {
-            if (this.showResult) {
-              this.resourceUrl = this.resourceUrl = `${baseUrl}/resource/${this.questionItem.answer}`
-            } else {
-              this.resourceUrl = this.resourceUrl = `${baseUrl}/resource/${this.questionItem.question}`
-            }
+            this.answerUrl = `${baseUrl}/resource/${this.questionItem.answer}`
+            this.resourceUrl = `${baseUrl}/resource/${this.questionItem.question}`
           }
         }
 
@@ -260,6 +269,7 @@ export default {
     const data = this.$store.state.data
     this.questionItem = data
     if (this.questionItem.resourceType === '图片') {
+      this.answerUrl = `${baseUrl}/resource/${this.questionItem.answer}`
       this.resourceUrl = `${baseUrl}/resource/${this.questionItem.question}`
     } else if (this.questionItem.resourceType === '视频') {
       this.resourceUrl = `${baseUrl}/resource/${this.questionItem.resource}`
@@ -275,6 +285,11 @@ export default {
   
   
   mounted() {
+    const login =  sessionStorage.getItem('login')
+    if (!login || login === 'false') {
+      this.$router.push({name: "hwait"})
+      return
+    }
     this.checkImageUrl(this.imageUrl, (isValid) => {
       if (!isValid) {
         console.log("invalid....................")
@@ -283,14 +298,14 @@ export default {
     });
     this.prefix = sessionStorage.getItem('prefix')
     console.log(this.teamInfo)
-    this.loadData();
-    
+
     const data = this.$store.state.data
     this.stage = this.$store.state.stage
     this.questionItem = data
     
     
     if (this.questionItem.resourceType === '图片') {
+      this.answerUrl = `${baseUrl}/resource/${this.questionItem.answer}`
       this.resourceUrl = `${baseUrl}/resource/${this.questionItem.question}`
     } else if (this.questionItem.resourceType === '视频') {
       this.resourceUrl = `${baseUrl}/resource/${this.questionItem.resource}`
@@ -298,6 +313,22 @@ export default {
    
     this.setRetryTimer()
   },
+
+  beforeRouteLeave(to, from, next) {
+    // 在这里编写离开页面前需要执行的逻辑
+    // 例如，你可以在这里提示用户保存未保存的更改
+    if (from.name !== to.name && to.name !== 'stageRank') {
+      sessionStorage.removeItem("time")
+      sessionStorage.removeItem("score")
+      sessionStorage.removeItem("showResult")
+      sessionStorage.removeItem("userSelects")
+      sessionStorage.removeItem("questionIndex")
+      sessionStorage.removeItem("questionItem")
+      sessionStorage.removeItem("questionList")
+    }
+    next()
+  },
+
   
 }
 </script>

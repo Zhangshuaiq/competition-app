@@ -250,7 +250,7 @@ public class ScoreBoardH implements BoardPane {
 
         container.setLayoutX(Double.parseDouble(cfgArr[17]));
         container.setLayoutY(Double.parseDouble(cfgArr[18]));
-        container.setPrefWidth((Double.parseDouble(cfgArr[19]) + 20) * teams.size() + 200);
+        container.setPrefWidth((Double.parseDouble(cfgArr[19]) + container.getSpacing()) * teams.size() - container.getSpacing());
     }
 
 

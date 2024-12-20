@@ -17,7 +17,7 @@
 </template>
 
 <script>
-import ScoreBoard from "@/components/ScoreBoard.vue";
+import ScoreBoard from "@/components/member/ScoreBoard.vue";
 import baseUrl from "@/config";
 
 export default {
@@ -57,6 +57,11 @@ export default {
   },
 
   mounted() {
+    const login =  sessionStorage.getItem('login')
+    if (!login || login === 'false') {
+      this.$router.push({name: "hwait"})
+      return
+    }
     this.checkImageUrl(this.imageUrl, (isValid) => {
       if (!isValid) {
         console.log("invalid....................")

@@ -16,6 +16,9 @@ export default {
       //const currentRouteName = this.$router.currentRoute.name;
       let targetRouteName = message.route;
       const role = sessionStorage.getItem('role');
+      if (role === 'score') {
+        return;
+      }
       if (targetRouteName !== '') {
         // 竞技模式的情况下评委需要看到的数据
         if (targetRouteName === 'hmodel7' && role && role === 'holder') {
@@ -29,14 +32,6 @@ export default {
               }
           );
         } else {
-          
-          if (targetRouteName === 'hclue' && role && role !== 'holder') {
-            return
-          }
-          if (targetRouteName === 'clue' && role && role === 'holder') {
-            return
-          }
-          
           if (role && role === 'holder' && !targetRouteName.startsWith('h')) {
             targetRouteName = 'h' + targetRouteName
           }

@@ -2,16 +2,18 @@
 <template>
   <div id="container-box" :style="containerBoxStyle">
     <div id="container">
-      <div :style="codeStyle">
-        
+      <div class="codeOutStyle" :style="codeOutStyle">
+        <div :style="codeStyle">
+          {{ teamItem.code }}
+        </div>
       </div>
 
       <div :style="teamStyle">
-
+        {{ teamItem.fullName }}
       </div>
 
       <div :style="scoreStyle">
-
+        {{ teamItem.teamScore }}
       </div>
     </div>
   </div>
@@ -20,19 +22,27 @@
 
 <script>
 import baseUrl from "@/config";
+import {scoreStyle, queryScore} from "@/api";
 
 export default {
   name: "TeamScore",
   
   data() {
     return {
+      timer: null,
       dialogFormVisible: false,
       teamItem: '',
       imageUrl: `${baseUrl}/resource/团队分数背景.jpg?${new Date().getTime()}`,
       defaultImageUrl: `${baseUrl}/resource/默认背景.jpg?${new Date().getTime()}`,
-      codeCfg: {},
-      teamCfg: {},
-      scoreCfg: {},
+      codeCfg: {
+        color: 'black'
+      },
+      teamCfg: {
+        color: 'black'
+      },
+      scoreCfg: {
+        color: 'black'
+      },
     }
   },
 
@@ -46,36 +56,57 @@ export default {
       };
     },
 
+    codeOutStyle(){
+      return {
+        width: '100%',
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        height: `${this.codeCfg.size}px`,
+        textAlign: 'center',
+        position: 'absolute',
+        top: `${this.codeCfg.y}vh`,
+      }
+    },
+
     codeStyle(){
       return {
         position: 'absolute',
-        width: 'max-content',
-        top: `${this.codeCfg.y}`,
-        left: `${this.codeCfg.x}`,
-        color: `${this.codeCfg.color}`,
-        fontsize: `${this.codeCfg.size}`,
+        width: `${this.codeCfg.size}px`,
+        height: `${this.codeCfg.size}px`,
+        lineHeight: `${this.codeCfg.size}px`,
+        borderRadius: '50%',
+        border: `1px solid ${this.codeCfg.color.replace('0x', '#')}`,
+        textAlign: 'center',
+        color: this.codeCfg.color.replace('0x', '#'),
+        fontSize: `${this.codeCfg.size}px`,
+        //fontSize: `${this.codeCfg.size }px`,
+        alignItems: 'center',
+        justifyContent: 'center',
+        display: this.codeCfg.show === 1? 'block': 'none'
       }
     },
 
     teamStyle(){
       return {
         position: 'absolute',
-        width: 'max-content',
-        top: `${this.teamCfg.y}`,
-        left: `${this.teamCfg.x}`,
-        color: `${this.teamCfg.color}`,
-        fontsize: `${this.teamCfg.size}`,
+        width: '100%',
+        textAlign: 'center',
+        top: `${this.teamCfg.y}vh`,
+        color: this.teamCfg.color.replace('0x', '#'),
+        fontSize: `${this.teamCfg.size}px`,
+        display: this.teamCfg.show === 1? 'block': 'none'
       }
     },
 
     scoreStyle(){
       return {
         position: 'absolute',
-        width: 'max-content',
-        top: `${this.scoreCfg.y}`,
-        left: `${this.scoreCfg.x}`,
-        color: `${this.scoreCfg.color}`,
-        fontsize: `${this.scoreCfg.size}`,
+        width: '100%',
+        textAlign: 'center',
+        top: `${this.scoreCfg.y}vh`,
+        color: this.scoreCfg.color.replace('0x', '#'),
+        fontSize: `${this.scoreCfg.size}px`,
       }
     }
   },
@@ -86,16 +117,50 @@ export default {
       img.onload = () => callback(true);
       img.onerror = () => callback(false);
       img.src = url;
-    }
+    },
+    
+    updateScore() {
+      queryScore(this.teamItem.id).then(res => {
+        sessionStorage.setItem('team', JSON.stringify(res.data))
+        this.teamItem = res.data
+      })
+    },
+    
+    queryStyle(){
+      scoreStyle().then(res => {
+        const result = res.data.item
+        console.log(result)
+        this.codeCfg = result[0]
+        this.teamCfg = result[1]
+        this.scoreCfg = result[2]
+      })
+    },
   },
   
   mounted() {
+    const login =  sessionStorage.getItem('team')
+    if (!login || login === '') {
+      this.$router.push({name: "scoreLogin"})
+      return
+    }
+    this.teamItem = JSON.parse(login)
+    this.queryStyle()
     this.checkImageUrl(this.imageUrl, (isValid) => {
       if (!isValid) {
         console.log("invalid....................")
         this.imageUrl = this.defaultImageUrl;
       }
     });
+    sessionStorage.setItem('role', 'score')
+    this.timer = setInterval(() => {
+      this.updateScore()
+    }, 1000)
+  },
+  
+  beforeDestroy(){
+    if (this.timer) {
+      clearInterval(this.timer)
+    }
   }
 
 
@@ -105,28 +170,10 @@ export default {
 <style scoped>
 
 #container {
-  padding: 100px;
-}
-
-.haotai {
-  margin-top: 40px;
-  margin: 0 30px;
-  text-align: center;
-  color: red;
-  height: 60px;
-  line-height: 60px;
-  font-size: xx-large;
-  border-width: 1px;
-  border-color: black;
-  background-color: white;
-  border-radius: 20px;
 }
 
 
-.haotai:hover {
-  background-color: #000000; /* 鼠标悬停时的背景颜色 */
-  color: #ffffff;
-}
+
 
 .member {
   border-color: black;

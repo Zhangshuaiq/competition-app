@@ -11,9 +11,9 @@
 
     <div id="questionList">
       <el-row :gutter="20">
-        <el-col span="2.4" v-for="question in questions" :key="question.questionNumber">
+        <el-col span="2.4" v-for="(question, index) in questions" :key="question.questionNumber">
           <div class="question-item" :style="{ visibility: question.hasAnswer === true  ? 'hidden' : 'visible' }">
-            {{ question.questionNumber }}
+            {{ index + 1 }}
           </div>
         </el-col>
       </el-row>
@@ -22,7 +22,7 @@
 </template>
 
 <script>
-import ScoreBoard from "@/components/ScoreBoard.vue";
+import ScoreBoard from "@/components/member/ScoreBoard.vue";
 import baseUrl from "@/config";
 
 export default {
@@ -65,6 +65,11 @@ export default {
   },
 
   mounted() {
+    const login =  sessionStorage.getItem('login')
+    if (!login || login === 'false') {
+      this.$router.push({name: "hwait"})
+      return
+    }
     this.checkImageUrl(this.imageUrl, (isValid) => {
       if (!isValid) {
         console.log("invalid....................")

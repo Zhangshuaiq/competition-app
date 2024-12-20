@@ -17,7 +17,7 @@
 </template>
 
 <script>
-import ScoreBoard from "@/components/ScoreBoard.vue";
+import ScoreBoard from "@/components/member/ScoreBoard.vue";
 import baseUrl from "@/config";
 
 export default {
@@ -58,6 +58,11 @@ export default {
   },
   
   mounted() {
+    const login =  sessionStorage.getItem('login')
+    if (!login || login === 'false') {
+      this.$router.push({name: "hwait"})
+      return
+    }
     // 查找列表
     this.checkImageUrl(this.imageUrl, (isValid) => {
       if (!isValid) {
@@ -73,25 +78,24 @@ export default {
 </script>
 
 <style scoped>
+.stageList {
+  margin-top: 20vh;
+  margin-left: 15vw;
+  margin-right: 15vw;
+  /*display: flex;           !* 启用Flexbox布局 *!*/
+  justify-content: center; /* 水平居中 */
+  align-items: center;     /* 垂直居中 */
+}
 
- .stageList {
-   margin-top: 20vh;
-   margin-left: 15vw;
-   margin-right: 15vw;
-   display: flex;           /* 启用Flexbox布局 */
-   justify-content: center; /* 水平居中 */
-   align-items: center;     /* 垂直居中 */
- }
- 
- .stage-item {
-   margin: 10px auto;       /* 上下边距为0，左右边距自动居中 */
-   width: 250px;
-   height: 60px;
-   line-height: 60px;
-   background-color: #C40000;
-   border-radius: 10px;
-   font-family: "微软雅黑";
-   font-size: 24px;
-   color: white;
- }
+.stage-item {
+  margin: 25px 15%;
+  width: 70%;
+  height: 60px;
+  line-height: 60px;
+  background-color: #C40000;
+  border-radius: 10px;
+  font-family: "微软雅黑";
+  font-size: 24px;
+  color: white;
+}
 </style>

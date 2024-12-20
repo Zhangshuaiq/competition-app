@@ -1,22 +1,25 @@
 import Vue from 'vue';
 import Router from 'vue-router';
-import ContestantIndex from '../components/ContestantIndex.vue';
-import WaitStart from "@/components/WaitStart";
-import Model7 from "@/components/Model7";
-import Model60 from "@/components/Model60";
-import Model61 from "@/components/Model61";
-import StageList from "@/components/StageList";
-import StageName from "@/components/StageName";
-import StageQuestion from "@/components/StageQuestion";
-import Question from "@/components/Question";
-import Model3 from "@/components/Model3";
-import Model61R from "@/components/Model61R.vue";
-import Roll from "@/components/Roll";
-import ClueQuestion from "@/components/ClueQuestion";
-import Rule from "@/components/Rule";
-import StageRank from "@/components/StageRank";
-import TeamRank from "@/components/TeamRank";
-import MemberRank from "@/components/MemberRank";
+
+import SContestantIndex from '../components/score/ContestantIndex.vue';
+
+import ContestantIndex from '../components/member/ContestantIndex.vue';
+import WaitStart from "@/components/member/WaitStart.vue";
+import Model7 from "@/components/member/Model7.vue";
+import Model60 from "@/components/member/Model60.vue";
+import Model61 from "@/components/member/Model61.vue";
+import StageList from "@/components/member/StageList.vue";
+import StageName from "@/components/member/StageName.vue";
+import StageQuestion from "@/components/member/StageQuestion.vue";
+import Question from "@/components/member/Question.vue";
+import Model3 from "@/components/member/Model3.vue";
+import Model61R from "@/components/member/Model61R.vue";
+import Roll from "@/components/member/Roll.vue";
+import ClueQuestion from "@/components/member/ClueQuestion.vue";
+import Rule from "@/components/member/Rule.vue";
+import StageRank from "@/components/member/StageRank.vue";
+import TeamRank from "@/components/member/TeamRank.vue";
+import MemberRank from "@/components/member/MemberRank.vue";
 
 
 import HWaitStart from "@/components/holder/WaitStart";
@@ -35,6 +38,8 @@ import HRule from "@/components/holder/Rule";
 import HStageRank from "@/components/holder/StageRank";
 import HTeamRank from "@/components/holder/TeamRank";
 import HMemberRank from "@/components/holder/MemberRank";
+import TeamScore from "@/components/score/TeamScore";
+import AllScore from "@/components/score/AllScore";
 Vue.use(Router);
 
 export default new Router({
@@ -239,6 +244,25 @@ export default new Router({
             path: '/hmemberRank',
             name: 'hmemberRank',
             component: HMemberRank
+        },
+        
+        // 个人分数端
+        {
+            path: '/scoreLogin',
+            name: 'scoreLogin',
+            component: SContestantIndex
+        },
+
+        {
+            path: '/teamScore',
+            name: 'teamScore',
+            component: TeamScore
+        },
+
+        {
+            path: '/allScore',
+            name: 'allScore',
+            component: AllScore
         },
     ],
 });

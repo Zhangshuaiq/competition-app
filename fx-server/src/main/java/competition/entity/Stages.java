@@ -67,6 +67,15 @@ public class Stages {
     // 答案单独展示
     private Integer answerSingle;
 
+    private Integer qdDesc;
+
+    public void setQdDesc(Integer qdDesc) {
+        this.qdDesc = qdDesc;
+    }
+
+    public Integer getQdDesc() {
+        return qdDesc;
+    }
 
     public void setOpenQd(Integer openQd) {
         this.openQd = openQd;

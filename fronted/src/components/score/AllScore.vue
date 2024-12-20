@@ -2,17 +2,30 @@
 <template>
   <div id="container-box" :style="containerBoxStyle">
     <div id="container">
-      <div :style="codeStyle">
-        {{ teamItem.code }}
-      </div>
-
-      <div :style="teamStyle">
-        {{ teamItem.fullName }}
-      </div>
-
-      <div :style="scoreStyle">
-        {{ teamItem.teamScore }}
-      </div>
+      <el-row v-for="x in rows" :key="x">
+        <el-col :span="24 / cols" v-for="y in cols" :key="y">
+          <div class="score-item" :style="scoreItemStyle">
+            <div v-if="teamList[(x - 1) * cols + y - 1]">
+              <div class="codeOutStyle" :style="codeOutStyle">
+                <div :style="codeStyle">
+                  {{teamList[(x - 1) * cols + y - 1].code}}
+                </div>
+              </div>
+  
+  
+              <div :style="teamStyle">
+                {{teamList[(x - 1) * cols + y - 1].fullName}}
+              </div>
+  
+              <div :style="scoreStyle">
+                {{teamList[(x - 1) * cols + y - 1].teamScore}}
+              </div>
+            </div>
+          </div>
+        </el-col>
+      </el-row>
+        
+    
     </div>
   </div>
   
@@ -20,17 +33,19 @@
 
 <script>
 import baseUrl from "@/config";
-import {scoreStyle, queryScore} from "@/api";
+import {scoreStyle, queryTeams} from "@/api";
 
 export default {
-  name: "TeamScore",
+  name: "AllScore",
   
   data() {
     return {
+      rows: 1,
+      cols: 1,
       timer: null,
       dialogFormVisible: false,
-      teamItem: '',
-      imageUrl: `${baseUrl}/resource/团队分数背景.jpg?${new Date().getTime()}`,
+      teamList: [],
+      imageUrl: `${baseUrl}/resource/全局分数背景.jpg?${new Date().getTime()}`,
       defaultImageUrl: `${baseUrl}/resource/默认背景.jpg?${new Date().getTime()}`,
       codeCfg: {
         color: 'black'
@@ -47,52 +62,71 @@ export default {
   computed: {
     containerBoxStyle() {
       return {
-        backgroundImage: `url(${this.imageUrl})`,
         backgroundSize: '100vw 100vh',
         height: '100vh',
-        position: 'relative'
       };
+    },
+    
+    scoreItemStyle(){
+      return {
+        textAlign: 'center',
+        backgroundImage: `url(${this.imageUrl})`,
+        backgroundSize: "100% 100%",
+         width: `100%`,
+        height: `${100 / this.rows}vh`,
+        position: 'relative'
+      }
+    },
+    
+    codeOutStyle(){
+      return {
+        width: '100%',
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        height: `${this.codeCfg.size}px`,
+        textAlign: 'center',
+        position: 'absolute',
+        top: `${this.codeCfg.y}%`,
+      }
     },
 
     codeStyle(){
       return {
-        position: 'absolute',
-        width: `${this.codeCfg.size/ 40 }em`,
-        height: `${this.codeCfg.size/ 40 }em`,
+        width: `${this.codeCfg.size + 10 }px`,
+        height: `${this.codeCfg.size  + 10 }px`,
+        lineHeight: `${this.codeCfg.size  + 10 }px`,
         borderRadius: '50%',
-        border: `0.05em solid ${this.codeCfg.color.replace('0x', '#')}`,
+        border: `1px solid ${this.codeCfg.color.replace('0x', '#')}`,
         textAlign: 'center',
-        top: `${this.codeCfg.y}vh`,
-        left: `${this.codeCfg.x}vw`,
         color: this.codeCfg.color.replace('0x', '#'),
-        fontSize: `${this.codeCfg.size/ 15 }em`,
-        //fontSize: `${this.codeCfg.size }px`,
+        fontSize: `${this.codeCfg.size }px`,
         alignItems: 'center',
         justifyContent: 'center',
-        display: this.codeCfg.show === 1? 'block': 'none'
       }
     },
 
     teamStyle(){
       return {
+        top: `${this.teamCfg.y}%`,
         position: 'absolute',
-        width: 'max-content',
-        top: `${this.teamCfg.y}vh`,
-        left: `${this.teamCfg.x}vw`,
+        textAlign: 'center',
+        width: '100%',
+        height: `${this.teamCfg.size }px`,
         color: this.teamCfg.color.replace('0x', '#'),
-        fontSize: `${this.teamCfg.size / 15 }em`,
-        display: this.teamCfg.show === 1? 'block': 'none'
+        fontSize: `${this.teamCfg.size }px`,
       }
     },
 
     scoreStyle(){
       return {
+        top: `${this.scoreCfg.y}%`,
         position: 'absolute',
-        width: 'max-content',
-        top: `${this.scoreCfg.y}vh`,
-        left: `${this.scoreCfg.x}vw`,
+        width: '100%',
+        textAlign: 'center',
         color: this.scoreCfg.color.replace('0x', '#'),
-        fontSize: `${this.scoreCfg.size/ 15 }em`,
+        fontSize: `${this.scoreCfg.size }px`,
+        height: `${this.scoreCfg.size }px`,
       }
     }
   },
@@ -106,45 +140,43 @@ export default {
     },
     
     updateScore() {
-      queryScore(this.teamItem.id).then(res => {
-        sessionStorage.setItem('team', JSON.stringify(res.data))
-        this.teamItem = res.data
+      queryTeams().then(res => {
+        this.teamList = res.data
       })
     },
     
     queryStyle(){
       scoreStyle().then(res => {
-        const result = res.data.item
+        const result = res.data.total
         console.log(result)
         this.codeCfg = result[0]
         this.teamCfg = result[1]
         this.scoreCfg = result[2]
+        this.rows =  this.codeCfg.rows
+        this.cols =  this.codeCfg.cols
       })
     },
   },
   
   mounted() {
-    const login =  sessionStorage.getItem('team')
-    if (!login || login === '') {
-      this.$router.push({name: "scoreLogin"})
-      return
-    }
-    this.teamItem = JSON.parse(login)
     this.queryStyle()
+    this.updateScore()
     this.checkImageUrl(this.imageUrl, (isValid) => {
       if (!isValid) {
         console.log("invalid....................")
         this.imageUrl = this.defaultImageUrl;
       }
     });
-    
+    sessionStorage.setItem('role', 'score')
     this.timer = setInterval(() => {
       this.updateScore()
     }, 1000)
   },
   
   beforeDestroy(){
-    
+    if (this.timer) {
+      clearInterval(this.timer)
+    }
   }
 
 
@@ -152,27 +184,11 @@ export default {
 </script>
 
 <style scoped>
-
-#container {
+html, body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  overflow: hidden; /* 禁止滚动条 */
 }
 
-
-
-
-.member {
-  border-color: black;
-  margin: 20px 10px;
-  width: 50px;
-  padding: 0 10px;
-  color: white;
-  line-height: 60px;
-  background-color: #ff9900;
-  text-align: center;
-  height: 60px;
-}
-
-.member:hover {
-  background-color: #000000; /* 鼠标悬停时的背景颜色 */
-  color: #ffffff;
-}
 </style>

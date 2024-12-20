@@ -60,7 +60,7 @@ export default {
   data(){
     return {
       resultData: {},
-      imageUrl: `${baseUrl}/resource/环节排名背景.jpg?${new Date().getTime()}`,
+      imageUrl: `${baseUrl}/resource/竞技排名背景.jpg?${new Date().getTime()}`,
       defaultImageUrl: `${baseUrl}/resource/默认背景.jpg?${new Date().getTime()}`,
     }
   },
@@ -91,6 +91,11 @@ export default {
   },
 
   mounted() {
+    const login =  sessionStorage.getItem('login')
+    if (!login || login === 'false') {
+      this.$router.push({name: "hwait"})
+      return
+    }
     this.checkImageUrl(this.imageUrl, (isValid) => {
       if (!isValid) {
         console.log("invalid....................")

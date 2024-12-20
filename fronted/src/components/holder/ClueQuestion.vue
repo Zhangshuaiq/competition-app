@@ -23,7 +23,19 @@
       <div v-else>
         <div id="question-info"  v-if="questionItem">
           <div id="question-name">
-            {{ questionItem.questionNumber }} &nbsp; ({{questionItem.questionType}}) &nbsp; {{ questionItem.question }}
+            <div v-if="questionItem.txbz === '4'">
+              {{ questionItem.order }} &nbsp; {{ questionItem.question }}
+            </div>
+            <div v-if="questionItem.txbz === '3'">
+              {{ questionItem.order }} &nbsp;&nbsp; {{questionItem.questionType}} &nbsp;&nbsp; {{ questionItem.question }}
+            </div>
+            <div v-if="questionItem.txbz === '2'">
+              {{ questionItem.order }} &nbsp; ({{questionItem.questionType}}) &nbsp; {{ questionItem.question }}
+            </div>
+
+            <div v-if="questionItem.txbz === '1'">
+              {{ questionItem.order }} &nbsp; [{{questionItem.questionType}}] &nbsp; {{ questionItem.question }}
+            </div>
           </div>
           <div id="answer-selection">
             <div class="selection-item"  v-if="questionItem.choiceA">
@@ -62,7 +74,7 @@
 </template>
 
 <script>
-import ScoreBoard from "@/components/ScoreBoard.vue";
+import ScoreBoard from "@/components/member/ScoreBoard.vue";
 import baseUrl from "@/config";
 
 export default {
@@ -104,11 +116,6 @@ export default {
       img.src = url;
     },
     
-    saveData(){
-      sessionStorage.setItem("showResult", this.showResult + "")
-      sessionStorage.setItem("showWait", this.showWait + "")
-      sessionStorage.setItem("questionItem", JSON.stringify(this.questionItem))
-    },
 
     setRetryTimer() {
       // 先清除之前的计时器（如果有）
@@ -145,6 +152,13 @@ export default {
   },
 
   mounted() {
+
+    const login =  sessionStorage.getItem('login')
+    if (!login || login === 'false') {
+      this.$router.push({name: "hwait"})
+      return
+    }
+    
     this.checkImageUrl(this.imageUrl, (isValid) => {
       if (!isValid) {
         console.log("invalid....................")
@@ -155,6 +169,7 @@ export default {
     const data = this.$store.state.data
     this.stage = this.$store.state.stage
     this.questionItem = data
+    
     this.setRetryTimer()
   },
 }
@@ -168,7 +183,7 @@ export default {
 
 #question-name {
   font-family: "Microsoft YaHei UI";
-  font-size: xx-large;
+  font-size: x-large;
 }
 
 #answer-selection {

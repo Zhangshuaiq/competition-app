@@ -10,18 +10,35 @@
     </div>
     
     <div style="margin: 20vh 5% 0 5%; text-align: center; height: 40px; line-height: 40px; width: 90%; background-color: white">
-      服务联系方式（微信同号）：陈先生 18008320850
+      {{contactText}}
     </div>
+
+
+    <el-dialog title="登陆验证" :visible.sync="dialogFormVisible" :close-on-click-modal="false" :show-close="false">
+      <el-form :model="form">
+        <el-form-item label="请输入密码" label-width="120">
+          <el-input v-model="form.password" autocomplete="off" @keyup.enter.native="validPassword"></el-input>
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button type="primary" @click="validPassword">确 定</el-button>
+      </div>
+    </el-dialog>
   </div>
 </template>
 
 <script>
 import baseUrl from "@/config";
-import {answerPrefix} from "@/api";
+import {answerPrefix, holderPass, queryContact} from "@/api";
 export default {
   name: "WaitStart",
   data() {
     return {
+      form:{
+        password: ''
+      },
+      contactText: '',
+      dialogFormVisible: true,
       imageUrl: `${baseUrl}/resource/等待答题背景.jpg?${new Date().getTime()}`,
       defaultImageUrl: `${baseUrl}/resource/默认背景.jpg?${new Date().getTime()}`,
       iconUrl: `${baseUrl}/resource/图标.jpg?${new Date().getTime()}`
@@ -38,6 +55,16 @@ export default {
   },
 
   methods:{
+    validPassword(){
+      holderPass().then(res => {
+        if (res.data === this.form.password) {
+          sessionStorage.setItem("login", "true")
+          this.dialogFormVisible = false
+        } else {
+          this.$message.error("登陆密码错误")
+        }
+      })
+    },
 
     checkImageUrl(url, callback) {
       const img = new Image();
@@ -50,6 +77,12 @@ export default {
       answerPrefix().then(res => {
         sessionStorage.setItem("prefix", res.data)
       })
+    },
+
+    contactInfo(){
+      queryContact().then(res => {
+        this.contactText = res.data
+      })
     }
   },
   mounted() {
@@ -59,8 +92,16 @@ export default {
         this.imageUrl = this.defaultImageUrl;
       }
     });
+    const login =  sessionStorage.getItem('login')
+    if (login && login === 'true') {
+      this.dialogFormVisible = false
+    } else {
+      this.dialogFormVisible = true
+    }
     sessionStorage.clear()
     this.queryPrefix()
+    this.contactInfo()
+    sessionStorage.setItem("login", !this.dialogFormVisible + "")
     sessionStorage.setItem("role", "holder")
   },
 }

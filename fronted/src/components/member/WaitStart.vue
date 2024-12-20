@@ -26,18 +26,19 @@
     </div>
     
     <div style="margin: 20vh 5% 0 5%; text-align: center; height: 40px; line-height: 40px; width: 90%; background-color: white">
-      服务联系方式（微信同号）：陈先生 18008320850
+      {{contactText}}
     </div>
   </div>
 </template>
 
 <script>
 import baseUrl from "@/config";
-import {answerPrefix} from "@/api";
+import {answerPrefix, queryContact} from "@/api";
 export default {
   name: "WaitStart",
   data() {
     return {
+      contactText: '',
       imageUrl: `${baseUrl}/resource/等待答题背景.jpg?${new Date().getTime()}`,
       defaultImageUrl: `${baseUrl}/resource/默认背景.jpg?${new Date().getTime()}`,
       iconUrl: `${baseUrl}/resource/图标.jpg?${new Date().getTime()}`,
@@ -48,6 +49,7 @@ export default {
   computed: {
     containerBoxStyle() {
       return {
+
         backgroundImage: `url(${this.imageUrl})`,
         backgroundSize: '100vw 100vh',
         height: '100vh',
@@ -75,6 +77,12 @@ export default {
       answerPrefix().then(res => {
         sessionStorage.setItem("prefix", res.data)
       })
+    },
+
+    contactInfo(){
+      queryContact().then(res => {
+        this.contactText = res.data
+      })
     }
   },
   
@@ -96,6 +104,7 @@ export default {
     sessionStorage.setItem("member", member)
     sessionStorage.setItem("user", item)
     this.queryPrefix()
+    this.contactInfo()
     const teamInfo = JSON.parse(item)
     this.team = teamInfo
     this.$websocket.send('/app/enter', {team: teamInfo.fullName + "-" + sessionStorage.getItem("member")})

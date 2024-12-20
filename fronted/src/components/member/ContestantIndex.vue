@@ -2,47 +2,74 @@
 <template>
   <div id="container-box" :style="containerBoxStyle">
     <div id="container">
-      <el-row>
-        <el-col v-for="(item, index) in teamList"
-                :key="index"
-                span=6
-        >
-          <div style="height: 80px">
-            <el-row>
-              <el-col span="6">
-                <div class="haotai" style="width: 100%;" >
-                  {{item.code}}
-                </div>
-              </el-col>
-              <el-col span="18">
-                <div class="haotai" @click="selectMember(item)">
-                  {{item.shortName}}
-                </div>
+
+      <div id="login-panel">
+        <el-row>
+          <div style="height: 50px">
+            <el-col span="16">
+              <el-input  class="custom-input" style="height: 50px" v-model="form.password" placeholder="请输入密码" autocomplete="off"
+                        @keyup.enter.native="validPassword"></el-input>
+            </el-col>
+            <el-col span="8" align="right">
+              <el-button style="color: #ff0000; font-size: 20px; height: 50px" @click="validPassword"> 提交 </el-button>
+            </el-col>
+          </div>
+
+        </el-row>
+        <br>
+        <div id="member-pane" :style="{ visibility: isVisible ? 'visible' : 'hidden' }">
+          <div v-if="isVisible">
+            <el-row :gutter="20">
+              <el-col v-for="(member, index) in this.teamItem.members.split(',')" :key="index" span="8">
+                <div class="name-tag" @click="doLogin(member)">{{ member }}</div>
               </el-col>
             </el-row>
           </div>
+        </div>
 
-        </el-col>
-      </el-row>
+      </div>
+
+      <!--      <el-row>-->
+      <!--        <el-col v-for="(item, index) in teamList"-->
+      <!--                :key="index"-->
+      <!--                span=6-->
+      <!--        >-->
+      <!--          <div style="height: 80px">-->
+      <!--            <el-row>-->
+      <!--              <el-col span="6">-->
+      <!--                <div class="haotai" style="width: 100%;" >-->
+      <!--                  {{item.code}}-->
+      <!--                </div>-->
+      <!--              </el-col>-->
+      <!--              <el-col span="18">-->
+      <!--                <div class="haotai" @click="selectMember(item)">-->
+      <!--                  {{item.shortName}}-->
+      <!--                </div>-->
+      <!--              </el-col>-->
+      <!--            </el-row>-->
+      <!--          </div>-->
+
+      <!--        </el-col>-->
+      <!--      </el-row>-->
     </div>
 
 
-    <el-dialog title="登陆验证" :visible.sync="dialogFormVisible">
-      <el-form :model="form" @submit.native.prevent>
-          <el-form-item label="请输入选手姓名" label-width="120">
-            <el-input v-model="form.member" autocomplete="off" @keyup.enter.native="validPassword"></el-input>
-          </el-form-item>
-          <el-form-item label="请输入密码" label-width="120">
-            <el-input v-model="form.password" autocomplete="off" @keyup.enter.native="validPassword"></el-input>
-           </el-form-item>
-      </el-form>
-      <div slot="footer" class="dialog-footer">
-        <el-button @click="dialogFormVisible = false">取 消</el-button>
-        <el-button type="primary" @click="validPassword" >确 定</el-button>
-      </div>
-    </el-dialog>
+    <!--    <el-dialog title="登陆验证" :visible.sync="dialogFormVisible">-->
+    <!--      <el-form :model="form" @submit.native.prevent>-->
+    <!--          <el-form-item label="请输入选手姓名" label-width="120">-->
+    <!--            <el-input v-model="form.member" autocomplete="off" @keyup.enter.native="validPassword"></el-input>-->
+    <!--          </el-form-item>-->
+    <!--          <el-form-item label="请输入密码" label-width="120">-->
+    <!--            <el-input v-model="form.password" autocomplete="off" @keyup.enter.native="validPassword"></el-input>-->
+    <!--           </el-form-item>-->
+    <!--      </el-form>-->
+    <!--      <div slot="footer" class="dialog-footer">-->
+    <!--        <el-button @click="dialogFormVisible = false">取 消</el-button>-->
+    <!--        <el-button type="primary" @click="validPassword" >确 定</el-button>-->
+    <!--      </div>-->
+    <!--    </el-dialog>-->
   </div>
-  
+
 </template>
 
 <script>
@@ -51,13 +78,13 @@ import baseUrl from "@/config";
 
 export default {
   name: "ContestantIndex",
-  
+
   data() {
     return {
       form: {
-        member: '',
         password: ''
       },
+      isVisible: false,
       teamList: [],
       dialogFormVisible: false,
       teamItem: '',
@@ -76,9 +103,9 @@ export default {
       };
     },
   },
-  
+
   methods: {
-    queryTeamList(){
+    queryTeamList() {
       queryTeams().then(res => {
         console.log(res)
         if (res.code === 200) {
@@ -94,34 +121,44 @@ export default {
       img.src = url;
     },
 
-    validPassword(){
-      if (!this.form.member || !this.form.password) {
-        this.$message.error("请完整填写登录信息")
+    validPassword() {
+      if (!this.form.password) {
+        this.$message.error("请输入密码")
         return
       }
-      if (this.teamItem.members.indexOf(this.form.member) < 0) {
-        this.$message.error("当前队伍没有对应的选手姓名")
-        return
+      this.teamItem = ''
+      for (let i = 0; i < this.teamList.length; i++) {
+        const item = this.teamList[i]
+        if (item.password === this.form.password) {
+          this.teamItem = item
+          break
+        }
       }
-      if (this.teamItem.password === this.form.password) {
-        this.member = this.form.member
-        // 查询是否应该进入竞技模式
-        queryStatus(this.teamItem.code).then(res => {
-          if (res.data) {
-            sessionStorage.setItem("lastStatus", 'true')
-            sessionStorage.setItem("user", JSON.stringify(this.teamItem))
-            sessionStorage.setItem("member", this.member)
-            this.$router.push({name: "model7"});
-          } else {
-            this.enterWaitPage(this.teamItem, this.member);
-          }
-        })
-      } else {
-        this.$message.error("登陆密码错误")
+
+      if (this.teamItem === '') {
+        this.$message.error("密码错误")
+        this.isVisible = false
+        return;
       }
+      this.isVisible = true
     },
 
-    selectMember(teamItem){
+    doLogin(member) {
+      this.member = member
+      // 查询是否应该进入竞技模式
+      queryStatus(this.teamItem.code).then(res => {
+        if (res.data) {
+          sessionStorage.setItem("lastStatus", 'true')
+          sessionStorage.setItem("user", JSON.stringify(this.teamItem))
+          sessionStorage.setItem("member", this.member)
+          this.$router.push({name: "model7"});
+        } else {
+          this.enterWaitPage(this.teamItem, this.member);
+        }
+      })
+    },
+
+    selectMember(teamItem) {
       this.teamItem = teamItem;
       this.dialogFormVisible = true
       this.form = {
@@ -130,7 +167,7 @@ export default {
       }
     },
 
-    enterWaitPage(teamItem, member){
+    enterWaitPage(teamItem, member) {
       sessionStorage.setItem("user", JSON.stringify(teamItem))
       sessionStorage.setItem("member", member)
       console.log(teamItem)
@@ -143,7 +180,7 @@ export default {
       })
     }
   },
-  
+
   mounted() {
     sessionStorage.clear()
     this.queryTeamList()
@@ -162,7 +199,10 @@ export default {
 <style scoped>
 
 #container {
-  padding: 100px;
+  height: 100%;
+  display: flex;
+  justify-content: center; /* 水平居中 */
+  align-items: center; /* 垂直居中 */
 }
 
 .haotai {
@@ -209,6 +249,28 @@ export default {
   background-color: #ff9900;
   text-align: center;
   height: 60px;
+}
+
+.name-tag {
+  border: black solid 1px;
+  text-align: center;
+  border-radius: 8px;
+  height: 40px;
+  line-height: 40px;
+  margin: 5px 0;
+}
+
+#login-panel {
+  width: 40%;
+}
+
+#member-pane{
+  height: 200px;
+}
+.custom-input >>> .el-input__inner {
+  height: 50px; /* 自定义高度 */
+  line-height: 50px; /* 调整文字垂直居中 */
+  font-size: 20px;
 }
 
 .member:hover {

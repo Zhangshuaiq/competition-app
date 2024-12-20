@@ -24,15 +24,31 @@
         <div id="question-info"  v-if="questionItem">
           <!--       图片不区分题目类型。因为图文制作在一起   -->
           <div v-if="questionItem.resourceType === '图片'">
-            <img :src="resourceUrl" alt="Overlay Image" class="overlay-img">
-<!--            <el-image style="width: 100vw; height: 100vh" :src="resourceUrl" ></el-image>-->
+            <div v-if="isResourceAvailable && showResult">
+              <img :src="answerUrl" alt="Overlay Image" class="overlay-img">
+            </div>
+            <div v-else>
+              <img :src="resourceUrl" alt="Overlay Image" class="overlay-img">
+            </div>
           </div>
           <!--    音频无需展示      -->
           <!--    视频需要播放      -->
           <!--    文字则正常展示      -->
           <div v-else-if="questionItem.questionType === '单选题' || questionItem.questionType === '多选题' || questionItem.questionType === '不定项选择题'">
             <div class="question-name">
-              {{ questionItem.order }} &nbsp; ({{questionItem.questionType}}) &nbsp; {{ questionItem.question }}
+              <div v-if="questionItem.txbz === '4'">
+                {{ questionItem.order }} &nbsp; {{ questionItem.question }}
+              </div>
+              <div v-if="questionItem.txbz === '3'">
+                {{ questionItem.order }} &nbsp;&nbsp; {{questionItem.questionType}} &nbsp;&nbsp; {{ questionItem.question }}
+              </div>
+              <div v-if="questionItem.txbz === '2'">
+                {{ questionItem.order }} &nbsp; ({{questionItem.questionType}}) &nbsp; {{ questionItem.question }}
+              </div>
+
+              <div v-if="questionItem.txbz === '1'">
+                {{ questionItem.order }} &nbsp; [{{questionItem.questionType}}] &nbsp; {{ questionItem.question }}
+              </div>
             </div>
             <div v-if="questionItem.resourceType === '视频'">
               <video width="320" height="240" controls muted>
@@ -94,8 +110,11 @@
           </div>
 
         </div>
-        
-        <div v-if="showResult && this.questionItem.resourceType !== '图片'" id="answer-info" 
+        <div class="qd-area" :style="qdBoxStyle" @click="startBuzz">
+          抢
+        </div>
+
+        <div v-if="showResult && !isResourceAvailable" id="answer-info"
              style="font-size: xx-large; margin-top: 20px;">
           <div v-if="questionItem.questionType === '简答题'" style="text-align: left; background-color: #C40000; border-radius: 8px;">
             <font color="white">{{ prefix }} {{questionItem.answer}}</font>
@@ -105,6 +124,7 @@
           </div>
         </div>
 
+
       </div>
     </div>
   </div>
@@ -113,12 +133,14 @@
 <script>
 import ScoreBoard from "@/components/member/ScoreBoard.vue";
 import baseUrl from "@/config";
+import {buzzQuestion} from "@/api";
 export default {
   name: "QuestionL",
   components: {ScoreBoard},
 
   data(){
     return {
+      isResourceAvailable: false,
       retryTimer: null, // 用于重试逻辑的计时器
       retryInterval: 500, // 重试间隔时间，例如5秒
       subscription: null,
@@ -131,9 +153,26 @@ export default {
       member: '',
       stage: {},
       resourceUrl: '',
+      answerUrl: '',
       imageUrl: `${baseUrl}/resource/答题背景.jpg?${new Date().getTime()}`,
       defaultImageUrl: `${baseUrl}/resource/默认背景.jpg?${new Date().getTime()}`,
       prefix: ''
+    }
+  },
+
+  watch: {
+    answerUrl(newUrl) {
+      if (!newUrl) {
+        this.isResourceAvailable = false;
+        return
+      }
+      this.checkImageUrl(newUrl, (isValid) => {
+        if (isValid) {
+          this.isResourceAvailable = true;
+        } else {
+          this.isResourceAvailable = false;
+        }
+      });
     }
   },
 
@@ -145,9 +184,25 @@ export default {
         height: '100vh',
       };
     },
+
+    qdBoxStyle(){
+      return {
+        visibility: (this.stage.openQd && this.second >= 0) ? 'visible' : 'hidden',
+      }
+    }
   },
   
   methods: {
+
+    startBuzz(){
+      const data = {
+        'team': this.teamInfo.shortName,
+        'username': this.member
+      }
+      buzzQuestion(data).then(() => {
+        console.log("抢答成功")
+      })
+    },
 
     checkImageUrl(url, callback) {
       const img = new Image();
@@ -181,9 +236,9 @@ export default {
           this.showResult = message.data
           if (this.questionItem.resourceType === '图片') {
             if (this.showResult) {
-              this.resourceUrl = this.resourceUrl = `${baseUrl}/resource/${this.questionItem.answer}`
+              this.answerUrl  = `${baseUrl}/resource/${this.questionItem.answer}`
             } else {
-              this.resourceUrl = this.resourceUrl = `${baseUrl}/resource/${this.questionItem.question}`
+              this.resourceUrl  = `${baseUrl}/resource/${this.questionItem.question}`
             }
           }
           this.second = -1
@@ -196,6 +251,8 @@ export default {
 
   beforeRouteUpdate(to, from, next) {
     const data = this.$store.state.data
+    this.answerUrl  = ''
+    this.isResourceAvailable = false;
     this.questionItem = data
     if (this.questionItem.resourceType === '图片') {
       this.resourceUrl = `${baseUrl}/resource/${this.questionItem.question}`
@@ -204,6 +261,7 @@ export default {
     }
     console.log(this.resourceUrl)
     this.showResult = false
+
     next();
   },
 
@@ -239,6 +297,22 @@ export default {
 #container {
   padding:0 100px;
 }
+
+.qd-area {
+  width: 100px;            /* 圆的直径 */
+  height: 100px;           /* 圆的直径 */
+  line-height: 94px;
+  background-color: #4A90E2; /* 蓝色背景 */
+  color: white;            /* 字体颜色为白色 */
+  border-radius: 50%;      /* 实现圆形效果 */
+  text-align: center;
+  font-size: 50px;         /* 字体大小 */
+  font-family: 'Microsoft YaHei', sans-serif; /* 字体 */
+  border: 2px solid #000;  /* 边框为黑色 */
+  margin: 0 auto;
+}
+
+
 
 .question-name {
   font-family: "Microsoft YaHei UI";

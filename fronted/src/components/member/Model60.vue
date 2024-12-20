@@ -23,10 +23,15 @@
       <div v-else>
         <div id="question-info"  v-if="questionItem">
 
-          <!--       图片不区分题目类型。因为图文制作在一起   -->
           <div v-if="questionItem.resourceType === '图片'">
-            <img :src="resourceUrl" alt="Overlay Image" class="overlay-img">
+            <div v-if="isResourceAvailable && showResult">
+              <img :src="answerUrl" alt="Overlay Image" class="overlay-img">
+            </div>
+            <div v-else>
+              <img :src="resourceUrl" alt="Overlay Image" class="overlay-img">
+            </div>
           </div>
+
           <!--    音频无需展示      -->
           <!--    视频需要播放      -->
           <!--    文字则正常展示      -->
@@ -82,7 +87,19 @@
 
           <div v-else-if="questionItem.questionType === '填空题' || questionItem.questionType === '简答题' || questionItem.questionType === '判断题'">
             <div class="question-name">
-              {{ questionItem.order }} &nbsp; ({{questionItem.questionType}}) &nbsp; {{ questionItem.question }}
+              <div v-if="questionItem.txbz === '4'">
+                {{ questionItem.order }} &nbsp; {{ questionItem.question }}
+              </div>
+              <div v-if="questionItem.txbz === '3'">
+                {{ questionItem.order }} &nbsp;&nbsp; {{questionItem.questionType}} &nbsp;&nbsp; {{ questionItem.question }}
+              </div>
+              <div v-if="questionItem.txbz === '2'">
+                {{ questionItem.order }} &nbsp; ({{questionItem.questionType}}) &nbsp; {{ questionItem.question }}
+              </div>
+
+              <div v-if="questionItem.txbz === '1'">
+                {{ questionItem.order }} &nbsp; [{{questionItem.questionType}}] &nbsp; {{ questionItem.question }}
+              </div>
             </div>
             <div v-if="questionItem.resourceType === '视频'">
               <video width="320" height="240" controls muted>
@@ -199,7 +216,7 @@
           </div>
         </div>
 
-        <div v-if="showResult" id="answer-info" style="font-size: xx-large; margin-top: 20px; text-align: center; background-color: #C40000; border-radius: 8px;">
+        <div v-if="showResult && !isResourceAvailable" id="answer-info" style="font-size: xx-large; margin-top: 20px; text-align: center; background-color: #C40000; border-radius: 8px;">
           <font color="white"> {{ prefix }} {{questionItem.answer}}</font>
         </div>
       </div>
@@ -215,6 +232,7 @@ export default {
   components: {ScoreBoard},
   data(){
     return {
+      isResourceAvailable: false,
       retryTimer: null, // 用于重试逻辑的计时器
       retryInterval: 500, // 重试间隔时间，例如5秒
       prefix: '',
@@ -230,10 +248,29 @@ export default {
       stage: {},
       submit : false,
       resourceUrl: '',
+      answerUrl: '',
       imageUrl: `${baseUrl}/resource/答题背景.jpg?${new Date().getTime()}`,
       defaultImageUrl: `${baseUrl}/resource/默认背景.jpg?${new Date().getTime()}`,
     }
   },
+
+  watch: {
+    answerUrl(newUrl) {
+      if (!newUrl) {
+        this.isResourceAvailable = false;
+        return
+      }
+      this.checkImageUrl(newUrl, (isValid) => {
+        if (isValid) {
+          this.isResourceAvailable = true;
+        } else {
+          this.isResourceAvailable = false;
+        }
+      });
+    }
+  },
+
+
   computed: {
     containerBoxStyle() {
       return {
@@ -359,9 +396,9 @@ export default {
           this.showResult = message.data
           if (this.questionItem.resourceType === '图片') {
             if (this.showResult) {
-              this.resourceUrl = this.resourceUrl = `${baseUrl}/resource/${this.questionItem.answer}`
+              this.answerUrl  = `${baseUrl}/resource/${this.questionItem.answer}`
             } else {
-              this.resourceUrl = this.resourceUrl = `${baseUrl}/resource/${this.questionItem.question}`
+              this.resourceUrl  = `${baseUrl}/resource/${this.questionItem.question}`
             }
           }
         }
@@ -373,6 +410,8 @@ export default {
 
   beforeRouteUpdate(to, from, next) {
     const data = this.$store.state.data
+    this.answerUrl = ''
+    this.isResourceAvailable = false;
     this.questionItem = data
     if (this.questionItem.resourceType === '图片') {
       this.resourceUrl = `${baseUrl}/resource/${this.questionItem.question}`
@@ -380,6 +419,7 @@ export default {
       this.resourceUrl = `${baseUrl}/resource/${this.questionItem.resource}`
     }
     this.showResult = false
+
     this.activeDiv = ''
     this.btnText = "提 交"
     this.submit = false
@@ -430,6 +470,22 @@ export default {
     }
    
     this.setRetryTimer()
+  },
+
+  beforeRouteLeave(to, from, next) {
+    // 在这里编写离开页面前需要执行的逻辑
+    // 例如，你可以在这里提示用户保存未保存的更改
+    if (from.name !== to.name && to.name !== 'stageRank') {
+      sessionStorage.removeItem("time")
+      sessionStorage.removeItem("score")
+      sessionStorage.removeItem("showResult")
+      sessionStorage.removeItem("userSelects")
+      sessionStorage.removeItem("questionIndex")
+      sessionStorage.removeItem("questionItem")
+      sessionStorage.removeItem("questionList")
+      sessionStorage.removeItem("submit")
+    }
+    next()
   },
   
 }
