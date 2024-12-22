@@ -68,13 +68,13 @@ public class ScoreBoardH implements BoardPane {
         String config = configs.getConfig();
         String[] cfgArr = config.split(ConfigSpliter.SPLITER);
         container.getChildren().clear();
-        container.setSpacing(20);
+        container.setSpacing(ScreenAdapter.calculateExX(20));
 
         Color statusColor = Color.WHITE;
-        int statusSize = (int) new Text().getFont().getSize();
+        double statusSize =  new Text().getFont().getSize();
 
         if (cfgArr.length >= 33) {
-            statusSize = Integer.parseInt(cfgArr[31]);
+            statusSize = ScreenAdapter.calculateExX(Integer.parseInt(cfgArr[31]));
             statusColor = Color.valueOf(cfgArr[32]);
         }
 
@@ -82,15 +82,16 @@ public class ScoreBoardH implements BoardPane {
         List<Teams> teams = TeamRuntime.getTeams();
         for (Teams team : teams) {
             VBox box = new VBox();
-            box.setPrefWidth(Integer.parseInt(cfgArr[19]));
+            box.setPrefWidth(ScreenAdapter.calculateExX(Integer.parseInt(cfgArr[19])));
             box.setSpacing(1);
             StackPane stackPane = new StackPane();
-            stackPane.setPrefSize(Integer.parseInt(cfgArr[19]), Integer.parseInt(cfgArr[20]));
+            stackPane.setPrefSize(ScreenAdapter.calculateExX(Integer.parseInt(cfgArr[19])),
+                ScreenAdapter.calculateExY(Integer.parseInt(cfgArr[20])));
 
             Text teamName = new Text(team.getShortName());
             teamName.setTextAlignment(TextAlignment.CENTER);
-            teamName.prefWidth(Integer.parseInt(cfgArr[19]));
-            teamName.prefHeight(Integer.parseInt(cfgArr[20]));
+//            teamName.prefWidth(Integer.parseInt(cfgArr[19]));
+//            teamName.prefHeight(Integer.parseInt(cfgArr[20]));
             teamName.setFill(Color.valueOf(cfgArr[15]));
             stackPane.setBackground(new Background(new BackgroundFill(Color.valueOf(cfgArr[16]), new CornerRadii(10), Insets.EMPTY)));
             teamName.setFont(font);
@@ -112,16 +113,15 @@ public class ScoreBoardH implements BoardPane {
 
             Text teamScore = new Text(team.getTeamScore() + "");
             StackPane stackPane1 = new StackPane();
-            stackPane1.setPrefSize(Integer.parseInt(cfgArr[19]), Integer.parseInt(cfgArr[20]));
+            stackPane1.setPrefSize(ScreenAdapter.calculateExX(Integer.parseInt(cfgArr[19])), ScreenAdapter.calculateExY(Integer.parseInt(cfgArr[20])));
             teamScore.setTextAlignment(TextAlignment.CENTER);
-            teamScore.prefWidth(Integer.parseInt(cfgArr[19]));
-            teamScore.prefHeight(Integer.parseInt(cfgArr[20]));
+
             teamScore.setFill(Color.valueOf(cfgArr[21]));
             stackPane1.setBackground(new Background(new BackgroundFill(Color.valueOf(cfgArr[22]), new CornerRadii(10), Insets.EMPTY)));
             teamScore.setFont(font);
             teamScore.setUnderline(Boolean.valueOf(split[5]));
             teamScore.setStrikethrough(Boolean.valueOf(split[2]));
-            container.setSpacing(Integer.parseInt(split[6]));
+            container.setSpacing(ScreenAdapter.calculateExX(Integer.parseInt(split[6])));
             if (Boolean.valueOf(split[3])) {
                 teamScore.setStroke(teamScore.getFill());
                 teamScore.setStrokeWidth(1);
@@ -145,13 +145,13 @@ public class ScoreBoardH implements BoardPane {
                     Map<String, Model60RuntimeData.ModelData> answerMap = runtimeData.stream().collect(Collectors.toMap(x -> x.getTeamName(), x -> x));
                     count = 3;
                     StackPane stackPane2 = new StackPane();
-                    stackPane2.setPrefSize(Integer.parseInt(cfgArr[19]), Integer.parseInt(cfgArr[20]));
+                    stackPane2.setPrefSize(ScreenAdapter.calculateExX(Integer.parseInt(cfgArr[19])), ScreenAdapter.calculateExY(Integer.parseInt(cfgArr[20])));
                     Model60RuntimeData.ModelData userData = answerMap.get(team.getFullName());
                     Text userSelect = new Text();
                     // fix bug: 用户未选择答案的情况
                     userSelect.setTextAlignment(TextAlignment.CENTER);
-                    userSelect.prefWidth(Integer.parseInt(cfgArr[19]));
-                    userSelect.prefHeight(Integer.parseInt(cfgArr[20]));
+//                    userSelect.prefWidth(Integer.parseInt(cfgArr[19]));
+//                    userSelect.prefHeight(Integer.parseInt(cfgArr[20]));
                     userSelect.setFont(statusFont);
                     userSelect.setFill(statusColor);
                     if (team.getStatus() == 1) {
@@ -186,7 +186,7 @@ public class ScoreBoardH implements BoardPane {
                     HBox memberStatus = new HBox();
                     memberStatus.setSpacing(1);
                     memberStatus.setPadding(new Insets(1, 1, 1,1));
-                    memberStatus.setPrefWidth(Integer.parseInt(cfgArr[19]));
+                    memberStatus.setPrefWidth(ScreenAdapter.calculateExX(Integer.parseInt(cfgArr[19])));
                     String members = team.getMembers();
                     if (!StringUtils.isEmpty(members)) {
                         String[] ms = members.split(",");
@@ -194,12 +194,10 @@ public class ScoreBoardH implements BoardPane {
                         for (int i = 0; i < ms.length; i++) {
                             Model61RuntimeData.ModelData modelData = dataMap.get(team.getFullName() + "-" + ms[i]);
                             StackPane stackPane2 = new StackPane();
-                            stackPane2.setPrefSize(w, Integer.parseInt(cfgArr[20]));
+                            stackPane2.setPrefSize(ScreenAdapter.calculateExX(w), ScreenAdapter.calculateExY(Integer.parseInt(cfgArr[20])));
                             Text l = new Text((i + 1) + "");
                             l.setTextAlignment(TextAlignment.CENTER);
                             stackPane2.getChildren().add(l);
-                            l.prefHeight(Integer.parseInt(cfgArr[20]));
-                            l.prefWidth(w);
                             l.setFont(statusFont);
                             l.setFill(statusColor);
                             if (team.getStatusList().get(i) == 1) {
@@ -234,7 +232,7 @@ public class ScoreBoardH implements BoardPane {
                 }
 
             }
-            box.setPrefHeight(Integer.parseInt(cfgArr[20]) * count + count * 10);
+            box.setPrefHeight(ScreenAdapter.calculateExY(Integer.parseInt(cfgArr[20]) * count + count * 10));
             container.getChildren().add(box);
         }
 //        CheckBox selectAll = new CheckBox("全选");
@@ -248,9 +246,13 @@ public class ScoreBoardH implements BoardPane {
 //            }
 //        });
 
-        container.setLayoutX(Double.parseDouble(cfgArr[17]));
-        container.setLayoutY(Double.parseDouble(cfgArr[18]));
-        container.setPrefWidth((Double.parseDouble(cfgArr[19]) + container.getSpacing()) * teams.size() - container.getSpacing());
+        container.setLayoutX(ScreenAdapter.calculateExX(Double.parseDouble(cfgArr[17])));
+        container.setLayoutY(ScreenAdapter.calculateExY(Double.parseDouble(cfgArr[18])));
+        container.setPrefWidth(ScreenAdapter.calculateExX((Double.parseDouble(cfgArr[19]) + container.getSpacing()) * teams.size() - container.getSpacing()));
+        int size = ((VBox)container.getChildren().get(0)).getChildren().size();
+        container.setPrefHeight(ScreenAdapter.calculateExY(Integer.parseInt(cfgArr[20]) * size + size - 1));
+        ExtendedScreen.scoreBoardStage.setWidth(container.getPrefWidth());
+        ExtendedScreen.scoreBoardStage.setHeight(container.getPrefHeight());
     }
 
 

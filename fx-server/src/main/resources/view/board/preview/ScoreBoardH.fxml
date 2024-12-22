@@ -7,7 +7,7 @@
 <?import javafx.scene.layout.*?>
 
 
-<HBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" 
+<HBox maxHeight="20000" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity"
       fx:controller="competition.controller.board.preview.ScoreBoardHPreview"
       fx:id="container" style="-fx-background-color: transparent;"
        xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" />

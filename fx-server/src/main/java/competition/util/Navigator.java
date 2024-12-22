@@ -277,8 +277,8 @@ public class Navigator {
             String config = configs.getConfig();
             if (!StringUtils.isEmpty(config)) {
                 String[] split = config.split(ConfigSpliter.SPLITER);
-                stage.setX(Double.parseDouble(split[17]));
-                stage.setY(Double.parseDouble(split[18]));
+                stage.setX(ScreenAdapter.calculateMainX(Double.parseDouble(split[17])));
+                stage.setY(ScreenAdapter.calculateMainY(Double.parseDouble(split[18])));
             }
             stage.setTitle(title);
             Scene  scene = new Scene(load, Color.TRANSPARENT);
@@ -292,16 +292,16 @@ public class Navigator {
 
             // 拖动时更新窗口位置
             load.setOnMouseDragged(event -> {
-                stage.setX(event.getScreenX() - xOffset.get());
-                stage.setY(event.getScreenY() - yOffset.get());
+                stage.setX(ScreenAdapter.calculateMainX(event.getScreenX() - xOffset.get()));
+                stage.setY(ScreenAdapter.calculateMainY(event.getScreenY() - yOffset.get()));
                 ObservableList<Screen> screens = Screen.getScreens();
                 if (screens.size() < 2) {
                     return;
                 }
                 Screen extendedScreen = screens.get(1); // 获取第二个屏幕
                 Rectangle2D bounds = extendedScreen.getBounds();
-                ExtendedScreen.scoreBoardStage.setX(bounds.getMinX() + event.getScreenX() - xOffset.get());
-                ExtendedScreen.scoreBoardStage.setY(bounds.getMinY() +event.getScreenY() - yOffset.get());
+                ExtendedScreen.scoreBoardStage.setX(bounds.getMinX() + ScreenAdapter.calculateExX(event.getScreenX() - xOffset.get()));
+                ExtendedScreen.scoreBoardStage.setY(bounds.getMinY() + ScreenAdapter.calculateExY(event.getScreenY() - yOffset.get()));
             });
 
             

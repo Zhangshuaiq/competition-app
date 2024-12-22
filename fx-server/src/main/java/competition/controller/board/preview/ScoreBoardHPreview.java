@@ -84,13 +84,14 @@ public class ScoreBoardHPreview extends PreviewPane implements BoardPane {
         String config = configs.getConfig();
         String[] cfgArr = config.split(ConfigSpliter.SPLITER);
         container.getChildren().clear();
-        container.setSpacing(20);
+        container.setMaxHeight(Double.MAX_VALUE);
+        container.setSpacing(ScreenAdapter.calculateMainX(20));
         
         Color statusColor = Color.WHITE;
-        int statusSize = (int) new Text().getFont().getSize();
+        double statusSize = new Text().getFont().getSize();
 
         if (cfgArr.length >= 33) {
-            statusSize = Integer.parseInt(cfgArr[31]);
+            statusSize = ScreenAdapter.calculateMainX(Integer.parseInt(cfgArr[31]));
             statusColor = Color.valueOf(cfgArr[32]);
         }
         Font statusFont = FontMap.load(FontMap.defaultFontName(), statusSize);
@@ -99,11 +100,12 @@ public class ScoreBoardHPreview extends PreviewPane implements BoardPane {
         for (Teams team : teams) {
             int count = 2;
             VBox box = new VBox();
-            box.setPrefWidth(Integer.parseInt(cfgArr[19]));
+            box.setPrefWidth(ScreenAdapter.calculateMainX(Integer.parseInt(cfgArr[19])));
+            box.setMaxHeight(Double.MAX_VALUE);
             box.setSpacing(1);
             StackPane stackPane = new StackPane();
-
-            stackPane.setPrefSize(Integer.parseInt(cfgArr[19]), Integer.parseInt(cfgArr[20]));
+            stackPane.setMaxHeight(Double.MAX_VALUE);
+            stackPane.setPrefSize(ScreenAdapter.calculateMainX(Integer.parseInt(cfgArr[19])), ScreenAdapter.calculateMainY(Integer.parseInt(cfgArr[20])));
             VBox.setVgrow(stackPane, Priority.NEVER);
             Text teamName = new Text(team.getShortName());
             teamName.setTextAlignment(TextAlignment.CENTER);
@@ -127,15 +129,16 @@ public class ScoreBoardHPreview extends PreviewPane implements BoardPane {
 
             Text teamScore = new Text(team.getTeamScore() + "");
             StackPane stackPane1 = new StackPane();
+            stackPane1.setMaxHeight(Double.MAX_VALUE);
             VBox.setVgrow(stackPane1, Priority.NEVER);
-            stackPane1.setPrefSize(Integer.parseInt(cfgArr[19]), Integer.parseInt(cfgArr[20]));
+            stackPane1.setPrefSize(ScreenAdapter.calculateMainX(Integer.parseInt(cfgArr[19])), ScreenAdapter.calculateMainY(Integer.parseInt(cfgArr[20])));
             teamScore.setTextAlignment(TextAlignment.CENTER);
             teamScore.setFill(Color.valueOf(cfgArr[21]));
             stackPane1.setBackground(new Background(new BackgroundFill(Color.valueOf(cfgArr[22]), new CornerRadii(10), Insets.EMPTY)));
             teamScore.setFont(font);
             teamScore.setUnderline(Boolean.valueOf(split[5]));
             teamScore.setStrikethrough(Boolean.valueOf(split[2]));
-            container.setSpacing(Integer.parseInt(split[6]));
+            container.setSpacing(ScreenAdapter.calculateMainX(Integer.parseInt(split[6])));
             if (Boolean.valueOf(split[3])) {
                 teamScore.setStroke(teamScore.getFill());
                 teamScore.setStrokeWidth(1);
@@ -157,8 +160,10 @@ public class ScoreBoardHPreview extends PreviewPane implements BoardPane {
                     buzzTime.setText(NumberUtil.fix2Point(timeVal * 0.001));
                 }
                 StackPane buzzPane = new StackPane();
+                buzzPane.setMaxHeight(Double.MAX_VALUE);
                 VBox.setVgrow(buzzPane, Priority.NEVER);
-                buzzPane.setPrefSize(Integer.parseInt(cfgArr[19]), Integer.parseInt(cfgArr[20]));
+
+                buzzPane.setPrefSize(ScreenAdapter.calculateMainX(Integer.parseInt(cfgArr[19])), ScreenAdapter.calculateMainY(Integer.parseInt(cfgArr[20])));
                 buzzTime.setTextAlignment(TextAlignment.CENTER);
                 buzzTime.setFill(Color.valueOf(cfgArr[21]));
 
@@ -167,7 +172,6 @@ public class ScoreBoardHPreview extends PreviewPane implements BoardPane {
                 buzzTime.setFont(Font.font(12));
                 buzzTime.setUnderline(Boolean.valueOf(split[5]));
                 buzzTime.setStrikethrough(Boolean.valueOf(split[2]));
-                container.setSpacing(Integer.parseInt(split[6]));
                 if (Boolean.valueOf(split[3])) {
                     buzzTime.setStroke(teamScore.getFill());
                     buzzTime.setStrokeWidth(1);
@@ -193,8 +197,9 @@ public class ScoreBoardHPreview extends PreviewPane implements BoardPane {
                     Map<String, Model60RuntimeData.ModelData> answerMap = runtimeData.stream().collect(Collectors.toMap(x -> x.getTeamName(), x -> x));
                     count ++;
                     StackPane stackPane2 = new StackPane();
+                    stackPane2.setMaxHeight(Double.MAX_VALUE);
                     VBox.setVgrow(stackPane2, Priority.NEVER);
-                    stackPane2.setPrefSize(Integer.parseInt(cfgArr[19]), Integer.parseInt(cfgArr[20]));
+                    stackPane2.setPrefSize(ScreenAdapter.calculateMainX(Integer.parseInt(cfgArr[19])), ScreenAdapter.calculateMainY(Integer.parseInt(cfgArr[20])));
                     Model60RuntimeData.ModelData userData = answerMap.get(team.getFullName());
                     Text userSelect = new Text();
                     // fix bug: 用户未选择答案的情况
@@ -231,9 +236,10 @@ public class ScoreBoardHPreview extends PreviewPane implements BoardPane {
                     Map<String, Model61RuntimeData.ModelData> dataMap = runtimeData.stream().collect(Collectors.toMap(x -> x.getTeamName() + "-" + x.getUserName(), x -> x));
                     count ++;
                     HBox memberStatus = new HBox();
+                    memberStatus.setMaxHeight(Double.MAX_VALUE);
                     memberStatus.setSpacing(1);
                     memberStatus.setPadding(new Insets(1, 1, 1,1));
-                    memberStatus.setPrefWidth(Integer.parseInt(cfgArr[19]));
+                    memberStatus.setPrefWidth(ScreenAdapter.calculateMainX(Integer.parseInt(cfgArr[19])));
                     String members = team.getMembers();
                     if (!StringUtils.isEmpty(members)) {
                         String[] ms = members.split(",");
@@ -241,8 +247,9 @@ public class ScoreBoardHPreview extends PreviewPane implements BoardPane {
                         for (int i = 0; i < ms.length; i++) {
                             Model61RuntimeData.ModelData modelData = dataMap.get(team.getFullName() + "-" + ms[i]);
                             StackPane stackPane2 = new StackPane();
+                            stackPane2.setMaxHeight(Double.MAX_VALUE);
                             VBox.setVgrow(stackPane2, Priority.NEVER);
-                            stackPane2.setPrefSize(w, Integer.parseInt(cfgArr[20]));
+                            stackPane2.setPrefSize(ScreenAdapter.calculateMainX(w), ScreenAdapter.calculateMainY(Integer.parseInt(cfgArr[20])));
                             Text l = new Text((i + 1) + "");
                             l.setTextAlignment(TextAlignment.CENTER);
                             stackPane2.getChildren().add(l);
@@ -300,7 +307,7 @@ public class ScoreBoardHPreview extends PreviewPane implements BoardPane {
                     
                 }
             });
-            box.setPrefHeight(Integer.parseInt(cfgArr[20]) * count + count - 1);
+            box.setPrefHeight(ScreenAdapter.calculateMainY(Integer.parseInt(cfgArr[20]) * count + count - 1));
             container.getChildren().add(box);
         }
 //        CheckBox selectAll = new CheckBox("全选");
@@ -314,11 +321,13 @@ public class ScoreBoardHPreview extends PreviewPane implements BoardPane {
 //            }
 //        });
 
-        container.setLayoutX(Double.parseDouble(cfgArr[17]));
-        container.setLayoutY(Double.parseDouble(cfgArr[18]));
-        container.setPrefWidth((Double.parseDouble(cfgArr[19]) + container.getSpacing()) * teams.size() - container.getSpacing());
+        //container.setLayoutX(ScreenAdapter.calculateMainX(Double.parseDouble(cfgArr[17])));
+        //container.setLayoutY(ScreenAdapter.calculateMainY(Double.parseDouble(cfgArr[18])));
+        container.setPrefWidth(ScreenAdapter.calculateMainX((Double.parseDouble(cfgArr[19]) + container.getSpacing()) * teams.size() - container.getSpacing()));
         int size = ((VBox)container.getChildren().get(0)).getChildren().size();
-        container.setPrefHeight(Integer.parseInt(cfgArr[20]) * size + size - 1);
+        container.setPrefHeight(ScreenAdapter.calculateMainY(Integer.parseInt(cfgArr[20]) * size + size - 1));
+        Navigator.scoreBoardStage.setWidth(container.getPrefWidth());
+        Navigator.scoreBoardStage.setHeight(container.getPrefHeight());
     }
 
 
