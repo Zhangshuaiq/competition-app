@@ -2544,17 +2544,20 @@ public class ControlPane {
             String[] split = config.split(ConfigSpliter.SPLITER);
             String boardLayout = split[14];
             if (boardLayout.equals("1")) {
-                if (scoreBoardPreview != null) {
-                    scoreBoardPreview.reload();
-                } else {
-                    scoreBoardPreview = (BoardPane) Navigator.scoreWithPos("/view/board/preview/ScoreBoardH.fxml", "", "/view/style.css", true);
-                }
+                scoreBoardPreview = (BoardPane) Navigator.scoreWithPos("/view/board/preview/ScoreBoardH.fxml", "", "/view/style.css", true);
+//                if (scoreBoardPreview != null) {
+//                    scoreBoardPreview.reload();
+//                } else {
+//                    scoreBoardPreview = (BoardPane) Navigator.scoreWithPos("/view/board/preview/ScoreBoardH.fxml", "", "/view/style.css", true);
+//                }
             } else if (boardLayout.equals("2")) {
-                if (scoreBoardPreview != null) {
-                    scoreBoardPreview.reload();
-                } else {
-                    scoreBoardPreview = (BoardPane) Navigator.scoreWithPos("/view/board/preview/ScoreBoardV.fxml", "", "/view/style.css", true);
-                }
+                scoreBoardPreview = (BoardPane) Navigator.scoreWithPos("/view/board/preview/ScoreBoardV.fxml", "", "/view/style.css", true);
+
+//                if (scoreBoardPreview != null) {
+//                    scoreBoardPreview.reload();
+//                } else {
+//                    scoreBoardPreview = (BoardPane) Navigator.scoreWithPos("/view/board/preview/ScoreBoardV.fxml", "", "/view/style.css", true);
+//                }
             }
         }
     }

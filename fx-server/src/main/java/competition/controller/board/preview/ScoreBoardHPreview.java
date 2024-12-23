@@ -20,6 +20,7 @@ import javafx.fxml.FXML;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
+import javafx.scene.Scene;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
@@ -321,13 +322,13 @@ public class ScoreBoardHPreview extends PreviewPane implements BoardPane {
 //            }
 //        });
 
-        //container.setLayoutX(ScreenAdapter.calculateMainX(Double.parseDouble(cfgArr[17])));
-        //container.setLayoutY(ScreenAdapter.calculateMainY(Double.parseDouble(cfgArr[18])));
-        container.setPrefWidth(ScreenAdapter.calculateMainX((Double.parseDouble(cfgArr[19]) + container.getSpacing()) * teams.size() - container.getSpacing()));
+        double prefWidth = ScreenAdapter.calculateMainX(Double.parseDouble(cfgArr[19])) * teams.size() + container.getSpacing() * teams.size();
+        container.setPrefWidth(prefWidth);
         int size = ((VBox)container.getChildren().get(0)).getChildren().size();
         container.setPrefHeight(ScreenAdapter.calculateMainY(Integer.parseInt(cfgArr[20]) * size + size - 1));
         Navigator.scoreBoardStage.setWidth(container.getPrefWidth());
         Navigator.scoreBoardStage.setHeight(container.getPrefHeight());
+
     }
 
 

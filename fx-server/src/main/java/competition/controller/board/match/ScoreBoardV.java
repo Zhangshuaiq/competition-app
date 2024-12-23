@@ -69,7 +69,7 @@ public class ScoreBoardV implements BoardPane {
     }
 
     private void show() {
-        int count = 2;
+
         ScoreStyle scoreStyle = scoreStyleMapper.selectById(1);
         String[] split = scoreStyle.getStyles().split(ConfigSpliter.SPLITER);
         Font font = FontMap.load(split[0], Integer.parseInt(split[1]));
@@ -81,15 +81,13 @@ public class ScoreBoardV implements BoardPane {
 
 
         container.getChildren().clear();
-        container.setSpacing(10);
+        container.setSpacing(ScreenAdapter.calculateExX(10));
 
-        left.setPrefWidth(100);
-        left.setPrefHeight(1000);
-        left.setSpacing(10);
+        left.setPrefWidth(ScreenAdapter.calculateExX(100));
+        left.setSpacing(ScreenAdapter.calculateExY(10));
 
-        right.setPrefWidth(100);
-        right.setPrefHeight(1000);
-        right.setSpacing(10);
+        right.setPrefWidth(ScreenAdapter.calculateExX(100));
+        right.setSpacing(ScreenAdapter.calculateExY(10));
 
 //        CheckBox selectAll = new CheckBox("全选");
 //        selectAll.setPrefWidth(100);
@@ -97,21 +95,23 @@ public class ScoreBoardV implements BoardPane {
         container.getChildren().addAll(left, right);
         List<Teams> teams = TeamRuntime.getTeams();
         for (int i = 0; i < teams.size(); i++) {
+            int count = 2;
             Teams team = teams.get(i);
             VBox box = new VBox();
-            box.setPrefWidth(Double.parseDouble(cfgArr[19]));
-            box.setPrefHeight(Double.parseDouble(cfgArr[20]) * 2 + 20);
+            box.setPrefWidth(ScreenAdapter.calculateExX(Double.parseDouble(cfgArr[19])));
+            box.setPrefHeight(ScreenAdapter.calculateExY(Double.parseDouble(cfgArr[20]) * 2 + 20));
             box.setSpacing(1);
 
 
             StackPane stackPane = new StackPane();
-            stackPane.setPrefSize(Double.parseDouble(cfgArr[19]), Double.parseDouble(cfgArr[20]));
+
+            stackPane.setPrefSize(ScreenAdapter.calculateExX(Double.parseDouble(cfgArr[19])),
+                    ScreenAdapter.calculateExY(Double.parseDouble(cfgArr[20])));
+
             Text teamName = new Text(team.getShortName());
             teamName.setTextAlignment(TextAlignment.CENTER);
-            teamName.prefWidth(Double.parseDouble(cfgArr[19]));
-            left.setPrefWidth(Double.parseDouble(cfgArr[19]));
-            right.setPrefWidth(Double.parseDouble(cfgArr[19]));
-            teamName.prefHeight(Double.parseDouble(cfgArr[20]));
+            left.setPrefWidth(ScreenAdapter.calculateExX(Double.parseDouble(cfgArr[19])));
+            right.setPrefWidth(ScreenAdapter.calculateExY(Double.parseDouble(cfgArr[19])));
             teamName.setFill(Color.valueOf(cfgArr[15]));
             stackPane.setBackground(new Background(new BackgroundFill(Color.valueOf(cfgArr[16]),  new CornerRadii(10), Insets.EMPTY)));
             teamName.setFont(font);
@@ -156,6 +156,40 @@ public class ScoreBoardV implements BoardPane {
             stackPane1.getChildren().add(teamScore);
             box.getChildren().add(stackPane1);
 
+
+
+            if (RuntimeUtil.showBuzzBar) {
+                count ++;
+                Long timeVal = RuntimeUtil.buzzTimeMap.get(team.getShortName());
+                Text buzzTime = new Text("0");
+                if (timeVal != null) {
+                    buzzTime.setText(NumberUtil.fix2Point(timeVal * 0.001));
+                }
+                StackPane buzzPane = new StackPane();
+                buzzPane.setMaxHeight(Double.MAX_VALUE);
+                VBox.setVgrow(buzzPane, Priority.NEVER);
+
+                buzzPane.setPrefSize(ScreenAdapter.calculateExX(Integer.parseInt(cfgArr[19])), ScreenAdapter.calculateExY(Integer.parseInt(cfgArr[20])));
+                buzzTime.setTextAlignment(TextAlignment.CENTER);
+                buzzTime.setFill(Color.valueOf(cfgArr[21]));
+
+                Color color = RuntimeUtil.buzzResult.getOrDefault(team.getShortName(), false)?Color.GREEN: Color.RED;
+                buzzPane.setBackground(new Background(new BackgroundFill(color, new CornerRadii(10), Insets.EMPTY)));
+                buzzTime.setFont(Font.font(12));
+                buzzTime.setUnderline(Boolean.valueOf(split[5]));
+                buzzTime.setStrikethrough(Boolean.valueOf(split[2]));
+                if (Boolean.valueOf(split[3])) {
+                    buzzTime.setStroke(teamScore.getFill());
+                    buzzTime.setStrokeWidth(1);
+                } else {
+                    buzzTime.setStroke(null);
+
+                }
+                buzzTime.getTransforms().clear();
+                buzzPane.getChildren().add(buzzTime);
+                box.getChildren().add(buzzPane);
+            }
+
             if (i % 2 == 0) {
                 left.getChildren().add(box);
             } else {
@@ -178,7 +212,7 @@ public class ScoreBoardV implements BoardPane {
                 if (questionType == 6 && m6 == 0) {
                     List<Model60RuntimeData.ModelData> runtimeData = Model60RuntimeData.getRuntimeData();
                     Map<String, Model60RuntimeData.ModelData> answerMap = runtimeData.stream().collect(Collectors.toMap(x -> x.getTeamName(), x -> x));
-                    count = 3;
+                    count ++;
                     StackPane stackPane2 = new StackPane();
                     stackPane2.setPrefSize(Integer.parseInt(cfgArr[19]), Integer.parseInt(cfgArr[20]));
                     Model60RuntimeData.ModelData userData = answerMap.get(team.getFullName());
@@ -217,7 +251,7 @@ public class ScoreBoardV implements BoardPane {
                 else if (questionType == 6 && m6 == 1) {
                     List<Model61RuntimeData.ModelData> runtimeData = Model61RuntimeData.getRuntimeData();
                     Map<String, Model61RuntimeData.ModelData> dataMap = runtimeData.stream().collect(Collectors.toMap(x -> x.getTeamName() + "-" + x.getUserName(), x -> x));
-                    count = 3;
+                    count ++;
                     HBox memberStatus = new HBox();
                     memberStatus.setSpacing(1);
                     memberStatus.setPadding(new Insets(1, 1, 1,1));
@@ -265,7 +299,7 @@ public class ScoreBoardV implements BoardPane {
                     }
                 }
                 else if (questionType == 7) {
-                    count = 3;
+                    count ++;
                 }
 
             }
@@ -281,10 +315,16 @@ public class ScoreBoardV implements BoardPane {
 //            }
 //        });
 
-        container.setLayoutX(Double.parseDouble(cfgArr[17]));
-        container.setLayoutY(Double.parseDouble(cfgArr[18]));
-        container.setPrefWidth(1000);
-        container.setPrefHeight(1000);
+        container.setPrefWidth(ScreenAdapter.calculateExX((Double.parseDouble(cfgArr[19]) * 2 ) + container.getSpacing()));
+
+        double leftSize = left.getChildren().size();
+        double rightSize = right.getChildren().size();
+        double leftCount = ((VBox)left.getChildren().get(0)).getChildren().size();
+        double size = (leftSize > rightSize)? leftSize : rightSize;
+        double prefHeight = ScreenAdapter.calculateExY(size * (Double.parseDouble(cfgArr[20]) * leftCount) + (size - 1) * 10);
+        container.setPrefHeight(prefHeight);
+        ExtendedScreen.scoreBoardStage.setWidth(container.getPrefWidth());
+        ExtendedScreen.scoreBoardStage.setHeight(container.getPrefHeight());
     }
 
     @Override

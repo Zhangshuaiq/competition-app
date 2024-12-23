@@ -71,7 +71,6 @@ public class ScoreBoardVPreview extends PreviewPane implements BoardPane {
     }
 
     private void show() {
-        int count = 2;
         BoardPane scoreBoard = controlPane.getScoreBoard();
         if (scoreBoard == null || !(scoreBoard instanceof ScoreBoardV)) {
             scoreBoard = (ScoreBoardV) ExtendedScreen.scoreWithPos("/view/board/match/ScoreBoardV.fxml", "", "/view/style.css", false);
@@ -93,7 +92,7 @@ public class ScoreBoardVPreview extends PreviewPane implements BoardPane {
 
 
         container.getChildren().clear();
-        container.setSpacing(10);
+        container.setSpacing(ScreenAdapter.calculateMainX(10));
        
         left.setPrefWidth(ScreenAdapter.calculateMainX(100));
         left.setSpacing(ScreenAdapter.calculateMainY(10));
@@ -107,6 +106,7 @@ public class ScoreBoardVPreview extends PreviewPane implements BoardPane {
         container.getChildren().addAll(left, right);
         List<Teams> teams = TeamRuntime.getTeams();
         for (int i = 0; i < teams.size(); i++) {
+            int count = 2;
             Teams team = teams.get(i);
             VBox box = new VBox();
             box.setPrefWidth(ScreenAdapter.calculateMainX(Double.parseDouble(cfgArr[19])));
@@ -119,7 +119,6 @@ public class ScoreBoardVPreview extends PreviewPane implements BoardPane {
                 ScreenAdapter.calculateMainY(Double.parseDouble(cfgArr[20])));
             Text teamName = new Text(team.getShortName());
             teamName.setTextAlignment(TextAlignment.CENTER);
-//            teamName.prefWidth(Double.parseDouble(cfgArr[19]));
             left.setPrefWidth(ScreenAdapter.calculateMainX(Double.parseDouble(cfgArr[19])));
             right.setPrefWidth(ScreenAdapter.calculateMainY(Double.parseDouble(cfgArr[19])));
             teamName.setFill(Color.valueOf(cfgArr[15]));
@@ -167,6 +166,42 @@ public class ScoreBoardVPreview extends PreviewPane implements BoardPane {
             stackPane1.getChildren().add(teamScore);
             box.getChildren().add(stackPane1);
 
+
+            // 抢答分时面板
+            if (RuntimeUtil.showBuzzBar) {
+                count ++;
+                Long timeVal = RuntimeUtil.buzzTimeMap.get(team.getShortName());
+                Text buzzTime = new Text("0");
+                if (timeVal != null) {
+                    buzzTime.setText(NumberUtil.fix2Point(timeVal * 0.001));
+                }
+                StackPane buzzPane = new StackPane();
+                buzzPane.setMaxHeight(Double.MAX_VALUE);
+                VBox.setVgrow(buzzPane, Priority.NEVER);
+
+                buzzPane.setPrefSize(ScreenAdapter.calculateMainX(Integer.parseInt(cfgArr[19])), ScreenAdapter.calculateMainY(Integer.parseInt(cfgArr[20])));
+                buzzTime.setTextAlignment(TextAlignment.CENTER);
+                buzzTime.setFill(Color.valueOf(cfgArr[21]));
+
+                Color color = RuntimeUtil.buzzResult.getOrDefault(team.getShortName(), false)?Color.GREEN: Color.RED;
+                buzzPane.setBackground(new Background(new BackgroundFill(color, new CornerRadii(10), Insets.EMPTY)));
+                buzzTime.setFont(Font.font(12));
+                buzzTime.setUnderline(Boolean.valueOf(split[5]));
+                buzzTime.setStrikethrough(Boolean.valueOf(split[2]));
+                if (Boolean.valueOf(split[3])) {
+                    buzzTime.setStroke(teamScore.getFill());
+                    buzzTime.setStrokeWidth(1);
+                } else {
+                    buzzTime.setStroke(null);
+
+                }
+                buzzTime.getTransforms().clear();
+                buzzPane.getChildren().add(buzzTime);
+                box.getChildren().add(buzzPane);
+            }
+
+
+
             if (i % 2 == 0) {
                 left.getChildren().add(box);
             } else {
@@ -190,7 +225,7 @@ public class ScoreBoardVPreview extends PreviewPane implements BoardPane {
                 if (questionType == 6 && m6 == 0) {
                     List<Model60RuntimeData.ModelData> runtimeData = Model60RuntimeData.getRuntimeData();
                     Map<String, Model60RuntimeData.ModelData> answerMap = runtimeData.stream().collect(Collectors.toMap(x -> x.getTeamName(), x -> x));
-                    count = 3;
+                    count ++;
                     StackPane stackPane2 = new StackPane();
                     stackPane2.setPrefSize(ScreenAdapter.calculateMainX(Integer.parseInt(cfgArr[19])),
                         ScreenAdapter.calculateMainY(Integer.parseInt(cfgArr[20])));
@@ -230,7 +265,7 @@ public class ScoreBoardVPreview extends PreviewPane implements BoardPane {
                 else if (questionType == 6 && m6 == 1) {
                     List<Model61RuntimeData.ModelData> runtimeData = Model61RuntimeData.getRuntimeData();
                     Map<String, Model61RuntimeData.ModelData> dataMap = runtimeData.stream().collect(Collectors.toMap(x -> x.getTeamName() + "-" + x.getUserName(), x -> x));
-                    count = 3;
+                    count ++;
                     HBox memberStatus = new HBox();
                     memberStatus.setSpacing(1);
                     memberStatus.setPadding(new Insets(1, 1, 1,1));
@@ -279,7 +314,7 @@ public class ScoreBoardVPreview extends PreviewPane implements BoardPane {
                     }
                 }
                 else if (questionType == 7) {
-                    count = 3;
+                    count ++;
                 }
 
             }
@@ -316,7 +351,7 @@ public class ScoreBoardVPreview extends PreviewPane implements BoardPane {
 
         //container.setLayoutX(Double.parseDouble(cfgArr[17]));
         //container.setLayoutY(Double.parseDouble(cfgArr[18]));
-        container.setPrefWidth(ScreenAdapter.calculateMainX((Double.parseDouble(cfgArr[19]) * 2 + container.getSpacing())));
+        container.setPrefWidth(ScreenAdapter.calculateMainX((Double.parseDouble(cfgArr[19]) * 2 ) + container.getSpacing()));
 
         double leftSize = left.getChildren().size();
         double rightSize = right.getChildren().size();

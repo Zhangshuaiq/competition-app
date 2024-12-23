@@ -246,9 +246,9 @@ public class ScoreBoardH implements BoardPane {
 //            }
 //        });
 
-        container.setLayoutX(ScreenAdapter.calculateExX(Double.parseDouble(cfgArr[17])));
-        container.setLayoutY(ScreenAdapter.calculateExY(Double.parseDouble(cfgArr[18])));
-        container.setPrefWidth(ScreenAdapter.calculateExX((Double.parseDouble(cfgArr[19]) + container.getSpacing()) * teams.size() - container.getSpacing()));
+
+        double prefWidth = ScreenAdapter.calculateExX(Double.parseDouble(cfgArr[19])) * teams.size() + container.getSpacing() * teams.size();
+        container.setPrefWidth(prefWidth);
         int size = ((VBox)container.getChildren().get(0)).getChildren().size();
         container.setPrefHeight(ScreenAdapter.calculateExY(Integer.parseInt(cfgArr[20]) * size + size - 1));
         ExtendedScreen.scoreBoardStage.setWidth(container.getPrefWidth());

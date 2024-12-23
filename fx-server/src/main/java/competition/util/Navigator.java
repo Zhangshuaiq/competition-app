@@ -49,6 +49,7 @@ public class Navigator {
         previewStage.initStyle(StageStyle.TRANSPARENT);
         timeBoardStage.setAlwaysOnTop(true);
         timeBoardStage.initStyle(StageStyle.TRANSPARENT);
+        scoreBoardStage.setResizable(true);
         scoreBoardStage.setAlwaysOnTop(true);
         scoreBoardStage.initStyle(StageStyle.TRANSPARENT);
         backendStage.setOnCloseRequest(new EventHandler<WindowEvent>() {
@@ -271,8 +272,10 @@ public class Navigator {
 
             loader.setControllerFactory(applicationContext::getBean);
             Parent load = loader.load();
-            
+
+
             Stage stage = scoreBoardStage;
+
 
             String config = configs.getConfig();
             if (!StringUtils.isEmpty(config)) {
@@ -282,6 +285,16 @@ public class Navigator {
             }
             stage.setTitle(title);
             Scene  scene = new Scene(load, Color.TRANSPARENT);
+
+
+//            scene.widthProperty().addListener((observable, oldValue, newValue) -> {
+//                stage.setWidth(newValue.doubleValue());
+//            });
+//
+//            scene.heightProperty().addListener((observable, oldValue, newValue) -> {
+//                stage.setHeight(newValue.doubleValue());
+//            });
+
             if (hiddenControl) {
                 //stage.initStyle(StageStyle.TRANSPARENT);
             }
