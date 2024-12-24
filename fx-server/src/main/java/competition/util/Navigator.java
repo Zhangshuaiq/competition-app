@@ -185,8 +185,8 @@ public class Navigator {
             String config = configs.getConfig();
             if (!StringUtils.isEmpty(config)) {
                 String[] split = config.split(ConfigSpliter.SPLITER);
-                stage.setX(Double.parseDouble(split[29]));
-                stage.setY(Double.parseDouble(split[30]));
+                stage.setX(ScreenAdapter.calculateMainX(Double.parseDouble(split[29])));
+                stage.setY(ScreenAdapter.calculateMainY(Double.parseDouble(split[30])));
             }
             stage.setTitle(title);
             Scene  scene = new Scene(load, Color.TRANSPARENT);
@@ -208,8 +208,9 @@ public class Navigator {
                 }
                 Screen extendedScreen = screens.get(1); // 获取第二个屏幕
                 Rectangle2D bounds = extendedScreen.getBounds();
-                ExtendedScreen.timeBoardStage.setX(bounds.getMinX() + event.getScreenX() - xOffset.get());
-                ExtendedScreen.timeBoardStage.setY(bounds.getMinY() + event.getScreenY() - yOffset.get());
+
+                ExtendedScreen.timeBoardStage.setX(bounds.getMinX() + ScreenAdapter.calculateExX(event.getScreenX() - xOffset.get()));
+                ExtendedScreen.timeBoardStage.setY(bounds.getMinY() + ScreenAdapter.calculateExY(event.getScreenY() - yOffset.get()));
             });
 
             scene.getStylesheets().add(cssFile); // 应用 CSS

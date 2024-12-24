@@ -16,21 +16,13 @@ import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.fxml.FXML;
 import javafx.geometry.Insets;
-import javafx.geometry.Pos;
-import javafx.scene.control.Label;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
-import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextAlignment;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 import org.springframework.stereotype.Component;
-
-import javax.annotation.Resource;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 
 @Component
 public class TimeBoardPreview extends PreviewPane {
@@ -175,6 +167,9 @@ public class TimeBoardPreview extends PreviewPane {
         if (timeBoard != null) {
             timeBoard.reload(timeVal, timeValue);
         }
+
+        Navigator.timeBoardStage.setX(ScreenAdapter.calculateMainX(Double.parseDouble(split[29])));
+        Navigator.timeBoardStage.setY(ScreenAdapter.calculateMainY(Double.parseDouble(split[30])));
     }
 
     private String format(int timeVal) {
