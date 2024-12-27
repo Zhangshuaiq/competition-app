@@ -256,16 +256,16 @@ public class ExtendedScreen {
             if (hiddenControl) {
                 //stage.initStyle(StageStyle.TRANSPARENT);
             }
-            load.setOnMousePressed(event -> {
-                xOffset.set(event.getSceneX());
-                yOffset.set(event.getSceneY());
-            });
+//            load.setOnMousePressed(event -> {
+//                xOffset.set(event.getSceneX());
+//                yOffset.set(event.getSceneY());
+//            });
 
-            // 拖动时更新窗口位置
-            load.setOnMouseDragged(event -> {
-                stage.setX(event.getScreenX() - xOffset.get());
-                stage.setY(event.getScreenY() - yOffset.get());
-            });
+//            // 拖动时更新窗口位置
+//            load.setOnMouseDragged(event -> {
+//                stage.setX(event.getScreenX() - xOffset.get());
+//                stage.setY(event.getScreenY() - yOffset.get());
+//            });
 
 
             scene.getStylesheets().add(cssFile); // 应用 CSS
