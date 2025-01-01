@@ -12,6 +12,7 @@ export default new Vuex.Store({
         currentRoute: '',
         data: {},  // 存储更多的数据,
         teams: {},
+        buzzStatus: false,
     },
     mutations: {
         setStage(state, stage) {
@@ -25,6 +26,10 @@ export default new Vuex.Store({
         },
         setTeamsData(state, data) {
             state.teams = data
+        },
+
+        setBuzzStatus(state, data) {
+            state.buzzStatus = data
         }
     },
 });

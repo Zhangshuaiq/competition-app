@@ -63,7 +63,9 @@
             </div>
           </div>
         </div>
-        
+        <div class="qd-area" :style="qdBoxStyle" @click="startBuzz">
+          抢
+        </div>
         <div v-if="showResult" id="answer-info" style="font-size: xx-large; margin-top: 20px; text-align: center; background-color: #C40000; border-radius: 8px;">
            <font color="white">{{ prefix }} {{questionItem.answer}}</font>
         </div>
@@ -76,6 +78,7 @@
 <script>
 import ScoreBoard from "@/components/member/ScoreBoard.vue";
 import baseUrl from "@/config";
+import {buzzQuestion} from "@/api";
 
 export default {
   name: "QuestionL",
@@ -83,7 +86,6 @@ export default {
 
   data(){
     return {
-      
       retryTimer: null, // 用于重试逻辑的计时器
       retryInterval: 500, // 重试间隔时间，例如5秒
       imageUrl: `${baseUrl}/resource/答题背景.jpg?${new Date().getTime()}`,
@@ -108,9 +110,26 @@ export default {
         height: '100vh',
       };
     },
+
+    qdBoxStyle(){
+      return {
+        visibility: (this.stage.openQd && this.second >= 0) ? 'visible' : 'hidden',
+      }
+    }
   },
   
   methods: {
+
+    startBuzz(){
+      const data = {
+        'team': this.teamInfo.shortName,
+        'username': this.member
+      }
+      buzzQuestion(data).then(() => {
+        console.log("抢答成功")
+      })
+    },
+
 
     checkImageUrl(url, callback) {
       const img = new Image();
@@ -200,6 +219,20 @@ export default {
 
 #container {
   padding:0 100px;
+}
+
+.qd-area {
+  width: 100px;            /* 圆的直径 */
+  height: 100px;           /* 圆的直径 */
+  line-height: 94px;
+  background-color: #4A90E2; /* 蓝色背景 */
+  color: white;            /* 字体颜色为白色 */
+  border-radius: 50%;      /* 实现圆形效果 */
+  text-align: center;
+  font-size: 50px;         /* 字体大小 */
+  font-family: 'Microsoft YaHei', sans-serif; /* 字体 */
+  border: 2px solid #000;  /* 边框为黑色 */
+  margin: 0 auto;
 }
 
 #question-name {

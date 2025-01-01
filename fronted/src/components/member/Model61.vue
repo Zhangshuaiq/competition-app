@@ -206,9 +206,12 @@
               <el-button disabled style="width: 200px; height: 50px; font-size: x-large" type="primary" @click="submitAnswer"> {{btnText}} </el-button>
             </div>
             <div v-else>
-              <el-button :disabled="second <= 0 || showResult || this.activeDiv === ''" style="width: 200px; height: 50px; font-size: x-large; z-index: 2" type="primary" @click="submitAnswer"> {{btnText}} </el-button>
+              <el-button :disabled="second <= 0 || showResult || activeDiv === '' || isBuzz" style="width: 200px; height: 50px; font-size: x-large; z-index: 2" type="primary" @click="submitAnswer"> {{btnText}} </el-button>
             </div>
           </div>
+        </div>
+        <div class="qd-area" :style="qdBoxStyle" @click="startBuzz">
+          抢
         </div>
         <div v-if="showResult" id="answer-info" style="font-size: xx-large; margin-top: 20px; background-color: #C40000; border-radius: 8px;">
            <font color="white">{{ prefix }} {{questionItem.answer}}</font>
@@ -221,11 +224,13 @@
 <script>
 import ScoreBoard from "@/components/member/ScoreBoard.vue";
 import baseUrl from "@/config";
+import {buzzQuestion} from "@/api";
 export default {
   name: "Model61M",
   components: {ScoreBoard},
   data(){
     return {
+      isBuzz: false,
       retryTimer: null, // 用于重试逻辑的计时器
       retryInterval: 500, // 重试间隔时间，例如5秒
       prefix: '',
@@ -254,10 +259,24 @@ export default {
         height: '100vh',
       };
     },
+
+    qdBoxStyle(){
+      return {
+        visibility: (this.stage.openQd && this.second >= 0 && this.isBuzz) ? 'visible' : 'hidden',
+      }
+    }
   },
   
   methods: {
-
+    startBuzz(){
+      const data = {
+        'team': this.teamInfo.shortName,
+        'username': this.member
+      }
+      buzzQuestion(data).then(() => {
+        console.log("抢答成功")
+      })
+    },
 
     sortString(input) {
       // 将字符串转换为字符数组
@@ -369,6 +388,7 @@ export default {
         }
         if (message.type === 'time') {
           this.second = parseInt(message.data)
+          this.isBuzz = message.isBuzz == 'true'
           // if (this.second <= 0) {
           //   // if (this.showResult === false) {
           //   //   this.activeDiv = ''
@@ -488,6 +508,20 @@ export default {
 
 #container {
   padding: 50px 100px;
+}
+
+.qd-area {
+  width: 100px;            /* 圆的直径 */
+  height: 100px;           /* 圆的直径 */
+  line-height: 94px;
+  background-color: #4A90E2; /* 蓝色背景 */
+  color: white;            /* 字体颜色为白色 */
+  border-radius: 50%;      /* 实现圆形效果 */
+  text-align: center;
+  font-size: 50px;         /* 字体大小 */
+  font-family: 'Microsoft YaHei', sans-serif; /* 字体 */
+  border: 2px solid #000;  /* 边框为黑色 */
+  margin: 0 auto;
 }
 
 .question-name {

@@ -60,7 +60,7 @@ public class TimeBoardPreview extends PreviewPane {
         // 抢答开始等待时间
         this.timeVal = time;
         this.timeValue = format(timeVal);
-        messageHandler.sendQuestionTime(this.timeVal + "");
+        messageHandler.sendQuestionTime(this.timeVal + "", "true");
         teamScore.setVisible(true);
         teamScore.setText(timeValue);
         timeline = new Timeline(new KeyFrame(Duration.seconds(1), e -> {
@@ -81,7 +81,7 @@ public class TimeBoardPreview extends PreviewPane {
                 }
             }
             this.timeValue = format(timeVal);
-            messageHandler.sendQuestionTime(timeVal + "");
+            messageHandler.sendQuestionTime(timeVal + "", "true");
             messageHandler.sendModel7Time(timeVal + "");
             for (int i = 0; i < Model7RuntimeData.getSeconds().size(); i++) {
                 Model7RuntimeData.getTimes().set(i, timeValue.replace(":", "分") + "秒");
@@ -204,7 +204,7 @@ public class TimeBoardPreview extends PreviewPane {
         }
         this.timeVal = time;
         this.timeValue = format(timeVal);
-        messageHandler.sendQuestionTime(this.timeVal + "");
+        messageHandler.sendQuestionTime(this.timeVal + "", "true");
         teamScore.setVisible(true);
         teamScore.setText(timeValue);
         timeline = new Timeline(new KeyFrame(Duration.seconds(1), e -> {
@@ -222,7 +222,7 @@ public class TimeBoardPreview extends PreviewPane {
                 }
             }
             this.timeValue = format(timeVal);
-            messageHandler.sendQuestionTime(timeVal + "");
+            messageHandler.sendQuestionTime(timeVal + "", "true");
             messageHandler.sendModel7Time(timeVal + "");
 //            for (int i = 0; i < Model7RuntimeData.getSeconds().size(); i++) {
 //                Model7RuntimeData.getTimes().set(i, timeValue.replace(":", "分") + "秒");
@@ -268,11 +268,11 @@ public class TimeBoardPreview extends PreviewPane {
             this.timeVal = 0;
             this.timeValue = format(timeVal);
             endTime = time;
-            messageHandler.sendQuestionTime(this.timeVal + "");
+            messageHandler.sendQuestionTime(this.timeVal + "", "false");
         } else {
             this.timeVal = time;
             this.timeValue = format(timeVal);
-            messageHandler.sendQuestionTime(this.timeVal + "");
+            messageHandler.sendQuestionTime(this.timeVal + "", "false");
         }
         teamScore.setVisible(true);
         teamScore.setText(timeValue);
@@ -297,7 +297,7 @@ public class TimeBoardPreview extends PreviewPane {
                 }
             }
             this.timeValue = format(timeVal);
-            messageHandler.sendQuestionTime(timeVal + "");
+            messageHandler.sendQuestionTime(timeVal + "", "false");
             messageHandler.sendModel7Time(timeVal + "");
             for (int i = 0; i < Model7RuntimeData.getSeconds().size(); i++) {
                 Model7RuntimeData.getTimes().set(i, timeValue.replace(":", "分") + "秒");

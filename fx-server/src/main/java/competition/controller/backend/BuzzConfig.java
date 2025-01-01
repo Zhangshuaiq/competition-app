@@ -68,13 +68,13 @@ public class BuzzConfig {
     private ColorPicker fontColor;
 
     @FXML
-    private CheckBox fontUnderline;
+    private CheckBox fontUnderline, xuhaoChecked, jianchengChecked, quanchengChecked;
 
     @FXML
     private ColorPicker backColor, xuhaoColor, shortColor, fullColor, successColor, failColor;
 
     @FXML
-    private TextField widthInput, heightInput, spaceInput, xuhaoSize, jianchengSize, quanchengSize, successSize, errorSize;
+    private TextField xInput, yInput, widthInput, heightInput, spaceInput, xuhaoSize, jianchengSize, quanchengSize, successSize, errorSize;
 
     @FXML
     private ComboBox<String> xuhaoFont, jianchengFont, quanchengFont, successFont, errorFont;
@@ -158,7 +158,17 @@ public class BuzzConfig {
             String config = configs.getConfig();
             if (!StringUtils.isEmpty(config)) {
                 JSONObject jsonObject = JSON.parseObject(config);
+
+
+                xuhaoChecked.setSelected(Boolean.parseBoolean(jsonObject.getOrDefault("xuhao", "false").toString()));
+                jianchengChecked.setSelected(Boolean.parseBoolean(jsonObject.getOrDefault("jiancheng", "false").toString()));
+                quanchengChecked.setSelected(Boolean.parseBoolean(jsonObject.getOrDefault("quancheng", "false").toString()));
+
                 backColor.setValue(Color.valueOf(jsonObject.getOrDefault("backColor", "BLACK").toString()));
+
+
+                xInput.setText(jsonObject.getOrDefault("x", "200").toString());
+                yInput.setText(jsonObject.getOrDefault("y", "200").toString());
                 widthInput.setText(jsonObject.getOrDefault("width", "200").toString());
                 heightInput.setText(jsonObject.getOrDefault("height", "200").toString());
                 spaceInput.setText(jsonObject.getOrDefault("rowSpace", "10").toString());
@@ -285,6 +295,8 @@ public class BuzzConfig {
         jsonObject.put("failColor", failColor.getValue().toString());
         jsonObject.put("width", widthInput.getText());
         jsonObject.put("height", heightInput.getText());
+        jsonObject.put("x", xInput.getText());
+        jsonObject.put("y", yInput.getText());
         jsonObject.put("rowSpace", spaceInput.getText());
         jsonObject.put("fontSelector", fontSelector.getValue());
         jsonObject.put("xuhaoFont", xuhaoFont.getValue());
@@ -298,6 +310,9 @@ public class BuzzConfig {
         jsonObject.put("quanchengSize", quanchengSize.getText());
         jsonObject.put("successSize", successSize.getText());
         jsonObject.put("errorSize", errorSize.getText());
+        jsonObject.put("xuhao", xuhaoChecked.isSelected());
+        jsonObject.put("jiancheng", jianchengChecked.isSelected());
+        jsonObject.put("quancheng", quanchengChecked.isSelected());
 
         configs.setConfig(jsonObject.toString());
         if (isNew) {

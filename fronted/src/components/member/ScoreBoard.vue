@@ -15,6 +15,17 @@
               </div>
             </el-col>
           </el-row>
+          <div v-if="buzzStatus">
+            <el-row>
+              <el-col span="22">
+                <div class="board-item" :style="{backgroundColor: item.buzzStatus?buzzStatusColor[1]: buzzStatusColor[0]}">
+                  <div>
+                    {{item.buzzTime}}
+                  </div>
+                </div>
+              </el-col>
+            </el-row>
+          </div>
           <div v-if="showStatus">
             <div v-if="showMember" >
               <el-row>
@@ -36,7 +47,6 @@
                 </el-col>
               </el-row>
             </div>
-            
           </div>
         </div>
       </el-col>
@@ -49,10 +59,12 @@
    name: "ScoreBoard",
    data() {
      return  {
+       buzzStatus: false,
        teamList: [],
        showStatus: false,
        showMember: false,
        statusColor: ['#FFFFFF', '#0070C0', '#00B050', '#FF0000'],
+       buzzStatusColor: ['#4472c4', '#70ad47'],
        questionItem: sessionStorage.getItem('questionItem') || {}
      }
    },
@@ -68,8 +80,11 @@
      '$store.state.teams': function (newStatus) {
        this.teamList = newStatus
        this.questionItem = JSON.parse(sessionStorage.getItem('questionItem'))
-       console.log("1572910872933333")
        console.log(this.questionItem)
+     },
+
+     '$store.state.buzzStatus': function (newStatus) {
+       this.buzzStatus = newStatus
      },
 
      questionItem(newVal, oldVal) {

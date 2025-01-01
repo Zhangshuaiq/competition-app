@@ -79,12 +79,14 @@ public class Teams {
     @TableField(exist = false)
     private Integer newScore;
 
-    public void setTeamScore(Integer teamScore) {
-        this.teamScore = teamScore;
-    }
+    @ExcelIgnore
+    // 抢答状态
+    @TableField(exist = false)
+    private boolean buzzStatus = false;
 
+    @ExcelIgnore
+    // 抢答时间
+    @TableField(exist = false)
+    private String buzzTime;
 
-    public void setMemberScore(String memberScore) {
-        this.memberScore = memberScore;
-    }
 }

@@ -734,8 +734,8 @@ public class ControlPane {
                     mode = buzz.getMode();
                     timeLimit = buzz.getTimeLimit();
                 }
-
-
+                previewPane.hideBuzzResult();
+                messageHandler.notifyPage("", null);
                 buzzBtn.setText("停止抢答");
                 buzzBtn.setTextFill(Color.WHITE);
                 buzzBtn.setStyle("-fx-background-color: #01a25a");
@@ -1557,7 +1557,7 @@ public class ControlPane {
         parentPane.requestFocus();
         timingBtn.setDisable(false);
         // 时间隐藏
-        messageHandler.sendQuestionTime("-1");
+        messageHandler.sendQuestionTime("-1", "false");
         if (timeBoardPreview != null) {
             timeBoardPreview.close();
         }
@@ -2248,19 +2248,6 @@ public class ControlPane {
                     items.add(item);
                 }
 
-//                if (!startAnswerBtn.getText().equals("开始答题")) {
-//
-//                    startAnswerQuestion();
-//                    
-////                    timeReset();
-////                    startAnswerBtn.setDisable(false);
-////                    Model61RuntimeData.forceFinish();
-////                    startAnswerBtn.setText("开始答题");
-////                    startAnswerBtn.setTextFill(Color.BLACK);
-////                    lastQBtn.setDisable(false);
-////                    nextQBtn.setDisable(false);
-//                }
-
                 result.setDataItemList(items);
                 ShowAnswerPreview.setTeamResult(result);
                 previewPane = Navigator.preview("/view/preview/ShowAnswer.fxml", "", "/view/style.css", true, true);
@@ -2349,7 +2336,8 @@ public class ControlPane {
             if (timeBoardPreview != null) {
                 timeBoardPreview.close();
             }
-            resetTimeBtn();
+
+            timingBtn.setDisable(false);
             timeReset();
         }
 
@@ -2370,6 +2358,10 @@ public class ControlPane {
         if (selectedIndex == 0) {
             return;
         }
+        RuntimeUtil.showBuzzBar = false;
+        previewPane.hideBuzzResult();
+        messageHandler.notifyPage("", null);
+        reloadScoreBoard();
         GlobalCache.showAnswer = false;
         questionCombox.getSelectionModel().select(selectedIndex - 1);
         TeamRuntime.resetStatus();
@@ -2397,6 +2389,10 @@ public class ControlPane {
                 Information.info("已经是最后一题");
                 return;
             }
+            RuntimeUtil.showBuzzBar = false;
+            previewPane.hideBuzzResult();
+            messageHandler.notifyPage("", null);
+            reloadScoreBoard();
             GlobalCache.showAnswer = false;
             questionCombox.getSelectionModel().select(selectedIndex + 1);
             TeamRuntime.resetStatus();
@@ -2660,7 +2656,7 @@ public class ControlPane {
 
         // 抢答违规的时间间隔
         long timeGap = 3000 + (int)(MusicPlayer.getAudioDuration(MusicResource.BUZZ_START) * 1000);
-
+        Teams teams = TeamRuntime.getTeams().stream().filter(x -> x.getShortName().equals(team)).collect(Collectors.toList()).get(0);
         long currentedTimeMillis = System.currentTimeMillis();
         if (RuntimeUtil.buzzStart > 0) {
 
@@ -2674,38 +2670,56 @@ public class ControlPane {
 
             long slipTime = currentedTimeMillis - (RuntimeUtil.buzzStart);
 
-            // 防止其他人抢到
-            RuntimeUtil.buzzStart = 0;
 
             // 判断是否是淘汰模式
             if (mode.equals("淘汰模式")) {
+                // 防止重复抢，多次点击只会计算第一次的
+                if (RuntimeUtil.buzzTimeMap.containsKey(team)) {
+                    return;
+                }
                 RuntimeUtil.buzzTimeMap.put(team, slipTime);
                 RuntimeUtil.buzzResult.put(team, false);
                 if (RuntimeUtil.buzzTimeMap.size() == TeamRuntime.getTeams().size()) {
+                    // 防止其他人抢到
+                    RuntimeUtil.buzzStart = 0;
                     RuntimeUtil.buzzResult.put(team, true);
-                    stopBuzz(false, true);
+                    stopBuzz(true, false);
+                    Platform.runLater(() -> {
+                        previewPane.showBuzzResult(teams, true);
+                    });
                 }
-                return;
             }
             // 提前抢答
-
-            if (slipTime < timeGap) {
+            else if (slipTime < timeGap) {
+                // 防止其他人抢到
+                RuntimeUtil.buzzStart = 0;
                 RuntimeUtil.buzzResult.put(team, false);
                 RuntimeUtil.buzzTimeMap.put(team, slipTime - timeGap);
                 stopBuzz(false, true);
+                Platform.runLater(() -> {
+                    previewPane.showBuzzResult(teams, false);
+                });
             } else
-            // 超时，无人抢答，一般不会触发此逻辑
-//            if (slipTime > buzzLimit) {
-//
-//            } else if (slipTime <= buzzLimit)
             {
+                // 防止其他人抢到
+                RuntimeUtil.buzzStart = 0;
                 // 抢答成功
                 RuntimeUtil.buzzTimeMap.put(team, System.currentTimeMillis() - RuntimeUtil.buzzCalculate);
                 RuntimeUtil.buzzResult.put(team, true);
                 RuntimeUtil.buzzCalculate = 0;
                 stopBuzz(true, false);
+                Platform.runLater(() -> {
+                    previewPane.showBuzzResult(teams, true);
+                });
+
             }
         }
+
+        for (Teams t : TeamRuntime.getTeams()) {
+            t.setBuzzStatus(RuntimeUtil.buzzResult.getOrDefault(t.getShortName(), false));
+            t.setBuzzTime(NumberUtil.fix2Point(RuntimeUtil.buzzTimeMap.getOrDefault(t.getShortName(), 0L) * 0.001));
+        }
+        messageHandler.notifyPage("", null);
     }
 
     public void reloadScoreBoard(){

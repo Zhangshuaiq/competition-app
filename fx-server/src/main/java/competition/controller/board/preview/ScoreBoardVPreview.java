@@ -185,7 +185,7 @@ public class ScoreBoardVPreview extends PreviewPane implements BoardPane {
 
                 Color color = RuntimeUtil.buzzResult.getOrDefault(team.getShortName(), false)?Color.GREEN: Color.RED;
                 buzzPane.setBackground(new Background(new BackgroundFill(color, new CornerRadii(10), Insets.EMPTY)));
-                buzzTime.setFont(Font.font(12));
+                buzzTime.setFont(Font.font(ScreenAdapter.calculateMainX(12)));
                 buzzTime.setUnderline(Boolean.valueOf(split[5]));
                 buzzTime.setStrikethrough(Boolean.valueOf(split[2]));
                 if (Boolean.valueOf(split[3])) {

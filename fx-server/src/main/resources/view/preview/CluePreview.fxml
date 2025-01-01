@@ -34,5 +34,9 @@
                     onMouseClicked="#showClue"/>
         </StackPane>
 
+        <VBox fx:id="buzzBox" prefHeight="400.0" prefWidth="422.0" visible="false">
+
+        </VBox>
+
     </children>
 </AnchorPane>

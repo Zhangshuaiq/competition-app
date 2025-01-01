@@ -42,6 +42,8 @@ public class Navigator {
     public static final Stage timeBoardStage = new Stage();
     
     public static final Stage scoreBoardStage = new Stage();
+
+    //public static final Stage buzzBoardStage = new Stage();
     
 
     static {

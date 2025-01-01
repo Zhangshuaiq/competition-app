@@ -1,5 +1,7 @@
 package competition.controller.match;
 
+import competition.entity.Teams;
+import competition.util.RuntimeUtil;
 import javafx.scene.Node;
 import javafx.scene.layout.AnchorPane;
 
@@ -30,6 +32,12 @@ public interface ReloadPane {
     default void reloadStyle(){}
 
     default void hideTime(){}
+
+    default void showBuzzResult(Teams team, boolean success){
+    }
+
+    default void hideBuzzResult(){
+    }
     
     default void scrollUp(){}
     

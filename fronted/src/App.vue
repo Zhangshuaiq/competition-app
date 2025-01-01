@@ -54,6 +54,7 @@ export default {
       }
 
       this.$store.commit('setTeamsData', message.teams)
+      this.$store.commit('setBuzzStatus', message.buzzStatus)
     });
   }
 

@@ -1,5 +1,7 @@
 package competition.controller.match;
 
+import com.alibaba.fastjson2.JSON;
+import com.alibaba.fastjson2.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import competition.controller.ControlPane;
 import competition.entity.*;
@@ -8,7 +10,9 @@ import competition.mapper.StagesMapper;
 import competition.util.*;
 import javafx.fxml.FXML;
 import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.scene.Node;
+import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -35,6 +39,9 @@ import java.util.List;
 @Scope("prototype")
 public class QuestionPreview implements ReloadPane{
 
+
+    @FXML
+    private VBox buzzBox;
 
     @FXML
     private StackPane backPane, stagePane;
@@ -634,6 +641,95 @@ public class QuestionPreview implements ReloadPane{
 
         } else {
             backPane.setVisible(GlobalCache.showAnswer);
+        }
+    }
+
+
+    @Override
+    public void hideBuzzResult() {
+        buzzBox.setVisible(false);
+    }
+
+    @Override
+    public void showBuzzResult(Teams team, boolean success) {
+        buzzBox.setVisible(true);
+        buzzBox.getChildren().clear();
+        buzzBox.toFront();
+        Configs configs = configsMapper.selectById(10);
+        String config = configs.getConfig();
+        if (!StringUtils.isEmpty(config)) {
+            JSONObject jsonObject = JSON.parseObject(config);
+            Label xuhao = new Label(team.getCode());
+
+            xuhao.setAlignment(Pos.CENTER.CENTER);
+            String xuhaoFont = jsonObject.getOrDefault("xuhaoFont", "默认.ttf").toString();
+            double xuhaoSize =  ScreenAdapter.calculateExX(Double.parseDouble(jsonObject.getOrDefault("xuhaoSize", "12").toString()));
+            xuhao.setFont(FontMap.load(xuhaoFont, xuhaoSize));
+            xuhao.setTextFill(Color.valueOf(jsonObject.getOrDefault("xuhaoColor", "BLACK").toString()));
+
+            Label jiancheng = new Label(team.getShortName());
+            jiancheng.setAlignment(Pos.CENTER.CENTER);
+            String jianchengFont = jsonObject.getOrDefault("jianchengFont", "默认.ttf").toString();
+            double jianchengSize =  ScreenAdapter.calculateExX(Double.parseDouble(jsonObject.getOrDefault("jianchengSize", "12").toString()));
+            jiancheng.setFont(FontMap.load(jianchengFont, jianchengSize));
+            jiancheng.setTextFill(Color.valueOf(jsonObject.getOrDefault("shortColor", "BLACK").toString()));
+
+            Label quancheng = new Label(team.getFullName());
+            String quanchengFont = jsonObject.getOrDefault("quanchengFont", "默认.ttf").toString();
+            double quanchengSize =  ScreenAdapter.calculateExX(Double.parseDouble(jsonObject.getOrDefault("quanchengSize", "12").toString()));
+            quancheng.setAlignment(Pos.CENTER.CENTER);
+            quancheng.setFont(FontMap.load(quanchengFont, quanchengSize));
+            quancheng.setTextFill(Color.valueOf(jsonObject.getOrDefault("fullColor", "BLACK").toString()));
+
+
+            Label result = new Label();
+            result.setAlignment(Pos.CENTER.CENTER);
+            if (success) {
+                result.setText("抢答成功");
+                String successFont = jsonObject.getOrDefault("successFont", "默认.ttf").toString();
+                double successSize =  ScreenAdapter.calculateExX(Double.parseDouble(jsonObject.getOrDefault("successSize", "12").toString()));
+                result.setFont(FontMap.load(successFont,(successSize)));
+                result.setTextFill(Color.valueOf(jsonObject.getOrDefault("successColor", "BLACK").toString()));
+            } else {
+                result.setText("抢答失败");
+                String errorFont = jsonObject.getOrDefault("errorFont", "默认.ttf").toString();
+                double errorSize =  ScreenAdapter.calculateExX(Double.parseDouble(jsonObject.getOrDefault("errorSize", "12").toString()));
+                result.setFont(FontMap.load(errorFont, errorSize));
+                result.setTextFill(Color.valueOf(jsonObject.getOrDefault("failColor", "BLACK").toString()));
+            }
+
+            double width = ScreenAdapter.calculateExX(Double.parseDouble(jsonObject.getOrDefault("width", "200").toString()));
+            xuhao.setPrefWidth(width);
+            jiancheng.setPrefWidth(width);
+            quancheng.setPrefWidth(width);
+            result.setPrefWidth(width);
+
+            xuhao.setPadding(new Insets(10, 0, 10, 0));
+            jiancheng.setPadding(new Insets(10, 0, 10, 0));
+            quancheng.setPadding(new Insets(10, 0, 10, 0));
+            result.setPadding(new Insets(10, 0, 10, 0));
+
+            Color color = Color.valueOf(jsonObject.getOrDefault("backColor", "BLACK").toString());
+            buzzBox.setBackground(new Background(new BackgroundFill(color, new CornerRadii(8), null)));
+            buzzBox.setPrefWidth(width);
+            buzzBox.setPrefHeight(ScreenAdapter.calculateExY(Double.parseDouble(jsonObject.getOrDefault("height", "200").toString())));
+            buzzBox.setSpacing(ScreenAdapter.calculateExY(Double.parseDouble(jsonObject.getOrDefault("rowSpace", "10").toString())));
+            buzzBox.setLayoutX(ScreenAdapter.calculateExX(Double.parseDouble(jsonObject.getOrDefault("x", "200").toString())));
+            buzzBox.setLayoutY(ScreenAdapter.calculateExY(Double.parseDouble(jsonObject.getOrDefault("y", "200").toString())));
+
+            if (Boolean.parseBoolean(jsonObject.getOrDefault("xuhao", "false").toString())) {
+                buzzBox.getChildren().add(xuhao);
+            }
+
+            if (Boolean.parseBoolean(jsonObject.getOrDefault("jiancheng", "false").toString())) {
+                buzzBox.getChildren().add(jiancheng);
+            }
+
+            if (Boolean.parseBoolean(jsonObject.getOrDefault("quancheng", "false").toString())) {
+                buzzBox.getChildren().add(quancheng);
+            }
+
+            buzzBox.getChildren().add(result);
         }
     }
 

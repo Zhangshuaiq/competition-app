@@ -60,7 +60,7 @@ public class ScoreBoardH implements BoardPane {
     }
 
     private void show() {
-        int count = 2;
+
         ScoreStyle scoreStyle = scoreStyleMapper.selectById(1);
         String[] split = scoreStyle.getStyles().split(ConfigSpliter.SPLITER);
         Font font = FontMap.load(split[0], Integer.parseInt(split[1]));
@@ -81,6 +81,7 @@ public class ScoreBoardH implements BoardPane {
         Font statusFont = FontMap.load(FontMap.defaultFontName(), statusSize);
         List<Teams> teams = TeamRuntime.getTeams();
         for (Teams team : teams) {
+            int count = 2;
             VBox box = new VBox();
             box.setPrefWidth(ScreenAdapter.calculateExX(Integer.parseInt(cfgArr[19])));
             box.setSpacing(1);
@@ -134,6 +135,39 @@ public class ScoreBoardH implements BoardPane {
             box.getChildren().add(stackPane1);
 
 
+            // 抢答分时面板
+            if (RuntimeUtil.showBuzzBar) {
+                count ++;
+                Long timeVal = RuntimeUtil.buzzTimeMap.get(team.getShortName());
+                Text buzzTime = new Text("0");
+                if (timeVal != null) {
+                    buzzTime.setText(NumberUtil.fix2Point(timeVal * 0.001));
+                }
+                StackPane buzzPane = new StackPane();
+                buzzPane.setMaxHeight(Double.MAX_VALUE);
+                VBox.setVgrow(buzzPane, Priority.NEVER);
+
+                buzzPane.setPrefSize(ScreenAdapter.calculateMainX(Integer.parseInt(cfgArr[19])), ScreenAdapter.calculateMainY(Integer.parseInt(cfgArr[20])));
+                buzzTime.setTextAlignment(TextAlignment.CENTER);
+                buzzTime.setFill(Color.valueOf(cfgArr[21]));
+
+                Color color = RuntimeUtil.buzzResult.getOrDefault(team.getShortName(), false)?Color.GREEN: Color.RED;
+                buzzPane.setBackground(new Background(new BackgroundFill(color, new CornerRadii(10), Insets.EMPTY)));
+                buzzTime.setFont(Font.font(ScreenAdapter.calculateExX(12)));
+                buzzTime.setUnderline(Boolean.valueOf(split[5]));
+                buzzTime.setStrikethrough(Boolean.valueOf(split[2]));
+                if (Boolean.valueOf(split[3])) {
+                    buzzTime.setStroke(teamScore.getFill());
+                    buzzTime.setStrokeWidth(1);
+                } else {
+                    buzzTime.setStroke(null);
+
+                }
+                buzzTime.getTransforms().clear();
+                buzzPane.getChildren().add(buzzTime);
+                box.getChildren().add(buzzPane);
+            }
+
 
             // 面板分数调整（Model60 模式）
             Stages currentStage = controlPane.getCurrentStage();
@@ -143,7 +177,7 @@ public class ScoreBoardH implements BoardPane {
                 if (questionType == 6 && m6 == 0) {
                     List<Model60RuntimeData.ModelData> runtimeData = Model60RuntimeData.getRuntimeData();
                     Map<String, Model60RuntimeData.ModelData> answerMap = runtimeData.stream().collect(Collectors.toMap(x -> x.getTeamName(), x -> x));
-                    count = 3;
+                    count ++;
                     StackPane stackPane2 = new StackPane();
                     stackPane2.setPrefSize(ScreenAdapter.calculateExX(Integer.parseInt(cfgArr[19])), ScreenAdapter.calculateExY(Integer.parseInt(cfgArr[20])));
                     Model60RuntimeData.ModelData userData = answerMap.get(team.getFullName());
@@ -182,7 +216,7 @@ public class ScoreBoardH implements BoardPane {
                 else if (questionType == 6 && m6 == 1) {
                     List<Model61RuntimeData.ModelData> runtimeData = Model61RuntimeData.getRuntimeData();
                     Map<String, Model61RuntimeData.ModelData> dataMap = runtimeData.stream().collect(Collectors.toMap(x -> x.getTeamName() + "-" + x.getUserName(), x -> x));
-                    count = 3;
+                    count ++;
                     HBox memberStatus = new HBox();
                     memberStatus.setSpacing(1);
                     memberStatus.setPadding(new Insets(1, 1, 1,1));
@@ -228,11 +262,11 @@ public class ScoreBoardH implements BoardPane {
                     }
                 }
                 else if (questionType == 7) {
-                    count = 3;
+                    count ++;
                 }
 
             }
-            box.setPrefHeight(ScreenAdapter.calculateExY(Integer.parseInt(cfgArr[20]) * count + count * 10));
+            box.setPrefHeight(ScreenAdapter.calculateExX(Integer.parseInt(cfgArr[20]) * count + count - 1));
             container.getChildren().add(box);
         }
 //        CheckBox selectAll = new CheckBox("全选");
@@ -245,7 +279,6 @@ public class ScoreBoardH implements BoardPane {
 
 //            }
 //        });
-
 
         double prefWidth = ScreenAdapter.calculateExX(Double.parseDouble(cfgArr[19])) * teams.size() + container.getSpacing() * teams.size();
         container.setPrefWidth(prefWidth);

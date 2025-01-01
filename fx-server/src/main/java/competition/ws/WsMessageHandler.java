@@ -12,6 +12,7 @@ import competition.entity.Stages;
 import competition.entity.Teams;
 import competition.mapper.TeamsMapper;
 import competition.util.GlobalCache;
+import competition.util.RuntimeUtil;
 import competition.util.TeamRuntime;
 import javafx.application.Platform;
 import org.springframework.messaging.handler.annotation.MessageMapping;
@@ -154,6 +155,7 @@ public class WsMessageHandler {
         Map<String, Object> dataMap = new HashMap<>();
         dataMap.put("route", route);
         dataMap.put("data", data);
+        dataMap.put("buzzStatus", RuntimeUtil.showBuzzBar);
         dataMap.put("teams", TeamRuntime.getTeams());
         dataMap.put("stage", controlPane.getCurrentStage());
         messagingTemplate.convertAndSend(PAGE_TOPIC, JSON.toJSONString(dataMap));
@@ -228,10 +230,11 @@ public class WsMessageHandler {
         messagingTemplate.convertAndSend(QUESTION_TOPIC, JSON.toJSONString(dataMap));
     }
     
-    public void sendQuestionTime(String time) {
+    public void sendQuestionTime(String time, String isBuzz) {
         Map<String, String> dataMap = new HashMap<>();
         dataMap.put("type", "time");
         dataMap.put("data", time);
+        dataMap.put("isBuzz", isBuzz);
         messagingTemplate.convertAndSend(QUESTION_TOPIC, JSON.toJSONString(dataMap));
     }
 
