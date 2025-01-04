@@ -714,9 +714,9 @@ public class ControlPane {
 
         Buzz buzz = buzzMapper.selectById(1);
 
-        if ( currentStage == null || currentStage.getOpenQd() == null || currentStage.getOpenQd() != 1) {
-            return;
-        }
+//        if ( currentStage == null || currentStage.getOpenQd() == null || currentStage.getOpenQd() != 1) {
+//            return;
+//        }
 
 
         Platform.runLater(() -> {
@@ -727,7 +727,10 @@ public class ControlPane {
                 RuntimeUtil.showBuzzBar = false;
                 RuntimeUtil.buzzTimeMap.clear();
                 RuntimeUtil.buzzResult.clear();
-                reloadScoreBoard();
+                if (scoreBoardPreview != null) {
+                    reloadScoreBoard();
+                }
+
                 String mode = "直接抢答";
                 int timeLimit = 10;
                 if (buzz != null) {
