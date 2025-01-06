@@ -9,6 +9,7 @@ import competition.mapper.ConfigsMapper;
 import competition.util.BaseDir;
 import competition.util.FontMap;
 import competition.util.ImageResource;
+import competition.util.NumberUtil;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
@@ -74,7 +75,7 @@ public class BuzzConfig {
     private ColorPicker backColor, xuhaoColor, shortColor, fullColor, successColor, failColor;
 
     @FXML
-    private TextField xInput, yInput, widthInput, heightInput, spaceInput, xuhaoSize, jianchengSize, quanchengSize, successSize, errorSize;
+    private TextField xInput, xLoc, yLoc, yInput, widthInput, heightInput, spaceInput, xuhaoSize, jianchengSize, quanchengSize, successSize, errorSize;
 
     @FXML
     private ComboBox<String> xuhaoFont, jianchengFont, quanchengFont, successFont, errorFont;
@@ -137,6 +138,8 @@ public class BuzzConfig {
             buzzSpeedText.setText(String.valueOf(buzz.getSpeed()));
             speedAdjust.setValue(Double.valueOf(buzz.getSpeed()));
 
+            xLoc.setText(StringUtils.isEmpty(buzz.getX())? "0":buzz.getX());
+            yLoc.setText(StringUtils.isEmpty(buzz.getY())? "0":buzz.getY());
             fontUnderline.setSelected(buzz.getUnderline() != null && buzz.getUnderline() == 1);
             fontItic.setSelected(buzz.getItic() != null && buzz.getItic() == 1);
             fontColor.setValue(Color.valueOf(buzz.getColor()));
@@ -270,6 +273,8 @@ public class BuzzConfig {
         buzz.setLastSuccess(lastSuccessCheckSelected ? 1 : 0);
         buzz.setTimeLimit(Integer.parseInt(limitTextText));
         buzz.setBackground(text);
+        buzz.setX(xLoc.getText());
+        buzz.setY(yLoc.getText());
 
         if (exist) {
             buzzMapper.updateById(buzz);

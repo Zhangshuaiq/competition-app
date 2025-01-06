@@ -26,11 +26,24 @@ public class MusicResource {
 
     public static final String SHOW_QUESTION = BaseDir.MUSIC_DIR + "试题显示.mp3";
 
-    public static final String BUZZ_SUCCESS = BaseDir.MUSIC_DIR + "抢答" +  File.separator +  "成功.mp3";
+    public static final String BUZZ_SUCCESS(int teamCode) {
+        return BaseDir.MUSIC_DIR + "抢答" +  File.separator +  "成功" + File.separator + teamCode + "cg.mp3";
+    }
 
-    public static final String BUZZ_FAIL = BaseDir.MUSIC_DIR + "抢答" +  File.separator +  "违规.mp3";
+    public static final String BUZZ_FAIL(int teamCode) {
+        return BaseDir.MUSIC_DIR + "抢答" +  File.separator +  "失败" + File.separator + teamCode + "cg.mp3";
+    }
 
-    public static final String BUZZ_START = BaseDir.MUSIC_DIR + "抢答" +  File.separator +  "开始抢答.mp3";
+    public static final String BUZZ_TIME(int second) {
+        return BaseDir.MUSIC_DIR + "抢答" +  File.separator +  second + ".mp3";
+    }
 
-    public static final String BUZZ_STOP = BaseDir.MUSIC_DIR + "抢答" +  File.separator +  "抢答结束.mp3";
+
+   // public static final String BUZZ_SUCCESS = BaseDir.MUSIC_DIR + "抢答" +  File.separator +  "成功.mp3";
+
+   // public static final String BUZZ_FAIL = BaseDir.MUSIC_DIR + "抢答" +  File.separator +  "违规.mp3";
+
+    public static final String BUZZ_START = BaseDir.MUSIC_DIR + "抢答" +  File.separator +  "开始.mp3";
+
+    public static final String BUZZ_STOP = BaseDir.MUSIC_DIR + "抢答" +  File.separator +  "时间到请停止回答.mp3";
 }

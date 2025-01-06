@@ -8,4 +8,13 @@ public class NumberUtil {
         DecimalFormat df = new DecimalFormat("#.####");
         return df.format(number);
     }
+
+    public static boolean isNumber(String number) {
+        try {
+            Double.parseDouble(number);
+            return true;
+        } catch (NumberFormatException e) {
+            return false;
+        }
+    }
 }

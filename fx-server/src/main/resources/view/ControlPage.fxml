@@ -282,7 +282,7 @@
                   <Font size="10.0" />
                </font>
             </Button>
-            <Button layoutX="120.0" layoutY="6.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="80.0" text="抢答复位">
+            <Button layoutX="120.0" layoutY="6.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="80.0" text="抢答复位" onMouseClicked="#buzzReset">
                <font>
                   <Font size="10.0" />
                </font>

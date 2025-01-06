@@ -165,6 +165,14 @@ public class ControlPane {
     // 计时器
     private ReloadPane timeBoardPreview;
 
+    // 抢答计时器
+    private ReloadPane buzzTimeBoardPreview;
+
+    // 外屏幕端抢答计时器
+    private ReloadPane buzzTimeBoard;
+
+
+
     // 外屏幕端计分板
     private BoardPane scoreBoard;
     // 外屏幕端计时器
@@ -401,7 +409,7 @@ public class ControlPane {
                 } else if (event.getCode() == KeyCode.X) {
                     nextQuestion();
                 } else if (event.getCode() == KeyCode.T) {
-                    startTiming(-1, false,0);
+                    startTiming();
                 } else if (event.getCode() == KeyCode.R) {
                     timeReset();
                 } else if (event.getCode() == KeyCode.F) {
@@ -441,7 +449,7 @@ public class ControlPane {
                 } else if (event.getCode() == KeyCode.X) {
                     nextQuestion();
                 } else if (event.getCode() == KeyCode.T) {
-                    startTiming(-1, false,0);
+                    startTiming();
                 } else if (event.getCode() == KeyCode.R) {
                     timeReset();
                 } else if (event.getCode() == KeyCode.F) {
@@ -481,7 +489,7 @@ public class ControlPane {
                 } else if (event.getCode() == KeyCode.X) {
                     nextQuestion();
                 } else if (event.getCode() == KeyCode.T) {
-                    startTiming(-1, false,0);
+                    startTiming();
                 } else if (event.getCode() == KeyCode.R) {
                     timeReset();
                 } else if (event.getCode() == KeyCode.F) {
@@ -521,7 +529,7 @@ public class ControlPane {
                 } else if (event.getCode() == KeyCode.X) {
                     nextQuestion();
                 } else if (event.getCode() == KeyCode.T) {
-                    startTiming(-1, false,0);
+                    startTiming();
                 } else if (event.getCode() == KeyCode.R) {
                     timeReset();
                 } else if (event.getCode() == KeyCode.F) {
@@ -561,7 +569,7 @@ public class ControlPane {
                 } else if (event.getCode() == KeyCode.X) {
                     nextQuestion();
                 } else if (event.getCode() == KeyCode.T) {
-                    startTiming(-1, false,0);
+                    startTiming();
                 } else if (event.getCode() == KeyCode.R) {
                     timeReset();
                 } else if (event.getCode() == KeyCode.F) {
@@ -708,6 +716,17 @@ public class ControlPane {
     }
 
 
+    // 抢答复位
+    @FXML
+    public void buzzReset(){
+        RuntimeUtil.showBuzzBar = false;
+        buzzBtn.setText("开始抢答");
+        buzzBtn.setTextFill(Color.BLACK);
+        buzzBtn.setStyle("");
+        buzzTimeBoardPreview.close();
+        reloadScoreBoard();
+    }
+
     // 抢答按钮点击
     @FXML
     public void buzzClicked() {
@@ -737,7 +756,6 @@ public class ControlPane {
                     mode = buzz.getMode();
                     timeLimit = buzz.getTimeLimit();
                 }
-                previewPane.hideBuzzResult();
                 messageHandler.notifyPage("", null);
                 buzzBtn.setText("停止抢答");
                 buzzBtn.setTextFill(Color.WHITE);
@@ -745,14 +763,13 @@ public class ControlPane {
                 RuntimeUtil.buzzStart = System.currentTimeMillis();
                 if (!mode.equals("直接抢答")) {
                     // 倒计时
-                    startTiming(timeLimit, true,3);
+                    startBuzz(timeLimit, true,3);
+                } else {
+                    startBuzz(timeLimit, true, 0);
                 }
-                startTiming(timeLimit, true, 0);
             } else {
-                timeReset();
-                buzzBtn.setText("开始抢答");
-                buzzBtn.setTextFill(Color.BLACK);
-                buzzBtn.setStyle("");
+                //timeReset();
+                buzzReset();
             }
         });
 
@@ -1157,7 +1174,7 @@ public class ControlPane {
                             questions,
                             random
                     );
-                    startTiming(-1, false, 0);
+                    startTiming();
                     timeBoardPreview.hideTime();
                     //messageHandler.sendModel7Start();
                     // 扩展屏显示题目信息
@@ -1175,7 +1192,7 @@ public class ControlPane {
 ////                        }
 //                        //messageHandler.sendModel60Start();
 //                    }
-                    startTiming(-1, false, 0);
+                    startTiming();
                 }
                 startAnswerBtn.setText("停止答题");
                 lastQBtn.setDisable(true);
@@ -1263,15 +1280,9 @@ public class ControlPane {
 
     @FXML
     public void startTiming(){
-        startTiming(-1, false, 0);
-    }
-
-    public void startTiming(int passTime, boolean buzzBefore, int buzzTime) {
         parentPane.requestFocus();
         String text = timeSecondText.getText();
-        if (passTime > 0) {
-            time = passTime;
-        } else if (!StringUtils.isEmpty(text)) {
+        if (!StringUtils.isEmpty(text)) {
             time = Integer.parseInt(text);
         }
         if (timeBoardPreview == null) {
@@ -1284,28 +1295,37 @@ public class ControlPane {
                 // 未进入环节的情况下默认倒计时
                 timeBoardPreview.startTiming(false, time);
             } else {
-                if (currentStage == null) {
-                    timeBoardPreview.startTiming(false, time);
-                } else if (currentStage.getQuestionType() == 7) {
+                if (currentStage.getQuestionType() == 7) {
                     // 竞技答题强制正计时
                     timeBoardPreview.startTiming(true, time);
                 } else {
-                    if (buzzBefore) {
-                        if (buzzTime > 0) {
-                            timeBoardPreview.startBuzz(buzzTime, time);
-                        } else {
-                            timeBoardPreview.buzzTiming(time);
-                        }
-
-                    } else {
-                        timeBoardPreview.startTiming(currentStage.getOrderVal() == 1, time);
-                    }
+                    timeBoardPreview.startTiming(currentStage.getOrderVal() == 1, time);
                 }
             }
             timingBtn.setDisable(true);
             startAnswerBtn.setDisable(true);
         }
     }
+
+    public void startBuzz(int passTime, boolean buzzBefore, int buzzTime){
+        parentPane.requestFocus();
+        if (buzzTimeBoardPreview == null) {
+            buzzTimeBoardPreview = (ReloadPane) Navigator.buzzTimeWithPos("/view/board/preview/BuzzTimeBoard.fxml", "", "/view/style.css", true);
+        } else {
+            buzzTimeBoardPreview.shows();
+        }
+        if (buzzBefore) {
+            if (buzzTime > 0) {
+                buzzTimeBoardPreview.startBuzz(buzzTime, passTime);
+            } else {
+                buzzTimeBoardPreview.buzzTiming(passTime);
+            }
+
+        }
+    }
+
+
+
 
 
     @FXML
@@ -1546,11 +1566,12 @@ public class ControlPane {
     }
 
 
+    public void resetBuzzTime(){
+        stopBuzz(false, false);
+    }
+
     public void resetTimeBtn() {
         timingBtn.setDisable(false);
-        if (currentStage != null && currentStage.getOpenQd() == 1) {
-            stopBuzz(false, false);
-        }
     }
 
 
@@ -2362,7 +2383,7 @@ public class ControlPane {
             return;
         }
         RuntimeUtil.showBuzzBar = false;
-        previewPane.hideBuzzResult();
+       // previewPane.hideBuzzResult();
         messageHandler.notifyPage("", null);
         reloadScoreBoard();
         GlobalCache.showAnswer = false;
@@ -2393,7 +2414,7 @@ public class ControlPane {
                 return;
             }
             RuntimeUtil.showBuzzBar = false;
-            previewPane.hideBuzzResult();
+            //previewPane.hideBuzzResult();
             messageHandler.notifyPage("", null);
             reloadScoreBoard();
             GlobalCache.showAnswer = false;
@@ -2579,6 +2600,10 @@ public class ControlPane {
         return timeBoardPreview;
     }
 
+    public ReloadPane getBuzzTimeBoardPreview() {
+        return buzzTimeBoardPreview;
+    }
+
     public BoardPane getScoreBoardPreview() {
         return scoreBoardPreview;
     }
@@ -2594,6 +2619,15 @@ public class ControlPane {
 
     public void setScoreBoard(BoardPane scoreBoard) {
         this.scoreBoard = scoreBoard;
+    }
+
+
+    public void setBuzzTimeBoard(ReloadPane buzzTimeBoard) {
+        this.buzzTimeBoard = buzzTimeBoard;
+    }
+
+    public void setBuzzTimeBoardPreview(ReloadPane buzzTimeBoardPreview) {
+        this.buzzTimeBoardPreview = buzzTimeBoardPreview;
     }
 
     public void setTimeBoard(ReloadPane timeBoard) {
@@ -2688,7 +2722,9 @@ public class ControlPane {
                     RuntimeUtil.buzzResult.put(team, true);
                     stopBuzz(true, false);
                     Platform.runLater(() -> {
-                        previewPane.showBuzzResult(teams, true);
+                        //previewPane.showBuzzResult(teams, true);
+                        BuzzResultPreview.setTeams(teams, true);
+                        Navigator.buzzResult("/view/preview/BuzzResult.fxml", "", "/view/style.css", true);
                     });
                 }
             }
@@ -2700,7 +2736,9 @@ public class ControlPane {
                 RuntimeUtil.buzzTimeMap.put(team, slipTime - timeGap);
                 stopBuzz(false, true);
                 Platform.runLater(() -> {
-                    previewPane.showBuzzResult(teams, false);
+                    //previewPane.showBuzzResult(teams, false);
+                    BuzzResultPreview.setTeams(teams, false);
+                    Navigator.buzzResult("/view/preview/BuzzResult.fxml", "", "/view/style.css", true);
                 });
             } else
             {
@@ -2712,7 +2750,9 @@ public class ControlPane {
                 RuntimeUtil.buzzCalculate = 0;
                 stopBuzz(true, false);
                 Platform.runLater(() -> {
-                    previewPane.showBuzzResult(teams, true);
+                   // previewPane.showBuzzResult(teams, true);
+                    BuzzResultPreview.setTeams(teams, true);
+                    Navigator.buzzResult("/view/preview/BuzzResult.fxml", "", "/view/style.css", true);
                 });
 
             }
@@ -2776,4 +2816,7 @@ public class ControlPane {
         }
     }
 
+    public ReloadPane getBuzzTimeBoard() {
+        return buzzTimeBoard;
+    }
 }

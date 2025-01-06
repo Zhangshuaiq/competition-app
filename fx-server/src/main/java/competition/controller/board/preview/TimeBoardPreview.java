@@ -49,67 +49,6 @@ public class TimeBoardPreview extends PreviewPane {
     private WsMessageHandler messageHandler;
 
 
-    @Override
-    public void startBuzz(int time, int limitTime) {
-        // 避免二次运行
-        if (timeline != null) {
-            if (timeline.getStatus() == Animation.Status.RUNNING) {
-                return;
-            }
-        }
-        // 抢答开始等待时间
-        this.timeVal = time;
-        this.timeValue = format(timeVal);
-        messageHandler.sendQuestionTime(this.timeVal + "", "true");
-        teamScore.setVisible(true);
-        teamScore.setText(timeValue);
-        timeline = new Timeline(new KeyFrame(Duration.seconds(1), e -> {
-            int alertValue = Integer.parseInt(controlPane.getAlertTime());
-            timeVal--;
-            if (timeVal == 0) {
-                timeline.stop();
-                timeline = null;
-                MusicPlayer.playWithCallback(MusicResource.BUZZ_START, () -> {
-                    RuntimeUtil.buzzCalculate = System.currentTimeMillis();
-                    buzzTiming(limitTime);
-                });
-
-
-            } else {
-                if (timeVal <= alertValue) {
-                    MusicPlayer.play(MusicResource.SECOND_PREFIX + timeVal + ".mp3");
-                }
-            }
-            this.timeValue = format(timeVal);
-            messageHandler.sendQuestionTime(timeVal + "", "true");
-            messageHandler.sendModel7Time(timeVal + "");
-            for (int i = 0; i < Model7RuntimeData.getSeconds().size(); i++) {
-                Model7RuntimeData.getTimes().set(i, timeValue.replace(":", "分") + "秒");
-                if (!Model7RuntimeData.getFinished().get(i)) {
-                    Model7RuntimeData.getSeconds().set(i, timeVal);
-                    Model7RuntimeData.getFts().set(i, timeValue.replace(":", "分") + "秒");
-                }
-            }
-
-            // 团队模式更新时间数值
-//            Model60RuntimeData.freshTime(timeVal);
-//            Model61RuntimeData.freshTime(timeVal);
-
-            PreviewStack.reload(this.timeVal, this.timeValue);
-            showData();
-        }));
-        ReloadPane timeBoard = controlPane.getTimeBoard();
-        if (timeBoard == null) {
-            timeBoard = (ReloadPane) ExtendedScreen.timeWithPos("/view/board/match/TimeBoard.fxml", "", "/view/style.css", true);
-        }
-        if (timeBoard != null) {
-            controlPane.setTimeBoard(timeBoard);
-            timeBoard.shows();
-            timeBoard.reload(timeVal, timeValue);
-        }
-        timeline.setCycleCount(-1);
-        timeline.playFromStart();
-    }
 
     @Override
     public void hideTime() {
@@ -195,66 +134,6 @@ public class TimeBoardPreview extends PreviewPane {
 
     }
 
-    public void buzzTiming(int time) {
-        // 避免二次运行
-        if (timeline != null) {
-            if (timeline.getStatus() == Animation.Status.RUNNING) {
-                return;
-            }
-        }
-        this.timeVal = time;
-        this.timeValue = format(timeVal);
-        messageHandler.sendQuestionTime(this.timeVal + "", "true");
-        teamScore.setVisible(true);
-        teamScore.setText(timeValue);
-        timeline = new Timeline(new KeyFrame(Duration.seconds(1), e -> {
-            int alertValue = Integer.parseInt(controlPane.getAlertTime());
-            timeVal--;
-            if (timeVal == 0) {
-//                MusicPlayer.playWithCallback(MusicResource.BUZZ_STOP, () -> {
-//                    controlPane.reloadScoreBoard();
-//                });
-                close();
-                controlPane.resetTimeBtn();
-            } else {
-                if (timeVal <= alertValue) {
-                    MusicPlayer.play(MusicResource.SECOND_PREFIX + timeVal + ".mp3");
-                }
-            }
-            this.timeValue = format(timeVal);
-            messageHandler.sendQuestionTime(timeVal + "", "true");
-            messageHandler.sendModel7Time(timeVal + "");
-//            for (int i = 0; i < Model7RuntimeData.getSeconds().size(); i++) {
-//                Model7RuntimeData.getTimes().set(i, timeValue.replace(":", "分") + "秒");
-//                if (!Model7RuntimeData.getFinished().get(i)) {
-//                    Model7RuntimeData.getSeconds().set(i, timeVal);
-//                    Model7RuntimeData.getFts().set(i, timeValue.replace(":", "分") + "秒");
-//                }
-//            }
-
-            // 团队模式更新时间数值
-           // Model60RuntimeData.freshTime(timeVal);
-           // Model61RuntimeData.freshTime(timeVal);
-
-            // 已结束
-            if(timeline == null) {
-                controlPane.stopOnTime();
-            }
-            PreviewStack.reload(this.timeVal, this.timeValue);
-            showData();
-        }));
-        ReloadPane timeBoard = controlPane.getTimeBoard();
-        if (timeBoard == null) {
-            timeBoard = (ReloadPane) ExtendedScreen.timeWithPos("/view/board/match/TimeBoard.fxml", "", "/view/style.css", true);
-        }
-        if (timeBoard != null) {
-            controlPane.setTimeBoard(timeBoard);
-            timeBoard.shows();
-            timeBoard.reload(timeVal, timeValue);
-        }
-        timeline.setCycleCount(-1);
-        timeline.playFromStart();
-    }
 
     @Override
     public void startTiming(boolean order, int time) {

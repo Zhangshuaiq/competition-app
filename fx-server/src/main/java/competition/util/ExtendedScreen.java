@@ -1,8 +1,12 @@
 package competition.util;
 
+import com.alibaba.fastjson2.JSON;
+import com.alibaba.fastjson2.JSONObject;
 import competition.JavaFxApplication;
 import competition.controller.board.preview.ScoreBoardVPreview;
+import competition.entity.Buzz;
 import competition.entity.Configs;
+import competition.mapper.BuzzMapper;
 import competition.mapper.ConfigsMapper;
 import javafx.collections.ObservableList;
 import javafx.event.EventHandler;
@@ -29,7 +33,12 @@ public class ExtendedScreen {
 
     public static final Stage timeBoardStage = new Stage();
 
+    // 抢答计时器面板
+    public static final Stage buzzTimeBoardStage = new Stage();
+
     public static final Stage scoreBoardStage = new Stage();
+
+    public static final Stage buzzBoardStage = new Stage();
     
     public static final Stage videoStage = new Stage();
     
@@ -39,6 +48,13 @@ public class ExtendedScreen {
         extendScreen.initStyle(StageStyle.TRANSPARENT);
         timeBoardStage.initStyle(StageStyle.TRANSPARENT);
         timeBoardStage.setAlwaysOnTop(true);
+
+        buzzTimeBoardStage.setAlwaysOnTop(true);
+        buzzTimeBoardStage.initStyle(StageStyle.TRANSPARENT);
+
+        buzzBoardStage.initStyle(StageStyle.TRANSPARENT);
+        buzzBoardStage.setAlwaysOnTop(true);
+
         scoreBoardStage.setAlwaysOnTop(true);
         scoreBoardStage.initStyle(StageStyle.TRANSPARENT);
         videoStage.initStyle(StageStyle.TRANSPARENT);
@@ -131,7 +147,7 @@ public class ExtendedScreen {
     }
 
 
-    public static Object timeWithPos(String fxml, String title, String cssFile, boolean hiddenControl){
+    public static Object buzzResult(String fxml, String title, String cssFile, boolean hiddenControl){
         Parent load = null;
         try {
 
@@ -142,6 +158,111 @@ public class ExtendedScreen {
             ConfigurableApplicationContext applicationContext = JavaFxApplication.getApplicationContext();
             ConfigsMapper configsMapper = applicationContext.getBean(ConfigsMapper.class);
             Configs configs = configsMapper.selectById(1);
+            loader.setControllerFactory(applicationContext::getBean);
+            load = loader.load();
+            Stage stage = buzzBoardStage;
+
+            // 没有扩展屏
+            if (Screen.getScreens().size() < 2) {
+                return null;
+            }
+            Screen extendedScreen = Screen.getScreens().get(1); // 假设扩展屏是列表中的第二个
+            Rectangle2D bounds = extendedScreen.getVisualBounds();
+            String config = configs.getConfig();
+            if (!StringUtils.isEmpty(config)) {
+                JSONObject jsonObject = JSON.parseObject(config);
+                stage.setX(bounds.getMinX() + ScreenAdapter.calculateExX(Double.parseDouble(jsonObject.getOrDefault("x", "0").toString())));
+                stage.setY(bounds.getMinY() + ScreenAdapter.calculateExY(Double.parseDouble(jsonObject.getOrDefault("y", "0").toString())));
+            }
+            // 将窗口定位到扩展屏
+            stage.setTitle(title);
+            Scene  scene = new Scene(load, Color.TRANSPARENT);
+            if (hiddenControl) {
+                //stage.initStyle(StageStyle.TRANSPARENT);
+            }
+            load.setOnMousePressed(event -> {
+                xOffset.set(event.getSceneX());
+                yOffset.set(event.getSceneY());
+            });
+
+            // 拖动时更新窗口位置
+            load.setOnMouseDragged(event -> {
+                stage.setX(event.getScreenX() - xOffset.get());
+                stage.setY(event.getScreenY() - yOffset.get());
+            });
+
+
+
+            scene.getStylesheets().add(cssFile); // 应用 CSS
+
+            stage.setScene(scene);
+            stage.show();
+            return loader.getController();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+
+    public static Object buzzTimeWithPos(String fxml, String title, String cssFile, boolean hiddenControl){
+        Parent load = null;
+        try {
+
+            AtomicReference<Double> xOffset = new AtomicReference<>((double) 0);
+            AtomicReference<Double> yOffset = new AtomicReference<>((double) 0);
+
+            FXMLLoader loader = new FXMLLoader(Navigator.class.getResource(fxml));
+            ConfigurableApplicationContext applicationContext = JavaFxApplication.getApplicationContext();
+            BuzzMapper configsMapper = applicationContext.getBean(BuzzMapper.class);
+            Buzz configs = configsMapper.selectById(1);
+            load = loader.load();
+            Stage stage = buzzTimeBoardStage;
+
+            if (configs != null) {
+                stage.setX(ScreenAdapter.calculateExX(Double.parseDouble(configs.getX())));
+                stage.setY(ScreenAdapter.calculateExY(Double.parseDouble(configs.getY())));
+            }
+
+            stage.setTitle(title);
+            Scene  scene = new Scene(load, Color.TRANSPARENT);
+            if (hiddenControl) {
+                //stage.initStyle(StageStyle.TRANSPARENT);
+            }
+            load.setOnMousePressed(event -> {
+                xOffset.set(event.getSceneX());
+                yOffset.set(event.getSceneY());
+            });
+
+            // 拖动时更新窗口位置
+            load.setOnMouseDragged(event -> {
+                stage.setX(event.getScreenX() - xOffset.get());
+                stage.setY(event.getScreenY() - yOffset.get());
+            });
+
+            scene.getStylesheets().add(cssFile); // 应用 CSS
+
+            stage.setScene(scene);
+            stage.show();
+            return loader.getController();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+
+    public static Object timeWithPos(String fxml, String title, String cssFile, boolean hiddenControl){
+        Parent load = null;
+        try {
+
+            AtomicReference<Double> xOffset = new AtomicReference<>((double) 0);
+            AtomicReference<Double> yOffset = new AtomicReference<>((double) 0);
+
+            FXMLLoader loader = new FXMLLoader(Navigator.class.getResource(fxml));
+            ConfigurableApplicationContext applicationContext = JavaFxApplication.getApplicationContext();
+            ConfigsMapper configsMapper = applicationContext.getBean(ConfigsMapper.class);
+            Configs configs = configsMapper.selectById(10);
             loader.setControllerFactory(applicationContext::getBean);
             load = loader.load();
             Stage stage = timeBoardStage;

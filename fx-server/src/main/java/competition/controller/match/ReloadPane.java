@@ -33,11 +33,11 @@ public interface ReloadPane {
 
     default void hideTime(){}
 
-    default void showBuzzResult(Teams team, boolean success){
-    }
-
-    default void hideBuzzResult(){
-    }
+//    default void showBuzzResult(Teams team, boolean success){
+//    }
+//
+//    default void hideBuzzResult(){
+//    }
     
     default void scrollUp(){}
     

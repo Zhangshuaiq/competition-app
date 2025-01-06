@@ -39,4 +39,8 @@ public class Buzz {
     private Integer itic;
 
     private Integer underline;
+
+    private String x;
+
+    private String y;
 }
