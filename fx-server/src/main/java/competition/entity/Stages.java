@@ -69,6 +69,7 @@ public class Stages {
 
     private Integer qdDesc;
 
+
     public void setQdDesc(Integer qdDesc) {
         this.qdDesc = qdDesc;
     }

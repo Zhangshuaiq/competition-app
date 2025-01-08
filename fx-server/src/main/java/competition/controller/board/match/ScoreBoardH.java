@@ -141,7 +141,7 @@ public class ScoreBoardH implements BoardPane {
                 Long timeVal = RuntimeUtil.buzzTimeMap.get(team.getShortName());
                 Text buzzTime = new Text("0");
                 if (timeVal != null) {
-                    buzzTime.setText(NumberUtil.fix2Point(timeVal * 0.001));
+                    buzzTime.setText(NumberUtil.fix2Point(timeVal / 1000000000.0));
                 }
                 StackPane buzzPane = new StackPane();
                 buzzPane.setMaxHeight(Double.MAX_VALUE);

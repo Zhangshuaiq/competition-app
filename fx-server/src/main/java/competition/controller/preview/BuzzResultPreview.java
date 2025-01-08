@@ -2,9 +2,14 @@ package competition.controller.preview;
 
 import com.alibaba.fastjson2.JSON;
 import com.alibaba.fastjson2.JSONObject;
+import competition.JavaFxApplication;
+import competition.controller.ControlPane;
+import competition.controller.match.BuzzResult;
+import competition.controller.match.CluePreview;
 import competition.entity.Configs;
 import competition.entity.Teams;
 import competition.mapper.ConfigsMapper;
+import competition.util.ExtendedScreen;
 import competition.util.FontMap;
 import competition.util.ScreenAdapter;
 import javafx.fxml.FXML;
@@ -30,8 +35,6 @@ public class BuzzResultPreview extends PreviewPane{
     @FXML
     private VBox container;
 
-    @Resource
-    private ConfigsMapper configsMapper;
 
     private static Teams teams;
 
@@ -57,6 +60,17 @@ public class BuzzResultPreview extends PreviewPane{
         if (inner == null) {
             return;
         }
+
+        if (ExtendedScreen.hasShow()) {
+            BuzzResult.setTeams(inner, innerStatus);
+            Object res = ExtendedScreen.buzzResult("/view/match/BuzzResult.fxml", "", "/view/style.css", true);
+            if (res != null) {
+                ControlPane controlPane = JavaFxApplication.getApplicationContext().getBean(ControlPane.class);
+                controlPane.setBuzzResult((BuzzResult) res);
+            }
+        }
+
+        ConfigsMapper configsMapper = JavaFxApplication.getApplicationContext().getBean(ConfigsMapper.class);
         Configs configs = configsMapper.selectById(10);
         String config = configs.getConfig();
         if (!StringUtils.isEmpty(config)) {

@@ -26,12 +26,12 @@ public class MusicResource {
 
     public static final String SHOW_QUESTION = BaseDir.MUSIC_DIR + "试题显示.mp3";
 
-    public static final String BUZZ_SUCCESS(int teamCode) {
+    public static final String BUZZ_SUCCESS(String teamCode) {
         return BaseDir.MUSIC_DIR + "抢答" +  File.separator +  "成功" + File.separator + teamCode + "cg.mp3";
     }
 
-    public static final String BUZZ_FAIL(int teamCode) {
-        return BaseDir.MUSIC_DIR + "抢答" +  File.separator +  "失败" + File.separator + teamCode + "cg.mp3";
+    public static final String BUZZ_FAIL(String teamCode) {
+        return BaseDir.MUSIC_DIR + "抢答" +  File.separator +  "失败" + File.separator + teamCode + "fg.mp3";
     }
 
     public static final String BUZZ_TIME(int second) {

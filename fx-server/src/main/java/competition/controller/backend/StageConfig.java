@@ -236,10 +236,9 @@ public class StageConfig {
         });
 
         paChoice.getItems().addAll("直接抢答",
-                "1秒后第一个抢答成功,提前为违规",
-                "3秒后第一个抢答成功,提前为违规",
-                "4秒后第一个抢答成功,提前为违规",
-                "5秒后第一个抢答成功,提前为违规");
+                "标准模式",
+                "淘汰模式"
+        );
 
         ruleChoice.valueProperty().addListener(new ChangeListener<String>() {
             @Override
@@ -279,10 +278,6 @@ public class StageConfig {
     }
     
     private void nextStageData(List<Stages> firstStages, VBox firstBox, int level) throws FileNotFoundException {
-//        if (CollectionUtils.isEmpty(firstStages)) {
-//            return;
-//        }
-       
         for (int i = 0; i < firstStages.size(); i++) {
             Stages stage = firstStages.get(i);
 //            if (recorded.contains(stage.getId())) {

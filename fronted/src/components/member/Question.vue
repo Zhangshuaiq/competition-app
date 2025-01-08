@@ -140,6 +140,7 @@ export default {
 
   data(){
     return {
+      buzzStatus: false,
       isResourceAvailable: false,
       retryTimer: null, // 用于重试逻辑的计时器
       retryInterval: 500, // 重试间隔时间，例如5秒
@@ -173,7 +174,11 @@ export default {
           this.isResourceAvailable = false;
         }
       });
-    }
+    },
+
+    '$store.state.buzzStatus': function (newStatus) {
+      this.buzzStatus = newStatus
+    },
   },
 
   computed: {
@@ -187,7 +192,7 @@ export default {
 
     qdBoxStyle(){
       return {
-        visibility: (this.stage.openQd && this.second >= 0) ? 'visible' : 'hidden',
+        visibility: (this.stage.openQd === 1 && !this.buzzStatus) ? 'visible' : 'hidden',
       }
     }
   },
@@ -251,6 +256,7 @@ export default {
 
   beforeRouteUpdate(to, from, next) {
     const data = this.$store.state.data
+    this.stage = this.$store.state.stage
     this.answerUrl  = ''
     this.isResourceAvailable = false;
     this.questionItem = data
@@ -259,7 +265,6 @@ export default {
     } else if (this.questionItem.resourceType === '视频') {
       this.resourceUrl = `${baseUrl}/resource/${this.questionItem.resource}`
     }
-    console.log(this.resourceUrl)
     this.showResult = false
 
     next();

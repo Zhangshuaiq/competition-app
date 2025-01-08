@@ -157,7 +157,7 @@ public class ExtendedScreen {
             FXMLLoader loader = new FXMLLoader(Navigator.class.getResource(fxml));
             ConfigurableApplicationContext applicationContext = JavaFxApplication.getApplicationContext();
             ConfigsMapper configsMapper = applicationContext.getBean(ConfigsMapper.class);
-            Configs configs = configsMapper.selectById(1);
+            Configs configs = configsMapper.selectById(10);
             loader.setControllerFactory(applicationContext::getBean);
             load = loader.load();
             Stage stage = buzzBoardStage;
@@ -218,10 +218,11 @@ public class ExtendedScreen {
             Buzz configs = configsMapper.selectById(1);
             load = loader.load();
             Stage stage = buzzTimeBoardStage;
-
+            Screen extendedScreen = Screen.getScreens().get(1); // 假设扩展屏是列表中的第二个
+            Rectangle2D bounds = extendedScreen.getVisualBounds();
             if (configs != null) {
-                stage.setX(ScreenAdapter.calculateExX(Double.parseDouble(configs.getX())));
-                stage.setY(ScreenAdapter.calculateExY(Double.parseDouble(configs.getY())));
+                stage.setX(bounds.getMinX() + ScreenAdapter.calculateExX(Double.parseDouble(configs.getX())));
+                stage.setY(bounds.getMinY() + ScreenAdapter.calculateExY(Double.parseDouble(configs.getY())));
             }
 
             stage.setTitle(title);

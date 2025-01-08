@@ -6,12 +6,16 @@ import javafx.util.Duration;
 
 import java.io.File;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.Map;
+import java.util.Queue;
 
 public class MusicPlayer {
 
    // private static Map<String, MediaPlayer> musicsMap = new HashMap<>();
     private static MediaPlayer mediaPlayer; // 单一实例
+
+    private static Queue<String> mediaQueue = new LinkedList<>();
 
     static {
 //        load(MusicResource.SECOND_5);
@@ -121,5 +125,52 @@ public class MusicPlayer {
             e.printStackTrace();
         }
        
+    }
+
+
+
+    public static void playQueued(String path) {
+        if (!new File(path).exists()) {
+            System.out.println("File does not exist: " + path);
+            return;
+        }
+
+        // 将文件加入队列
+        mediaQueue.offer(path);
+
+        // 如果没有正在播放的媒体，则启动播放
+        playNext();
+    }
+
+    private static void playNext() {
+        String nextPath = mediaQueue.poll();
+        if (nextPath == null) {
+            System.out.println("Queue is empty. Playback finished.");
+            return; // 队列为空，停止播放
+        }
+
+        if (mediaPlayer != null) {
+            mediaPlayer.stop(); // 如果已有实例在播放，先停止
+            mediaPlayer.dispose(); // 释放旧的资源
+        }
+
+        try {
+            Media media = new Media(new File(nextPath).toURI().toString());
+            mediaPlayer = new MediaPlayer(media);
+
+            mediaPlayer.setOnEndOfMedia(() -> {
+                playNext(); // 播放下一个文件
+            });
+
+            mediaPlayer.setOnError(() -> {
+                System.err.println("Error occurred while playing: " + nextPath);
+                playNext(); // 播放下一个文件
+            });
+
+            mediaPlayer.play();
+        } catch (Exception e) {
+            e.printStackTrace();
+            playNext(); // 播放下一个文件
+        }
     }
 }

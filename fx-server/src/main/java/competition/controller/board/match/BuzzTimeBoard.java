@@ -1,11 +1,15 @@
 package competition.controller.board.match;
 
 import competition.JavaFxApplication;
+import competition.controller.ControlPane;
 import competition.controller.match.ReloadPane;
+import competition.entity.Buzz;
 import competition.entity.Configs;
+import competition.mapper.BuzzMapper;
 import competition.mapper.ConfigsMapper;
 import competition.util.ConfigSpliter;
 import competition.util.FontMap;
+import competition.util.ScreenAdapter;
 import javafx.fxml.FXML;
 import javafx.geometry.Insets;
 import javafx.scene.layout.AnchorPane;
@@ -24,7 +28,7 @@ public class BuzzTimeBoard implements ReloadPane {
     @FXML
     private AnchorPane container;
 
-    private String timeValue = "00秒";
+    private String timeValue = "0";
 
 
     private int timeVal;
@@ -49,50 +53,46 @@ public class BuzzTimeBoard implements ReloadPane {
 
     @Override
     public void reload(int time, String timeTxt) {
+
         this.timeVal = time;
         this.timeValue = timeTxt;
-        Configs configs = configsMapper.selectById(1);
-        String config = configs.getConfig();
-        String[] split = config.split(ConfigSpliter.SPLITER);
+        BuzzMapper buzzMapper = JavaFxApplication.getApplicationContext().getBean(BuzzMapper.class);
+        Buzz buzz = buzzMapper.selectById(1);
         teamScore.setTextAlignment(TextAlignment.CENTER);
+        teamScore.setFont(FontMap.load(buzz.getFont(), ScreenAdapter.calculateMainX(buzz.getFontSize())));
 
-        teamScore.setFont(FontMap.load(split[33], Integer.parseInt(split[24])));
-        teamScore.setFill(Color.valueOf(split[23]));
-        if (split.length >= 35) {
-            stackPane.setBackground(new Background(new BackgroundFill(Color.valueOf(split[34]), CornerRadii.EMPTY, Insets.EMPTY)));
-        }
+        teamScore.setFill(Color.valueOf(buzz.getColor()));
+        teamScore.setText(timeValue);
+        // stackPane.setBackground(new Background(new BackgroundFill(Color.valueOf(b), CornerRadii.EMPTY, Insets.EMPTY)));
 
-        if (split.length >= 36) {
-            if (Boolean.parseBoolean(split[35])) {
-                teamScore.setStroke(teamScore.getFill());
-                teamScore.setStrokeWidth(1);
-            } else {
-                teamScore.setStroke(null);
-            }
+        if (1 == (buzz.getBold())) {
+            teamScore.setStroke(teamScore.getFill());
+            teamScore.setStrokeWidth(1);
+        } else {
+            teamScore.setStroke(null);
         }
         showData();
     }
 
     @Override
     public void reload() {
-        Configs configs = configsMapper.selectById(1);
-        String config = configs.getConfig();
-        String[] split = config.split(ConfigSpliter.SPLITER);
+
+        BuzzMapper buzzMapper = JavaFxApplication.getApplicationContext().getBean(BuzzMapper.class);
+        Buzz buzz = buzzMapper.selectById(1);
         teamScore.setTextAlignment(TextAlignment.CENTER);
-        teamScore.setFont(FontMap.load(split[33], Integer.parseInt(split[24])));
-        teamScore.setFill(Color.valueOf(split[23]));
-        if (split.length >= 35) {
-            stackPane.setBackground(new Background(new BackgroundFill(Color.valueOf(split[34]), CornerRadii.EMPTY, Insets.EMPTY)));
+        teamScore.setFont(FontMap.load(buzz.getFont(), ScreenAdapter.calculateMainX(buzz.getFontSize())));
+
+        teamScore.setFill(Color.valueOf(buzz.getColor()));
+        teamScore.setText(timeValue);
+        // stackPane.setBackground(new Background(new BackgroundFill(Color.valueOf(b), CornerRadii.EMPTY, Insets.EMPTY)));
+
+        if (1 == (buzz.getBold())) {
+            teamScore.setStroke(teamScore.getFill());
+            teamScore.setStrokeWidth(1);
+        } else {
+            teamScore.setStroke(null);
         }
 
-        if (split.length >= 36) {
-            if (Boolean.parseBoolean(split[35])) {
-                teamScore.setStroke(teamScore.getFill());
-                teamScore.setStrokeWidth(1);
-            } else {
-                teamScore.setStroke(null);
-            }
-        }
         showData();
     }
 
@@ -102,25 +102,7 @@ public class BuzzTimeBoard implements ReloadPane {
     }
 
     private String format(int timeVal) {
-        int minute = timeVal / 60;
-        int seconds = timeVal % 60;
-        if (minute > 9) {
-            if (seconds >= 10) {
-                return minute + ":" + seconds;
-            }
-            return minute + ":0" + seconds;
-        }
-        if (minute > 0) {
-            if (seconds >= 10) {
-                return "0" + minute + ":" + seconds;
-            }
-            return "0" + minute + ":0" + seconds;
-        } else {
-            if (seconds >= 10) {
-                return "00:" + seconds;
-            }
-            return "00:0" + seconds;
-        }
+        return timeVal + "";
     }
 
     @Override

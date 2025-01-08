@@ -55,14 +55,21 @@ public class BuzzTimeBoardPreview extends PreviewPane {
     private Text teamScore = new Text();
 
     private ControlPane controlPane;
-    
-
 
 
     @Override
     public void startBuzz(int time, int limitTime) {
 
         showData();
+
+        BuzzMapper buzzMapper = JavaFxApplication.getApplicationContext().getBean(BuzzMapper.class);
+        Buzz buzz = buzzMapper.selectById(1);
+        double speed = 1.0;
+        try {
+            speed =  Double.parseDouble(buzz.getSpeed());
+        } catch (Exception ex) {
+            System.out.println("抢答速率设置错误");
+        }
         // 避免二次运行
         if (timeline != null) {
             if (timeline.getStatus() == Animation.Status.RUNNING) {
@@ -74,14 +81,14 @@ public class BuzzTimeBoardPreview extends PreviewPane {
         this.timeValue = format(timeVal);
         teamScore.setVisible(true);
         teamScore.setText(timeValue);
-        timeline = new Timeline(new KeyFrame(Duration.seconds(1), e -> {
+        timeline = new Timeline(new KeyFrame(Duration.seconds(speed), e -> {
             int alertValue = Integer.parseInt(controlPane.getAlertTime());
             timeVal--;
             if (timeVal == 0) {
                 timeline.stop();
                 timeline = null;
                 MusicPlayer.playWithCallback(MusicResource.BUZZ_START, () -> {
-                    RuntimeUtil.buzzCalculate = System.currentTimeMillis();
+                    RuntimeUtil.buzzCalculate = System.nanoTime();
                     buzzTiming(limitTime);
                 });
 
@@ -138,19 +145,17 @@ public class BuzzTimeBoardPreview extends PreviewPane {
         Buzz buzz = buzzMapper.selectById(1);
         teamScore.setTextAlignment(TextAlignment.CENTER);
         teamScore.setFont(FontMap.load(buzz.getFont(), ScreenAdapter.calculateMainX(buzz.getFontSize())));
-        
+
         teamScore.setFill(Color.valueOf(buzz.getColor()));
         teamScore.setText(timeValue);
-       // stackPane.setBackground(new Background(new BackgroundFill(Color.valueOf(b), CornerRadii.EMPTY, Insets.EMPTY)));
+        // stackPane.setBackground(new Background(new BackgroundFill(Color.valueOf(b), CornerRadii.EMPTY, Insets.EMPTY)));
 
-            if (1 == (buzz.getBold())) {
-                teamScore.setStroke(teamScore.getFill());
-                teamScore.setStrokeWidth(1);
-            } else {
-                teamScore.setStroke(null);
-            }
-
-
+        if (1 == (buzz.getBold())) {
+            teamScore.setStroke(teamScore.getFill());
+            teamScore.setStrokeWidth(1);
+        } else {
+            teamScore.setStroke(null);
+        }
 
 
         ReloadPane timeBoard = controlPane.getBuzzTimeBoard();
@@ -170,25 +175,7 @@ public class BuzzTimeBoardPreview extends PreviewPane {
     }
 
     private String format(int timeVal) {
-        int minute = timeVal / 60;
-        int seconds = timeVal % 60;
-        if (minute > 9) {
-            if (seconds >= 10) {
-                return minute + ":" + seconds;
-            }
-            return minute + ":0" + seconds;
-        }
-        if (minute > 0) {
-            if (seconds >= 10) {
-                return "0" + minute + ":" + seconds;
-            }
-            return "0" + minute + ":0" + seconds;
-        } else {
-            if (seconds >= 10) {
-                return "00:" + seconds;
-            }
-            return "00:0" + seconds;
-        }
+        return timeVal + "";
 
     }
 
@@ -201,9 +188,17 @@ public class BuzzTimeBoardPreview extends PreviewPane {
         }
         this.timeVal = time;
         this.timeValue = format(timeVal);
+        BuzzMapper buzzMapper = JavaFxApplication.getApplicationContext().getBean(BuzzMapper.class);
+        Buzz buzz = buzzMapper.selectById(1);
+        double speed = 1.0;
+        try {
+            speed =  Double.parseDouble(buzz.getSpeed());
+        } catch (Exception ex) {
+            System.out.println("抢答速率设置错误");
+        }
         teamScore.setVisible(true);
         teamScore.setText(timeValue);
-        timeline = new Timeline(new KeyFrame(Duration.seconds(1), e -> {
+        timeline = new Timeline(new KeyFrame(Duration.seconds(speed), e -> {
             int alertValue = Integer.parseInt(controlPane.getAlertTime());
             timeVal--;
             if (timeVal == 0) {
@@ -220,7 +215,7 @@ public class BuzzTimeBoardPreview extends PreviewPane {
             this.timeValue = format(timeVal);
 
             // 已结束
-            if(timeline == null) {
+            if (timeline == null) {
                 controlPane.stopOnTime();
             }
             PreviewStack.reload(this.timeVal, this.timeValue);
@@ -259,7 +254,7 @@ public class BuzzTimeBoardPreview extends PreviewPane {
             timeline.stop();
             timeline = null;
         }
-      
+
         Stage stage = (Stage) (teamScore.getScene().getWindow());
         stage.hide();
         ReloadPane timeBoard = controlPane.getBuzzTimeBoard();
