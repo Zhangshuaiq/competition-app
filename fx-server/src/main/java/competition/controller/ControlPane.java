@@ -765,14 +765,13 @@ public class ControlPane {
                     mode = buzz.getMode();
                     timeLimit = buzz.getTimeLimit();
                 }
-                if (!StringUtils.isEmpty(currentStage.getpAType())) {
+                if (currentStage != null && !StringUtils.isEmpty(currentStage.getpAType())) {
                     mode = currentStage.getpAType();
                 }
                 messageHandler.notifyPage("", null);
                 buzzBtn.setText("停止抢答");
                 buzzBtn.setTextFill(Color.WHITE);
                 buzzBtn.setStyle("-fx-background-color: #01a25a");
-                RuntimeUtil.buzzStart = System.nanoTime();
                 if (!mode.equals("直接抢答")) {
                     // 倒计时
                     startBuzz(timeLimit, true,3);
