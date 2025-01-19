@@ -771,6 +771,8 @@ public class ControlPane {
                 messageHandler.notifyPage("", null);
                 buzzBtn.setText("停止抢答");
                 buzzBtn.setTextFill(Color.WHITE);
+                RuntimeUtil.buzzStart = System.nanoTime();
+
                 buzzBtn.setStyle("-fx-background-color: #01a25a");
                 if (!mode.equals("直接抢答")) {
                     // 倒计时
@@ -1579,7 +1581,7 @@ public class ControlPane {
 
 
     public void resetBuzzTime(){
-        stopBuzz(null, new ArrayList<>(), false, false);
+        stopBuzz(null, new ArrayList<>(), false, false, false);
     }
 
     public void resetTimeBtn() {
@@ -2250,6 +2252,10 @@ public class ControlPane {
         if (controlStage == null) {
             return;
         }
+
+        // 关闭抢答结果的弹窗
+        closeBuzzResultWindow();
+
         MusicPlayer.play(MusicResource.SHOW_ANSWER);
         // 首先强行关闭
         if (!startAnswerBtn.getText().equals("开始答题")) {
@@ -2384,6 +2390,11 @@ public class ControlPane {
     }
 
 
+    private void closeBuzzResultWindow(){
+        Navigator.buzzBoardStage.close();
+        ExtendedScreen.buzzBoardStage.close();
+    }
+
     // 上一题
     @FXML
     public void lastQuestion() {
@@ -2395,7 +2406,8 @@ public class ControlPane {
             return;
         }
         RuntimeUtil.showBuzzBar = false;
-       // previewPane.hideBuzzResult();
+        // 关闭抢答结果的弹窗
+        closeBuzzResultWindow();
         messageHandler.notifyPage("", null);
         reloadScoreBoard();
         GlobalCache.showAnswer = false;
@@ -2406,7 +2418,6 @@ public class ControlPane {
         }
         TeamRuntime.resetScore();
         showQuestion();
-
     }
 
     // 下一题
@@ -2426,7 +2437,7 @@ public class ControlPane {
                 return;
             }
             RuntimeUtil.showBuzzBar = false;
-            //previewPane.hideBuzzResult();
+            closeBuzzResultWindow();
             messageHandler.notifyPage("", null);
             reloadScoreBoard();
             GlobalCache.showAnswer = false;
@@ -2725,6 +2736,7 @@ public class ControlPane {
             // 判断是否是淘汰模式
             if (mode.equals("淘汰模式")) {
                 // 防止重复抢，多次点击只会计算第一次的
+                RuntimeUtil.showBuzzBar = true;
                 if (RuntimeUtil.buzzTimeMap.containsKey(team)) {
                     return;
                 }
@@ -2732,7 +2744,7 @@ public class ControlPane {
                 if (slipTime < timeGap) {
                     RuntimeUtil.buzzTimeMap.put(team, slipTime - timeGap);
                     RuntimeUtil.buzzResult.put(team, false);
-
+                    // 每次抢答都更新状态面板
                     if (RuntimeUtil.buzzTimeMap.size() == TeamRuntime.getTeams().size()) {
                         // 防止其他人抢到
                         RuntimeUtil.buzzStart = 0;
@@ -2744,18 +2756,25 @@ public class ControlPane {
                             BuzzResultPreview.setTeams(teams, true);
                             stopBuzz(teams,
                                     TeamRuntime.getTeams().stream().filter(x -> !x.getShortName().equals(team)).collect(Collectors.toList()),
-                                    true, false);
+                                    true, false, false);
                         } else {
                             RuntimeUtil.buzzResult.put(team, false);
                             stopBuzz(teams,
                                     new ArrayList<>(),
-                                    false, false);
+                                    false, false, false);
                         }
 
                         Platform.runLater(() -> {
                             //previewPane.showBuzzResult(teams, true);
                             Navigator.buzzResult("/view/preview/BuzzResult.fxml", "", "/view/style.css", true);
                         });
+                    } else {
+                        for (Teams t : TeamRuntime.getTeams()) {
+                            t.setBuzzStatus(RuntimeUtil.buzzResult.getOrDefault(t.getShortName(), false));
+                            t.setBuzzTime(NumberUtil.fix2Point(RuntimeUtil.buzzTimeMap.getOrDefault(t.getShortName(), 0L) / 1000000000.0));
+                        }
+                        reloadScoreBoard();
+                        return;
                     }
                 } else {
                     // 抢答成功，直接结束抢答
@@ -2768,8 +2787,7 @@ public class ControlPane {
                             )
                             .collect(Collectors.toList());
 
-                    stopBuzz(teams, taotaiTeams,
-                            true, false);
+                    stopBuzz(teams, taotaiTeams, true, false, false);
                     Platform.runLater(() -> {
                         // previewPane.showBuzzResult(teams, true);
                         BuzzResultPreview.setTeams(teams, true);
@@ -2784,7 +2802,7 @@ public class ControlPane {
                 RuntimeUtil.buzzStart = 0;
                 RuntimeUtil.buzzResult.put(team, false);
                 RuntimeUtil.buzzTimeMap.put(team, slipTime - timeGap);
-                stopBuzz(null, Collections.singletonList(teams), false, true);
+                stopBuzz(null, Collections.singletonList(teams), false, true, true);
                 Platform.runLater(() -> {
                     BuzzResultPreview.setTeams(teams, false);
                     Navigator.buzzResult("/view/preview/BuzzResult.fxml", "", "/view/style.css", true);
@@ -2797,7 +2815,7 @@ public class ControlPane {
                 RuntimeUtil.buzzTimeMap.put(team, System.nanoTime() - RuntimeUtil.buzzCalculate);
                 RuntimeUtil.buzzResult.put(team, true);
                 RuntimeUtil.buzzCalculate = 0;
-                stopBuzz(teams, new ArrayList<>(), true, false);
+                stopBuzz(teams, new ArrayList<>(), true, false, true);
                 Platform.runLater(() -> {
                    // previewPane.showBuzzResult(teams, true);
                     BuzzResultPreview.setTeams(teams, true);
@@ -2811,7 +2829,7 @@ public class ControlPane {
             t.setBuzzStatus(RuntimeUtil.buzzResult.getOrDefault(t.getShortName(), false));
             t.setBuzzTime(NumberUtil.fix2Point(RuntimeUtil.buzzTimeMap.getOrDefault(t.getShortName(), 0L) / 1000000000.0));
         }
-        messageHandler.notifyPage("", null);
+        reloadScoreBoard();
     }
 
     public void reloadScoreBoard(){
@@ -2820,7 +2838,7 @@ public class ControlPane {
     }
 
     // 停止抢答
-    private void stopBuzz(Teams successTeam, List<Teams> failTeams, boolean success, boolean fail){
+    private void stopBuzz(Teams successTeam, List<Teams> failTeams, boolean success, boolean fail, boolean standard){
         Buzz buzz = buzzMapper.selectById(1);
         Platform.runLater(() -> {
             RuntimeUtil.showBuzzBar = true;
@@ -2832,25 +2850,44 @@ public class ControlPane {
 
             if (success) {
                 if (buzz.getSuccessMusic() == 1) {
-                    MusicPlayer.playWithCallback(MusicResource.BUZZ_SUCCESS(successTeam.getCode()), () -> {
-                        if (buzz.getErrorMusic() == 1) {
-                            if (!failTeams.isEmpty()) {
-                                for (Teams failTeam : failTeams) {
-                                    MusicPlayer.playQueued(MusicResource.BUZZ_FAIL(failTeam.getCode()));
+                    if (standard) {
+                        // 标准模式下判定是否需要提前响应音乐
+                        MusicPlayer.playWithCallback(MusicResource.BUZZ_SUCCESS_BEFORE, () -> {
+                            MusicPlayer.play(MusicResource.BUZZ_SUCCESS(successTeam.getCode()));
+                        });
+                    } else {
+                        MusicPlayer.playWithCallback(MusicResource.BUZZ_SUCCESS(successTeam.getCode()), () -> {
+                            // 播放违规
+                            if (buzz.getPlayError() == 1) {
+                                if (!failTeams.isEmpty()) {
+                                    for (Teams failTeam : failTeams) {
+                                        MusicPlayer.playQueued(MusicResource.BUZZ_FAIL(failTeam.getCode()));
+                                    }
                                 }
-                            }
 
-                        }
-                    });
+                            }
+                        });
+                    }
+
                 }
                 scoreBoardPreview.reload();
                 return;
             }
 
             if (fail) {
+                // 不播放违规信息
+                if (buzz.getPlayError() != 1) {
+                    return;
+                }
                 if (buzz.getErrorMusic() == 1) {
-                    for (Teams failTeam : failTeams) {
-                        MusicPlayer.play(MusicResource.BUZZ_FAIL(failTeam.getCode()));
+                    if (standard) {
+                        MusicPlayer.playWithCallback(MusicResource.BUZZ_FAIL_BEFORE, () -> {
+                            MusicPlayer.play(MusicResource.BUZZ_SUCCESS(failTeams.get(0).getCode()));
+                        });
+                    } else {
+                        for (Teams failTeam : failTeams) {
+                            MusicPlayer.play(MusicResource.BUZZ_FAIL(failTeam.getCode()));
+                        }
                     }
                 }
                 scoreBoardPreview.reload();

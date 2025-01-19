@@ -63,10 +63,20 @@ public class ScoreBoardH implements BoardPane {
 
         ScoreStyle scoreStyle = scoreStyleMapper.selectById(1);
         String[] split = scoreStyle.getStyles().split(ConfigSpliter.SPLITER);
-        Font font = FontMap.load(split[0], Integer.parseInt(split[1]));
+
+        ScoreStyle scoreStyle1 = scoreStyleMapper.selectById(3);
+        String[] ssplit = scoreStyle1.getStyles().split(ConfigSpliter.SPLITER);
+
+        Font font = FontMap.load(split[0], ScreenAdapter.calculateExX(Integer.parseInt(split[1])));
+        Font sfont = FontMap.load(ssplit[0], ScreenAdapter.calculateExX(Integer.parseInt(ssplit[1])));
+
+
         Configs configs = configsMapper.selectById(1);
         String config = configs.getConfig();
         String[] cfgArr = config.split(ConfigSpliter.SPLITER);
+
+
+
         container.getChildren().clear();
         container.setSpacing(ScreenAdapter.calculateExX(20));
 
@@ -112,6 +122,7 @@ public class ScoreBoardH implements BoardPane {
             }
             box.getChildren().add(stackPane);
 
+
             Text teamScore = new Text(team.getTeamScore() + "");
             StackPane stackPane1 = new StackPane();
             stackPane1.setPrefSize(ScreenAdapter.calculateExX(Integer.parseInt(cfgArr[19])), ScreenAdapter.calculateExY(Integer.parseInt(cfgArr[20])));
@@ -119,11 +130,11 @@ public class ScoreBoardH implements BoardPane {
 
             teamScore.setFill(Color.valueOf(cfgArr[21]));
             stackPane1.setBackground(new Background(new BackgroundFill(Color.valueOf(cfgArr[22]), new CornerRadii(10), Insets.EMPTY)));
-            teamScore.setFont(font);
-            teamScore.setUnderline(Boolean.valueOf(split[5]));
-            teamScore.setStrikethrough(Boolean.valueOf(split[2]));
-            container.setSpacing(ScreenAdapter.calculateExX(Integer.parseInt(split[6])));
-            if (Boolean.valueOf(split[3])) {
+            teamScore.setFont(sfont);
+            teamScore.setUnderline(Boolean.valueOf(ssplit[5]));
+            teamScore.setStrikethrough(Boolean.valueOf(ssplit[2]));
+            container.setSpacing(ScreenAdapter.calculateExX(Integer.parseInt(ssplit[6])));
+            if (Boolean.valueOf(ssplit[3])) {
                 teamScore.setStroke(teamScore.getFill());
                 teamScore.setStrokeWidth(1);
             } else {
@@ -132,6 +143,9 @@ public class ScoreBoardH implements BoardPane {
             }
             teamScore.getTransforms().clear();
             stackPane1.getChildren().add(teamScore);
+            if (Boolean.valueOf(ssplit[4])) {
+                teamScore.getTransforms().add(new Shear(-0.3, 0));
+            }
             box.getChildren().add(stackPane1);
 
 
@@ -151,7 +165,18 @@ public class ScoreBoardH implements BoardPane {
                 buzzTime.setTextAlignment(TextAlignment.CENTER);
                 buzzTime.setFill(Color.valueOf(cfgArr[21]));
 
-                Color color = RuntimeUtil.buzzResult.getOrDefault(team.getShortName(), false)?Color.GREEN: Color.RED;
+                Boolean b = RuntimeUtil.buzzResult.get(team.getShortName());
+                Color color = null;
+                if (b == null) {
+                    // 未抢答
+                    color =  Color.valueOf(cfgArr[25]);
+                } else if (b) {
+                    // 已抢答成功
+                    color = Color.valueOf(cfgArr[27]);
+                } else {
+                    // 抢答违规
+                    color = Color.valueOf(cfgArr[28]);
+                }
                 buzzPane.setBackground(new Background(new BackgroundFill(color, new CornerRadii(10), Insets.EMPTY)));
                 buzzTime.setFont(Font.font(ScreenAdapter.calculateExX(12)));
                 buzzTime.setUnderline(Boolean.valueOf(split[5]));
