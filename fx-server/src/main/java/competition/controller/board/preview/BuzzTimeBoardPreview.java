@@ -99,6 +99,10 @@ public class BuzzTimeBoardPreview extends PreviewPane {
                 }
             }
             this.timeValue = format(timeVal);
+            // 不显示 0
+            if (this.timeValue.equals("0")) {
+                this.timeValue = "";
+            }
             PreviewStack.reload(this.timeVal, this.timeValue);
             showData();
         }));
@@ -176,7 +180,6 @@ public class BuzzTimeBoardPreview extends PreviewPane {
 
     private String format(int timeVal) {
         return timeVal + "";
-
     }
 
     public void buzzTiming(int time) {
@@ -191,11 +194,11 @@ public class BuzzTimeBoardPreview extends PreviewPane {
         BuzzMapper buzzMapper = JavaFxApplication.getApplicationContext().getBean(BuzzMapper.class);
         Buzz buzz = buzzMapper.selectById(1);
         double speed = 1.0;
-        try {
-            speed =  Double.parseDouble(buzz.getSpeed());
-        } catch (Exception ex) {
-            System.out.println("抢答速率设置错误");
-        }
+//        try {
+//            speed =  Double.parseDouble(buzz.getSpeed());
+//        } catch (Exception ex) {
+//            System.out.println("抢答速率设置错误");
+//        }
         teamScore.setVisible(true);
         teamScore.setText(timeValue);
         timeline = new Timeline(new KeyFrame(Duration.seconds(speed), e -> {
@@ -207,11 +210,13 @@ public class BuzzTimeBoardPreview extends PreviewPane {
                 });
                 close();
                 controlPane.resetBuzzTime();
-            } else {
-                if (timeVal <= alertValue) {
-                    MusicPlayer.play(MusicResource.BUZZ_TIME(timeVal));
-                }
             }
+            // 抢答开始后不播报中间的语音
+//            else {
+//                if (timeVal <= alertValue) {
+//                    MusicPlayer.play(MusicResource.BUZZ_TIME(timeVal));
+//                }
+//            }
             this.timeValue = format(timeVal);
 
             // 已结束
@@ -235,7 +240,6 @@ public class BuzzTimeBoardPreview extends PreviewPane {
 
         timeline.setCycleCount(-1);
         timeline.playFromStart();
-        MusicPlayer.play(MusicResource.BUZZ_TIME(timeVal));
     }
 
     public void stopTiming() {

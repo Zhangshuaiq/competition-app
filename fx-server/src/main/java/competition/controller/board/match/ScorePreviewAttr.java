@@ -31,22 +31,22 @@ public class ScorePreviewAttr {
     private CheckBox secondOpenBox;
 
     @FXML
-    private CheckBox deleteChoice;
+    private CheckBox deleteChoice, sdeleteChoice;
 
     @FXML
-    private TextField fontSize;
+    private TextField fontSize, sfontSize;
 
     @FXML
-    private CheckBox underlineChoice;
+    private CheckBox underlineChoice, sunderlineChoice;
 
     @FXML
-    private ComboBox<String> fontSelector;
+    private ComboBox<String> fontSelector, sfontSelector;
 
     @FXML
-    private CheckBox iticChoice;
+    private CheckBox iticChoice, siticChoice;
 
     @FXML
-    private CheckBox boldChoice;
+    private CheckBox boldChoice, sboldChoice;
     
     @Resource
     private ControlPane controlPane;
@@ -59,6 +59,8 @@ public class ScorePreviewAttr {
     
     @FXML
     public void initialize(){
+
+        // 队伍名称字体设置
         fontSelector.setItems(FXCollections.observableList(FontMap.fontNames()));
         ScoreStyle scoreStyle = scoreStyleMapper.selectById(1);
         fontSelector.setValue(FontMap.defaultFontName());
@@ -79,11 +81,31 @@ public class ScorePreviewAttr {
                     colSpan.setText(split[6]);
                 }
             }
-        } 
+        }
+
+        // 分数字体设置
+        sfontSelector.setItems(FXCollections.observableList(FontMap.fontNames()));
+        ScoreStyle sscoreStyle = scoreStyleMapper.selectById(3);
+        sfontSelector.setValue(FontMap.defaultFontName());
+        sfontSize.setText(12 + "");
+        if (sscoreStyle != null) {
+            String styles = sscoreStyle.getStyles();
+            if (!StringUtils.isEmpty(styles)) {
+                String[] split = styles.split(ConfigSpliter.SPLITER);
+                sfontSelector.setValue((split[0]));
+                sfontSize.setText((split[1]));
+                sdeleteChoice.setSelected(Boolean.valueOf(split[2]));
+                sboldChoice.setSelected(Boolean.valueOf(split[3]));
+                siticChoice.setSelected(Boolean.valueOf(split[4]));
+                sunderlineChoice.setSelected(Boolean.valueOf(split[5]));
+            }
+        }
     }
     
     @FXML
     public void saveConfig(){
+
+        // 保存队伍名字字体配置
         String value = fontSelector.getValue() + ConfigSpliter.SPLITER
                 + fontSize.getText() + ConfigSpliter.SPLITER
                 + deleteChoice.isSelected() + ConfigSpliter.SPLITER
@@ -94,6 +116,19 @@ public class ScorePreviewAttr {
         ScoreStyle scoreStyle = scoreStyleMapper.selectById(1);
         scoreStyle.setStyles(value);
         scoreStyleMapper.updateById(scoreStyle);
+
+
+        // 保存分数字体配置
+        String svalue = sfontSelector.getValue() + ConfigSpliter.SPLITER
+            + sfontSize.getText() + ConfigSpliter.SPLITER
+            + sdeleteChoice.isSelected() + ConfigSpliter.SPLITER
+            + sboldChoice.isSelected() + ConfigSpliter.SPLITER
+            + siticChoice.isSelected() + ConfigSpliter.SPLITER
+            + sunderlineChoice.isSelected();
+        ScoreStyle sscoreStyle = scoreStyleMapper.selectById(3);
+        sscoreStyle.setStyles(svalue);
+        scoreStyleMapper.updateById(sscoreStyle);
+
         if (Screen.getScreens().size() > 1) {
             if (secondOpenBox.isSelected()) {
                 ExtendedScreen.scoreBoardStage.show();

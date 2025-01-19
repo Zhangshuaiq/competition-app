@@ -46,4 +46,8 @@ public class MusicResource {
     public static final String BUZZ_START = BaseDir.MUSIC_DIR + "抢答" +  File.separator +  "开始.mp3";
 
     public static final String BUZZ_STOP = BaseDir.MUSIC_DIR + "抢答" +  File.separator +  "时间到请停止回答.mp3";
+
+    public static final String BUZZ_SUCCESS_BEFORE = BaseDir.MUSIC_DIR + "抢答" +  File.separator +  "成功音效.mp3";
+
+    public static final String BUZZ_FAIL_BEFORE = BaseDir.MUSIC_DIR + "抢答" +  File.separator +  "犯规音效.mp3";
 }

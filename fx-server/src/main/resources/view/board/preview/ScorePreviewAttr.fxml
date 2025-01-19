@@ -1,13 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.text.*?>
-<?import java.lang.*?>
-<?import java.util.*?>
-<?import javafx.scene.*?>
-<?import javafx.scene.control.*?>
-<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.CheckBox?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Separator?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.AnchorPane?>
 
-<AnchorPane prefHeight="323.0" prefWidth="473.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="competition.controller.board.match.ScorePreviewAttr">
+<AnchorPane prefHeight="442.0" prefWidth="473.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="competition.controller.board.match.ScorePreviewAttr">
    <children>
       <AnchorPane layoutX="40.0" layoutY="42.0" prefHeight="30.0" prefWidth="392.0">
          <children>
@@ -26,11 +27,21 @@
       <Label layoutX="16.0" layoutY="76.0" text="字体" textFill="#8a8686" />
       <Separator layoutX="89.0" layoutY="26.0" prefHeight="3.0" prefWidth="304.0" />
       <Separator layoutX="58.0" layoutY="87.0" prefHeight="3.0" prefWidth="337.0" />
-      <Button layoutX="111.0" layoutY="265.0" mnemonicParsing="false" onMouseClicked="#saveConfig" prefHeight="30.0" prefWidth="96.0" text="保存" />
-      <Button layoutX="268.0" layoutY="264.0" mnemonicParsing="false" onMouseClicked="#closeStage" prefHeight="30.0" prefWidth="96.0" text="关闭" />
-      <Separator layoutX="58.0" layoutY="196.0" prefHeight="3.0" prefWidth="337.0" />
-      <Label layoutX="16.0" layoutY="185.0" text="外观" textFill="#8a8686" />
-      <Label layoutX="58.0" layoutY="221.0" text="列间距" />
-      <TextField fx:id="colSpan" layoutX="126.0" layoutY="216.0" prefHeight="30.0" prefWidth="135.0" />
+      <Button layoutX="111.0" layoutY="390.0" mnemonicParsing="false" onMouseClicked="#saveConfig" prefHeight="30.0" prefWidth="96.0" text="保存" />
+      <Button layoutX="268.0" layoutY="389.0" mnemonicParsing="false" onMouseClicked="#closeStage" prefHeight="30.0" prefWidth="96.0" text="关闭" />
+      <Separator layoutX="58.0" layoutY="321.0" prefHeight="3.0" prefWidth="337.0" />
+      <Label layoutX="16.0" layoutY="310.0" text="外观" textFill="#8a8686" />
+      <Label layoutX="58.0" layoutY="346.0" text="列间距" />
+      <TextField fx:id="colSpan" layoutX="126.0" layoutY="341.0" prefHeight="30.0" prefWidth="135.0" />
+      <Label layoutX="68.0" layoutY="226.0" text="名称" />
+      <ComboBox fx:id="sfontSelector" layoutX="110.0" layoutY="221.0" prefWidth="150.0" />
+      <Label layoutX="285.0" layoutY="226.0" text="大小" />
+      <TextField fx:id="sfontSize" layoutX="326.0" layoutY="220.0" prefHeight="20.0" prefWidth="96.0" />
+      <CheckBox fx:id="sdeleteChoice" layoutX="52.0" layoutY="272.0" mnemonicParsing="false" text="删除线" />
+      <CheckBox fx:id="sboldChoice" layoutX="138.0" layoutY="272.0" mnemonicParsing="false" text="加粗" />
+      <CheckBox fx:id="siticChoice" layoutX="231.0" layoutY="272.0" mnemonicParsing="false" text="斜体" />
+      <CheckBox fx:id="sunderlineChoice" layoutX="315.0" layoutY="272.0" mnemonicParsing="false" text="下划线" />
+      <Label layoutX="15.0" layoutY="191.0" text="分数" textFill="#8a8686" />
+      <Separator layoutX="57.0" layoutY="202.0" prefHeight="3.0" prefWidth="337.0" />
    </children>
 </AnchorPane>

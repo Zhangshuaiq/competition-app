@@ -5,7 +5,7 @@ import java.util.Map;
 
 public class RuntimeUtil {
 
-    public static boolean showBuzzBar = false;
+    public static volatile boolean showBuzzBar = false;
 
     public static volatile long buzzStart = 0;
 
