@@ -727,10 +727,12 @@ public class ControlPane {
     @FXML
     public void buzzReset(){
         RuntimeUtil.showBuzzBar = false;
+        if (buzzTimeBoardPreview != null) {
+            buzzTimeBoardPreview.close();
+        }
         buzzBtn.setText("开始抢答");
         buzzBtn.setTextFill(Color.BLACK);
         buzzBtn.setStyle("");
-        buzzTimeBoardPreview.close();
         Navigator.buzzBoardStage.close();
         ExtendedScreen.buzzBoardStage.close();
         reloadScoreBoard();
@@ -741,12 +743,6 @@ public class ControlPane {
     public void buzzClicked() {
 
         Buzz buzz = buzzMapper.selectById(1);
-
-//        if ( currentStage == null || currentStage.getOpenQd() == null || currentStage.getOpenQd() != 1) {
-//            return;
-//        }
-
-
         Platform.runLater(() -> {
             String text = buzzBtn.getText();
             if (text.equals("开始抢答")) {
@@ -2407,6 +2403,7 @@ public class ControlPane {
         }
         RuntimeUtil.showBuzzBar = false;
         // 关闭抢答结果的弹窗
+        buzzReset();
         closeBuzzResultWindow();
         messageHandler.notifyPage("", null);
         reloadScoreBoard();
@@ -2437,6 +2434,7 @@ public class ControlPane {
                 return;
             }
             RuntimeUtil.showBuzzBar = false;
+            buzzReset();
             closeBuzzResultWindow();
             messageHandler.notifyPage("", null);
             reloadScoreBoard();
@@ -2769,11 +2767,26 @@ public class ControlPane {
                             Navigator.buzzResult("/view/preview/BuzzResult.fxml", "", "/view/style.css", true);
                         });
                     } else {
+                        // 抢答失败扣分
+                        if (currentStage != null && currentStage.getQdDesc() != null && currentStage.getQdDesc() == 1) {
+                            teams.setTeamScore(teams.getTeamScore() - currentStage.getDesValue());
+                            teamsMapper.updateById(teams);
+                        }
                         for (Teams t : TeamRuntime.getTeams()) {
-                            t.setBuzzStatus(RuntimeUtil.buzzResult.getOrDefault(t.getShortName(), false));
+                            Boolean b = RuntimeUtil.buzzResult.get(t.getShortName());
+                            if (b == null) {
+                                t.setBuzzStatus(0);
+                            }
+                            else if (b) {
+                                t.setBuzzStatus(1);
+                            } else {
+                                t.setBuzzStatus(2);
+                            }
                             t.setBuzzTime(NumberUtil.fix2Point(RuntimeUtil.buzzTimeMap.getOrDefault(t.getShortName(), 0L) / 1000000000.0));
                         }
-                        reloadScoreBoard();
+                        Platform.runLater(() -> {
+                            reloadScoreBoard();
+                        });
                         return;
                     }
                 } else {
@@ -2802,6 +2815,10 @@ public class ControlPane {
                 RuntimeUtil.buzzStart = 0;
                 RuntimeUtil.buzzResult.put(team, false);
                 RuntimeUtil.buzzTimeMap.put(team, slipTime - timeGap);
+                if (currentStage != null && currentStage.getQdDesc() != null && currentStage.getQdDesc() == 1) {
+                    teams.setTeamScore(teams.getTeamScore() - currentStage.getDesValue());
+                    teamsMapper.updateById(teams);
+                }
                 stopBuzz(null, Collections.singletonList(teams), false, true, true);
                 Platform.runLater(() -> {
                     BuzzResultPreview.setTeams(teams, false);
@@ -2826,10 +2843,22 @@ public class ControlPane {
         }
 
         for (Teams t : TeamRuntime.getTeams()) {
-            t.setBuzzStatus(RuntimeUtil.buzzResult.getOrDefault(t.getShortName(), false));
+            Boolean b = RuntimeUtil.buzzResult.get(t.getShortName());
+            if (b == null) {
+                t.setBuzzStatus(0);
+            }
+            else
+            if (b) {
+                t.setBuzzStatus(1);
+            } else {
+                t.setBuzzStatus(2);
+            }
             t.setBuzzTime(NumberUtil.fix2Point(RuntimeUtil.buzzTimeMap.getOrDefault(t.getShortName(), 0L) / 1000000000.0));
         }
-        reloadScoreBoard();
+        Platform.runLater(() -> {
+            reloadScoreBoard();
+        });
+
     }
 
     public void reloadScoreBoard(){
@@ -2882,7 +2911,7 @@ public class ControlPane {
                 if (buzz.getErrorMusic() == 1) {
                     if (standard) {
                         MusicPlayer.playWithCallback(MusicResource.BUZZ_FAIL_BEFORE, () -> {
-                            MusicPlayer.play(MusicResource.BUZZ_SUCCESS(failTeams.get(0).getCode()));
+                            MusicPlayer.play(MusicResource.BUZZ_FAIL(failTeams.get(0).getCode()));
                         });
                     } else {
                         for (Teams failTeam : failTeams) {

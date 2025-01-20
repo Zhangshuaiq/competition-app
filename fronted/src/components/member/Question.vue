@@ -140,6 +140,7 @@ export default {
 
   data(){
     return {
+      hasBuzzed: false,
       buzzStatus: false,
       isResourceAvailable: false,
       retryTimer: null, // 用于重试逻辑的计时器
@@ -178,6 +179,10 @@ export default {
 
     '$store.state.buzzStatus': function (newStatus) {
       this.buzzStatus = newStatus
+      if (newStatus === true) {
+        this.hasBuzzed = false;
+        sessionStorage.setItem('hasBuzzed', this.hasBuzzed)
+      }
     },
   },
 
@@ -192,7 +197,7 @@ export default {
 
     qdBoxStyle(){
       return {
-        visibility: (this.stage.openQd === 1 && !this.buzzStatus) ? 'visible' : 'hidden',
+        visibility: (this.stage.openQd === 1 && !this.buzzStatus && !this.hasBuzzed) ? 'visible' : 'hidden',
       }
     }
   },
@@ -204,8 +209,16 @@ export default {
         'team': this.teamInfo.shortName,
         'username': this.member
       }
-      buzzQuestion(data).then(() => {
-        console.log("抢答成功")
+      buzzQuestion(data).then((res) => {
+        if (res.data === 'true') {
+          this.hasBuzzed = true;
+          console.log("抢答成功")
+        } else {
+          this.$message.error("抢答尚未开始")
+          this.hasBuzzed = false;
+        }
+        sessionStorage.setItem('hasBuzzed', this.hasBuzzed)
+
       })
     },
 
@@ -266,7 +279,8 @@ export default {
       this.resourceUrl = `${baseUrl}/resource/${this.questionItem.resource}`
     }
     this.showResult = false
-
+    sessionStorage.removeItem('hasBuzzed')
+    this.hasBuzzed = false;
     next();
   },
 
@@ -284,6 +298,8 @@ export default {
       this.$router.push({name: "contestant"})
       return
     }
+    this.hasBuzzed = sessionStorage.getItem('hasBuzzed') === 'true'
+    this.buzzStatus = sessionStorage.getItem('buzzStatus') === 'true'
     this.teamInfo = JSON.parse(item)
     const data = this.$store.state.data
     this.stage = this.$store.state.stage

@@ -82,7 +82,7 @@ public class Teams {
     @ExcelIgnore
     // 抢答状态
     @TableField(exist = false)
-    private boolean buzzStatus = false;
+    private int buzzStatus = 0;
 
     @ExcelIgnore
     // 抢答时间

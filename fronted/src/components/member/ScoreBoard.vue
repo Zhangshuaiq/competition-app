@@ -18,7 +18,7 @@
           <div v-if="buzzStatus">
             <el-row>
               <el-col span="22">
-                <div class="board-item" :style="{backgroundColor: item.buzzStatus?buzzStatusColor[1]: buzzStatusColor[0]}">
+                <div class="board-item" :style="{backgroundColor: buzzStatusColor[item.buzzStatus]}">
                   <div>
                     {{item.buzzTime}}
                   </div>
@@ -64,7 +64,7 @@
        showStatus: false,
        showMember: false,
        statusColor: ['#FFFFFF', '#0070C0', '#00B050', '#FF0000'],
-       buzzStatusColor: ['#4472c4', '#70ad47'],
+       buzzStatusColor: ['#FFFFFF',  '#00B050', '#FF0000'],
        questionItem: sessionStorage.getItem('questionItem') || {}
      }
    },
@@ -84,6 +84,7 @@
      },
 
      '$store.state.buzzStatus': function (newStatus) {
+       sessionStorage.setItem('buzzStatus', newStatus)
        this.buzzStatus = newStatus
      },
 
@@ -98,6 +99,7 @@
      const data = this.$store.state.teams
      console.log(data)
      this.teamList = data
+     this.buzzStatus = sessionStorage.getItem('buzzStatus') === 'true'
      if (this.$store.state.currentRoute.indexOf('model61') >= 0) {
        this.showStatus = true
        this.showMember = true

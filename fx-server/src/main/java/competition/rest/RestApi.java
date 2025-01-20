@@ -184,8 +184,11 @@ public class RestApi {
         String member = data.get("username");
         // 更新数据库的状态，记录抢答的题目和人
         ControlPane controlPane = JavaFxApplication.getApplicationContext().getBean(ControlPane.class);
+        if (RuntimeUtil.buzzStart <= 0) {
+            return JsonResp.success("false");
+        }
         controlPane.notifyBuzz(team, member);
-        return JsonResp.success("");
+        return JsonResp.success("true");
     }
     
 }

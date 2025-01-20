@@ -230,18 +230,18 @@ public class Navigator {
             });
 
 
-            load.setOnMouseReleased(event -> {
-                System.out.println("抢答提示框拖动后位置 ========================>");
-                System.out.println(stage.getX());
-                System.out.println(stage.getY());
-                if (!StringUtils.isEmpty(config)) {
-                    JSONObject jsonObject = JSON.parseObject(config);
-                    jsonObject.put("x", stage.getX() + "");
-                    jsonObject.put("y", stage.getY() + "");
-                    configs.setConfig(jsonObject.toJSONString());
-                    configsMapper.updateById(configs);
-                }
-            });
+//            load.setOnMouseReleased(event -> {
+//                System.out.println("抢答提示框拖动后位置 ========================>");
+//                System.out.println(stage.getX());
+//                System.out.println(stage.getY());
+//                if (!StringUtils.isEmpty(config)) {
+//                    JSONObject jsonObject = JSON.parseObject(config);
+//                    jsonObject.put("x", stage.getX() + "");
+//                    jsonObject.put("y", stage.getY() + "");
+//                    configs.setConfig(jsonObject.toJSONString());
+//                    configsMapper.updateById(configs);
+//                }
+//            });
 
             scene.getStylesheets().add(cssFile); // 应用 CSS
 
@@ -299,16 +299,16 @@ public class Navigator {
                 ExtendedScreen.buzzTimeBoardStage.setY(bounds.getMinY() + ScreenAdapter.calculateExY(event.getScreenY() - yOffset.get()));
             });
 
-            load.setOnMouseReleased(event -> {
-                System.out.println("抢答计时拖动后位置 ========================>");
-                System.out.println(stage.getX());
-                System.out.println(stage.getY());
-                BuzzMapper buzzMapper = JavaFxApplication.getApplicationContext().getBean(BuzzMapper.class);
-                Buzz buzz = buzzMapper.selectById(1);
-                buzz.setX(stage.getX() + "");
-                buzz.setY(stage.getY() + "");
-                buzzMapper.updateById(buzz);
-            });
+//            load.setOnMouseReleased(event -> {
+//                System.out.println("抢答计时拖动后位置 ========================>");
+//                System.out.println(stage.getX());
+//                System.out.println(stage.getY());
+//                BuzzMapper buzzMapper = JavaFxApplication.getApplicationContext().getBean(BuzzMapper.class);
+//                Buzz buzz = buzzMapper.selectById(1);
+//                buzz.setX(stage.getX() + "");
+//                buzz.setY(stage.getY() + "");
+//                buzzMapper.updateById(buzz);
+//            });
 
             scene.getStylesheets().add(cssFile); // 应用 CSS
 
