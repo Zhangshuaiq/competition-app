@@ -37,6 +37,10 @@ public class SerialPortConnector {
         return instance;
     }
 
+    public boolean isConnected(){
+        return serialPort!= null && serialPort.isOpen();
+    }
+
     private SerialPortConnector(String portName) {
         this.portName = portName;
         serialPort = SerialPort.getCommPort(portName); // 替换为你的串口名
@@ -118,22 +122,31 @@ public class SerialPortConnector {
         String frameLength = String.format("%04d", totalLength); // 不足4位补0
 
         // 校验区域
-        String toCheck = FRAME_HEAD + SPLITTER + frameLength + SPLITTER + cmd + SPLITTER + data + SPLITTER;
+        String toCheck;
+        if (!data.isEmpty()) {
+            toCheck = FRAME_HEAD + SPLITTER + frameLength + SPLITTER + cmd + SPLITTER + data + SPLITTER;
+        } else {
+            toCheck = FRAME_HEAD + SPLITTER + frameLength + SPLITTER + cmd + SPLITTER;
+        }
 
         String crc16 = CRC16.calculateCRC16(toCheck.getBytes(StandardCharsets.US_ASCII)); // 计算CRC16校验码
 
-
         // 完整帧格式
-        String fullCmd =  FRAME_HEAD + SPLITTER + frameLength + SPLITTER + cmd + SPLITTER + data + SPLITTER + crc16 + SPLITTER + FRAME_TAIL;
+        String fullCmd;
+        if (!data.isEmpty()) {
+            fullCmd = FRAME_HEAD + SPLITTER + frameLength + SPLITTER + cmd + SPLITTER + data + SPLITTER + crc16 + SPLITTER + FRAME_TAIL;
+        } else {
+            fullCmd = FRAME_HEAD + SPLITTER + frameLength + SPLITTER + cmd +  SPLITTER + crc16 + SPLITTER + FRAME_TAIL;
+        }
         serialPort.writeBytes(fullCmd.getBytes(), fullCmd.length());
         System.out.println("Data sent: " + fullCmd);
 
         return "";
     }
 
-//    public static void main(String[] args) {
-//        SerialPortConnector connector = new SerialPortConnector("COM3");
-//        connector.send(Command.SMOD, "1");
-//
-//    }
+    public static void main(String[] args) {
+        SerialPortConnector connector = new SerialPortConnector("COM3");
+        connector.send(Command.STAR, "");
+
+    }
 }

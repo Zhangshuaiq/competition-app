@@ -6,7 +6,9 @@ import competition.JavaFxApplication;
 import competition.entity.Configs;
 import competition.entity.Teams;
 import competition.mapper.ConfigsMapper;
+import competition.util.ExtendedScreen;
 import competition.util.FontMap;
+import competition.util.Navigator;
 import competition.util.ScreenAdapter;
 import javafx.fxml.FXML;
 import javafx.geometry.Insets;
@@ -114,8 +116,6 @@ public class BuzzResult implements ReloadPane {
             container.setPrefWidth(width);
             container.setPrefHeight(ScreenAdapter.calculateExY(Double.parseDouble(jsonObject.getOrDefault("height", "200").toString())));
             container.setSpacing(ScreenAdapter.calculateExY(Double.parseDouble(jsonObject.getOrDefault("rowSpace", "10").toString())));
-            container.setLayoutX(ScreenAdapter.calculateExX(Double.parseDouble(jsonObject.getOrDefault("x", "200").toString())));
-            container.setLayoutY(ScreenAdapter.calculateExY(Double.parseDouble(jsonObject.getOrDefault("y", "200").toString())));
 
             if (Boolean.parseBoolean(jsonObject.getOrDefault("xuhao", "false").toString())) {
                 container.getChildren().add(xuhao);
@@ -130,6 +130,8 @@ public class BuzzResult implements ReloadPane {
             }
 
             container.getChildren().add(result);
+            ExtendedScreen.buzzBoardStage.setWidth(container.getPrefWidth());
+            ExtendedScreen.buzzBoardStage.setHeight(container.getPrefHeight());
         }
     }
 

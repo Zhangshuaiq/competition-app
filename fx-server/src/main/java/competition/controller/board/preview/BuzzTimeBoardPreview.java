@@ -191,38 +191,19 @@ public class BuzzTimeBoardPreview extends PreviewPane {
         }
         this.timeVal = time;
         this.timeValue = format(timeVal);
-        BuzzMapper buzzMapper = JavaFxApplication.getApplicationContext().getBean(BuzzMapper.class);
-        Buzz buzz = buzzMapper.selectById(1);
         double speed = 1.0;
-//        try {
-//            speed =  Double.parseDouble(buzz.getSpeed());
-//        } catch (Exception ex) {
-//            System.out.println("抢答速率设置错误");
-//        }
         teamScore.setVisible(true);
         teamScore.setText(timeValue);
         timeline = new Timeline(new KeyFrame(Duration.seconds(speed), e -> {
             int alertValue = Integer.parseInt(controlPane.getAlertTime());
             timeVal--;
             if (timeVal == 0) {
-                MusicPlayer.playWithCallback(MusicResource.BUZZ_STOP, () -> {
-                    controlPane.reloadScoreBoard();
-                });
+                controlPane.reloadScoreBoard();
                 close();
                 controlPane.resetBuzzTime();
             }
-            // 抢答开始后不播报中间的语音
-//            else {
-//                if (timeVal <= alertValue) {
-//                    MusicPlayer.play(MusicResource.BUZZ_TIME(timeVal));
-//                }
-//            }
             this.timeValue = format(timeVal);
 
-            // 已结束
-            if (timeline == null) {
-                controlPane.stopOnTime();
-            }
             PreviewStack.reload(this.timeVal, this.timeValue);
             showData();
         }));

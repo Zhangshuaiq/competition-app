@@ -11,6 +11,7 @@ import competition.entity.Teams;
 import competition.mapper.ConfigsMapper;
 import competition.util.ExtendedScreen;
 import competition.util.FontMap;
+import competition.util.Navigator;
 import competition.util.ScreenAdapter;
 import javafx.fxml.FXML;
 import javafx.geometry.Insets;
@@ -130,8 +131,8 @@ public class BuzzResultPreview extends PreviewPane{
             container.setPrefWidth(width);
             container.setPrefHeight(ScreenAdapter.calculateMainY(Double.parseDouble(jsonObject.getOrDefault("height", "200").toString())));
             container.setSpacing(ScreenAdapter.calculateMainY(Double.parseDouble(jsonObject.getOrDefault("rowSpace", "10").toString())));
-            container.setLayoutX(ScreenAdapter.calculateMainX(Double.parseDouble(jsonObject.getOrDefault("x", "200").toString())));
-            container.setLayoutY(ScreenAdapter.calculateMainY(Double.parseDouble(jsonObject.getOrDefault("y", "200").toString())));
+            //container.setLayoutX(ScreenAdapter.calculateMainX(Double.parseDouble(jsonObject.getOrDefault("x", "200").toString())));
+            //container.setLayoutY(ScreenAdapter.calculateMainY(Double.parseDouble(jsonObject.getOrDefault("y", "200").toString())));
 
             if (Boolean.parseBoolean(jsonObject.getOrDefault("xuhao", "false").toString())) {
                 container.getChildren().add(xuhao);
@@ -146,6 +147,8 @@ public class BuzzResultPreview extends PreviewPane{
             }
 
             container.getChildren().add(result);
+            Navigator.buzzBoardStage.setWidth(container.getPrefWidth());
+            Navigator.buzzBoardStage.setHeight(container.getPrefHeight());
         }
     }
 }

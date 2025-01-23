@@ -180,6 +180,8 @@ export default {
     '$store.state.buzzStatus': function (newStatus) {
       this.buzzStatus = newStatus
       if (newStatus === true) {
+        sessionStorage.setItem('hasBuzzed', this.hasBuzzed)
+      } else {
         this.hasBuzzed = false;
         sessionStorage.setItem('hasBuzzed', this.hasBuzzed)
       }
@@ -197,7 +199,7 @@ export default {
 
     qdBoxStyle(){
       return {
-        visibility: (this.stage.openQd === 1 && !this.buzzStatus && !this.hasBuzzed) ? 'visible' : 'hidden',
+        visibility: (this.stage.openQd === 1 && !this.hasBuzzed) ? 'visible' : 'hidden',
       }
     }
   },
@@ -331,6 +333,8 @@ export default {
   font-family: 'Microsoft YaHei', sans-serif; /* 字体 */
   border: 2px solid #000;  /* 边框为黑色 */
   margin: 0 auto;
+  pointer-events: auto;
+  z-index: 10;
 }
 
 
@@ -376,5 +380,7 @@ export default {
   left: 0;
   width: 100%;
   height: 100%;
+  z-index: 100;
+  pointer-events: none;
 }
 </style>

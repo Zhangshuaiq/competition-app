@@ -10,6 +10,8 @@ import competition.controller.preview.*;
 import competition.entity.*;
 import competition.mapper.*;
 import competition.modal.TeamResult;
+import competition.serial.Command;
+import competition.serial.SerialPortConnector;
 import competition.service.ScoreService;
 import competition.util.*;
 import competition.ws.Model60RuntimeData;
@@ -746,6 +748,7 @@ public class ControlPane {
         Platform.runLater(() -> {
             String text = buzzBtn.getText();
             if (text.equals("开始抢答")) {
+                closeBuzzResultWindow();
                 RuntimeUtil.buzzCalculate = 0;
                 RuntimeUtil.buzzStart = 0;
                 RuntimeUtil.showBuzzBar = false;
@@ -753,6 +756,11 @@ public class ControlPane {
                 RuntimeUtil.buzzResult.clear();
                 if (scoreBoardPreview != null) {
                     reloadScoreBoard();
+                }
+
+                SerialPortConnector instance = SerialPortConnector.getInstance();
+                if (instance != null && instance.isConnected()) {
+                    instance.send(Command.STAR, "");
                 }
 
                 String mode = "直接抢答";
@@ -778,6 +786,10 @@ public class ControlPane {
                     startBuzz(timeLimit, true, 0);
                 }
             } else {
+                SerialPortConnector instance = SerialPortConnector.getInstance();
+                if (instance != null && instance.isConnected()) {
+                    instance.send(Command.EEND, "");
+                }
                 //timeReset();
                 buzzReset();
             }
@@ -1319,11 +1331,13 @@ public class ControlPane {
 
     public void startBuzz(int passTime, boolean buzzBefore, int buzzTime){
         parentPane.requestFocus();
-        if (buzzTimeBoardPreview == null) {
-            buzzTimeBoardPreview = (ReloadPane) Navigator.buzzTimeWithPos("/view/board/preview/BuzzTimeBoard.fxml", "", "/view/style.css", true);
-        } else {
-            buzzTimeBoardPreview.shows();
-        }
+        buzzTimeBoardPreview = (ReloadPane) Navigator.buzzTimeWithPos("/view/board/preview/BuzzTimeBoard.fxml", "", "/view/style.css", true);
+
+//        if (buzzTimeBoardPreview == null) {
+//            buzzTimeBoardPreview = (ReloadPane) Navigator.buzzTimeWithPos("/view/board/preview/BuzzTimeBoard.fxml", "", "/view/style.css", true);
+//        } else {
+//            buzzTimeBoardPreview.shows();
+//        }
         if (buzzBefore) {
             if (buzzTime > 0) {
                 buzzTimeBoardPreview.startBuzz(buzzTime, passTime);
@@ -1576,8 +1590,43 @@ public class ControlPane {
     }
 
 
+    // 由于时间到了导致没有抢答完成的分情况
     public void resetBuzzTime(){
-        stopBuzz(null, new ArrayList<>(), false, false, false);
+        Buzz buzz = buzzMapper.selectById(1);
+
+        String mode = buzz.getMode();
+        if (mode.equals("淘汰模式")) {
+            Integer lastSuccess = buzz.getLastSuccess();
+            LinkedList<String> linkedList = new LinkedList<>(RuntimeUtil.buzzTimeMap.keySet());
+            List<Teams> teams = new ArrayList<>();
+
+            for (String s : linkedList) {
+                for (Teams team : TeamRuntime.getTeams()) {
+                    if (s.equals(team.getShortName())) {
+                        teams.add(team);
+                    }
+                }
+            }
+
+            // 无人抢答
+            if (teams.isEmpty()) {
+                stopBuzz(null, new ArrayList<>(), false, false, false);
+                MusicPlayer.playWithCallback(MusicResource.BUZZ_STOP, () -> {});
+                return;
+            }
+
+            if (lastSuccess == null || lastSuccess.equals(0)) {
+                stopBuzz(null, teams, false, true, false);
+            } else {
+                Teams lastTeam = teams.remove(teams.size() - 1);
+                // 配置最后一名抢答犯规为成功
+                stopBuzz(lastTeam, teams, true, false, false);
+            }
+        } else {
+            stopBuzz(null, new ArrayList<>(), false, false, false);
+            MusicPlayer.playWithCallback(MusicResource.BUZZ_STOP, () -> {});
+        }
+
     }
 
     public void resetTimeBtn() {
@@ -2915,7 +2964,7 @@ public class ControlPane {
                         });
                     } else {
                         for (Teams failTeam : failTeams) {
-                            MusicPlayer.play(MusicResource.BUZZ_FAIL(failTeam.getCode()));
+                            MusicPlayer.playQueued(MusicResource.BUZZ_FAIL(failTeam.getCode()));
                         }
                     }
                 }
@@ -2924,7 +2973,7 @@ public class ControlPane {
             }
 
             // 超时
-            MusicPlayer.play(MusicResource.BUZZ_STOP);
+            //MusicPlayer.play(MusicResource.BUZZ_STOP);
             scoreBoardPreview.reload();
         });
     }

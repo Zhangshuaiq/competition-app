@@ -1,6 +1,7 @@
 package competition.util;
 
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 public class RuntimeUtil {
@@ -11,7 +12,7 @@ public class RuntimeUtil {
 
     public static volatile long buzzCalculate = 0;
 
-    public static Map<String, Long> buzzTimeMap = new HashMap<>();
+    public static LinkedHashMap<String, Long> buzzTimeMap = new LinkedHashMap<>();
 
-    public static Map<String, Boolean> buzzResult = new HashMap<>();
+    public static LinkedHashMap<String, Boolean> buzzResult = new LinkedHashMap<>();
 }
