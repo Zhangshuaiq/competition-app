@@ -15,6 +15,8 @@ public class MusicPlayer {
    // private static Map<String, MediaPlayer> musicsMap = new HashMap<>();
     private static MediaPlayer mediaPlayer; // 单一实例
 
+    private static MediaPlayer mediaPlayer1; // 单一实例
+
     private static Queue<String> mediaQueue = new LinkedList<>();
 
     static {
@@ -105,6 +107,29 @@ public class MusicPlayer {
         return duration[0];
     }
 
+    public static void playOther(String path) {
+        if (!new File(path).exists()) {
+            return;
+        }
+        if (mediaPlayer1 != null) {
+            mediaPlayer1.stop(); // 如果已有实例在播放，先停止
+            mediaPlayer1.dispose(); // 释放旧的资源
+        }
+        try {
+            Media media = new Media(new File(path).toURI().toString());
+            mediaPlayer1 = new MediaPlayer(media);
+            mediaPlayer1.play();
+            mediaPlayer1.setOnEndOfMedia(() -> {
+                mediaPlayer1.stop();
+                mediaPlayer1.seek(Duration.ZERO);
+            });
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+    }
+
+
     public static void play(String path) {
         if (!new File(path).exists()) {
             return;
@@ -137,12 +162,9 @@ public class MusicPlayer {
 
         // 将文件加入队列
         mediaQueue.offer(path);
-
-        // 如果没有正在播放的媒体，则启动播放
-        playNext();
     }
 
-    private static void playNext() {
+    public static void playNext() {
         String nextPath = mediaQueue.poll();
         if (nextPath == null) {
             System.out.println("Queue is empty. Playback finished.");

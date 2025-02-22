@@ -1,14 +1,28 @@
 package competition.controller.backend;
 
+import com.alibaba.fastjson2.JSON;
+import competition.dto.BuzzDevice;
+import competition.dto.ScreenDevice;
+import competition.entity.TerminalInfo;
+import competition.mapper.TerminalInfoMapper;
+import competition.serial.Command;
 import competition.serial.SerialPortConnector;
+import competition.util.ColorUtil;
 import competition.util.Information;
+import competition.util.ObjectUtil;
+import competition.util.TimeUtil;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
-import javafx.scene.control.Button;
-import javafx.scene.control.ComboBox;
+import javafx.scene.control.*;
+import javafx.scene.control.cell.PropertyValueFactory;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
+import javax.annotation.Resource;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 @Component
 public class TerminalConfig {
@@ -20,7 +34,76 @@ public class TerminalConfig {
     private Button connectBtn;
 
     @FXML
+    private TextField screenAddressField;
+
+    @FXML
+    private TextArea logArea;
+
+    @FXML
+    private TableView<ScreenDevice> screenTable;
+
+    @FXML
+    private TableColumn<ScreenDevice, String> screenLightCol;
+
+    @FXML
+    private CheckBox light2Checker;
+
+    @FXML
+    private TableColumn<ScreenDevice, String> screenAddressCol;
+
+    @FXML
+    private ComboBox<String> color3Selector;
+
+    @FXML
+    private TableColumn<ScreenDevice, String> screenColorCol;
+
+    @FXML
+    private CheckBox light1Checker;
+
+    @FXML
+    private TableView<BuzzDevice> buzzTable;
+
+    @FXML
+    private CheckBox light3Checker;
+
+    @FXML
+    private TextField screenFlagField;
+
+    @FXML
+    private ComboBox<String> color2Selector;
+
+    @FXML
+    private TextField buzzFlagField;
+
+    @FXML
+    private TextField portField;
+
+    @FXML
+    private TableColumn<BuzzDevice, String> buzzFlagCol;
+
+    @FXML
+    private TableColumn<ScreenDevice, String> screenFlagCol;
+
+    @FXML
+    private TableColumn<BuzzDevice, String> buzzAddressCol;
+
+    @FXML
+    private TextField buzzAddressField;
+
+    @FXML
+    private ComboBox<String> color1Selector;
+
+    @Resource
+    private TerminalInfoMapper terminalInfoMapper;
+
+    @FXML
     public void initialize() {
+
+        bindTableProperty();
+        initDeviceInfo();
+
+        loadDataFromTable();
+
         List<String> ports = SerialPortConnector.getAvailableSerialPorts();
         portBox.getItems().addAll(ports);
 
@@ -32,6 +115,94 @@ public class TerminalConfig {
             connectBtn.setText("打开");
         }
     }
+
+
+    private void showScreenInfo(){
+        int selectedIndex = screenTable.getSelectionModel().getSelectedIndex();
+        if (selectedIndex < 0) {
+            return;
+        }
+        ScreenDevice screenDevice = screenTable.getItems().get(selectedIndex);
+        screenFlagField.setText(screenDevice.getFlag());
+        screenAddressField.setText(screenDevice.getAddress());
+        String[] colors = screenDevice.getColor().split(",");
+        color1Selector.setValue(colors[0]);
+        color2Selector.setValue(colors[1]);
+        color3Selector.setValue(colors[2]);
+        String light = screenDevice.getLight();
+        light1Checker.setSelected(Objects.equals(light.substring(0, 1), "1"));
+        light2Checker.setSelected(Objects.equals(light.substring(1, 2), "1"));
+        light3Checker.setSelected(Objects.equals(light.substring(2, 3), "1"));
+    }
+
+    private void showBuzzInfo(){
+        int selectedIndex = buzzTable.getSelectionModel().getSelectedIndex();
+        if (selectedIndex < 0) {
+            return;
+        }
+        BuzzDevice buzzDevice = buzzTable.getItems().get(selectedIndex);
+        buzzFlagField.setText(buzzDevice.getFlag());
+        buzzAddressField.setText(buzzDevice.getAddress());
+    }
+
+    private void bindTableProperty(){
+        screenFlagCol.setCellValueFactory(new PropertyValueFactory<>("flag"));
+        screenAddressCol.setCellValueFactory(new PropertyValueFactory<>("address"));
+        screenColorCol.setCellValueFactory(new PropertyValueFactory<>("color"));
+        screenLightCol.setCellValueFactory(new PropertyValueFactory<>("light"));
+
+        screenTable.setOnMouseClicked(event -> showScreenInfo());
+
+        buzzFlagCol.setCellValueFactory(new PropertyValueFactory<>("flag"));
+        buzzAddressCol.setCellValueFactory(new PropertyValueFactory<>("address"));
+
+        buzzTable.setOnMouseClicked(event -> showBuzzInfo());
+
+    }
+
+    private void initDeviceInfo(){
+        ObservableList<String> colorList = FXCollections.observableList(new ArrayList<>(ColorUtil.COLOR_MAPPER.keySet()));
+        color1Selector.setItems(colorList);
+        color1Selector.setValue(ColorUtil.NO_COLOR);
+        color2Selector.setItems(colorList);
+        color2Selector.setValue(ColorUtil.NO_COLOR);
+        color3Selector.setItems(colorList);
+        color3Selector.setValue(ColorUtil.NO_COLOR);
+    }
+
+    private void loadDataFromTable(){
+        TerminalInfo terminalInfo = terminalInfoMapper.selectById(1);
+        loadPort(terminalInfo);
+        loadScreenTable(terminalInfo);
+        loadBuzzTable(terminalInfo);
+    }
+
+    private void loadPort(TerminalInfo terminalInfo){
+        if (terminalInfo != null) {
+            portField.setText(ObjectUtil.toString(terminalInfo.getConnectPort()));
+        } else {
+            portField.setText("0");
+        }
+    }
+
+    private void loadScreenTable(TerminalInfo terminalInfo) {
+        screenTable.getItems().clear();
+        if (terminalInfo != null) {
+            String screenList = terminalInfo.getScreenList();
+            JSON.parseArray(screenList, ScreenDevice.class).forEach(screenTable.getItems()::add);
+        }
+        screenTable.refresh();
+    }
+
+    private void loadBuzzTable(TerminalInfo terminalInfo) {
+        buzzTable.getItems().clear();
+        if (terminalInfo != null) {
+            String buzzList = terminalInfo.getBuzzList();
+            JSON.parseArray(buzzList, BuzzDevice.class).forEach(buzzTable.getItems()::add);
+        }
+        buzzTable.refresh();
+    }
+
 
 
     @FXML
@@ -47,12 +218,151 @@ public class TerminalConfig {
             }
             SerialPortConnector instance = SerialPortConnector.createInstance(selectedPort);
             instance.connect();
+            configHardwareDevice();
             connectBtn.setText("关闭");
         }
     }
 
+    // 配置硬件设备
+    private void configHardwareDevice(){
+        SerialPortConnector instance = SerialPortConnector.getInstance();
+        if (instance == null) {
+            Information.error("请先打开串口");
+            return;
+        }
+        if (instance.isConnected()) {
+            // 设置为配置模式
+            instance.send(Command.SMOD, "1");
+            String response = waitResponse();
+            if (!response.contains(Command.SMOD.getCmd()) || !response.contains("OK")) {
+                logArea.appendText(TimeUtil.currentTime() + ":      设置为配置模式失败\n");
+                return;
+            }
+            logArea.appendText(TimeUtil.currentTime() + ":     设置为配置模式成功\n");
+            String data = portField.getText() + "," +  portField.getText();
+            instance.send(Command.SMAT, data);
+            response = waitResponse();
+            if (!response.contains(Command.SMAT.getCmd()) || !response.contains("OK")) {
+                logArea.appendText(TimeUtil.currentTime() + ":      设置屏幕地址失败\n");
+                return;
+            }
+            logArea.appendText(TimeUtil.currentTime() + ":     设置屏幕地址成功\n");
+        }
+    }
+
+    private String waitResponse(){
+        SerialPortConnector instance = SerialPortConnector.getInstance();
+        String response;
+        while (StringUtils.isEmpty(response = instance.getResponse())) {
+            try {
+                Thread.sleep(100);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+        return response;
+    }
 
 
+    @FXML
+    public void savePort(){
+        if (StringUtils.isEmpty(portField.getText())) {
+            Information.error("请输入信道");
+            return;
+        }
+        TerminalInfo terminalInfo = terminalInfoMapper.selectById(1);
+        if (terminalInfo != null) {
+            terminalInfo.setConnectPort(Integer.parseInt(portField.getText()));
+            terminalInfoMapper.updateById(terminalInfo);
+        } else {
+            terminalInfo = new TerminalInfo();
+            terminalInfo.setId(1);
+            terminalInfo.setConnectPort(Integer.parseInt(portField.getText()));
+            terminalInfoMapper.insert(terminalInfo);
+        }
+    }
 
+
+    @FXML
+    public void saveScreenInfo(){
+        String flag = screenFlagField.getText();
+        String address = screenAddressField.getText();
+        String color = color1Selector.getValue() + "," + color2Selector.getValue() + "," + color3Selector.getValue();
+        String light = (light1Checker.isSelected() ? "1" : "0") + (light2Checker.isSelected() ? "1" : "0") + (light3Checker.isSelected() ? "1" : "0");
+
+        ScreenDevice screenDevice = new ScreenDevice();
+        screenDevice.setFlag(flag);
+        screenDevice.setAddress(address);
+        screenDevice.setColor(color);
+        screenDevice.setLight(light);
+
+        List<ScreenDevice> deviceList = new ArrayList<>();
+
+        TerminalInfo terminalInfo = terminalInfoMapper.selectById(1);
+        if (terminalInfo != null) {
+            String screenList = terminalInfo.getScreenList();
+            deviceList.addAll(JSON.parseArray(screenList, ScreenDevice.class));
+        }
+        deviceList.add(screenDevice);
+        terminalInfo.setScreenList(JSON.toJSONString(deviceList));
+        terminalInfoMapper.updateById(terminalInfo);
+        loadScreenTable(terminalInfo);
+    }
+
+    @FXML
+    public void deleteScreenInfo(){
+        int selectedIndex = buzzTable.getSelectionModel().getSelectedIndex();
+        if (selectedIndex < 0) {
+            return;
+        }
+        TerminalInfo terminalInfo = terminalInfoMapper.selectById(1);
+        if (terminalInfo != null) {
+            String screenList = terminalInfo.getScreenList();
+            List<ScreenDevice> deviceList = JSON.parseArray(screenList, ScreenDevice.class);
+            deviceList.remove(selectedIndex);
+            terminalInfo.setScreenList(JSON.toJSONString(deviceList));
+            terminalInfoMapper.updateById(terminalInfo);
+            loadScreenTable(terminalInfo);
+        }
+    }
+
+    @FXML
+    public void deleteBuzzInfo(){
+        int selectedIndex = buzzTable.getSelectionModel().getSelectedIndex();
+        if (selectedIndex < 0) {
+            return;
+        }
+        TerminalInfo terminalInfo = terminalInfoMapper.selectById(1);
+        if (terminalInfo != null) {
+            String buzzList = terminalInfo.getBuzzList();
+            List<BuzzDevice> deviceList = JSON.parseArray(buzzList, BuzzDevice.class);
+            deviceList.remove(selectedIndex);
+            terminalInfo.setBuzzList(JSON.toJSONString(deviceList));
+            terminalInfoMapper.updateById(terminalInfo);
+            loadBuzzTable(terminalInfo);
+        }
+    }
+
+    @FXML
+    public void saveBuzzInfo(){
+        String flag = buzzFlagField.getText();
+        String address = buzzAddressField.getText();
+
+        BuzzDevice buzzDevice = new BuzzDevice();
+        buzzDevice.setFlag(flag);
+        buzzDevice.setAddress(address);
+
+        List<BuzzDevice> deviceList = new ArrayList<>();
+
+        TerminalInfo terminalInfo = terminalInfoMapper.selectById(1);
+        if (terminalInfo != null) {
+            String buzzList = terminalInfo.getBuzzList();
+            deviceList.addAll(JSON.parseArray(buzzList, BuzzDevice.class));
+        }
+        deviceList.add(buzzDevice);
+        terminalInfo.setBuzzList(JSON.toJSONString(deviceList));
+        terminalInfoMapper.updateById(terminalInfo);
+        loadBuzzTable(terminalInfo);
+    }
 
 }

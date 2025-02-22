@@ -2,21 +2,47 @@ package competition.serial;
 
 public enum Command {
 
-    HEAT,
+    HEAT("HEAT"),
 
-    SMOD,
+    SMOD("SMOD"),
 
-    SKEY,
+    SKEY("SKEY"),
 
-    SDSP,
+    SDSP("SDSP"),
 
-    SHOW,
+    SHOW("SHOW"),
 
-    SBLK,
+    SMAT("SMAT"),
 
-    STAR,
+    SKUP("SKUP"),
 
-    EEND,
+    SBLK("SBLK"),
 
-    UKEY
+    STAR("STAR"),
+
+    EEND("EEND"),
+
+    SDUP("SDUP"),
+
+    UKEY("UKEY"),
+    ;
+
+    private String cmd;
+
+    Command(String cmd) {
+        this.cmd = cmd;
+    }
+
+    public String getCmd() {
+        return cmd;
+    }
+
+    public static Command of(String cmd) {
+        for (Command value : values()) {
+            if (value.cmd.equals(cmd)) {
+                return value;
+            }
+        }
+        return null;
+    }
 }

@@ -31,6 +31,8 @@ import javafx.scene.layout.Background;
 import javafx.scene.layout.BackgroundFill;
 import javafx.scene.layout.CornerRadii;
 import javafx.scene.layout.StackPane;
+import javafx.scene.media.Media;
+import javafx.scene.media.MediaPlayer;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextAlignment;
@@ -38,13 +40,19 @@ import javafx.stage.Stage;
 import javafx.util.Duration;
 import org.springframework.stereotype.Component;
 
+import java.io.File;
+
 @Component
 public class BuzzTimeBoardPreview extends PreviewPane {
+
+    private static MediaPlayer mediaPlayer;
 
     @FXML
     private AnchorPane container;
 
     private String timeValue = "0";
+
+    private volatile boolean stop = false;
 
     private Timeline timeline;
 
@@ -55,6 +63,39 @@ public class BuzzTimeBoardPreview extends PreviewPane {
     private Text teamScore = new Text();
 
     private ControlPane controlPane;
+
+    private void playInternal(double speed, int limitTime, int alertValue){
+        if (stop) {
+            return;
+        }
+        // 不显示 0
+        if (timeVal == 0) {
+            MusicPlayer.playWithCallback(MusicResource.BUZZ_START, () -> {
+                RuntimeUtil.buzzCalculate = System.nanoTime();
+                buzzTiming(limitTime);
+            });
+            return;
+        }
+        this.timeValue = format(timeVal);
+        if (this.timeValue.equals("0")) {
+            this.timeValue = "";
+        }
+        PreviewStack.reload(this.timeVal, this.timeValue);
+        teamScore.setText(timeValue);
+        updateExtendScreen();
+        //showData();
+        MusicPlayer.playWithCallback(MusicResource.BUZZ_TIME(timeVal), () -> {
+            if (timeVal <= alertValue) {
+                timeline = new Timeline(new KeyFrame(Duration.seconds(speed), e -> {
+                    timeVal--;
+                    playInternal(speed, limitTime, alertValue);
+                }));
+                timeline.setCycleCount(1);
+                timeline.play();
+            }
+
+        });
+    }
 
 
     @Override
@@ -81,31 +122,34 @@ public class BuzzTimeBoardPreview extends PreviewPane {
         this.timeValue = format(timeVal);
         teamScore.setVisible(true);
         teamScore.setText(timeValue);
-        timeline = new Timeline(new KeyFrame(Duration.seconds(speed), e -> {
-            int alertValue = Integer.parseInt(controlPane.getAlertTime());
-            timeVal--;
-            if (timeVal == 0) {
-                timeline.stop();
-                timeline = null;
-                MusicPlayer.playWithCallback(MusicResource.BUZZ_START, () -> {
-                    RuntimeUtil.buzzCalculate = System.nanoTime();
-                    buzzTiming(limitTime);
-                });
+        stop = false;
+        playInternal(speed, limitTime, Integer.parseInt(controlPane.getAlertTime()));
+//        timeline = new Timeline(new KeyFrame(Duration.seconds(speed), e -> {
+//            int alertValue = Integer.parseInt(controlPane.getAlertTime());
+//            timeVal--;
+//            if (timeVal == 0) {
+//                timeline.stop();
+//                timeline = null;
+//                MusicPlayer.playWithCallback(MusicResource.BUZZ_START, () -> {
+//                    RuntimeUtil.buzzCalculate = System.nanoTime();
+//                    buzzTiming(limitTime);
+//                });
+//
+//
+//            } else {
+//                if (timeVal <= alertValue) {
+//                    MusicPlayer.play(MusicResource.BUZZ_TIME(timeVal));
+//                }
+//            }
+//
+//        }));
+        updateExtendScreen();
+//        timeline.setCycleCount(-1);
+//        timeline.playFromStart();
+//        MusicPlayer.play(MusicResource.BUZZ_TIME(timeVal));
+    }
 
-
-            } else {
-                if (timeVal <= alertValue) {
-                    MusicPlayer.play(MusicResource.BUZZ_TIME(timeVal));
-                }
-            }
-            this.timeValue = format(timeVal);
-            // 不显示 0
-            if (this.timeValue.equals("0")) {
-                this.timeValue = "";
-            }
-            PreviewStack.reload(this.timeVal, this.timeValue);
-            showData();
-        }));
+    private void updateExtendScreen(){
         if (ExtendedScreen.hasShow()) {
             ReloadPane timeBoard = controlPane.getBuzzTimeBoard();
             if (timeBoard == null) {
@@ -117,10 +161,9 @@ public class BuzzTimeBoardPreview extends PreviewPane {
                 timeBoard.reload(timeVal, timeValue);
             }
         }
-        timeline.setCycleCount(-1);
-        timeline.playFromStart();
-        MusicPlayer.play(MusicResource.BUZZ_TIME(timeVal));
     }
+
+
 
     @Override
     public void hideTime() {
@@ -236,6 +279,7 @@ public class BuzzTimeBoardPreview extends PreviewPane {
     @Override
     public void close() {
         if (timeline != null) {
+            stop = true;
             timeline.stop();
             timeline = null;
         }

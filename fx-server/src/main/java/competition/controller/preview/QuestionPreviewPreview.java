@@ -335,8 +335,9 @@ public class QuestionPreviewPreview extends PreviewPane {
 
             if (GlobalCache.MAX_TEAM_NUMBER <= 0) {
                 tiganLabel.setText(tiganLabel.getText() + "(未注册)");
+               // StringProperty [bean: Text[id=tiganLabel, text="1、(单选题)男年满(         )周岁、女年满(         )周岁的孤老烈士遗属本人自愿的，可以在光荣院、敬老院集中供养。( )", x=0.0, y=0.0, alignment=LEFT, origin=BASELINE, boundsType=LOGICAL, lineSpacing=2.0, wrappingWidth=1530.0, font=Font[name=SimHei, family=SimHei, style=Regular, size=30.0], fontSmoothingType=GRAY, fill=0x000000ff], name: text, value: 1、(单选题)男年满(         )周岁、女年满(         )周岁的孤老烈士遗属本人自愿的，可以在光荣院、敬老院集中供养。( )]
             }
-            
+            tiganLabel.setText(tiganLabel.getText().replace("\u00A0", " "));
             // 只有选择题展示选项
             tiganBox.getChildren().add(tiganLabel);
             if (questionType.equals("单选题") || questionType.equals("多选题") || questionType.equals("不定项选择题")) {

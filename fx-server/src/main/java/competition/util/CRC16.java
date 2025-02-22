@@ -29,10 +29,10 @@ public class CRC16 {
         return String.format("%04X",(crc & 0xFFFF)); // 返回16位结果
     }
 
-//    public static void main(String[] args) {
-//        // 测试数据
-//        byte[] testData = "#,0020,HEAT,0,".getBytes(StandardCharsets.US_ASCII); // 示例数据，可以根据实际情况修改
-//        String crc = calculateCRC16(testData);
-//        System.out.printf(crc); // 以16进制格式输出CRC16校验值
-//    }
+    public static void main(String[] args) {
+        // 测试数据
+        byte[] testData = "#,0020,SMOD,0,".getBytes(StandardCharsets.US_ASCII); // 示例数据，可以根据实际情况修改
+        String crc = calculateCRC16(testData);
+        System.out.printf(crc); // 以16进制格式输出CRC16校验值
+    }
 }

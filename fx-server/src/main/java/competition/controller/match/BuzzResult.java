@@ -93,7 +93,7 @@ public class BuzzResult implements ReloadPane {
                 result.setFont(FontMap.load(successFont,(successSize)));
                 result.setTextFill(Color.valueOf(jsonObject.getOrDefault("successColor", "BLACK").toString()));
             } else {
-                result.setText("抢答失败");
+                result.setText("抢答犯规");
                 String errorFont = jsonObject.getOrDefault("errorFont", "默认.ttf").toString();
                 double errorSize =  ScreenAdapter.calculateExX(Double.parseDouble(jsonObject.getOrDefault("errorSize", "12").toString()));
                 result.setFont(FontMap.load(errorFont, errorSize));

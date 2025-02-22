@@ -263,7 +263,7 @@ public class ExtendedScreen {
             FXMLLoader loader = new FXMLLoader(Navigator.class.getResource(fxml));
             ConfigurableApplicationContext applicationContext = JavaFxApplication.getApplicationContext();
             ConfigsMapper configsMapper = applicationContext.getBean(ConfigsMapper.class);
-            Configs configs = configsMapper.selectById(10);
+            Configs configs = configsMapper.selectById(1);
             loader.setControllerFactory(applicationContext::getBean);
             load = loader.load();
             Stage stage = timeBoardStage;

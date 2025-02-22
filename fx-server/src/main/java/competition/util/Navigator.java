@@ -8,6 +8,8 @@ import competition.entity.Buzz;
 import competition.entity.Configs;
 import competition.mapper.BuzzMapper;
 import competition.mapper.ConfigsMapper;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.ObservableList;
 import javafx.embed.swing.JFXPanel;
 import javafx.event.EventHandler;
@@ -119,6 +121,15 @@ public class Navigator {
 
             previewStage.setScene(previewScene);
             previewStage.show();
+            previewStage.sceneProperty().addListener(new ChangeListener<Scene>() {
+                @Override
+                public void changed(ObservableValue<? extends Scene> observable, Scene oldValue, Scene newValue) {
+                    // 关闭
+                    GlobalCache.showTeamRank = false;
+                    GlobalCache.showMemberRank = false;
+                    GlobalCache.showModel7Rank = false;
+                }
+            });
             PreviewPane previewPane =  loader.getController();
             previewPane.setScene(previewScene);
             return previewPane;
@@ -366,6 +377,17 @@ public class Navigator {
                 ExtendedScreen.timeBoardStage.setY(bounds.getMinY() + ScreenAdapter.calculateExY(event.getScreenY() - yOffset.get()));
             });
 
+            load.setOnMouseReleased(event -> {
+                System.out.println("答题计时拖动后位置 ========================>");
+                System.out.println(stage.getX());
+                System.out.println(stage.getY());
+                String[] split = config.split(ConfigSpliter.SPLITER);
+                split[29] = stage.getX() + "";
+                split[30] = stage.getY() + "";
+                configs.setConfig(String.join(ConfigSpliter.SPLITER, split));
+                configsMapper.updateById(configs);
+            });
+
             scene.getStylesheets().add(cssFile); // 应用 CSS
 
             stage.setScene(scene);
@@ -471,6 +493,16 @@ public class Navigator {
                 ExtendedScreen.scoreBoardStage.setY(bounds.getMinY() + ScreenAdapter.calculateExY(event.getScreenY() - yOffset.get()));
             });
 
+            load.setOnMouseReleased(event -> {
+                System.out.println("分数面板拖动后位置 ========================>");
+                System.out.println(stage.getX());
+                System.out.println(stage.getY());
+                String[] split = config.split(ConfigSpliter.SPLITER);
+                split[17] = stage.getX() + "";
+                split[18] = stage.getY() + "";
+                configs.setConfig(String.join(ConfigSpliter.SPLITER, split));
+                configsMapper.updateById(configs);
+            });
             
             scene.getStylesheets().add(cssFile); // 应用 CSS
 

@@ -272,8 +272,9 @@ public class CluePreview implements ReloadPane {
             if (GlobalCache.MAX_TEAM_NUMBER <= 0) {
                 tiganLabel.setText(tiganLabel.getText() + "(未注册)");
             }
+            tiganLabel.setText(tiganLabel.getText().replace("\u00A0", " "));
             // 答案
-            daanLabel.setText(split[4] + " " + inner.getAnswer());
+            daanLabel.setText(split[4] + " " + inner.getAnswer().replace("\u00A0", " "));
             backPane.setLayoutX(tiganBox.getLayoutX());
             backPane.setLayoutY((tiganBox.getLayoutY() + tiganBox.getPrefHeight() + ScreenAdapter.calculateExY(10)));
             // 答案颜色

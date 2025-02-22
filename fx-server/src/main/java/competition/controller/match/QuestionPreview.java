@@ -260,6 +260,7 @@ public class QuestionPreview implements ReloadPane{
             if (GlobalCache.MAX_TEAM_NUMBER <= 0) {
                 tiganLabel.setText(tiganLabel.getText() + "(未注册)");
             }
+            tiganLabel.setText(tiganLabel.getText().replace("\u00A0", " "));
 
             // 只有选择题展示选项
             tiganBox.getChildren().add(tiganLabel);

@@ -133,7 +133,7 @@ public class ScoreBoardH implements BoardPane {
             teamScore.setFont(sfont);
             teamScore.setUnderline(Boolean.valueOf(ssplit[5]));
             teamScore.setStrikethrough(Boolean.valueOf(ssplit[2]));
-            container.setSpacing(ScreenAdapter.calculateExX(Integer.parseInt(ssplit[6])));
+            container.setSpacing(ScreenAdapter.calculateExX(Integer.parseInt(split[6])));
             if (Boolean.valueOf(ssplit[3])) {
                 teamScore.setStroke(teamScore.getFill());
                 teamScore.setStrokeWidth(1);
@@ -226,7 +226,7 @@ public class ScoreBoardH implements BoardPane {
                                 stackPane2.setBackground(new Background(new BackgroundFill(Color.valueOf(cfgArr[25]), new CornerRadii(10), Insets.EMPTY)));
                             }
                         } else {
-                            userSelect.setText(userData.getUserSelect());
+                            userSelect.setText(userData.getUserSelect().replace("\u00A0", " "));
                             if (userData.getAnswer().equals(userData.getUserSelect())) {
                                 stackPane2.setBackground(new Background(new BackgroundFill(Color.valueOf(cfgArr[27]), new CornerRadii(10), Insets.EMPTY)));
                             } else {
@@ -272,7 +272,7 @@ public class ScoreBoardH implements BoardPane {
                                     }
                                     //stackPane2.setBackground(new Background(new BackgroundFill(Color.valueOf(cfgArr[25]), new CornerRadii(10), Insets.EMPTY)));
                                 } else {
-                                    if (modelData.getUserSelect().equals(modelData.getAnswer())) {
+                                    if (modelData.getUserSelect().replace("\u00A0", " ").equals(modelData.getAnswer().replace("\u00A0", " "))) {
                                         stackPane2.setBackground(new Background(new BackgroundFill(Color.valueOf(cfgArr[27]), new CornerRadii(10), Insets.EMPTY)));
                                     } else {
                                         stackPane2.setBackground(new Background(new BackgroundFill(Color.valueOf(cfgArr[28]), new CornerRadii(10), Insets.EMPTY)));

@@ -271,8 +271,8 @@ public class ScoreBoardVPreview extends PreviewPane implements BoardPane {
                                 stackPane2.setBackground(new Background(new BackgroundFill(Color.valueOf(cfgArr[25]), new CornerRadii(10), Insets.EMPTY)));
                             }
                         } else {
-                            userSelect.setText(userData.getUserSelect());
-                            if (userData.getAnswer().equals(userData.getUserSelect())) {
+                            userSelect.setText(userData.getUserSelect().replace("\u00A0", " "));
+                            if (userData.getAnswer().replace("\u00A0", " ").equals(userData.getUserSelect().replace("\u00A0", " "))) {
                                 stackPane2.setBackground(new Background(new BackgroundFill(Color.valueOf(cfgArr[27]), new CornerRadii(10), Insets.EMPTY)));
                             } else {
                                 stackPane2.setBackground(new Background(new BackgroundFill(Color.valueOf(cfgArr[28]), new CornerRadii(10), Insets.EMPTY)));

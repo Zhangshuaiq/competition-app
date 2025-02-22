@@ -26,6 +26,8 @@ public class SerialPortConnector {
 
     private String portName;
 
+    private volatile String response;
+
     public static synchronized SerialPortConnector createInstance(String portName) {
         if (instance == null) {
             instance = new SerialPortConnector(portName);
@@ -37,8 +39,8 @@ public class SerialPortConnector {
         return instance;
     }
 
-    public boolean isConnected(){
-        return serialPort!= null && serialPort.isOpen();
+    public boolean isConnected() {
+        return serialPort != null && serialPort.isOpen();
     }
 
     private SerialPortConnector(String portName) {
@@ -50,7 +52,7 @@ public class SerialPortConnector {
         serialPort.setParity(SerialPort.NO_PARITY);
     }
 
-    public void connect(){
+    public void connect() {
         if (serialPort.openPort()) {
             System.out.println("Port opened successfully.");
             serialPort.addDataListener(new SerialPortDataListener() {
@@ -74,13 +76,67 @@ public class SerialPortConnector {
                         for (String s : split) {
                             if (!StringUtils.isEmpty(s.trim())) {
                                 String responseData = FRAME_HEAD + s.trim();
-                                System.out.println("Received Data: " +responseData);
                                 switch (Command.valueOf(responseData.substring(7, 11))) {
                                     case HEAT:
-                                        System.out.println(" response:" + Command.HEAT);
+                                        System.out.println(" 心跳包:" + Command.HEAT);
                                         break;
                                     case SMOD:
-                                        System.out.println("response: " +Command.SMOD);
+                                        response = responseData;
+                                        System.out.println("response: " + Command.SMOD);
+                                        System.out.println("Received Data: " +responseData);
+                                        break;
+                                    case STAR:
+                                        response = responseData;
+                                        System.out.println("response: " + Command.STAR);
+                                        System.out.println("Received Data: " +responseData);
+                                        break;
+                                    case EEND:
+                                        response = responseData;
+                                        System.out.println("response: " + Command.EEND);
+                                        System.out.println("Received Data: " +responseData);
+                                        break;
+                                    case SBLK:
+                                        response = responseData;
+                                        System.out.println("response: " + Command.SBLK);
+                                        System.out.println("Received Data: " +responseData);
+                                        break;
+                                    case SDSP:
+                                        response = responseData;
+                                        System.out.println("response: " + Command.SDSP);
+                                        System.out.println("Received Data: " +responseData);
+                                        break;
+                                    case SHOW:
+                                        response = responseData;
+                                        System.out.println("response: " + Command.SHOW);
+                                        System.out.println("Received Data: " +responseData);
+                                        break;
+                                    case SKEY:
+                                        response = responseData;
+                                        System.out.println("response: " + Command.SKEY);
+                                        System.out.println("Received Data: " +responseData);
+                                        break;
+                                    case UKEY:
+                                        response = responseData;
+                                        System.out.println("response: " + Command.UKEY);
+                                        System.out.println("Received Data: " +responseData);
+                                        break;
+                                    case SMAT:
+                                        response = responseData;
+                                        System.out.println("response: " + Command.SMAT);
+                                        System.out.println("Received Data: " +responseData);
+                                        break;
+                                    case SKUP:
+                                        response = responseData;
+                                        System.out.println("response: " + Command.SKUP);
+                                        System.out.println("Received Data: " +responseData);
+                                        break;
+                                    case SDUP:
+                                        response = responseData;
+                                        System.out.println("response: " + Command.SDUP);
+                                        System.out.println("Received Data: " +responseData);
+                                        break;
+                                    default:
+                                        System.out.println("Received Data: " +responseData);
                                         break;
                                 }
                             }
@@ -94,6 +150,14 @@ public class SerialPortConnector {
         }
     }
 
+    public String getResponse() {
+        if (response != null) {
+            String temp = response;
+            response = null;
+            return temp;
+        }
+        return response;
+    }
 
     public String getPortName() {
         return portName;
@@ -110,13 +174,18 @@ public class SerialPortConnector {
     }
 
 
-    public void close(){
+    public void close() {
         serialPort.closePort();
         serialPort = null;
         instance = null;
     }
 
-    public String send(Command cmd, String data){
+    public void send(String cmd) {
+        serialPort.writeBytes(cmd.getBytes(), cmd.length());
+        System.out.println("Data sent: " + cmd);
+    }
+
+    public void send(Command cmd, String data) {
         // 长度 = 1(帧头) + 1(分隔符) + 4(帧长度) + 1(分隔符) + 4(命令码) + 1(分隔符) + len(数据区域) + 1(分隔符) + 4(校验区域) +  1(分隔符) + 1(帧尾) = 18
         int totalLength = 1 + 1 + 4 + 1 + 4 + 1 + data.length() + 1 + 4 + 1 + 1;
         String frameLength = String.format("%04d", totalLength); // 不足4位补0
@@ -136,12 +205,9 @@ public class SerialPortConnector {
         if (!data.isEmpty()) {
             fullCmd = FRAME_HEAD + SPLITTER + frameLength + SPLITTER + cmd + SPLITTER + data + SPLITTER + crc16 + SPLITTER + FRAME_TAIL;
         } else {
-            fullCmd = FRAME_HEAD + SPLITTER + frameLength + SPLITTER + cmd +  SPLITTER + crc16 + SPLITTER + FRAME_TAIL;
+            fullCmd = FRAME_HEAD + SPLITTER + frameLength + SPLITTER + cmd + SPLITTER + crc16 + SPLITTER + FRAME_TAIL;
         }
-        serialPort.writeBytes(fullCmd.getBytes(), fullCmd.length());
-        System.out.println("Data sent: " + fullCmd);
-
-        return "";
+        send(fullCmd);
     }
 
     public static void main(String[] args) {
