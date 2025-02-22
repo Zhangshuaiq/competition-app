@@ -225,14 +225,16 @@ export default {
   width: 100px;            /* 圆的直径 */
   height: 100px;           /* 圆的直径 */
   line-height: 94px;
-  background-color: #4A90E2; /* 蓝色背景 */
+  background-color: #00b050; /* 绿色背景 */
   color: white;            /* 字体颜色为白色 */
   border-radius: 50%;      /* 实现圆形效果 */
   text-align: center;
   font-size: 50px;         /* 字体大小 */
   font-family: 'Microsoft YaHei', sans-serif; /* 字体 */
-  border: 2px solid #000;  /* 边框为黑色 */
+  border: 10px solid #e5e0e0;  /* 边框为灰色 */
   margin: 0 auto;
+  pointer-events: auto;
+  z-index: 10;
 }
 
 #question-name {

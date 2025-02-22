@@ -15,10 +15,10 @@
               </div>
             </el-col>
           </el-row>
-          <div v-if="buzzStatus">
+          <div :style="{ visibility: buzzStatus ? 'visible' : 'hidden' }">
             <el-row>
               <el-col span="22">
-                <div class="board-item" :style="{backgroundColor: item.buzzStatus?buzzStatusColor[1]: buzzStatusColor[0]}">
+                <div class="board-item" :style="{backgroundColor: buzzStatusColor[item.buzzStatus]}">
                   <div>
                     {{item.buzzTime}}
                   </div>
@@ -26,8 +26,8 @@
               </el-col>
             </el-row>
           </div>
-          <div v-if="showStatus">
-            <div v-if="showMember" >
+          <div :style="{ visibility: showStatus ? 'visible' : 'hidden' }">
+            <div :style="{ visibility: showMember ? 'visible' : 'hidden' }">
               <el-row>
                 <el-col span="6" v-for="(st, index) in item.statusList" :key="index">
                   <div class="status-item" :style="{backgroundColor: statusColor[st]}">
@@ -36,18 +36,17 @@
                 </el-col>
               </el-row>
             </div>
-            <div v-else>
-              <el-row>
-                <el-col span="22">
-                  <div class="board-item" :style="{backgroundColor: statusColor[item.status]}">
-                    <div v-if="item.status === 2 || item.status === 3">
-                      {{item.teamSelect}}
-                    </div>
-                  </div>
-                </el-col>
-              </el-row>
-            </div>
-            
+<!--            <div :style="{ visibility: !showMember ? 'visible' : 'hidden' }">-->
+<!--              <el-row>-->
+<!--                <el-col span="22">-->
+<!--                  <div class="board-item" :style="{backgroundColor: statusColor[item.status]}">-->
+<!--                    <div v-if="item.status === 2 || item.status === 3">-->
+<!--                      {{item.teamSelect}}-->
+<!--                    </div>-->
+<!--                  </div>-->
+<!--                </el-col>-->
+<!--              </el-row>-->
+<!--            </div>-->
           </div>
         </div>
       </el-col>
