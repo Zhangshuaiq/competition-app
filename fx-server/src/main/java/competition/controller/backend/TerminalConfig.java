@@ -239,6 +239,7 @@ public class TerminalConfig {
                 return;
             }
             logArea.appendText(TimeUtil.currentTime() + ":     设置为配置模式成功\n");
+            // 设置屏幕地址
             String data = portField.getText() + "," +  portField.getText();
             instance.send(Command.SMAT, data);
             response = waitResponse();
@@ -247,6 +248,24 @@ public class TerminalConfig {
                 return;
             }
             logArea.appendText(TimeUtil.currentTime() + ":     设置屏幕地址成功\n");
+
+            // 设置为抢答模式
+            instance.send(Command.SMOD, "0");
+            response = waitResponse();
+            if (!response.contains(Command.SMOD.getCmd()) || !response.contains("OK")) {
+                logArea.appendText(TimeUtil.currentTime() + ":      设置为抢答模式失败\n");
+                return;
+            }
+            logArea.appendText(TimeUtil.currentTime() + ":     设置为抢答模式成功\n");
+
+            // 屏幕显示分数
+            instance.send(Command.SHOW, "0");
+            response = waitResponse();
+            if (!response.contains(Command.SHOW.getCmd()) || !response.contains("OK")) {
+                logArea.appendText(TimeUtil.currentTime() + ":      显示分数失败\n");
+                return;
+            }
+            logArea.appendText(TimeUtil.currentTime() + ":     显示分数成功\n");
         }
     }
 

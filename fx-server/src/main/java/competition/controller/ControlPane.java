@@ -1599,6 +1599,9 @@ public class ControlPane {
         Buzz buzz = buzzMapper.selectById(1);
 
         String mode = buzz.getMode();
+        if (currentStage != null && !StringUtils.isEmpty(currentStage.getpAType())) {
+            mode = currentStage.getpAType();
+        }
         if (mode.equals("淘汰模式")) {
             Integer lastSuccess = buzz.getLastSuccess();
             LinkedList<String> linkedList = new LinkedList<>(RuntimeUtil.buzzTimeMap.keySet());
