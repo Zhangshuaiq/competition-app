@@ -27,26 +27,26 @@
             </el-row>
           </div>
           <div :style="{ visibility: showStatus ? 'visible' : 'hidden' }">
-            <div :style="{ visibility: showMember ? 'visible' : 'hidden' }">
+            <div v-if="showMember">
               <el-row>
                 <el-col span="6" v-for="(st, index) in item.statusList" :key="index">
-                  <div class="status-item" :style="{backgroundColor: statusColor[st]}">
+                  <div class="status-item" :style="{backgroundColor: showMember?statusColor[st]:'transparent'}">
                     {{index + 1}}
                   </div>
                 </el-col>
               </el-row>
             </div>
-<!--            <div :style="{ visibility: !showMember ? 'visible' : 'hidden' }">-->
-<!--              <el-row>-->
-<!--                <el-col span="22">-->
-<!--                  <div class="board-item" :style="{backgroundColor: statusColor[item.status]}">-->
-<!--                    <div v-if="item.status === 2 || item.status === 3">-->
-<!--                      {{item.teamSelect}}-->
-<!--                    </div>-->
-<!--                  </div>-->
-<!--                </el-col>-->
-<!--              </el-row>-->
-<!--            </div>-->
+            <div :v-if="!showMember">
+              <el-row>
+                <el-col span="22">
+                  <div class="board-item" :style="{backgroundColor: !showMember? statusColor[item.status]:'transparent'}">
+                    <div v-if="item.status === 2 || item.status === 3">
+                      {{item.teamSelect}}
+                    </div>
+                  </div>
+                </el-col>
+              </el-row>
+            </div>
           </div>
         </div>
       </el-col>
@@ -130,7 +130,7 @@
   text-align: center;
   font-size: smaller;
   color: white;
-  background-color: #FFC000;
+  background-color:  #FFC000;
 }
 
 .board-item {
