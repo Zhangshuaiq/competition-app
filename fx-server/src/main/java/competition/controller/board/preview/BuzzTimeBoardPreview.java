@@ -124,29 +124,7 @@ public class BuzzTimeBoardPreview extends PreviewPane {
         teamScore.setText(timeValue);
         stop = false;
         playInternal(speed, limitTime, Integer.parseInt(controlPane.getAlertTime()));
-//        timeline = new Timeline(new KeyFrame(Duration.seconds(speed), e -> {
-//            int alertValue = Integer.parseInt(controlPane.getAlertTime());
-//            timeVal--;
-//            if (timeVal == 0) {
-//                timeline.stop();
-//                timeline = null;
-//                MusicPlayer.playWithCallback(MusicResource.BUZZ_START, () -> {
-//                    RuntimeUtil.buzzCalculate = System.nanoTime();
-//                    buzzTiming(limitTime);
-//                });
-//
-//
-//            } else {
-//                if (timeVal <= alertValue) {
-//                    MusicPlayer.play(MusicResource.BUZZ_TIME(timeVal));
-//                }
-//            }
-//
-//        }));
         updateExtendScreen();
-//        timeline.setCycleCount(-1);
-//        timeline.playFromStart();
-//        MusicPlayer.play(MusicResource.BUZZ_TIME(timeVal));
     }
 
     private void updateExtendScreen(){

@@ -12,7 +12,11 @@ public class TerminalInfo {
     @TableId(type = IdType.AUTO)
     private Integer id;
 
+    // 显示器信道
     private Integer connectPort;
+
+    // 抢答器信道
+    private Integer buzzPort;
 
     private String screenList;
 

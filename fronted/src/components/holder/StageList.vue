@@ -79,7 +79,7 @@ export default {
 
 <style scoped>
 .stageList {
-  margin-top: 20vh;
+  margin-top: 3vh;
   margin-left: 15vw;
   margin-right: 15vw;
   /*display: flex;           !* 启用Flexbox布局 *!*/

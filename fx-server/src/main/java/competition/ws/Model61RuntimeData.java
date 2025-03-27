@@ -104,7 +104,7 @@ public class Model61RuntimeData {
                             int scores = team.getQScores().stream().mapToInt(x -> x).sum();
                             team.setNewScore(team.getTeamScore() + scores);
 
-                            scoreService.addScore(data.getUserName(), team.getFullName(), controlPane.getCurrentStage().getName(), data.getQuestionNumber().toString(),
+                            scoreService.addScore(data.getUserName(), team, controlPane.getCurrentStage().getName(), data.getQuestionNumber().toString(),
                                     data.getSecond().toString(), data.getScore(), team.getNewScore().toString(), data.getUserSelect());
                         } else {
                             team.setNewScore(team.getTeamScore());
@@ -215,7 +215,7 @@ public class Model61RuntimeData {
                         // 更新队伍分数
                         if (controlPane.getCurrentStage().getCountTotal() == 1) {
                             team.setNewScore(team.getTeamScore() + data.getScore());
-                            scoreService.addScore(data.getUserName(), team.getFullName(), controlPane.getCurrentStage().getName(), data.getQuestionNumber().toString(),
+                            scoreService.addScore(data.getUserName(), team, controlPane.getCurrentStage().getName(), data.getQuestionNumber().toString(),
                                     data.getSecond().toString(), data.getScore(), team.getNewScore().toString(), data.getUserSelect());
 
                         } else {
@@ -228,7 +228,7 @@ public class Model61RuntimeData {
                         if (controlPane.getCurrentStage().getCountTotal() == 1) {
                             team.setNewScore(team.getTeamScore() - controlPane.getCurrentStage().getDesValue());
 
-                            scoreService.addScore(data.getUserName(), team.getFullName(), controlPane.getCurrentStage().getName(), data.getQuestionNumber().toString(),
+                            scoreService.addScore(data.getUserName(), team, controlPane.getCurrentStage().getName(), data.getQuestionNumber().toString(),
                                     data.getSecond().toString(), -controlPane.getCurrentStage().getDesValue(), team.getNewScore().toString(), data.getUserSelect());
                         } else {
                             team.setNewScore(team.getTeamScore());

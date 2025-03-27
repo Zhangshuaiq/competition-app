@@ -1,8 +1,13 @@
 package competition.service;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import competition.dto.ScreenDevice;
 import competition.entity.StageMemberScore;
+import competition.entity.Teams;
 import competition.mapper.StageMemberScoreMapper;
+import competition.serial.Command;
+import competition.serial.SerialPortConfig;
+import competition.serial.SerialPortConnector;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
@@ -15,16 +20,23 @@ public class ScoreService {
     @Resource
     private StageMemberScoreMapper scoreMapper;
     
-    public void addScore(String member, String team, String stage,
+    public void addScore(String member, Teams team, String stage,
                          String question, String time, int score, String totalScore, String answerText){
-        
+        SerialPortConnector instance = SerialPortConnector.getInstance();
+        ScreenDevice screenDevice = SerialPortConfig.getScreenDevice(team.getShortName());
+        if (screenDevice != null) {
+            // 异步更新平板分数
+            new Thread(() -> {
+                instance.send(Command.SHOW, SerialPortConfig.buildScreenData(screenDevice, Integer.parseInt(totalScore)));
+            }).start();
+        }
         if (member == null) {
             List<StageMemberScore> scores = scoreMapper.selectList(new LambdaQueryWrapper<StageMemberScore>()
                     .eq(StageMemberScore::getTeam, team)
                     .eq(StageMemberScore::getStage, stage)
             );
             StageMemberScore memberScore = new StageMemberScore();
-            memberScore.setTeam(team);
+            memberScore.setTeam(team.getFullName());
             memberScore.setStage(stage);
             memberScore.setQuestion(question);
             memberScore.setTime(time);
@@ -58,7 +70,7 @@ public class ScoreService {
                     .eq(StageMemberScore::getStage, stage)
             );
             StageMemberScore memberScore = new StageMemberScore();
-            memberScore.setTeam(team);
+            memberScore.setTeam(team.getFullName());
             memberScore.setMember(member);
             memberScore.setStage(stage);
             memberScore.setQuestion(question);

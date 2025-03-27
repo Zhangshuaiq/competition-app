@@ -78,6 +78,8 @@ public class TimeBoardPreview extends PreviewPane {
         Configs configs = configsMapper.selectById(1);
         String config = configs.getConfig();
         String[] split = config.split(ConfigSpliter.SPLITER);
+        Navigator.timeBoardStage.setX(ScreenAdapter.calculateMainX(Double.parseDouble(split[29])));
+        Navigator.timeBoardStage.setY(ScreenAdapter.calculateMainY(Double.parseDouble(split[30])));
         teamScore.setTextAlignment(TextAlignment.CENTER);
         teamScore.setFont(FontMap.load(split[33], ScreenAdapter.calculateMainX(Integer.parseInt(split[24]))));
         
@@ -106,9 +108,6 @@ public class TimeBoardPreview extends PreviewPane {
         if (timeBoard != null) {
             timeBoard.reload(timeVal, timeValue);
         }
-
-        Navigator.timeBoardStage.setX(ScreenAdapter.calculateMainX(Double.parseDouble(split[29])));
-        Navigator.timeBoardStage.setY(ScreenAdapter.calculateMainY(Double.parseDouble(split[30])));
     }
 
     private String format(int timeVal) {

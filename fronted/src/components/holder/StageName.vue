@@ -81,7 +81,7 @@ export default {
   display: flex;           /* 启用Flexbox布局 */
   justify-content: center; /* 水平居中 */
   align-items: center;     /* 垂直居中 */
-  height: 70vh;
+  height: 50vh;
 }
 
 .stage-item {

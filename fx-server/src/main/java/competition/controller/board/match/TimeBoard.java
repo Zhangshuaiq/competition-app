@@ -39,6 +39,8 @@ public class TimeBoard implements ReloadPane {
     @FXML
     public void initialize() {
         configsMapper = JavaFxApplication.getApplicationContext().getBean(ConfigsMapper.class);
+        stackPane.getChildren().clear();
+        container.getChildren().clear();
         stackPane.getChildren().add(teamScore);
         container.getChildren().add(stackPane);
         reload();

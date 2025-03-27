@@ -12,9 +12,9 @@
       <ComboBox fx:id="portBox" layoutX="196.0" layoutY="44.0" prefHeight="30.0" prefWidth="525.0" />
       <Button fx:id="connectBtn" layoutX="741.0" layoutY="44.0" mnemonicParsing="false" onMouseClicked="#controlPort" prefHeight="30.0" prefWidth="106.0" text="打开" />
       <Label layoutX="82.0" layoutY="92.0" text="硬件终端信息" />
-      <Label layoutX="82.0" layoutY="137.0" text="主机信道：" />
-      <TextField fx:id="portField" layoutX="155.0" layoutY="130.0" prefHeight="30.0" prefWidth="118.0" />
-      <Button layoutX="298.0" layoutY="130.0" mnemonicParsing="false" onMouseClicked="#savePort" prefHeight="30.0" prefWidth="76.0" text="保存" />
+      <Label layoutX="82.0" layoutY="137.0" text="主机显示器信道：" />
+      <TextField fx:id="portField" layoutX="204.0" layoutY="130.0" prefHeight="30.0" prefWidth="118.0" />
+      <Button layoutX="396.0" layoutY="130.0" mnemonicParsing="false" onMouseClicked="#saveScreenPort" prefHeight="30.0" prefWidth="76.0" text="保存" />
       <Separator layoutX="198.0" layoutY="98.0" prefHeight="0.0" prefWidth="715.0" />
       <Label layoutX="82.0" layoutY="189.0" text="显示器列表：" />
       <TableView fx:id="screenTable" layoutX="82.0" layoutY="222.0" prefHeight="146.0" prefWidth="411.0">
@@ -60,5 +60,8 @@
       <CheckBox fx:id="light3Checker" layoutX="962.0" layoutY="312.0" mnemonicParsing="false" prefHeight="16.0" prefWidth="18.0" />
       <TextArea fx:id="logArea" layoutX="76.0" layoutY="603.0" prefHeight="192.0" prefWidth="977.0" />
       <Label layoutX="76.0" layoutY="574.0" text="日志：" />
+      <Label layoutX="565.0" layoutY="138.0" text="主机抢答器信道：" />
+      <TextField fx:id="portField1" layoutX="685.0" layoutY="131.0" prefHeight="30.0" prefWidth="118.0" />
+      <Button layoutX="840.0" layoutY="130.0" mnemonicParsing="false" onMouseClicked="#saveBuzzPort" prefHeight="30.0" prefWidth="76.0" text="保存" />
    </children>
 </AnchorPane>

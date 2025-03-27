@@ -3,8 +3,10 @@ package competition.util;
 import competition.JavaFxApplication;
 import competition.entity.Teams;
 import competition.mapper.TeamsMapper;
+import org.springframework.util.CollectionUtils;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class TeamRuntime {
 
@@ -17,6 +19,17 @@ public class TeamRuntime {
 
     public static List<Teams> getTeams() {
         return teams;
+    }
+
+    public static Teams getByShortName(String shortName){
+        if (teams == null || CollectionUtils.isEmpty(teams)) {
+            return null;
+        }
+        List<Teams> collect = teams.stream().filter(x -> x.getShortName().equals(shortName)).collect(Collectors.toList());
+        if (CollectionUtils.isEmpty(collect)) {
+            return null;
+        }
+        return collect.get(0);
     }
 
 

@@ -100,7 +100,7 @@ public class Model7RuntimeData {
                                 team.setTeamScore(team.getTeamScore() + data.getScore());
                                 //teamsMapper.updateById(team);
                                 // 需要更新环节获取分数
-                                scoreService.addScore(null, team.getFullName(), controlPane.getCurrentStage().getName(), data.getQuestionNumber().toString(), null,
+                                scoreService.addScore(null, team, controlPane.getCurrentStage().getName(), data.getQuestionNumber().toString(), null,
                                         data.getScore(), team.getTeamScore().toString(), data.getUserSelect());
                                 Platform.runLater(() -> {
                                     controlPane.teamScore.setText(team.getTeamScore().toString());
@@ -126,7 +126,7 @@ public class Model7RuntimeData {
                     if (team.getFullName().equals(data.getTeamName())) {
                         team.setTeamScore(team.getTeamScore() + data.getScore());
                         //teamsMapper.updateById(team);
-                        scoreService.addScore(null, team.getFullName(), controlPane.getCurrentStage().getName(), data.getQuestionNumber().toString(), null, data.getScore(),
+                        scoreService.addScore(null, team, controlPane.getCurrentStage().getName(), data.getQuestionNumber().toString(), null, data.getScore(),
                                 team.getTeamScore().toString(), data.getUserSelect());
                         Platform.runLater(() -> {
                             controlPane.teamScore.setText(team.getTeamScore().toString());
@@ -147,7 +147,7 @@ public class Model7RuntimeData {
                         Integer desValue = controlPane.getCurrentStage().getDesValue();
                         team.setTeamScore(team.getTeamScore() - desValue);
                         //teamsMapper.updateById(team);
-                        scoreService.addScore(null, team.getFullName(), controlPane.getCurrentStage().getName(), data.getQuestionNumber().toString(),
+                        scoreService.addScore(null, team, controlPane.getCurrentStage().getName(), data.getQuestionNumber().toString(),
                                 null, -desValue, team.getTeamScore().toString(), data.getUserSelect());
 
                         Platform.runLater(() -> {
@@ -206,7 +206,7 @@ public class Model7RuntimeData {
                 // 均没回答
                 if (size == 0) {
                     for (Questions questions : questionList) {
-                        scoreService.addScore(null, teams.getFullName(), controlPane.getCurrentStage().getName(), questions.getQuestionNumber().toString(),
+                        scoreService.addScore(null, teams, controlPane.getCurrentStage().getName(), questions.getQuestionNumber().toString(),
                                 null, -controlPane.getCurrentStage().getDesValue(), teams.getTeamScore().toString(), "");
                     }
                 } else {
@@ -215,7 +215,7 @@ public class Model7RuntimeData {
                     List<Integer> answered = modelData.stream().map(ModelData::getQuestionNumber).collect(Collectors.toList());
                     total.removeAll(answered);
                     for (Integer integer : total) {
-                        scoreService.addScore(null, teams.getFullName(), controlPane.getCurrentStage().getName(), integer.toString(), null,
+                        scoreService.addScore(null, teams, controlPane.getCurrentStage().getName(), integer.toString(), null,
                                 -controlPane.getCurrentStage().getDesValue(), teams.getTeamScore().toString(), "");
                     }
                 }

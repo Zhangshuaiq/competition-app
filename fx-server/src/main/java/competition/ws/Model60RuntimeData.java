@@ -98,7 +98,7 @@ public class Model60RuntimeData {
                         if (controlPane.getCurrentStage().getCountTotal() == 1) {
                             team.setNewScore(team.getTeamScore() + data.getScore());
 
-                            scoreService.addScore(null, team.getFullName(),  controlPane.getCurrentStage().getName(), modelData.getQuestionNumber().toString(),
+                            scoreService.addScore(null, team,  controlPane.getCurrentStage().getName(), modelData.getQuestionNumber().toString(),
                                     modelData.getSecond().toString(),  data.getScore(), team.getNewScore().toString(), data.getUserSelect());
                         } else {
                             team.setNewScore(team.getTeamScore());
@@ -114,7 +114,7 @@ public class Model60RuntimeData {
                         if (controlPane.getCurrentStage().getCountTotal() == 1) {
                             team.setNewScore(team.getTeamScore() - controlPane.getCurrentStage().getDesValue());
 
-                            scoreService.addScore(null, team.getFullName(),  controlPane.getCurrentStage().getName(), modelData.getQuestionNumber().toString(),
+                            scoreService.addScore(null, team,  controlPane.getCurrentStage().getName(), modelData.getQuestionNumber().toString(),
                                     modelData.getSecond().toString(),  - controlPane.getCurrentStage().getDesValue(), team.getNewScore().toString(), data.getUserSelect());
                         } else {
                             team.setNewScore(team.getTeamScore());
@@ -145,7 +145,7 @@ public class Model60RuntimeData {
                     if (controlPane.getCurrentStage().getCountTotal() == 1) {
                         team.setNewScore(team.getTeamScore() - controlPane.getCurrentStage().getDesValue());
 
-                        scoreService.addScore(null, team.getFullName(),  controlPane.getCurrentStage().getName(), modelData.getQuestionNumber().toString(),
+                        scoreService.addScore(null, team,  controlPane.getCurrentStage().getName(), modelData.getQuestionNumber().toString(),
                                 modelData.getSecond().toString(),  - controlPane.getCurrentStage().getDesValue(), team.getNewScore().toString(), modelData.getUserSelect());
                     }
                 }

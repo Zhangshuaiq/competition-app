@@ -4,13 +4,16 @@ import com.alibaba.fastjson2.JSON;
 import com.alibaba.fastjson2.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import competition.JavaFxApplication;
+import competition.controller.backend.TerminalConfig;
 import competition.controller.board.BoardPane;
 import competition.controller.match.ReloadPane;
 import competition.controller.preview.*;
+import competition.dto.BuzzDevice;
 import competition.entity.*;
 import competition.mapper.*;
 import competition.modal.TeamResult;
 import competition.serial.Command;
+import competition.serial.SerialPortConfig;
 import competition.serial.SerialPortConnector;
 import competition.service.ScoreService;
 import competition.util.*;
@@ -743,7 +746,6 @@ public class ControlPane {
     // 抢答按钮点击
     @FXML
     public void buzzClicked() {
-
         Buzz buzz = buzzMapper.selectById(1);
         Platform.runLater(() -> {
             String text = buzzBtn.getText();
@@ -756,11 +758,6 @@ public class ControlPane {
                 RuntimeUtil.buzzResult.clear();
                 if (scoreBoardPreview != null) {
                     reloadScoreBoard();
-                }
-
-                SerialPortConnector instance = SerialPortConnector.getInstance();
-                if (instance != null && instance.isConnected()) {
-                    instance.send(Command.STAR, "");
                 }
 
                 String mode = "直接抢答";
@@ -785,12 +782,9 @@ public class ControlPane {
                     RuntimeUtil.buzzCalculate = System.nanoTime();
                     startBuzz(timeLimit, true, 0);
                 }
+                TerminalConfig.sendStartBuzz();
             } else {
-                SerialPortConnector instance = SerialPortConnector.getInstance();
-                if (instance != null && instance.isConnected()) {
-                    instance.send(Command.EEND, "");
-                }
-                //timeReset();
+                TerminalConfig.sendStopBuzz();
                 buzzReset();
             }
         });
@@ -840,7 +834,7 @@ public class ControlPane {
                         // currentStage
                         // Questions questions = CurrentQuestions.getQuestionList().get(Integer.parseInt(questionCombox.getValue()) - 1);
                         if (questions == null) {
-                            scoreService.addScore(null, teamList.getFullName(), currentStage.getName(), null, null, Integer.parseInt(text),
+                            scoreService.addScore(null, teamList, currentStage.getName(), null, null, Integer.parseInt(text),
                                     teamList.getTeamScore().toString(), "");
                         } else {
                             if (controlStage.getRandomSort() == 1) {
@@ -848,11 +842,11 @@ public class ControlPane {
                             } else {
                                 questions.setOrder(questions.getQuestionNumber());
                             }
-                            scoreService.addScore(null, teamList.getFullName(), currentStage.getName(), questions.getQuestionNumber().toString(),
+                            scoreService.addScore(null, teamList, currentStage.getName(), questions.getQuestionNumber().toString(),
                                     null, Integer.parseInt(text), teamList.getTeamScore().toString(), "");
                         }
                     } else {
-                        scoreService.addScore(null, teamList.getFullName(), null, null, null, Integer.parseInt(text),
+                        scoreService.addScore(null, teamList, null, null, null, Integer.parseInt(text),
                                 teamList.getTeamScore().toString(), "");
                     }
                 }
@@ -895,7 +889,7 @@ public class ControlPane {
 
 
                     if (questions == null) {
-                        scoreService.addScore(memberComBox.getValue(), teams.getFullName(), currentStage.getName(), null, null, Integer.parseInt(text),
+                        scoreService.addScore(memberComBox.getValue(), teams, currentStage.getName(), null, null, Integer.parseInt(text),
                                 jsonObject.getIntValue(member) + "", "");
                     } else {
                         if (controlStage.getRandomSort() == 1) {
@@ -903,12 +897,12 @@ public class ControlPane {
                         } else {
                             questions.setOrder(questions.getQuestionNumber());
                         }
-                        scoreService.addScore(memberComBox.getValue(), teams.getFullName(), currentStage.getName(), questions.getQuestionNumber().toString(),
+                        scoreService.addScore(memberComBox.getValue(), teams, currentStage.getName(), questions.getQuestionNumber().toString(),
                                 null, Integer.parseInt(text), jsonObject.getIntValue(member) + "", "");
                     }
                     // Questions questions = CurrentQuestions.getQuestionList().get(Integer.parseInt(questionCombox.getValue()) - 1);
                 } else {
-                    scoreService.addScore(memberComBox.getValue(), teams.getFullName(), null, null,
+                    scoreService.addScore(memberComBox.getValue(), teams, null, null,
                             null, Integer.parseInt(text), jsonObject.getIntValue(member) + "", "");
                 }
             } else {
@@ -934,7 +928,7 @@ public class ControlPane {
                         );
                     }
                     if (questions == null) {
-                        scoreService.addScore(null, teams.getFullName(), currentStage.getName(), null,
+                        scoreService.addScore(null, teams, currentStage.getName(), null,
                                 null, Integer.parseInt(text), teams.getTeamScore().toString(), "");
                     } else {
                         if (controlStage.getRandomSort() == 1) {
@@ -942,11 +936,11 @@ public class ControlPane {
                         } else {
                             questions.setOrder(questions.getQuestionNumber());
                         }
-                        scoreService.addScore(null, teams.getFullName(), currentStage.getName(), questions.getQuestionNumber().toString(),
+                        scoreService.addScore(null, teams, currentStage.getName(), questions.getQuestionNumber().toString(),
                                 null, Integer.parseInt(text), teams.getTeamScore().toString(), "");
                     }
                 } else {
-                    scoreService.addScore(null, teams.getFullName(), null, null,
+                    scoreService.addScore(null, teams, null, null,
                             null, Integer.parseInt(text), teams.getTeamScore().toString(), "");
                 }
             }
@@ -1016,7 +1010,7 @@ public class ControlPane {
                             );
                         }
                         if (questions == null) {
-                            scoreService.addScore(null, teamList.getFullName(), currentStage.getName(), null,
+                            scoreService.addScore(null, teamList, currentStage.getName(), null,
                                     null, -Integer.parseInt(text), teamList.getTeamScore().toString(), "");
                         } else {
                             if (controlStage.getRandomSort() == 1) {
@@ -1024,11 +1018,11 @@ public class ControlPane {
                             } else {
                                 questions.setOrder(questions.getQuestionNumber());
                             }
-                            scoreService.addScore(null, teamList.getFullName(), currentStage.getName(), questions.getQuestionNumber().toString(),
+                            scoreService.addScore(null, teamList, currentStage.getName(), questions.getQuestionNumber().toString(),
                                     null, -Integer.parseInt(text), teamList.getTeamScore().toString(), "");
                         }
                     } else {
-                        scoreService.addScore(null, teamList.getFullName(), null, null,
+                        scoreService.addScore(null, teamList, null, null,
                                 null, -Integer.parseInt(text), teamList.getTeamScore().toString(), "");
                     }
                 }
@@ -1071,15 +1065,15 @@ public class ControlPane {
                     }
 
                     if (questions == null) {
-                        scoreService.addScore(memberComBox.getValue(), teams.getFullName(), currentStage.getName(), null,
+                        scoreService.addScore(memberComBox.getValue(), teams, currentStage.getName(), null,
                                 null, -Integer.parseInt(text), memItemScore + "", "");
                     } else {
                         questions.setOrder(Integer.parseInt(questionCombox.getValue()) );
-                        scoreService.addScore(memberComBox.getValue(), teams.getFullName(), currentStage.getName(),
+                        scoreService.addScore(memberComBox.getValue(), teams, currentStage.getName(),
                                 questions.getQuestionNumber().toString(), null, -Integer.parseInt(text), memItemScore + "", "");
                     }
                 } else {
-                    scoreService.addScore(memberComBox.getValue(), teams.getFullName(), null, null, null,
+                    scoreService.addScore(memberComBox.getValue(), teams, null, null, null,
                             -Integer.parseInt(text), memItemScore + "", "");
                 }
                 this.memberScore.setText(memItemScore + "");
@@ -1113,15 +1107,15 @@ public class ControlPane {
 
 
                     if (questions == null) {
-                        scoreService.addScore(null, teams.getFullName(), currentStage.getName(), null,
+                        scoreService.addScore(null, teams, currentStage.getName(), null,
                                 null, -Integer.parseInt(text), teams.getTeamScore().toString(), "");
                     } else {
                         questions.setOrder(Integer.parseInt(questionCombox.getValue()) );
-                        scoreService.addScore(null, teams.getFullName(), currentStage.getName(), questions.getQuestionNumber().toString(),
+                        scoreService.addScore(null, teams, currentStage.getName(), questions.getQuestionNumber().toString(),
                                 null, -Integer.parseInt(text), teams.getTeamScore().toString(), "");
                     }
                 } else {
-                    scoreService.addScore(null, teams.getFullName(), null, null,
+                    scoreService.addScore(null, teams, null, null,
                             null, -Integer.parseInt(text), teams.getTeamScore().toString(), "");
                 }
             }
@@ -1308,21 +1302,24 @@ public class ControlPane {
         if (!StringUtils.isEmpty(text)) {
             time = Integer.parseInt(text);
         }
-        if (timeBoardPreview == null) {
-            timeBoardPreview = (ReloadPane) Navigator.timeWithPos("/view/board/preview/TimeBoard.fxml", "", "/view/style.css", true);
-        } else {
-            timeBoardPreview.shows();
-        }
+
+        timeBoardPreview = (ReloadPane) Navigator.timeWithPos("/view/board/preview/TimeBoard.fxml", "", "/view/style.css", true);
+
+
         if (timeBoardPreview != null) {
             if (controlStage == null) {
                 // 未进入环节的情况下默认倒计时
                 timeBoardPreview.startTiming(false, time);
             } else {
-                if (currentStage.getQuestionType() == 7) {
-                    // 竞技答题强制正计时
-                    timeBoardPreview.startTiming(true, time);
+                if (currentStage != null) {
+                    if (currentStage.getQuestionType() == 7) {
+                        // 竞技答题强制正计时
+                        timeBoardPreview.startTiming(true, time);
+                    } else {
+                        timeBoardPreview.startTiming(currentStage.getOrderVal() == 1, time);
+                    }
                 } else {
-                    timeBoardPreview.startTiming(currentStage.getOrderVal() == 1, time);
+                    timeBoardPreview.startTiming(false, time);
                 }
             }
             timingBtn.setDisable(true);
@@ -1333,12 +1330,6 @@ public class ControlPane {
     public void startBuzz(int passTime, boolean buzzBefore, int buzzTime){
         parentPane.requestFocus();
         buzzTimeBoardPreview = (ReloadPane) Navigator.buzzTimeWithPos("/view/board/preview/BuzzTimeBoard.fxml", "", "/view/style.css", true);
-
-//        if (buzzTimeBoardPreview == null) {
-//            buzzTimeBoardPreview = (ReloadPane) Navigator.buzzTimeWithPos("/view/board/preview/BuzzTimeBoard.fxml", "", "/view/style.css", true);
-//        } else {
-//            buzzTimeBoardPreview.shows();
-//        }
         if (buzzBefore) {
             if (buzzTime > 0) {
                 buzzTimeBoardPreview.startBuzz(buzzTime, passTime);
@@ -1655,9 +1646,6 @@ public class ControlPane {
         }
         timeSecondText.setText(time + "");
         startAnswerBtn.setDisable(false);
-//        if (currentStage == null) {
-//            return;
-//        }
     }
 
 
@@ -2771,6 +2759,18 @@ public class ControlPane {
     }
 
 
+    public void notifyBuzzByHardware(String teamAddress){
+        BuzzDevice buzzDevice = SerialPortConfig.getBuzzDevice(teamAddress);
+        if (buzzDevice != null) {
+//            Teams teams = TeamRuntime.getByShortName();
+//            if (teams != null) {
+//
+//            }
+            notifyBuzz(buzzDevice.getFlag(), "");
+        }
+    }
+
+
     // 通知抢答结果
     public void notifyBuzz(String team, String member){
         Buzz buzz = buzzMapper.selectById(1);
@@ -2787,7 +2787,7 @@ public class ControlPane {
         Teams teams = TeamRuntime.getTeams().stream().filter(x -> x.getShortName().equals(team)).collect(Collectors.toList()).get(0);
         if (RuntimeUtil.buzzStart > 0) {
             String mode = buzz.getMode();
-            if (!StringUtils.isEmpty(currentStage.getpAType())) {
+            if (currentStage != null && !StringUtils.isEmpty(currentStage.getpAType())) {
                 mode = currentStage.getpAType();
             }
             if (mode.equals("直接抢答")) {
@@ -2966,6 +2966,7 @@ public class ControlPane {
 
     // 停止抢答
     private void stopBuzz(Teams successTeam, List<Teams> failTeams, boolean success, boolean fail, boolean standard){
+        TerminalConfig.sendStopBuzz();
         Buzz buzz = buzzMapper.selectById(1);
         Platform.runLater(() -> {
             RuntimeUtil.showBuzzBar = true;

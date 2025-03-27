@@ -3,6 +3,8 @@ package competition.serial;
 import com.fazecast.jSerialComm.SerialPort;
 import com.fazecast.jSerialComm.SerialPortDataListener;
 import com.fazecast.jSerialComm.SerialPortEvent;
+import competition.JavaFxApplication;
+import competition.controller.ControlPane;
 import competition.util.CRC16;
 import competition.util.Information;
 import org.springframework.util.StringUtils;
@@ -20,7 +22,7 @@ public class SerialPortConnector {
 
     private static final String FRAME_TAIL = "&";
 
-    private static final String SPLITTER = ",";
+    public static final String SPLITTER = ",";
 
     private SerialPort serialPort;
 
@@ -50,6 +52,7 @@ public class SerialPortConnector {
         serialPort.setNumDataBits(8);
         serialPort.setNumStopBits(SerialPort.ONE_STOP_BIT);
         serialPort.setParity(SerialPort.NO_PARITY);
+        serialPort.setComPortTimeouts(SerialPort.TIMEOUT_READ_SEMI_BLOCKING, 100, 100);
     }
 
     public void connect() {
@@ -116,9 +119,10 @@ public class SerialPortConnector {
                                         System.out.println("Received Data: " +responseData);
                                         break;
                                     case UKEY:
-                                        response = responseData;
+                                        //response = responseData;
                                         System.out.println("response: " + Command.UKEY);
                                         System.out.println("Received Data: " +responseData);
+                                        handleBuzzResult(responseData);
                                         break;
                                     case SMAT:
                                         response = responseData;
@@ -144,10 +148,17 @@ public class SerialPortConnector {
                     }
                 }
             });
-
         } else {
             Information.error("串口打开失败,请检查硬件");
         }
+    }
+
+    private void handleBuzzResult(String response) {
+        ControlPane controlPane = JavaFxApplication.getApplicationContext().getBean(ControlPane.class);
+        // #,0020,UKEY,5,1A50,&
+        // 回调指令结果根据指令结果来返回
+        String[] split = response.split(SPLITTER);
+        controlPane.notifyBuzzByHardware(split[3]);
     }
 
     public String getResponse() {
@@ -175,9 +186,11 @@ public class SerialPortConnector {
 
 
     public void close() {
-        serialPort.closePort();
-        serialPort = null;
-        instance = null;
+        if (serialPort.isOpen()) {
+            serialPort.closePort();
+            serialPort = null;
+            instance = null;
+        }
     }
 
     public void send(String cmd) {
@@ -185,7 +198,11 @@ public class SerialPortConnector {
         System.out.println("Data sent: " + cmd);
     }
 
-    public void send(Command cmd, String data) {
+    public String send(Command cmd, String data) {
+        if (!serialPort.isOpen()) {
+            Information.error("串口未打开，显示器无法同步分数");
+            return null;
+        }
         // 长度 = 1(帧头) + 1(分隔符) + 4(帧长度) + 1(分隔符) + 4(命令码) + 1(分隔符) + len(数据区域) + 1(分隔符) + 4(校验区域) +  1(分隔符) + 1(帧尾) = 18
         int totalLength = 1 + 1 + 4 + 1 + 4 + 1 + data.length() + 1 + 4 + 1 + 1;
         String frameLength = String.format("%04d", totalLength); // 不足4位补0
@@ -208,11 +225,15 @@ public class SerialPortConnector {
             fullCmd = FRAME_HEAD + SPLITTER + frameLength + SPLITTER + cmd + SPLITTER + crc16 + SPLITTER + FRAME_TAIL;
         }
         send(fullCmd);
+        return fullCmd;
     }
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws InterruptedException {
+        // #,0030,SHOW,0,123,123,7,6A43,&
         SerialPortConnector connector = new SerialPortConnector("COM3");
-        connector.send(Command.STAR, "");
+        connector.connect();
+        Thread.sleep(1000);
+        System.out.println( connector.send(Command.SHOW, "1,058,123,7"));
 
     }
 }
