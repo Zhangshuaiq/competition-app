@@ -756,6 +756,8 @@ public class ControlPane {
                 RuntimeUtil.showBuzzBar = false;
                 RuntimeUtil.buzzTimeMap.clear();
                 RuntimeUtil.buzzResult.clear();
+                // 清空已有但未播放完毕的旧音乐文件
+                MusicPlayer.clearQueue();
                 if (scoreBoardPreview != null) {
                     reloadScoreBoard();
                 }
@@ -900,7 +902,6 @@ public class ControlPane {
                         scoreService.addScore(memberComBox.getValue(), teams, currentStage.getName(), questions.getQuestionNumber().toString(),
                                 null, Integer.parseInt(text), jsonObject.getIntValue(member) + "", "");
                     }
-                    // Questions questions = CurrentQuestions.getQuestionList().get(Integer.parseInt(questionCombox.getValue()) - 1);
                 } else {
                     scoreService.addScore(memberComBox.getValue(), teams, null, null,
                             null, Integer.parseInt(text), jsonObject.getIntValue(member) + "", "");
@@ -950,10 +951,6 @@ public class ControlPane {
             scoreBoardPreview.getSelected().clear();
             scoreBoardPreview.reload();
         }
-
-//        if (previewPane != null) {
-//            previewPane.reload();
-//        }
         if (previewPane != null
                 && (previewPane instanceof MemberRankPreview || previewPane instanceof TeamRankPreview)) {
             previewPane.reload();
@@ -989,9 +986,6 @@ public class ControlPane {
             for (String s : selected) {
                 if (teamList.getShortName().equals(s)) {
                     int currScore = teamList.getTeamScore() - Integer.parseInt(text);
-//                    if (currScore < 0) {
-//                        currScore = 0;
-//                    }
                     teamList.setTeamScore(currScore);
                     teamsMapper.updateById(teamList);
                     if (currentStage != null && !StringUtils.isEmpty(questionCombox.getValue())) {
@@ -1043,9 +1037,6 @@ public class ControlPane {
                 String memberScore = teams.getMemberScore();
                 JSONObject jsonObject = JSON.parseObject(memberScore);
                 int memItemScore = jsonObject.getIntValue(member) - Integer.parseInt(text);
-//                if (memItemScore < 0) {
-//                    memItemScore = 0;
-//                }
                 jsonObject.put(member, memItemScore);
                 teams.setMemberScore(JSON.toJSONString(jsonObject));
                 teamsMapper.updateById(teams);
@@ -1081,12 +1072,8 @@ public class ControlPane {
                 memberScore.setText("0");
             }
 
-
             if (!selected.contains(teams.getShortName())) {
                 int currScore = teams.getTeamScore() - Integer.parseInt(text);
-//                if (currScore < 0) {
-//                    currScore = 0;
-//                }
                 teams.setTeamScore(currScore);
                 teamsMapper.updateById(teams);
                 if (currentStage != null) {
@@ -1103,9 +1090,6 @@ public class ControlPane {
                                 .eq(Questions::getStageNumber, currentStage.getSortVal())
                         );
                     }
-
-
-
                     if (questions == null) {
                         scoreService.addScore(null, teams, currentStage.getName(), null,
                                 null, -Integer.parseInt(text), teams.getTeamScore().toString(), "");
@@ -1128,10 +1112,6 @@ public class ControlPane {
             scoreBoardPreview.getSelected().clear();
             scoreBoardPreview.reload();
         }
-
-//        if (previewPane != null) {
-//            previewPane.reload();
-//        }
 
         if (previewPane != null
                 && (previewPane instanceof MemberRankPreview || previewPane instanceof TeamRankPreview)) {
@@ -1195,19 +1175,6 @@ public class ControlPane {
                     //messageHandler.sendModel7Start();
                     // 扩展屏显示题目信息
                 } else if (currentStage.getQuestionType() == 6) {
-//                    if (currentStage.getM6() == 1) {
-////                        if (Model61RuntimeData.getRuntimeData().isEmpty() || questions == null) {
-////                            Information.error("请先显示试题");
-////                            return;
-////                        }
-//                        //messageHandler.sendModel61Start();
-//                    } else if (currentStage.getM6() == 0) {
-////                        if (Model60RuntimeData.getRuntimeData().isEmpty() || questions == null) {
-////                            Information.error("请先显示试题");
-////                            return;
-////                        }
-//                        //messageHandler.sendModel60Start();
-//                    }
                     startTiming();
                 }
                 startAnswerBtn.setText("停止答题");
@@ -1223,12 +1190,7 @@ public class ControlPane {
                 timeReset();
                 startAnswerBtn.setDisable(false);
                 if (currentStage.getQuestionType() == 7) {
-                    //messageHandler.sendModel7Start();
                     Model7RuntimeData.forceFinish();
-//                    for (int i = 0; i < Model7RuntimeData.getFinished().size(); i++) {
-//                        Model7RuntimeData.getFinished().set(i, true);
-//                    }
-
                     previewPane.reload();
                     messageHandler.model7Finish();
                     updateScoreBoard();
@@ -2573,7 +2535,6 @@ public class ControlPane {
         // 删除竞技模式缓存
         model7StatusMapper.delete(new LambdaQueryWrapper<>());
         messageHandler.notifyPage("wait", null);
-
         System.exit(0);
     }
 
@@ -2754,7 +2715,6 @@ public class ControlPane {
             desValue = belongStage.getDesValue();
         }
         scoreDescInput.setText(desValue + "");
-
         controlStage = belongStage;
     }
 
@@ -2762,10 +2722,6 @@ public class ControlPane {
     public void notifyBuzzByHardware(String teamAddress){
         BuzzDevice buzzDevice = SerialPortConfig.getBuzzDevice(teamAddress);
         if (buzzDevice != null) {
-//            Teams teams = TeamRuntime.getByShortName();
-//            if (teams != null) {
-//
-//            }
             notifyBuzz(buzzDevice.getFlag(), "");
         }
     }
@@ -2793,8 +2749,6 @@ public class ControlPane {
             if (mode.equals("直接抢答")) {
                 timeGap = 0;
             }
-
-
 
             // 判断是否是淘汰模式
             if (mode.equals("淘汰模式")) {
@@ -2844,12 +2798,8 @@ public class ControlPane {
                                 RuntimeUtil.buzzResult.put(team, false);
                                 stopBuzz(null, TeamRuntime.getTeams(), false, false, false);
                             }
-
-
                         }
-
                         Platform.runLater(() -> {
-                            //previewPane.showBuzzResult(teams, true);
                             Navigator.buzzResult("/view/preview/BuzzResult.fxml", "", "/view/style.css", true);
                         });
                     } else {
@@ -2874,9 +2824,7 @@ public class ControlPane {
                             }
                             t.setBuzzTime(NumberUtil.fix2Point(RuntimeUtil.buzzTimeMap.getOrDefault(t.getShortName(), 0L) / 1000000000.0));
                         }
-                        Platform.runLater(() -> {
-                            reloadScoreBoard();
-                        });
+                        Platform.runLater(this::reloadScoreBoard);
                         return;
                     }
                 } else {
@@ -2902,10 +2850,9 @@ public class ControlPane {
                         BuzzResultPreview.setTeams(teams, true);
                         Platform.runLater(() -> {
                             Navigator.buzzResult("/view/preview/BuzzResult.fxml", "", "/view/style.css", true);
-                        });                    }
-
+                        });
+                    }
                 }
-
             }
             // 提前抢答
             else if (slipTime < timeGap || RuntimeUtil.buzzCalculate == 0) {
@@ -2932,7 +2879,6 @@ public class ControlPane {
                 RuntimeUtil.buzzCalculate = 0;
                 stopBuzz(teams, new ArrayList<>(), true, false, true);
                 Platform.runLater(() -> {
-                   // previewPane.showBuzzResult(teams, true);
                     BuzzResultPreview.setTeams(teams, true);
                     Navigator.buzzResult("/view/preview/BuzzResult.fxml", "", "/view/style.css", true);
                 });
@@ -2993,7 +2939,6 @@ public class ControlPane {
                                     }
                                     MusicPlayer.playNext();
                                 }
-
                             }
                         });
                     }

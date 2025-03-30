@@ -43,11 +43,6 @@ public class TerminalConfig {
     @FXML
     private TableView<ScreenDevice> screenTable;
 
-    @FXML
-    private TableColumn<ScreenDevice, String> screenLightCol;
-
-    @FXML
-    private CheckBox light2Checker;
 
     @FXML
     private TableColumn<ScreenDevice, String> screenAddressCol;
@@ -58,14 +53,10 @@ public class TerminalConfig {
     @FXML
     private TableColumn<ScreenDevice, String> screenColorCol;
 
-    @FXML
-    private CheckBox light1Checker;
 
     @FXML
     private TableView<BuzzDevice> buzzTable;
 
-    @FXML
-    private CheckBox light3Checker;
 
     @FXML
     private TextField screenFlagField;
@@ -131,10 +122,6 @@ public class TerminalConfig {
         color1Selector.setValue(colors[0]);
         color2Selector.setValue(colors[1]);
         color3Selector.setValue(colors[2]);
-        String light = screenDevice.getLight();
-        light1Checker.setSelected(Objects.equals(light.substring(0, 1), "1"));
-        light2Checker.setSelected(Objects.equals(light.substring(1, 2), "1"));
-        light3Checker.setSelected(Objects.equals(light.substring(2, 3), "1"));
     }
 
     private void showBuzzInfo() {
@@ -151,7 +138,6 @@ public class TerminalConfig {
         screenFlagCol.setCellValueFactory(new PropertyValueFactory<>("flag"));
         screenAddressCol.setCellValueFactory(new PropertyValueFactory<>("address"));
         screenColorCol.setCellValueFactory(new PropertyValueFactory<>("color"));
-        screenLightCol.setCellValueFactory(new PropertyValueFactory<>("light"));
 
         screenTable.setOnMouseClicked(event -> showScreenInfo());
 
@@ -450,13 +436,11 @@ public class TerminalConfig {
         String flag = screenFlagField.getText();
         String address = screenAddressField.getText();
         String color = color1Selector.getValue() + "," + color2Selector.getValue() + "," + color3Selector.getValue();
-        String light = (light1Checker.isSelected() ? "1" : "0") + (light2Checker.isSelected() ? "1" : "0") + (light3Checker.isSelected() ? "1" : "0");
 
         ScreenDevice screenDevice = new ScreenDevice();
         screenDevice.setFlag(flag);
         screenDevice.setAddress(address);
         screenDevice.setColor(color);
-        screenDevice.setLight(light);
 
         List<ScreenDevice> deviceList = new ArrayList<>();
 

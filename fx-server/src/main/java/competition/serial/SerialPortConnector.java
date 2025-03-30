@@ -230,10 +230,11 @@ public class SerialPortConnector {
 
     public static void main(String[] args) throws InterruptedException {
         // #,0030,SHOW,0,123,123,7,6A43,&
+        // #,0030,SHOW,1,230,211,7,36F5,&
         SerialPortConnector connector = new SerialPortConnector("COM3");
         connector.connect();
         Thread.sleep(1000);
-        System.out.println( connector.send(Command.SHOW, "1,058,123,7"));
+        connector.send("#,0030,SHOW,0,123,123,7,6A43,&");
 
     }
 }

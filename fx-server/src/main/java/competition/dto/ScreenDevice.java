@@ -10,6 +10,4 @@ public class ScreenDevice {
     private String address;
 
     private String color;
-
-    private String light;
 }

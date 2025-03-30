@@ -195,4 +195,8 @@ public class MusicPlayer {
             playNext(); // 播放下一个文件
         }
     }
+
+    public synchronized static void clearQueue(){
+        mediaQueue.clear();
+    }
 }

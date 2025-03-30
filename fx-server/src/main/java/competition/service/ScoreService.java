@@ -2,8 +2,10 @@ package competition.service;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import competition.dto.ScreenDevice;
+import competition.entity.EffectConfig;
 import competition.entity.StageMemberScore;
 import competition.entity.Teams;
+import competition.mapper.EffectConfigMapper;
 import competition.mapper.StageMemberScoreMapper;
 import competition.serial.Command;
 import competition.serial.SerialPortConfig;
@@ -13,21 +15,43 @@ import org.springframework.util.StringUtils;
 
 import javax.annotation.Resource;
 import java.util.List;
+import java.util.Objects;
+import java.util.concurrent.TimeUnit;
 
 @Service
 public class ScoreService {
     
     @Resource
     private StageMemberScoreMapper scoreMapper;
+
+    @Resource
+    private EffectConfigMapper configMapper;
     
     public void addScore(String member, Teams team, String stage,
                          String question, String time, int score, String totalScore, String answerText){
         SerialPortConnector instance = SerialPortConnector.getInstance();
+
+        EffectConfig effectConfig = configMapper.selectById(1);
+        boolean light;
+        if (effectConfig != null) {
+            light = Objects.equals(1, effectConfig.getScreenEffect());
+        } else {
+            light = false;
+        }
         ScreenDevice screenDevice = SerialPortConfig.getScreenDevice(team.getShortName());
         if (screenDevice != null) {
             // 异步更新平板分数
             new Thread(() -> {
-                instance.send(Command.SHOW, SerialPortConfig.buildScreenData(screenDevice, Integer.parseInt(totalScore)));
+                // 需要闪灯则闪灯 1 秒
+                if (light) {
+                    instance.send(Command.SHOW, SerialPortConfig.buildScreenData(screenDevice, Integer.parseInt(totalScore), true));
+                    try {
+                        TimeUnit.SECONDS.sleep(1);
+                    } catch (InterruptedException e) {
+                        throw new RuntimeException(e);
+                    }
+                }
+                instance.send(Command.SHOW, SerialPortConfig.buildScreenData(screenDevice, Integer.parseInt(totalScore), false));
             }).start();
         }
         if (member == null) {

@@ -6,7 +6,8 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<AnchorPane prefHeight="827.0" prefWidth="1100.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="competition.controller.backend.TerminalConfig">
+<AnchorPane prefHeight="827.0" prefWidth="1100.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="competition.controller.backend.TerminalConfig">
    <children>
       <Label layoutX="82.0" layoutY="49.0" text="硬件 COM 口：" />
       <ComboBox fx:id="portBox" layoutX="196.0" layoutY="44.0" prefHeight="30.0" prefWidth="525.0" />
@@ -20,9 +21,8 @@
       <TableView fx:id="screenTable" layoutX="82.0" layoutY="222.0" prefHeight="146.0" prefWidth="411.0">
         <columns>
           <TableColumn fx:id="screenFlagCol" prefWidth="96.0" text="标识" />
-          <TableColumn fx:id="screenAddressCol" prefWidth="104.0" text="地址" />
-            <TableColumn fx:id="screenColorCol" prefWidth="104.0" text="颜色" />
-            <TableColumn fx:id="screenLightCol" prefWidth="104.0" text="是否闪烁" />
+          <TableColumn fx:id="screenAddressCol" prefWidth="157.0" text="地址" />
+            <TableColumn fx:id="screenColorCol" prefWidth="156.0" text="颜色" />
         </columns>
       </TableView>
       <Label layoutX="76.0" layoutY="392.0" text="抢答器列表：" />
@@ -35,7 +35,6 @@
       <Label layoutX="631.0" layoutY="222.0" prefHeight="15.0" prefWidth="35.0" text="标识" />
       <Label layoutX="847.0" layoutY="222.0" prefHeight="15.0" prefWidth="35.0" text="地址" />
       <Label layoutX="631.0" layoutY="269.0" prefHeight="15.0" prefWidth="35.0" text="颜色" />
-      <Label layoutX="631.0" layoutY="312.0" prefHeight="15.0" prefWidth="60.0" text="闪烁" />
       <TextField fx:id="screenFlagField" layoutX="666.0" layoutY="218.0" />
       <TextField fx:id="screenAddressField" layoutX="882.0" layoutY="218.0" />
       <ComboBox fx:id="color1Selector" layoutX="710.0" layoutY="265.0" prefHeight="23.0" prefWidth="91.0" />
@@ -44,20 +43,14 @@
       <Label layoutX="674.0" layoutY="269.0" prefHeight="15.0" prefWidth="35.0" text="管道1" />
       <Label layoutX="806.0" layoutY="269.0" prefHeight="15.0" prefWidth="35.0" text="管道2" />
       <Label layoutX="937.0" layoutY="269.0" prefHeight="15.0" prefWidth="35.0" text="管道3" />
-      <CheckBox fx:id="light1Checker" layoutX="720.0" layoutY="312.0" mnemonicParsing="false" prefHeight="16.0" prefWidth="18.0" />
-      <Button layoutX="711.0" layoutY="345.0" mnemonicParsing="false" onMouseClicked="#saveScreenInfo" prefHeight="23.0" prefWidth="60.0" text="保存" />
-      <Button layoutX="878.0" layoutY="345.0" mnemonicParsing="false" onMouseClicked="#deleteScreenInfo" prefHeight="23.0" prefWidth="60.0" text="删除" />
+      <Button layoutX="711.0" layoutY="306.0" mnemonicParsing="false" onMouseClicked="#saveScreenInfo" prefHeight="23.0" prefWidth="60.0" text="保存" />
+      <Button layoutX="881.0" layoutY="306.0" mnemonicParsing="false" onMouseClicked="#deleteScreenInfo" prefHeight="23.0" prefWidth="60.0" text="删除" />
       <TextField fx:id="buzzAddressField" layoutX="882.0" layoutY="435.0" />
       <TextField fx:id="buzzFlagField" layoutX="666.0" layoutY="435.0" />
       <Label layoutX="847.0" layoutY="439.0" prefHeight="15.0" prefWidth="35.0" text="地址" />
       <Label layoutX="631.0" layoutY="439.0" prefHeight="15.0" prefWidth="35.0" text="标识" />
       <Button layoutX="881.0" layoutY="501.0" mnemonicParsing="false" onMouseClicked="#deleteBuzzInfo" prefHeight="23.0" prefWidth="60.0" text="删除" />
       <Button layoutX="714.0" layoutY="501.0" mnemonicParsing="false" onMouseClicked="#saveBuzzInfo" prefHeight="23.0" prefWidth="60.0" text="保存" />
-      <Label layoutX="677.0" layoutY="312.0" prefHeight="15.0" prefWidth="35.0" text="管道1" />
-      <Label layoutX="800.0" layoutY="312.0" prefHeight="15.0" prefWidth="35.0" text="管道2" />
-      <CheckBox fx:id="light2Checker" layoutX="843.0" layoutY="312.0" mnemonicParsing="false" prefHeight="16.0" prefWidth="18.0" />
-      <Label layoutX="919.0" layoutY="312.0" prefHeight="15.0" prefWidth="35.0" text="管道3" />
-      <CheckBox fx:id="light3Checker" layoutX="962.0" layoutY="312.0" mnemonicParsing="false" prefHeight="16.0" prefWidth="18.0" />
       <TextArea fx:id="logArea" layoutX="76.0" layoutY="603.0" prefHeight="192.0" prefWidth="977.0" />
       <Label layoutX="76.0" layoutY="574.0" text="日志：" />
       <Label layoutX="565.0" layoutY="138.0" text="主机抢答器信道：" />

@@ -51,17 +51,24 @@ public class SerialPortConfig {
         return String.join("", collect);
     }
 
-    private static String getLight(String light) {
-        int number = Integer.parseInt(light, 2);
-        int reversedNumber = Integer.reverse(number) >>> (Integer.SIZE - light.length());
-        return Integer.toBinaryString(reversedNumber);
-    }
+//    private static String getLight(String light) {
+//        int number = Integer.parseInt(light, 2);
+//        int reversedNumber = Integer.reverse(number) >>> (Integer.SIZE - light.length());
+//        return Integer.toBinaryString(reversedNumber);
+//    }
 
-    public static String buildScreenData(ScreenDevice screenDevice, int score){
+    public static String buildScreenData(ScreenDevice screenDevice, int score, boolean light){
+        if (light) {
+            return screenDevice.getAddress() + SerialPortConnector.SPLITTER
+                    +  String.format("%03d", score) + SerialPortConnector.SPLITTER
+                    + getColor(screenDevice.getColor()) + SerialPortConnector.SPLITTER
+                    + "7"
+                    ;
+        }
         return screenDevice.getAddress() + SerialPortConnector.SPLITTER
                 +  String.format("%03d", score) + SerialPortConnector.SPLITTER
                 + getColor(screenDevice.getColor()) + SerialPortConnector.SPLITTER
-                + getLight(screenDevice.getLight())
+                + "0"
                 ;
     }
 }

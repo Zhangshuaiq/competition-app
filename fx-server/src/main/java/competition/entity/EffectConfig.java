@@ -13,7 +13,9 @@ public class EffectConfig {
     @TableId(type = IdType.AUTO)
     private Integer id;
 
-    private Integer screenEffect;
+    private Integer screenEffect = 0;
 
-    private Integer scoreEffect;
+    private Integer scoreEffect = 0;
+
+    private Integer buzzEffect = 0;
 }
