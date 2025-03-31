@@ -4,8 +4,8 @@
     <div id="container">
       <el-row v-for="x in rows" :key="x">
         <el-col :span="24 / cols" v-for="y in cols" :key="y">
-          <div class="score-item" :style="scoreItemStyle">
-            <div v-if="teamList[(x - 1) * cols + y - 1]">
+          <div v-if="teamList[(x - 1) * cols + y - 1]" class="score-item" :style="scoreItemStyle(teamList[(x - 1) * cols + y - 1].buzzStatus)">
+            <div >
               <div class="codeOutStyle" :style="codeOutStyle">
                 <div :style="codeStyle">
                   {{teamList[(x - 1) * cols + y - 1].code}}
@@ -46,6 +46,8 @@ export default {
       dialogFormVisible: false,
       teamList: [],
       imageUrl: `${baseUrl}/resource/全局分数背景.jpg?${new Date().getTime()}`,
+      buzzSuccessUrl: `${baseUrl}/resource/抢答成功背景.jpg?${new Date().getTime()}`,
+      buzzFailUrl: `${baseUrl}/resource/抢答失败背景.jpg?${new Date().getTime()}`,
       defaultImageUrl: `${baseUrl}/resource/默认背景.jpg?${new Date().getTime()}`,
       codeCfg: {
         color: 'black'
@@ -65,17 +67,6 @@ export default {
         backgroundSize: '100vw 100vh',
         height: '100vh',
       };
-    },
-    
-    scoreItemStyle(){
-      return {
-        textAlign: 'center',
-        backgroundImage: `url(${this.imageUrl})`,
-        backgroundSize: "100% 100%",
-         width: `100%`,
-        height: `${100 / this.rows}vh`,
-        position: 'relative'
-      }
     },
     
     codeOutStyle(){
@@ -132,6 +123,34 @@ export default {
   },
   
   methods: {
+
+    scoreItemStyle(buzzStatus) {
+      let imageUrl;
+      if (buzzStatus === 0) {
+        imageUrl = this.imageUrl;
+      } else if (buzzStatus === 1) {
+        imageUrl = this.buzzSuccessUrl;
+      } else {
+        imageUrl = this.buzzFailUrl;
+      }
+
+      this.checkImageUrl(imageUrl, (isValid) => {
+        if (!isValid) {
+          imageUrl = this.defaultImageUrl;
+        }
+      });
+
+      return {
+        textAlign: 'center',
+        backgroundImage: `url(${imageUrl})`,
+        backgroundSize: "100% 100%",
+        width: `100%`,
+        height: `${100 / this.rows}vh`,
+        position: 'relative',
+        backgroundColor: buzzStatus === 1 ? 'red' : buzzStatus === 2 ? 'green' : 'transparent'
+      };
+    },
+
     checkImageUrl(url, callback) {
       const img = new Image();
       img.onload = () => callback(true);
@@ -162,6 +181,20 @@ export default {
     this.queryStyle()
     this.updateScore()
     this.checkImageUrl(this.imageUrl, (isValid) => {
+      if (!isValid) {
+        console.log("invalid....................")
+        this.imageUrl = this.defaultImageUrl;
+      }
+    });
+
+    this.checkImageUrl(this.buzzSuccessUrl, (isValid) => {
+      if (!isValid) {
+        console.log("invalid....................")
+        this.imageUrl = this.defaultImageUrl;
+      }
+    });
+
+    this.checkImageUrl(this.buzzFailUrl, (isValid) => {
       if (!isValid) {
         console.log("invalid....................")
         this.imageUrl = this.defaultImageUrl;

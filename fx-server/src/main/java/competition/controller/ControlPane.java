@@ -9,6 +9,7 @@ import competition.controller.board.BoardPane;
 import competition.controller.match.ReloadPane;
 import competition.controller.preview.*;
 import competition.dto.BuzzDevice;
+import competition.dto.ScreenDevice;
 import competition.entity.*;
 import competition.mapper.*;
 import competition.modal.TeamResult;
@@ -45,6 +46,7 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
+import javafx.scene.shape.Circle;
 import javafx.stage.Stage;
 import lombok.SneakyThrows;
 import org.springframework.stereotype.Component;
@@ -54,6 +56,7 @@ import org.springframework.util.StringUtils;
 import javax.annotation.Resource;
 import java.io.*;
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.locks.AbstractQueuedSynchronizer;
 import java.util.stream.Collectors;
@@ -70,6 +73,10 @@ public class ControlPane {
     private VideoPlayer videoPlayer;
 
     // 倒计时提示音控制, 默认 5 秒
+
+
+    @FXML
+    private Circle hardwareStatus;
 
     @FXML
     private ImageView iconImg;
@@ -372,6 +379,21 @@ public class ControlPane {
 
     @FXML
     public void initialize() {
+
+        // 检测硬件状态
+        Timeline timeline = new Timeline(new KeyFrame(javafx.util.Duration.seconds(1), event -> {
+            SerialPortConnector instance = SerialPortConnector.getInstance();
+            if (instance == null) {
+                hardwareStatus.setFill(Color.RED);
+            } else if (instance.isConnected()) {
+                hardwareStatus.setFill(Color.GREEN);
+            } else {
+                hardwareStatus.setFill(Color.RED);
+            }
+        }));
+        timeline.setCycleCount(-1);
+        timeline.play();
+
         closeLabel.getStyleClass().add("label-hover");
         scrollPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
         scrollPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
@@ -738,6 +760,7 @@ public class ControlPane {
         buzzBtn.setText("开始抢答");
         buzzBtn.setTextFill(Color.BLACK);
         buzzBtn.setStyle("");
+        TeamRuntime.resetBuzzStatus();
         Navigator.buzzBoardStage.close();
         ExtendedScreen.buzzBoardStage.close();
         reloadScoreBoard();
@@ -750,6 +773,7 @@ public class ControlPane {
         Platform.runLater(() -> {
             String text = buzzBtn.getText();
             if (text.equals("开始抢答")) {
+                TeamRuntime.resetBuzzStatus();
                 closeBuzzResultWindow();
                 RuntimeUtil.buzzCalculate = 0;
                 RuntimeUtil.buzzStart = 0;
@@ -2721,8 +2745,9 @@ public class ControlPane {
 
     public void notifyBuzzByHardware(String teamAddress){
         BuzzDevice buzzDevice = SerialPortConfig.getBuzzDevice(teamAddress);
+        Teams teams = TeamRuntime.getByCode(teamAddress);
         if (buzzDevice != null) {
-            notifyBuzz(buzzDevice.getFlag(), "");
+            notifyBuzz(teams.getShortName(), "");
         }
     }
 
@@ -2828,6 +2853,7 @@ public class ControlPane {
                         return;
                     }
                 } else {
+                    teams.setBuzzStatus(1);
                     // 抢答成功，直接结束抢答
                     RuntimeUtil.buzzStart = 0;
                     RuntimeUtil.buzzTimeMap.put(team, System.nanoTime() - RuntimeUtil.buzzCalculate);
@@ -2923,6 +2949,8 @@ public class ControlPane {
             reloadScoreBoard();
 
             if (success) {
+                // 闪烁计分屏
+                lightScreen(Objects.equals(1, buzz.getLight()), successTeam);
                 if (buzz.getSuccessMusic() == 1) {
                     if (standard) {
                         // 标准模式下判定是否需要提前响应音乐
@@ -2968,12 +2996,12 @@ public class ControlPane {
             }
 
             if (fail) {
-                // 不播放违规信息
-                if (buzz.getPlayError() != 1) {
-                    return;
-                }
+                // 不播放前置的违规音效
+//                if (buzz.getPlayError() != 1) {
+//                    return;
+//                }
                 // 播放违规音效
-                if (buzz.getErrorMusic() == 1) {
+                if (buzz.getErrorMusic() == 1 && buzz.getPlayError() == 1) {
                     if (standard) {
                         MusicPlayer.playWithCallback(MusicResource.BUZZ_FAIL_BEFORE, () -> {
                             MusicPlayer.play(MusicResource.BUZZ_FAIL(failTeams.get(0).getCode()));
@@ -2984,7 +3012,9 @@ public class ControlPane {
                         }
                         MusicPlayer.playNext();
                     }
-                } else {
+                } else if (buzz.getErrorMusic() == 0 && buzz.getPlayError() == 1){
+                    MusicPlayer.playWithCallback(MusicResource.BUZZ_FAIL_BEFORE, () -> {});
+                } else if (buzz.getErrorMusic() == 1 && buzz.getPlayError() == 0){
                     if (standard) {
                         MusicPlayer.play(MusicResource.BUZZ_FAIL(failTeams.get(0).getCode()));
                     } else {
@@ -3046,5 +3076,22 @@ public class ControlPane {
 
     public ReloadPane getBuzzResult() {
         return buzzResult;
+    }
+
+    private void lightScreen(boolean light, Teams team) {
+        if (light) {
+            ScreenDevice screenDevice = SerialPortConfig.getScreenDevice(team.getCode());
+            SerialPortConnector instance = SerialPortConnector.getInstance();
+            if (instance != null && instance.isConnected()) {
+                instance.send(Command.SHOW, SerialPortConfig.buildScreenData(screenDevice, team.getTeamScore(), true));
+                try {
+                    TimeUnit.SECONDS.sleep(1);
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
+                }
+                instance.send(Command.SHOW, SerialPortConfig.buildScreenData(screenDevice, team.getTeamScore(), false));
+            }
+
+        }
     }
 }

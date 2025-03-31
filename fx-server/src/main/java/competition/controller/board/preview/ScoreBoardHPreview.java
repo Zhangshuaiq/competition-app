@@ -114,6 +114,7 @@ public class ScoreBoardHPreview extends PreviewPane implements BoardPane {
             stackPane.setMaxHeight(Double.MAX_VALUE);
             stackPane.setPrefSize(ScreenAdapter.calculateMainX(Integer.parseInt(cfgArr[19])), ScreenAdapter.calculateMainY(Integer.parseInt(cfgArr[20])));
             VBox.setVgrow(stackPane, Priority.NEVER);
+
             Text teamName = new Text(team.getShortName());
             teamName.setTextAlignment(TextAlignment.CENTER);
             teamName.setFill(Color.valueOf(cfgArr[15]));
@@ -129,6 +130,8 @@ public class ScoreBoardHPreview extends PreviewPane implements BoardPane {
             }
             teamName.getTransforms().clear();
             stackPane.getChildren().add(teamName);
+
+
             if (Boolean.valueOf(split[4])) {
                 teamName.getTransforms().add(new Shear(-0.3, 0));
             }

@@ -5,10 +5,10 @@ import java.util.Set;
 
 public class WsTeamMemberWaiter {
     
-    // 等待中的队伍
-    public static Set<String> waitingMember = new HashSet<>();
+    // 连接中的队伍
+    public static Set<String> connectTeams = new HashSet<>();
     
-    public static void addWaiter(String member) {
-        waitingMember.add(member);
+    public static void addConnectedTeam(String member) {
+        connectTeams.add(member);
     }
 }

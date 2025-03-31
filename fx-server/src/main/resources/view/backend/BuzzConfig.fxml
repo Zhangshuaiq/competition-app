@@ -10,7 +10,8 @@
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.AnchorPane?>
 
-<AnchorPane prefHeight="827.0" prefWidth="1100.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="competition.controller.backend.BuzzConfig">
+<AnchorPane prefHeight="827.0" prefWidth="1100.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="competition.controller.backend.BuzzConfig">
    <children>
       <Label layoutX="145.0" layoutY="39.0" text="模式设置：" />
       <ComboBox fx:id="buzzCombox" layoutX="251.0" layoutY="34.0" prefHeight="30.0" prefWidth="454.0" />
@@ -95,5 +96,6 @@
       <TextField fx:id="yLoc" layoutX="856.0" layoutY="294.0" prefHeight="30.0" prefWidth="87.0" />
       <Label layoutX="666.0" layoutY="299.0" text="x" />
       <Label layoutX="834.0" layoutY="301.0" text="y" />
+      <CheckBox fx:id="lightCheck" layoutX="632.0" layoutY="341.0" mnemonicParsing="false" text="闪烁" />
    </children>
 </AnchorPane>

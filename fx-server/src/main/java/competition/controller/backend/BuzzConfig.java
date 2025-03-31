@@ -60,6 +60,9 @@ public class BuzzConfig {
     private CheckBox fontBold;
 
     @FXML
+    private CheckBox lightCheck;
+
+    @FXML
     private Slider speedAdjust;
 
     @FXML
@@ -151,6 +154,7 @@ public class BuzzConfig {
             successMusicCheck.setSelected(buzz.getSuccessMusic() != null && buzz.getSuccessMusic() == 1);
             playErrorCheck.setSelected(buzz.getPlayError() != null && buzz.getPlayError() == 1);
             lastSuccessCheck.setSelected(buzz.getLastSuccess() != null && buzz.getLastSuccess() == 1);
+            lightCheck.setSelected(buzz.getLight() != null && buzz.getLight() == 1);
             timeLimitText.setText(String.valueOf(buzz.getTimeLimit()));
             paneBackgroundText.setText(buzz.getBackground());
         }
@@ -253,6 +257,7 @@ public class BuzzConfig {
         boolean successMusicCheckSelected = successMusicCheck.isSelected();
         boolean playErrorCheckSelected = playErrorCheck.isSelected();
         boolean lastSuccessCheckSelected = lastSuccessCheck.isSelected();
+        boolean lightCheckSelected = lightCheck.isSelected();
         String limitTextText = timeLimitText.getText();
         if (StringUtils.isEmpty(limitTextText)) {
             limitTextText = "3";
@@ -271,6 +276,7 @@ public class BuzzConfig {
         buzz.setSuccessMusic(successMusicCheckSelected ? 1 : 0);
         buzz.setPlayError(playErrorCheckSelected ? 1 : 0);
         buzz.setLastSuccess(lastSuccessCheckSelected ? 1 : 0);
+        buzz.setLight(lightCheckSelected ? 1 : 0);
         buzz.setTimeLimit(Integer.parseInt(limitTextText));
         buzz.setBackground(text);
         buzz.setX(xLoc.getText());

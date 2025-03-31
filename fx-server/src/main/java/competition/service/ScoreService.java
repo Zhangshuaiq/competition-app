@@ -38,7 +38,7 @@ public class ScoreService {
         } else {
             light = false;
         }
-        ScreenDevice screenDevice = SerialPortConfig.getScreenDevice(team.getShortName());
+        ScreenDevice screenDevice = SerialPortConfig.getScreenDevice(team.getCode());
         if (screenDevice != null) {
             // 异步更新平板分数
             new Thread(() -> {

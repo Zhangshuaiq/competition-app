@@ -59,22 +59,10 @@ public class TerminalConfig {
 
 
     @FXML
-    private TextField screenFlagField;
-
-    @FXML
     private ComboBox<String> color2Selector;
 
     @FXML
-    private TextField buzzFlagField;
-
-    @FXML
     private TextField portField, portField1;
-
-    @FXML
-    private TableColumn<BuzzDevice, String> buzzFlagCol;
-
-    @FXML
-    private TableColumn<ScreenDevice, String> screenFlagCol;
 
     @FXML
     private TableColumn<BuzzDevice, String> buzzAddressCol;
@@ -116,7 +104,6 @@ public class TerminalConfig {
             return;
         }
         ScreenDevice screenDevice = screenTable.getItems().get(selectedIndex);
-        screenFlagField.setText(screenDevice.getFlag());
         screenAddressField.setText(screenDevice.getAddress());
         String[] colors = screenDevice.getColor().split(",");
         color1Selector.setValue(colors[0]);
@@ -130,18 +117,15 @@ public class TerminalConfig {
             return;
         }
         BuzzDevice buzzDevice = buzzTable.getItems().get(selectedIndex);
-        buzzFlagField.setText(buzzDevice.getFlag());
         buzzAddressField.setText(buzzDevice.getAddress());
     }
 
     private void bindTableProperty() {
-        screenFlagCol.setCellValueFactory(new PropertyValueFactory<>("flag"));
         screenAddressCol.setCellValueFactory(new PropertyValueFactory<>("address"));
         screenColorCol.setCellValueFactory(new PropertyValueFactory<>("color"));
 
         screenTable.setOnMouseClicked(event -> showScreenInfo());
 
-        buzzFlagCol.setCellValueFactory(new PropertyValueFactory<>("flag"));
         buzzAddressCol.setCellValueFactory(new PropertyValueFactory<>("address"));
 
         buzzTable.setOnMouseClicked(event -> showBuzzInfo());
@@ -239,17 +223,17 @@ public class TerminalConfig {
             for (ScreenDevice screenDevice : screenDevices) {
                 data = screenDevice.getAddress() + "," + screenDevice.getAddress() + "," + portField.getText();
                 cmd = instance.send(Command.SDSP, data);
-                logArea.appendText(TimeUtil.currentTime() + ":      " + screenDevice.getFlag() + "设置显示器地址【" + cmd + "】\n");
+                logArea.appendText(TimeUtil.currentTime() + ":      " + screenDevice.getAddress() + "设置显示器地址【" + cmd + "】\n");
                 response = waitResponse();
                 if (response == null) {
-                    logArea.appendText(TimeUtil.currentTime() + ":      " + screenDevice.getFlag() + "读取响应超时\n");
+                    logArea.appendText(TimeUtil.currentTime() + ":      " + screenDevice.getAddress() + "读取响应超时\n");
                     return;
                 }
                 if (!response.contains(Command.SDSP.getCmd()) || !response.contains("OK")) {
-                    logArea.appendText(TimeUtil.currentTime() + ":      " + screenDevice.getFlag() + "设置显示器地址失败\n");
+                    logArea.appendText(TimeUtil.currentTime() + ":      " + screenDevice.getAddress() + "设置显示器地址失败\n");
                     return;
                 }
-                logArea.appendText(TimeUtil.currentTime() + ":     " + screenDevice.getFlag() + "设置显示器地址成功\n");
+                logArea.appendText(TimeUtil.currentTime() + ":     " + screenDevice.getAddress() + "设置显示器地址成功\n");
             }
 
             // 设置信道 抢答器，显示器，强制主机抢答器为 100，用于通信
@@ -273,17 +257,17 @@ public class TerminalConfig {
             for (BuzzDevice buzzDevice : buzzDevices) {
                 data = "0" + "," + buzzDevice.getAddress() + "," + portField1.getText();
                 cmd = instance.send(Command.SKEY, data);
-                logArea.appendText(TimeUtil.currentTime() + ":      " + buzzDevice.getFlag() + "设置抢答器地址【" + cmd + "】\n");
+                logArea.appendText(TimeUtil.currentTime() + ":      " + buzzDevice.getAddress() + "设置抢答器地址【" + cmd + "】\n");
                 response = waitResponse();
                 if (response == null) {
-                    logArea.appendText(TimeUtil.currentTime() + ":      " + buzzDevice.getFlag() + "读取响应超时\n");
+                    logArea.appendText(TimeUtil.currentTime() + ":      " + buzzDevice.getAddress() + "读取响应超时\n");
                     return;
                 }
                 if (!response.contains(Command.SKEY.getCmd()) || !response.contains("OK")) {
-                    logArea.appendText(TimeUtil.currentTime() + ":      " + buzzDevice.getFlag() + "设置抢答器地址失败\n");
+                    logArea.appendText(TimeUtil.currentTime() + ":      " + buzzDevice.getAddress() + "设置抢答器地址失败\n");
                     return;
                 }
-                logArea.appendText(TimeUtil.currentTime() + ":     " + buzzDevice.getFlag() + "设置抢答器地址成功\n");
+                logArea.appendText(TimeUtil.currentTime() + ":     " + buzzDevice.getAddress() + "设置抢答器地址成功\n");
             }
 
             // 设置信道 抢答器，显示器
@@ -433,12 +417,10 @@ public class TerminalConfig {
 
     @FXML
     public void saveScreenInfo() {
-        String flag = screenFlagField.getText();
         String address = screenAddressField.getText();
         String color = color1Selector.getValue() + "," + color2Selector.getValue() + "," + color3Selector.getValue();
 
         ScreenDevice screenDevice = new ScreenDevice();
-        screenDevice.setFlag(flag);
         screenDevice.setAddress(address);
         screenDevice.setColor(color);
 
@@ -491,11 +473,9 @@ public class TerminalConfig {
 
     @FXML
     public void saveBuzzInfo() {
-        String flag = buzzFlagField.getText();
         String address = buzzAddressField.getText();
 
         BuzzDevice buzzDevice = new BuzzDevice();
-        buzzDevice.setFlag(flag);
         buzzDevice.setAddress(address);
 
         List<BuzzDevice> deviceList = new ArrayList<>();

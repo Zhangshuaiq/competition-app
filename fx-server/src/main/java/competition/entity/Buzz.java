@@ -20,6 +20,8 @@ public class Buzz {
 
     private Integer lastSuccess;
 
+    private Integer light;
+
     private Integer playError;
 
     private Integer successMusic;

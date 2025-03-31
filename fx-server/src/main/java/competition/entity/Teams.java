@@ -80,7 +80,7 @@ public class Teams {
     private Integer newScore;
 
     @ExcelIgnore
-    // 抢答状态
+    // 抢答状态 0 未抢答 1 成功 2 失败
     @TableField(exist = false)
     private int buzzStatus = 0;
 

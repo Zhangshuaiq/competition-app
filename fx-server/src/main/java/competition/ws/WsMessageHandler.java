@@ -1,24 +1,21 @@
 package competition.ws;
 
 import com.alibaba.fastjson2.JSON;
-import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import competition.JavaFxApplication;
 import competition.controller.ControlPane;
 import competition.controller.board.BoardPane;
-import competition.controller.match.Model7;
 import competition.controller.preview.*;
 import competition.entity.Questions;
-import competition.entity.Stages;
 import competition.entity.Teams;
 import competition.mapper.TeamsMapper;
 import competition.util.GlobalCache;
 import competition.util.RuntimeUtil;
 import competition.util.TeamRuntime;
 import javafx.application.Platform;
+import org.springframework.messaging.handler.annotation.Header;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Controller;
-import org.springframework.util.StringUtils;
 
 import javax.annotation.Resource;
 import java.nio.charset.StandardCharsets;
@@ -74,11 +71,12 @@ public class WsMessageHandler {
     private SimpMessagingTemplate messagingTemplate;
     
     @MessageMapping("/enter")
-    public void enter(byte[] msg){
+    public void enter(byte[] msg, @Header("simpSessionId") String sessionId){
         String jsonText =  new String(msg, StandardCharsets.UTF_8);
         Map parse = JSON.parseObject(jsonText, Map.class);
         String team = parse.get("team").toString();
-        WsTeamMemberWaiter.addWaiter(team);
+        System.out.println("团队" + team + "加入,标识为：" + sessionId);
+        WsTeamMemberWaiter.addConnectedTeam(team);
     }
     
     

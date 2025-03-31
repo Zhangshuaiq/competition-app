@@ -21,6 +21,25 @@ public class TeamRuntime {
         return teams;
     }
 
+
+    public static void resetBuzzStatus(){
+        for (Teams team : teams) {
+            team.setBuzzStatus(0);
+        }
+    }
+
+
+    public static Teams getByCode(String code){
+        if (teams == null || CollectionUtils.isEmpty(teams)) {
+            return null;
+        }
+        List<Teams> collect = teams.stream().filter(x -> x.getCode().equals(code)).collect(Collectors.toList());
+        if (CollectionUtils.isEmpty(collect)) {
+            return null;
+        }
+        return collect.get(0);
+    }
+
     public static Teams getByShortName(String shortName){
         if (teams == null || CollectionUtils.isEmpty(teams)) {
             return null;

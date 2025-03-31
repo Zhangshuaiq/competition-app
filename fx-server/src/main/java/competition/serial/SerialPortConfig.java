@@ -25,7 +25,7 @@ public class SerialPortConfig {
     }
 
     public static ScreenDevice getScreenDevice(String name){
-        List<ScreenDevice> collect = screenDevices.stream().filter(x -> x.getFlag().equals(name)).collect(Collectors.toList());
+        List<ScreenDevice> collect = screenDevices.stream().filter(x -> x.getAddress().equals(name)).collect(Collectors.toList());
         if (!collect.isEmpty()) {
             return collect.get(0);
         }

@@ -26,4 +26,5 @@ public class WsConfig implements WebSocketMessageBrokerConfigurer {
         // 配置客户端发送消息的路径前缀
         registry.setApplicationDestinationPrefixes("/app");
     }
+
 }

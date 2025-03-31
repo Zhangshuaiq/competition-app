@@ -7,7 +7,6 @@ import competition.entity.*;
 import competition.mapper.*;
 import competition.resp.JsonResp;
 import competition.util.*;
-import javafx.application.Platform;
 import org.springframework.core.io.UrlResource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -15,10 +14,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
-import java.net.MalformedURLException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -53,6 +50,15 @@ public class RestApi {
         // 队伍数量限制
         List<Teams> teams = teamsMapper.selectList(new LambdaQueryWrapper<>());
         teams.sort((o1, o2) -> Integer.parseInt(o1.getCode()) - Integer.parseInt(o2.getCode()));
+        List<Teams> teamWithStatus = TeamRuntime.getTeams();
+        for (Teams team : teams) {
+            for (Teams teams1 : teamWithStatus) {
+                if (team.getCode().equals(teams1.getCode())) {
+                    team.setBuzzStatus(teams1.getBuzzStatus());
+                    break;
+                }
+            }
+        }
         int maxTeamNumber = GlobalCache.MAX_TEAM_NUMBER;
         if (teams.size() <= maxTeamNumber) {
             return JsonResp.success(teams);
@@ -140,7 +146,15 @@ public class RestApi {
     
     @GetMapping("/score/{teamId}")
     public JsonResp queryScore(@PathVariable Integer teamId){
-        return JsonResp.success(teamsMapper.selectById(teamId));
+        Teams targetTeam = teamsMapper.selectById(teamId);
+        List<Teams> teamWithStatus = TeamRuntime.getTeams();
+            for (Teams teams1 : teamWithStatus) {
+                if (targetTeam.getCode().equals(teams1.getCode())) {
+                    targetTeam.setBuzzStatus(teams1.getBuzzStatus());
+                    break;
+                }
+            }
+        return JsonResp.success(targetTeam);
     }
 
 

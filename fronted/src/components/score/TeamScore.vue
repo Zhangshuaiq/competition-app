@@ -33,6 +33,8 @@ export default {
       dialogFormVisible: false,
       teamItem: '',
       imageUrl: `${baseUrl}/resource/团队分数背景.jpg?${new Date().getTime()}`,
+      buzzSuccessUrl: `${baseUrl}/resource/抢答成功背景.jpg?${new Date().getTime()}`,
+      buzzFailUrl: `${baseUrl}/resource/抢答失败背景.jpg?${new Date().getTime()}`,
       defaultImageUrl: `${baseUrl}/resource/默认背景.jpg?${new Date().getTime()}`,
       codeCfg: {
         color: 'black'
@@ -48,8 +50,14 @@ export default {
 
   computed: {
     containerBoxStyle() {
+      let imageUrl = this.imageUrl
+      if (this.teamItem.buzzStatus === 1) {
+        imageUrl = this.buzzSuccessUrl
+      } else if (this.teamItem.buzzStatus === 2) {
+        imageUrl = this.buzzFailUrl
+      }
       return {
-        backgroundImage: `url(${this.imageUrl})`,
+        backgroundImage: `url(${imageUrl})`,
         backgroundSize: '100vw 100vh',
         height: '100vh',
         position: 'relative'
@@ -146,6 +154,18 @@ export default {
     this.teamItem = JSON.parse(login)
     this.queryStyle()
     this.checkImageUrl(this.imageUrl, (isValid) => {
+      if (!isValid) {
+        console.log("invalid....................")
+        this.imageUrl = this.defaultImageUrl;
+      }
+    });
+    this.checkImageUrl(this.buzzSuccessUrl, (isValid) => {
+      if (!isValid) {
+        console.log("invalid....................")
+        this.imageUrl = this.defaultImageUrl;
+      }
+    });
+    this.checkImageUrl(this.buzzFailUrl, (isValid) => {
       if (!isValid) {
         console.log("invalid....................")
         this.imageUrl = this.defaultImageUrl;
