@@ -76,7 +76,7 @@ public class WsMessageHandler {
         Map parse = JSON.parseObject(jsonText, Map.class);
         String team = parse.get("team").toString();
         System.out.println("团队" + team + "加入,标识为：" + sessionId);
-        WsTeamMemberWaiter.addConnectedTeam(team);
+        WsTeamMemberWaiter.addConnectedTeam(sessionId, team);
     }
     
     

@@ -83,7 +83,7 @@ public class PaneConfig {
     private TextField size2;
 
     @FXML
-    private ImageView scoreQrcode, scoreQrcode1;
+    private ImageView scoreQrcode, scoreQrcode1, scoreQrcode11;
     
 
     @FXML
@@ -110,7 +110,7 @@ public class PaneConfig {
     private TextField rows;
 
     @FXML
-    private TextField scoreWebsite, scoreWebsite1;
+    private TextField scoreWebsite, scoreWebsite1, scoreWebsite11;
 
     @FXML
     private TextArea contactText;
@@ -155,6 +155,7 @@ public class PaneConfig {
 
         scoreWebsite.textProperty().bindBidirectional(ipaddr);
         scoreWebsite1.textProperty().bindBidirectional(ipaddr);
+        scoreWebsite11.textProperty().bindBidirectional(ipaddr);
         memberWebsite.textProperty().bindBidirectional(ipaddr);
         holderWebsite.textProperty().bindBidirectional(ipaddr);
         
@@ -186,6 +187,7 @@ public class PaneConfig {
             holderQrcode.setImage(generateQRCodeImage("http://" + ipaddr.get() + ":8080/index.html#/hwait"));
             scoreQrcode.setImage(generateQRCodeImage("http://" + ipaddr.get() + ":8080/index.html#/allScore"));
             scoreQrcode1.setImage(generateQRCodeImage("http://" + ipaddr.get() + ":8080/index.html#/scoreLogin"));
+            scoreQrcode11.setImage(generateQRCodeImage("http://" + ipaddr.get() + ":8080/index.html#/buzzLogin"));
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -345,6 +347,29 @@ public class PaneConfig {
             e.printStackTrace();
         }
     }
+
+    @FXML
+    public void largeScoreQrcode11(){
+        Stage newStage = new Stage();
+        Image image = null;
+        try {
+            image = generateQRCodeImage("http://" + ipaddr.get() + ":8080/index.html#/buzzLogin");
+            ImageView zoomedImageView = new ImageView(image);
+            zoomedImageView.setPreserveRatio(true);
+            zoomedImageView.setFitWidth(image.getWidth() * 2); // 放大到原始大小的两倍
+            zoomedImageView.setFitHeight(image.getHeight() * 2);
+
+            // 设置背景
+            StackPane newRoot = new StackPane(zoomedImageView);
+            newRoot.setBackground(new Background(new BackgroundFill(Color.gray(0.3, 0.5), null, null))); // 灰色半透明背景
+
+            Scene newScene = new Scene(newRoot, 1000, 600); // 可以调整新窗口的大小
+            newStage.setScene(newScene);
+            newStage.show();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
     
     @FXML
     public void update1(){
@@ -377,6 +402,15 @@ public class PaneConfig {
     public void update4(){
         try {
             scoreQrcode1.setImage(generateQRCodeImage("http://" + ipaddr.get() + ":8080/index.html#/scoreLogin"));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    @FXML
+    public void update44(){
+        try {
+            scoreQrcode11.setImage(generateQRCodeImage("http://" + ipaddr.get() + ":8080/index.html#/buzzLogin"));
         } catch (Exception e) {
             e.printStackTrace();
         }

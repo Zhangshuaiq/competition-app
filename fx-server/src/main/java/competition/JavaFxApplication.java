@@ -36,17 +36,6 @@ public class JavaFxApplication extends Application {
         Parent load = loader.load();
         Scene scene = new Scene(load);
         scene.getStylesheets().add("/view/style.css"); // 应用 CSS
-//        // 鼠标按下时记录初始坐标
-//        load.setOnMousePressed(event -> {
-//            xOffset = event.getSceneX();
-//            yOffset = event.getSceneY();
-//        });
-//
-//        // 拖动时更新窗口位置
-//        load.setOnMouseDragged(event -> {
-//            primaryStage.setX(event.getScreenX() - xOffset);
-//            primaryStage.setY(event.getScreenY() - yOffset);
-//        });
         stage.initStyle(StageStyle.UNDECORATED);
         stage.setOnCloseRequest(e -> {
             WsMessageHandler messageHandler = JavaFxApplication.getApplicationContext().getBean(WsMessageHandler.class);
@@ -75,38 +64,6 @@ public class JavaFxApplication extends Application {
     public static ConfigurableApplicationContext getApplicationContext() {
         return applicationContext;
     }
-
-//    public static void restartJavaFxApplication() {
-//        Platform.runLater(() -> {
-//            try {
-//                FXMLLoader loader = new FXMLLoader(JavaFxApplication.class.getResource("/view/ControlPage.fxml"));
-//                loader.setControllerFactory(applicationContext::getBean); // 使用Spring上下文来创建控制器实例
-//                Parent load = loader.load();
-//                Scene scene = new Scene(load);
-//                scene.getStylesheets().add("/view/style.css"); // 应用 CSS
-//
-//
-//                stage.setOnCloseRequest(e -> {
-//                    WsMessageHandler messageHandler = JavaFxApplication.getApplicationContext().getBean(WsMessageHandler.class);
-//                    messageHandler.notifyPage("wait", null);
-//                    System.exit(0);
-//                });
-//                stage.setScene(scene);
-//                stage.setResizable(false);
-//                stage.setAlwaysOnTop(true);
-//                stage.setTitle("答赛答题竞赛系统");
-//                try {
-//                    stage.getIcons().add(new Image(new FileInputStream(BaseDir.IMAGE_DIR + "图标.jpg")));
-//                } catch (Exception ex) {
-//                    System.out.println("加载不到图片");
-//                }
-//                stage.show();
-//                MusicPlayer.prePlay(MusicResource.SECOND_0);
-//            } catch (Exception e) {
-//                e.printStackTrace();
-//            }
-//        });
-//    }
 
    
 }

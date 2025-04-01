@@ -390,6 +390,16 @@ public class ControlPane {
             } else {
                 hardwareStatus.setFill(Color.RED);
             }
+
+//            double random = Math.random();
+//            if (random < 0.33) {
+//                hardwareStatus.setFill(Color.RED);
+//            } else if (random < 0.66) {
+//                hardwareStatus.setFill(Color.YELLOW);
+//            } else {
+//                hardwareStatus.setFill(Color.GREEN);
+//            }
+
         }));
         timeline.setCycleCount(-1);
         timeline.play();
@@ -738,6 +748,9 @@ public class ControlPane {
         });
 
         showScoreBoard();
+        // 展示前端链接状态
+        Navigator.connectionBar("/view/board/preview/TeamConnectionBar.fxml", "", "/view/style.css", true);
+
     }
 
     private void showStage() {

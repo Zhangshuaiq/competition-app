@@ -49,9 +49,14 @@ public class Navigator {
 
     // 抢答计时器面板
     public static final Stage buzzTimeBoardStage = new Stage();
-    
+
+    // 分数面板
     public static final Stage scoreBoardStage = new Stage();
 
+    // 客户端连接状态面板
+    public static final Stage connectionStage = new Stage();
+
+    // 抢答结束面板
     public static final Stage buzzBoardStage = new Stage();
     
 
@@ -71,6 +76,11 @@ public class Navigator {
         scoreBoardStage.setResizable(true);
         scoreBoardStage.setAlwaysOnTop(true);
         scoreBoardStage.initStyle(StageStyle.TRANSPARENT);
+
+        connectionStage.setResizable(true);
+        connectionStage.setAlwaysOnTop(true);
+        connectionStage.initStyle(StageStyle.TRANSPARENT);
+
         backendStage.setOnCloseRequest(new EventHandler<WindowEvent>() {
             @Override
             public void handle(WindowEvent event) {
@@ -389,6 +399,100 @@ public class Navigator {
             });
 
             scene.getStylesheets().add(cssFile); // 应用 CSS
+
+            stage.setScene(scene);
+            stage.show();
+            return loader.getController();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    public static Object connectionBar(String fxml, String title, String cssFile, boolean hiddenControl){
+
+        try {
+
+            AtomicReference<Double> xOffset = new AtomicReference<>((double) 0);
+            AtomicReference<Double> yOffset = new AtomicReference<>((double) 0);
+            FXMLLoader loader = new FXMLLoader(Navigator.class.getResource(fxml));
+            ConfigurableApplicationContext applicationContext = JavaFxApplication.getApplicationContext();
+            ConfigsMapper configsMapper = applicationContext.getBean(ConfigsMapper.class);
+
+//            Configs configs = configsMapper.selectById(1);
+            loader.setControllerFactory(applicationContext::getBean);
+            Parent load = loader.load();
+
+
+            Stage stage = connectionStage;
+
+
+//            String config = configs.getConfig();
+//            if (!StringUtils.isEmpty(config)) {
+//                String[] split = config.split(ConfigSpliter.SPLITER);
+//                stage.setX(ScreenAdapter.calculateMainX(Double.parseDouble(split[17])));
+//                stage.setY(ScreenAdapter.calculateMainY(Double.parseDouble(split[18])));
+//            }
+            stage.setTitle(title);
+            Scene  scene = new Scene(load, Color.TRANSPARENT);
+
+
+//            scene.widthProperty().addListener((observable, oldValue, newValue) -> {
+//                stage.setWidth(newValue.doubleValue());
+//            });
+//
+//            scene.heightProperty().addListener((observable, oldValue, newValue) -> {
+//                stage.setHeight(newValue.doubleValue());
+//            });
+
+            if (hiddenControl) {
+                //stage.initStyle(StageStyle.TRANSPARENT);
+            }
+            load.setOnMousePressed(event -> {
+                xOffset.set(event.getSceneX());
+                yOffset.set(event.getSceneY());
+            });
+
+            // 拖动时更新窗口位置
+            load.setOnMouseDragged(event -> {
+                stage.setX(ScreenAdapter.calculateMainX(event.getScreenX() - xOffset.get()));
+                stage.setY(ScreenAdapter.calculateMainY(event.getScreenY() - yOffset.get()));
+                ObservableList<Screen> screens = Screen.getScreens();
+//                if (screens.size() < 2) {
+//                    return;
+//                }
+//                Screen extendedScreen = screens.get(1); // 获取第二个屏幕
+//                Rectangle2D bounds = extendedScreen.getBounds();
+//                ExtendedScreen.scoreBoardStage.setX(bounds.getMinX() + ScreenAdapter.calculateExX(event.getScreenX() - xOffset.get()));
+//                ExtendedScreen.scoreBoardStage.setY(bounds.getMinY() + ScreenAdapter.calculateExY(event.getScreenY() - yOffset.get()));
+            });
+
+//            load.setOnMouseReleased(event -> {
+//                System.out.println("状态面板拖动后位置 ========================>");
+//                System.out.println(stage.getX());
+//                System.out.println(stage.getY());
+//                String[] split = config.split(ConfigSpliter.SPLITER);
+//                split[17] = stage.getX() + "";
+//                split[18] = stage.getY() + "";
+//                configs.setConfig(String.join(ConfigSpliter.SPLITER, split));
+//                configsMapper.updateById(configs);
+//            });
+
+            scene.getStylesheets().add(cssFile); // 应用 CSS
+
+//            SwingUtilities.invokeLater(() -> {
+//                JDialog dialog = new JDialog();
+//                dialog.setUndecorated(true); // 去掉对话框装饰
+//                dialog.setAlwaysOnTop(true); // 可选：保持对话框在最上层
+//                JFXPanel jfxPanel = new JFXPanel();
+//
+//                scene.setFill(null);
+//
+//                jfxPanel.setScene(scene);
+//                dialog.add(jfxPanel);
+//                dialog.setSize(1000, 200);
+//                dialog.setVisible(true);
+//            });
 
             stage.setScene(scene);
             stage.show();

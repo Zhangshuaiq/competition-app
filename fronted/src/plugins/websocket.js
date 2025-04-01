@@ -22,7 +22,13 @@ export default {
                 const connection = new SockJS(options.url);
                 stompClient = Stomp.over(connection);
             }
-            stompClient.connect({}, frame => {
+            let teamId = "";
+            const user = sessionStorage.getItem('user');
+            console.log(user)
+            if (user) {
+                teamId = JSON.parse(user).shortName;
+            }
+            stompClient.connect({teamId: teamId}, frame => {
                 connected = true;
                 sessionStorage.setItem("websocketSessionInfo", options.url)
                 console.log('Connected: ' + frame);

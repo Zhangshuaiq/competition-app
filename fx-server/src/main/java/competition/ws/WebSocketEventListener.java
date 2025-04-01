@@ -13,13 +13,19 @@ public class WebSocketEventListener {
     public void handleWebSocketConnectListener(SessionConnectEvent event) {
         StompHeaderAccessor headerAccessor = StompHeaderAccessor.wrap(event.getMessage());
         String sessionId = headerAccessor.getSessionId();
-        System.out.println("Client connected: " + sessionId);
+        String teamId = headerAccessor.getFirstNativeHeader("teamId");
+        if (teamId != null && !teamId.isEmpty()) {
+            System.out.println("旧的客户端链接刷新了网页: " + sessionId);
+            WsTeamMemberWaiter.addReconnectedTeam(sessionId, teamId);
+        } else {
+            System.out.println("新的客户端进入: " + sessionId);
+        }
     }
 
     @EventListener
     public void handleWebSocketDisconnectListener(SessionDisconnectEvent event) {
         StompHeaderAccessor headerAccessor = StompHeaderAccessor.wrap(event.getMessage());
         String sessionId = headerAccessor.getSessionId();
-        System.out.println("Client disconnected: " + sessionId);
+        WsTeamMemberWaiter.removeConnectedTeam(sessionId);
     }
 }
