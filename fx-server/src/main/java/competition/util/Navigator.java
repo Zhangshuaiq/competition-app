@@ -3,6 +3,7 @@ package competition.util;
 import com.alibaba.fastjson2.JSON;
 import com.alibaba.fastjson2.JSONObject;
 import competition.JavaFxApplication;
+import competition.controller.board.preview.TeamConnectionBarPreview;
 import competition.controller.preview.PreviewPane;
 import competition.entity.Buzz;
 import competition.entity.Configs;
@@ -12,6 +13,7 @@ import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.ObservableList;
 import javafx.embed.swing.JFXPanel;
+import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Rectangle2D;
@@ -138,6 +140,7 @@ public class Navigator {
                     GlobalCache.showTeamRank = false;
                     GlobalCache.showMemberRank = false;
                     GlobalCache.showModel7Rank = false;
+                    GlobalCache.showBuzzRank = false;
                 }
             });
             PreviewPane previewPane =  loader.getController();
@@ -417,33 +420,19 @@ public class Navigator {
             AtomicReference<Double> yOffset = new AtomicReference<>((double) 0);
             FXMLLoader loader = new FXMLLoader(Navigator.class.getResource(fxml));
             ConfigurableApplicationContext applicationContext = JavaFxApplication.getApplicationContext();
-            ConfigsMapper configsMapper = applicationContext.getBean(ConfigsMapper.class);
-
 //            Configs configs = configsMapper.selectById(1);
             loader.setControllerFactory(applicationContext::getBean);
             Parent load = loader.load();
+            TeamConnectionBarPreview controller = loader.getController();
 
 
             Stage stage = connectionStage;
 
 
-//            String config = configs.getConfig();
-//            if (!StringUtils.isEmpty(config)) {
-//                String[] split = config.split(ConfigSpliter.SPLITER);
-//                stage.setX(ScreenAdapter.calculateMainX(Double.parseDouble(split[17])));
-//                stage.setY(ScreenAdapter.calculateMainY(Double.parseDouble(split[18])));
-//            }
+
             stage.setTitle(title);
             Scene  scene = new Scene(load, Color.TRANSPARENT);
-
-
-//            scene.widthProperty().addListener((observable, oldValue, newValue) -> {
-//                stage.setWidth(newValue.doubleValue());
-//            });
-//
-//            scene.heightProperty().addListener((observable, oldValue, newValue) -> {
-//                stage.setHeight(newValue.doubleValue());
-//            });
+            stage.setOnCloseRequest(event -> controller.onWindowClose());
 
             if (hiddenControl) {
                 //stage.initStyle(StageStyle.TRANSPARENT);

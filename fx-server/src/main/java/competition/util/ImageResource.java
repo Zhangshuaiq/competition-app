@@ -350,6 +350,25 @@ public class ImageResource {
         return 默认背景();
     }
 
+
+    public static final String 抢答排名背景(){
+        String res = BaseDir.BACKGROUND_DIR + File.separator + "抢答排名背景.png";
+        if (new File(res).exists()) {
+            return res;
+        }
+
+        res = BaseDir.BACKGROUND_DIR + File.separator + "抢答排名背景.jpg";
+        if (new File(res).exists()) {
+            return res;
+        }
+
+        res = BaseDir.BACKGROUND_DIR + File.separator + "抢答排名背景.jpeg";
+        if (new File(res).exists()) {
+            return res;
+        }
+        return 默认背景();
+    }
+
     public static final String 竞技模式背景(){
         String res = BaseDir.BACKGROUND_DIR + File.separator + "竞技模式背景.png";
         if (new File(res).exists()) {

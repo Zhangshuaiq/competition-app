@@ -12,7 +12,9 @@ import competition.mapper.ScoreStyleMapper;
 import competition.mapper.StageMemberScoreMapper;
 import competition.mapper.TeamsMapper;
 import competition.util.*;
+import competition.ws.WsTeamMemberWaiter;
 import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.geometry.Pos;
@@ -259,6 +261,8 @@ public class TeamConfig {
         teamsMapper.deleteById(selectedItem.getId());
         showTeam();
         tableView.getSelectionModel().select(0);
+        ObservableList<Teams> items = tableView.getItems();
+        TeamRuntime.setTeams(new ArrayList<>(items));
     }
     
     @FXML
@@ -400,5 +404,7 @@ public class TeamConfig {
         List<Teams> teams = teamsMapper.selectList(new LambdaQueryWrapper<>());
         teams = teams.stream().sorted(Comparator.comparingInt(x -> Integer.parseInt(x.getCode()))).collect(Collectors.toList());
         tableView.setItems(FXCollections.observableList(teams));
+        TeamRuntime.setTeams(teams);
+        controlPane.reloadScoreBoard();
     }
 }

@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.text.*?>
+<?import javafx.scene.layout.*?>
+
+<AnchorPane fx:id="container" prefHeight="400.0" prefWidth="609.0" xmlns="http://javafx.com/javafx/8"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="competition.controller.preview.BuzzRankPreview">
+   <children>
+
+      <StackPane fx:id="titleBox" layoutX="30.0" layoutY="34.0" prefHeight="58.0" prefWidth="581.0">
+         <children>
+            <Text fx:id="competitionLab" strokeType="OUTSIDE" strokeWidth="0.0" text="抢  答  排  行  榜" textAlignment="CENTER" wrappingWidth="578.240234375">
+               <font>
+                  <Font size="34.0" />
+               </font>
+            </Text>
+         </children>
+      </StackPane>
+
+      <VBox fx:id="rankBox" layoutX="13.0" layoutY="79.0" prefHeight="-Infinity" prefWidth="1801.0" />
+   </children>
+</AnchorPane>

@@ -15,7 +15,12 @@ import competition.mapper.ConfigsMapper;
 import competition.mapper.ScoreConfigMapper;
 import competition.mapper.ScoreConfigMapper1;
 import competition.util.Information;
+import competition.util.Navigator;
+import competition.util.RuntimeUtil;
 import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
+import javafx.event.Event;
 import javafx.fxml.FXML;
 import javafx.scene.Scene;
 import javafx.scene.control.CheckBox;
@@ -29,6 +34,7 @@ import javafx.scene.layout.BackgroundFill;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
+import javafx.stage.WindowEvent;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
@@ -44,6 +50,10 @@ import java.util.Map;
 @Component
 public class PaneConfig {
 
+
+    // 链接状态控制器
+    @FXML
+    private CheckBox connectionStateControl;
 
     @FXML
     private ImageView holderQrcode;
@@ -149,8 +159,19 @@ public class PaneConfig {
     
     @FXML
     public void initialize(){
+        connectionStateControl.selectedProperty().addListener((observable, oldValue, newValue) -> {
+            System.out.println("链接状态展示.......");
+            System.out.println(newValue);
+            RuntimeUtil.showConnectionStatus = newValue;
+            if (RuntimeUtil.showConnectionStatus) {
+                // 展示前端链接状态
+                Navigator.connectionBar("/view/board/preview/TeamConnectionBar.fxml", "", "/view/style.css", true);
+            } else {
+                WindowEvent closeEvent = new WindowEvent( Navigator.connectionStage, WindowEvent.WINDOW_CLOSE_REQUEST);
+                Event.fireEvent( Navigator.connectionStage, closeEvent);  // 这会触发 setOnCloseRequest()
+            }
+        });
 
-        
         showData();
 
         scoreWebsite.textProperty().bindBidirectional(ipaddr);

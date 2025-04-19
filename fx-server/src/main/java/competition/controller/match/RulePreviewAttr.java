@@ -32,7 +32,7 @@ public class RulePreviewAttr {
     private CheckBox deleteChoice;
 
     @FXML
-    private ColorPicker colorInput;
+    private ColorPicker colorInput, backColorInput;
 
     @FXML
     private ComboBox<String> textAlignSelector;
@@ -92,16 +92,6 @@ public class RulePreviewAttr {
         final String config = configs.getConfig();
         if (!StringUtils.isEmpty(config)) {
             final String[] huanjieArr = config.split(ConfigSpliter.SPLITER);
-            //  hjbh.setValue(Color.valueOf(huanjieArr[0]));
-            //            bhbj.setValue(Color.valueOf(huanjieArr[1]));
-            //            hjmc.setValue(Color.valueOf(huanjieArr[2]));
-            //            mcbj.setValue(Color.valueOf(huanjieArr[3]));
-            //            hjx.setText(huanjieArr[4]);
-            //            hjy.setText(huanjieArr[5]);
-            //            hjk.setText(huanjieArr[6]);
-            //            hjg.setText(huanjieArr[7]);
-            //            xscjan.setSelected(Boolean.valueOf(huanjieArr[8]));
-            //            xshjlb.setSelected(Boolean.valueOf(huanjieArr[9]));
             xInput.setText(huanjieArr[1]);
             yInput.setText(huanjieArr[2]);
             widthInput.setText(huanjieArr[3]);
@@ -131,6 +121,9 @@ public class RulePreviewAttr {
             underlineChoice.setSelected(Boolean.valueOf(detailArr[12]));
             textAlignSelector.setValue(detailArr[13]);
             spaceInput.setText(detailArr[14]);
+            if (detailArr.length > 15) {
+                backColorInput.setValue(Color.valueOf(detailArr[15].replace("0x", "#")));
+            }
         }
 
     }
@@ -183,7 +176,8 @@ public class RulePreviewAttr {
                 + itic + ConfigSpliter.SPLITER
                 + underlne + ConfigSpliter.SPLITER
                 + alignValue + ConfigSpliter.SPLITER
-                + rowSpace
+                + rowSpace + ConfigSpliter.SPLITER
+                + backColorInput.getValue().toString()
                 ;
         configs.setConfig(huanjieVal);
         configs.setDetails(detail);

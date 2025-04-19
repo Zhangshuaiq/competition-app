@@ -240,7 +240,7 @@ public class TeamRankPreview extends PreviewPane{
             Teams item = teams.get(i);
             TeamMemberRankData rankData = new TeamMemberRankData();
             rankData.setTeam(item.getFullName());
-            rankData.setScore(item.getTeamScore());
+            rankData.setScore(Long.valueOf(item.getTeamScore()));
             rankList.add(rankData);
         }
         // sort 根据分数和时间进行排序

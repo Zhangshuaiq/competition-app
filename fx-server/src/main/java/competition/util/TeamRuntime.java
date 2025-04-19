@@ -5,8 +5,11 @@ import competition.entity.Teams;
 import competition.mapper.TeamsMapper;
 import org.springframework.util.CollectionUtils;
 
+import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class TeamRuntime {
 
@@ -14,6 +17,14 @@ public class TeamRuntime {
 
     public static void setTeams(List<Teams> teams) {
         TeamRuntime.teams = teams;
+    }
+
+    public static Map<String, String> getSeqMap(){
+        return teams.stream().collect(Collectors.toMap(Teams::getShortName, Teams::getCode));
+    }
+
+    public static Map<String, List<String>> getTeamMemberMapping(){
+        return teams.stream().collect(Collectors.toMap(Teams::getShortName, x -> Stream.of(x.getMembers().split(",")).collect(Collectors.toList())));
     }
 
 

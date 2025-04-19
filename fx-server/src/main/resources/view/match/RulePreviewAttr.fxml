@@ -7,7 +7,8 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<AnchorPane prefHeight="536.0" prefWidth="472.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" 
+<AnchorPane prefHeight="536.0" prefWidth="472.0" xmlns="http://javafx.com/javafx/8"
+            xmlns:fx="http://javafx.com/fxml/1"
             fx:controller="competition.controller.match.RulePreviewAttr">
    <children>
       <AnchorPane layoutX="40.0" layoutY="42.0" prefHeight="83.0" prefWidth="392.0">
@@ -30,13 +31,15 @@
       </AnchorPane>
       <AnchorPane layoutX="40.0" layoutY="159.0" prefHeight="119.0" prefWidth="392.0">
          <children>
-            <Label layoutX="255.0" layoutY="14.0" text="背景颜色" />
-            <ColorPicker fx:id="colorInput" layoutX="336.0" layoutY="9.0" prefHeight="30.0" prefWidth="32.0" />
+            <Label layoutX="159.0" layoutY="15.0" text="字体颜色" />
+            <ColorPicker fx:id="colorInput" layoutX="212.0" layoutY="7.0" prefHeight="30.0" prefWidth="32.0" />
             <Label layoutX="27.0" layoutY="52.0" text="背景图片" />
             <TextField fx:id="backgroundPath" layoutX="108.0" layoutY="47.0" prefHeight="30.0" prefWidth="275.0" />
             <Button layoutX="106.0" layoutY="90.0" mnemonicParsing="false" text="选择图片" />
             <Button layoutX="196.0" layoutY="90.0" mnemonicParsing="false" text="取消图片" />
-            <CheckBox fx:id="backgroundChoice" layoutX="86.0" layoutY="13.0" mnemonicParsing="false" text="填充背景" />
+            <CheckBox fx:id="backgroundChoice" layoutX="63.0" layoutY="14.0" mnemonicParsing="false" text="填充背景" />
+            <Label visible="false" layoutX="260.0" layoutY="15.0" text="背景颜色" />
+            <ColorPicker visible="false" fx:id="backColorInput" layoutX="316.0" layoutY="8.0" prefHeight="30.0" prefWidth="32.0" />
          </children>
       </AnchorPane>
       <Label layoutX="69.0" layoutY="322.0" text="名称" />

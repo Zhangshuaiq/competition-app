@@ -37,7 +37,7 @@ public class StageNamePreviewAttr {
     private CheckBox deleteChoice;
 
     @FXML
-    private ColorPicker colorInput;
+    private ColorPicker colorInput, fontColorInput;
 
     @FXML
     private ComboBox<String> textAlignSelector;
@@ -77,7 +77,9 @@ public class StageNamePreviewAttr {
     
     @Resource
     private StagesMapper stagesMapper;
-    
+
+    @Resource
+    private ConfigsMapper configsMapper;
     
     
     private static int stageId;
@@ -117,23 +119,9 @@ public class StageNamePreviewAttr {
     private void previewData(){
         final Stages stage = stagesMapper.selectById(stageId);
         final String config = stage.getStyle();
-        String[] detailArr = "750%%400%%400%%150%%false%%0x990000ff%%%%默认.ttf%%40%%false%%false%%false%%false%%居中对齐%%0".split(ConfigSpliter.SPLITER);
+        String[] detailArr = "750%%400%%400%%150%%false%%0x990000ff%%%%默认.ttf%%40%%false%%false%%false%%false%%居中对齐%%0%%0x000000ff".split(ConfigSpliter.SPLITER);
         if (!StringUtils.isEmpty(config)) {
             detailArr = config.split(ConfigSpliter.SPLITER);
-        } else {
-//            GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
-//            // 获取默认字体
-//            xInput.setText(ConfigSpliter.DEFAULT_X + "");
-//            yInput.setText(ConfigSpliter.DEFAULT_Y +"");
-//            widthInput.setText(ConfigSpliter.DEFAULT_W +"");
-//            heightInput.setText(ConfigSpliter.DEFAULT_H +"");
-//            textAlignSelector.setValue(AlignmentUtil.alignNames().get(0));
-//            Font defaultFont = new JLabel().getFont();
-//            fontSelector.setValue(defaultFont.getFamily());
-//            fontSize.setText(defaultFont.getSize() + "");
-//            iticChoice.setSelected(false);
-//            deleteChoice.setSelected(false);
-//            spaceInput.setText("0");
         }
         xInput.setText(detailArr[0]);
         yInput.setText(detailArr[1]);
@@ -150,6 +138,16 @@ public class StageNamePreviewAttr {
         underlineChoice.setSelected(Boolean.valueOf(detailArr[12]));
         textAlignSelector.setValue(detailArr[13]);
         spaceInput.setText(detailArr[14]);
+        if (detailArr.length > 15) {
+            fontColorInput.setValue(Color.valueOf(detailArr[15].replace("0x", "#")));
+        } else {
+            // 读取全局配置
+            final Configs stageConfig = configsMapper.selectById(2);
+            final String globalConfig = stageConfig.getConfig();
+            final String[] huanjieArr = globalConfig.split(ConfigSpliter.SPLITER);
+            fontColorInput.setValue(Color.valueOf(huanjieArr[2].replace("0x", "#")));
+        }
+
     }
 
     public void closeStage(MouseEvent event) {
@@ -166,6 +164,7 @@ public class StageNamePreviewAttr {
         String height = heightInput.getText();
         boolean fillBackground = backgroundChoice.isSelected();
         final String backgroundColor = colorInput.getValue().toString();
+        final String fontColor = fontColorInput.getValue().toString();
         String backgroundImage = backgroundPath.getText();
         final String fontFamily = fontSelector.getValue();
         String fsize = fontSize.getText();
@@ -192,7 +191,8 @@ public class StageNamePreviewAttr {
                 + itic + ConfigSpliter.SPLITER
                 + underlne + ConfigSpliter.SPLITER
                 + alignValue + ConfigSpliter.SPLITER
-                + rowSpace
+                + rowSpace + ConfigSpliter.SPLITER
+                + fontColor
                 ;
         stages.setStyle(detail);
         stagesMapper.updateById(stages);

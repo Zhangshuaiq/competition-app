@@ -160,6 +160,9 @@ public class StageNamePreview implements ReloadPane{
         title.prefWidth(ScreenAdapter.calculateExX(Integer.parseInt(detailArr[2])));
         title.prefHeight(ScreenAdapter.calculateExY(Integer.parseInt(detailArr[3])));
         title.setFill(Color.valueOf(huanjieArr[2]));
+        if (detailArr.length > 15) {
+            title.setFill(Color.valueOf(detailArr[15]));
+        }
         Font font = FontMap.load(detailArr[7], ScreenAdapter.calculateExX(Integer.parseInt(detailArr[8])));
         title.setFont(font);
         if (Boolean.valueOf(detailArr[10])) {

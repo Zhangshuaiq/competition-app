@@ -86,5 +86,6 @@
       <Label layoutX="296.0" layoutY="329.0" text="http://" />
       <Label layoutX="604.0" layoutY="329.0" text=":8080/index.html#/scoreLogin" />
       <ImageView fx:id="scoreQrcode11" fitHeight="54.0" fitWidth="54.0" layoutX="887.0" layoutY="310.0" onMouseClicked="#largeScoreQrcode11" pickOnBounds="true" preserveRatio="true" />
+      <CheckBox fx:id="connectionStateControl" layoutX="990.0" layoutY="64.0" mnemonicParsing="false" text="链接状态" />
    </children>
 </AnchorPane>

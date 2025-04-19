@@ -4,6 +4,13 @@ import java.text.DecimalFormat;
 
 public class NumberUtil {
 
+    public static String fix2PointWithDefault(long number) {
+        if (number == RuntimeUtil.UN_BUZZ_TIME) {
+            return "--";
+        }
+        return fix2Point(number / 1000000000.0);
+    }
+
     public static String fix2Point(double number) {
         DecimalFormat df = new DecimalFormat("0.0000");
         return df.format(number);

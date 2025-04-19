@@ -161,7 +161,7 @@ public class ScoreBoardVPreview extends PreviewPane implements BoardPane {
             teamScore.setFont(sfont);
             teamScore.setUnderline(Boolean.valueOf(ssplit[5]));
             teamScore.setStrikethrough(Boolean.valueOf(ssplit[2]));
-            container.setSpacing(Integer.parseInt(ssplit[6]));
+            container.setSpacing(Integer.parseInt(split[6]));
             if (Boolean.valueOf(ssplit[3])) {
                 teamScore.setStroke(teamScore.getFill());
                 teamScore.setStrokeWidth(1);
@@ -373,9 +373,17 @@ public class ScoreBoardVPreview extends PreviewPane implements BoardPane {
         //container.setLayoutX(Double.parseDouble(cfgArr[17]));
         //container.setLayoutY(Double.parseDouble(cfgArr[18]));
         container.setPrefWidth(ScreenAdapter.calculateMainX((Double.parseDouble(cfgArr[19]) * 2 ) + container.getSpacing()));
-
         double leftSize = left.getChildren().size();
         double rightSize = right.getChildren().size();
+
+        // 补齐
+        if (rightSize < leftSize) {
+            VBox box = new VBox();
+            box.setPrefWidth(ScreenAdapter.calculateMainX(Double.parseDouble(cfgArr[19])));
+            box.setPrefHeight(ScreenAdapter.calculateMainY(Double.parseDouble(cfgArr[20]) * 2 + 20));
+            box.setSpacing(1);
+            right.getChildren().add(box);
+        }
         double leftCount = ((VBox)left.getChildren().get(0)).getChildren().size();
         double size = (leftSize > rightSize)? leftSize : rightSize;
         double prefHeight = ScreenAdapter.calculateMainY(size * (Double.parseDouble(cfgArr[20]) * leftCount) + (size - 1) * 10);

@@ -458,15 +458,26 @@ public class StageConfig {
           
             // update children's sort value
 
-            List<Stages> nextLevelStages = list.stream().filter(x -> x.getLevel() >= (level + 1)).collect(Collectors.toList());
+            List<Stages> nextLevelStages = list.stream().filter(x -> x.getLevel() >= (level + 1))
+                    .sorted(Comparator.comparing(Stages::getSortVal))
+                    .collect(Collectors.toList());
+
+            // 修复顺序错乱
+            for (int i = 0; i < nextLevelStages.size(); i++) {
+                String ends = (i + 1) + "";
+                if (!nextLevelStages.get(i).getSortVal().endsWith(ends)) {
+                    String updatedSortVal = nextLevelStages.get(i).getSortVal().substring(0, nextLevelStages.get(i).getSortVal().length() - 1) + ends;
+                    nextLevelStages.get(i).setSortVal(updatedSortVal);
+                }
+            }
             for (Stages levelStage : nextLevelStages) {
                 if (levelStage.getSortVal().startsWith(changed.getSortVal())) {
-                    levelStage.setSortVal(levelStage.getSortVal().replace(changed.getSortVal(), sortVal));
+                    levelStage.setSortVal(levelStage.getSortVal().replaceFirst(changed.getSortVal(), sortVal));
                     stagesMapper.updateById(levelStage);
                 }
 
                 if (levelStage.getSortVal().startsWith(sortVal)) {
-                    levelStage.setSortVal(levelStage.getSortVal().replace(sortVal, changed.getSortVal()));
+                    levelStage.setSortVal(levelStage.getSortVal().replaceFirst(sortVal, changed.getSortVal()));
                     stagesMapper.updateById(levelStage);
                 }
             }
@@ -484,15 +495,25 @@ public class StageConfig {
             String sortVal = stages.getSortVal();
             Stages changed = collect.get(0);
 
-            List<Stages> nextLevelStages = list.stream().filter(x -> x.getLevel() >= (level + 1)).collect(Collectors.toList());
+            List<Stages> nextLevelStages = list.stream().filter(x -> x.getLevel() >= (level + 1))
+                    .sorted(Comparator.comparing(Stages::getSortVal))
+                    .collect(Collectors.toList());
+            // 修复顺序错乱
+            for (int i = 0; i < nextLevelStages.size(); i++) {
+                String ends = (i + 1) + "";
+                if (!nextLevelStages.get(i).getSortVal().endsWith(ends)) {
+                    String updatedSortVal = nextLevelStages.get(i).getSortVal().substring(0, nextLevelStages.get(i).getSortVal().length() - 1) + ends;
+                    nextLevelStages.get(i).setSortVal(updatedSortVal);
+                }
+            }
             for (Stages levelStage : nextLevelStages) {
                 if (levelStage.getSortVal().startsWith(changed.getSortVal())) {
-                    levelStage.setSortVal(levelStage.getSortVal().replace(changed.getSortVal(), sortVal));
+                    levelStage.setSortVal(levelStage.getSortVal().replaceFirst(changed.getSortVal(), sortVal));
                     stagesMapper.updateById(levelStage);
                 }
 
                 if (levelStage.getSortVal().startsWith(sortVal)) {
-                    levelStage.setSortVal(levelStage.getSortVal().replace(sortVal, changed.getSortVal()));
+                    levelStage.setSortVal(levelStage.getSortVal().replaceFirst(sortVal, changed.getSortVal()));
                     stagesMapper.updateById(levelStage);
                 }
             }

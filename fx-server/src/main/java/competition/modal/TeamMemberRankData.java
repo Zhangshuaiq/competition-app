@@ -11,15 +11,18 @@ public class TeamMemberRankData implements Comparable<TeamMemberRankData>{
     
     // 团队
     private String team;
+
+    private String shortName;
     
     // 分数
-    private Integer score;
+    private Long score;
     
     // 成员
     private String member;
 
+
     @Override
     public int compareTo(TeamMemberRankData o) {
-        return score - o.score;
+        return (int) (score - o.score);
     }
 }

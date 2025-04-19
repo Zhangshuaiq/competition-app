@@ -11,6 +11,8 @@ public class TextResource {
     
     public static final String FS =  BaseDir.TXT_DIR + File.separator + "分数.txt";
 
+    public static final String BUZZ_TITLE = BaseDir.TXT_DIR + File.separator + "抢答排名标题.txt";
+
     public static final String TEAM_TITLE = BaseDir.TXT_DIR + File.separator + "团队排名标题.txt";
 
     public static final String MODEL_TITLE = BaseDir.TXT_DIR + File.separator + "竞技排名标题.txt";

@@ -377,11 +377,26 @@ public class ControlPane {
         }
     }
 
+    private boolean enterQuestionPage(){
+        return previewPane != null &&
+                ((previewPane instanceof QuestionPreviewPreview)
+                        || (previewPane instanceof CluePreviewPreview)
+                        || (previewPane instanceof Model7Preview)
+                );
+    }
+
     @FXML
     public void initialize() {
-
         // 检测硬件状态
-        Timeline timeline = new Timeline(new KeyFrame(javafx.util.Duration.seconds(1), event -> {
+        Timeline timeline = new Timeline(new KeyFrame(javafx.util.Duration.millis(100), event -> {
+
+            // 检测开始答题状态
+            if (enterQuestionPage()) {
+                startAnswerBtn.setDisable(false);
+            } else {
+                startAnswerBtn.setDisable(true);
+            }
+
             SerialPortConnector instance = SerialPortConnector.getInstance();
             if (instance == null) {
                 hardwareStatus.setFill(Color.RED);
@@ -748,9 +763,6 @@ public class ControlPane {
         });
 
         showScoreBoard();
-        // 展示前端链接状态
-        Navigator.connectionBar("/view/board/preview/TeamConnectionBar.fxml", "", "/view/style.css", true);
-
     }
 
     private void showStage() {
@@ -989,7 +1001,7 @@ public class ControlPane {
             scoreBoardPreview.reload();
         }
         if (previewPane != null
-                && (previewPane instanceof MemberRankPreview || previewPane instanceof TeamRankPreview)) {
+                && (previewPane instanceof MemberRankPreview || previewPane instanceof TeamRankPreview || previewPane instanceof BuzzRankPreview)) {
             previewPane.reload();
         }
 
@@ -1151,7 +1163,7 @@ public class ControlPane {
         }
 
         if (previewPane != null
-                && (previewPane instanceof MemberRankPreview || previewPane instanceof TeamRankPreview)) {
+                && (previewPane instanceof MemberRankPreview || previewPane instanceof TeamRankPreview || previewPane instanceof BuzzRankPreview)) {
             previewPane.reload();
         }
 
@@ -1580,6 +1592,17 @@ public class ControlPane {
         } else {
             returnLast();
             GlobalCache.showTeamRank = false;
+        }
+    }
+
+    @FXML
+    public void buzzRank(){
+        if (!GlobalCache.showBuzzRank) {
+            previewPane = Navigator.preview("/view/preview/BuzzRank.fxml", "", "/view/style.css", true, true);
+            GlobalCache.showBuzzRank = true;
+        } else {
+            returnLast();
+            GlobalCache.showBuzzRank = false;
         }
     }
 
@@ -2860,6 +2883,8 @@ public class ControlPane {
                             } else {
                                 t.setBuzzStatus(2);
                             }
+                            System.out.println("抢答犯规 ...................................");
+                            System.out.println(RuntimeUtil.buzzTimeMap.get(t.getShortName()));
                             t.setBuzzTime(NumberUtil.fix2Point(RuntimeUtil.buzzTimeMap.getOrDefault(t.getShortName(), 0L) / 1000000000.0));
                         }
                         Platform.runLater(this::reloadScoreBoard);
@@ -2899,6 +2924,8 @@ public class ControlPane {
                 RuntimeUtil.buzzStart = 0;
                 RuntimeUtil.buzzResult.put(team, false);
                 RuntimeUtil.buzzTimeMap.put(team, -Math.abs(slipTime - timeGap));
+                System.out.println("抢答犯规 ...................................");
+                System.out.println(RuntimeUtil.buzzTimeMap.get(team));
                 if (currentStage != null && currentStage.getQdDesc() != null && currentStage.getQdDesc() == 1) {
                     teams.setTeamScore(teams.getTeamScore() - currentStage.getDesValue());
                     teamsMapper.updateById(teams);

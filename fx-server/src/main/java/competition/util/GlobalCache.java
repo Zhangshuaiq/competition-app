@@ -28,6 +28,9 @@ public class GlobalCache {
     
     // 团队排行是否正在展示
     public static boolean showTeamRank = false;
+
+    // 抢答排行是否正在展示
+    public static boolean showBuzzRank = false;
     
     // 视频是否正在播放
     public static boolean videoPlay = false;

@@ -7,7 +7,8 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<AnchorPane prefHeight="536.0" prefWidth="472.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="competition.controller.match.StageNamePreviewAttr">
+<AnchorPane prefHeight="536.0" prefWidth="472.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="competition.controller.match.StageNamePreviewAttr">
    <children>
       <AnchorPane layoutX="40.0" layoutY="42.0" prefHeight="83.0" prefWidth="392.0">
          <children>
@@ -33,8 +34,8 @@
             <ColorPicker fx:id="colorInput" layoutX="336.0" layoutY="9.0" prefHeight="30.0" prefWidth="32.0" />
             <Label layoutX="27.0" layoutY="52.0" text="背景图片" />
             <TextField fx:id="backgroundPath" disable="true" layoutX="108.0" layoutY="47.0" prefHeight="30.0" prefWidth="275.0" />
-            <Button layoutX="106.0" layoutY="90.0" mnemonicParsing="false" text="选择图片" onMouseClicked="#selectImg"/>
-            <Button layoutX="196.0" layoutY="90.0" mnemonicParsing="false" text="取消图片" onMouseClicked="#cancelImg"/>
+            <Button layoutX="106.0" layoutY="90.0" mnemonicParsing="false" onMouseClicked="#selectImg" text="选择图片" />
+            <Button layoutX="196.0" layoutY="90.0" mnemonicParsing="false" onMouseClicked="#cancelImg" text="取消图片" />
             <CheckBox fx:id="backgroundChoice" layoutX="86.0" layoutY="13.0" mnemonicParsing="false" text="填充背景" />
          </children>
       </AnchorPane>
@@ -43,9 +44,9 @@
       <Label layoutX="286.0" layoutY="322.0" text="大小" />
       <TextField fx:id="fontSize" layoutX="327.0" layoutY="316.0" prefHeight="20.0" prefWidth="96.0" />
       <CheckBox fx:id="deleteChoice" layoutX="55.0" layoutY="368.0" mnemonicParsing="false" text="删除线" />
-      <CheckBox fx:id="boldChoice" layoutX="139.0" layoutY="368.0" mnemonicParsing="false" text="加粗" />
-      <CheckBox fx:id="iticChoice" layoutX="232.0" layoutY="368.0" mnemonicParsing="false" text="斜体" />
-      <CheckBox fx:id="underlineChoice" layoutX="316.0" layoutY="368.0" mnemonicParsing="false" text="下划线" />
+      <CheckBox fx:id="boldChoice" layoutX="126.0" layoutY="368.0" mnemonicParsing="false" text="加粗" />
+      <CheckBox fx:id="iticChoice" layoutX="191.0" layoutY="368.0" mnemonicParsing="false" text="斜体" />
+      <CheckBox fx:id="underlineChoice" layoutX="258.0" layoutY="368.0" mnemonicParsing="false" text="下划线" />
       <Label layoutX="69.0" layoutY="435.0" text="水平" />
       <ComboBox fx:id="textAlignSelector" layoutX="111.0" layoutY="430.0" prefWidth="150.0" />
       <Label layoutX="288.0" layoutY="435.0" text="行间距" />
@@ -60,5 +61,7 @@
       <Separator layoutX="95.0" layoutY="417.0" prefHeight="3.0" prefWidth="304.0" />
       <Button layoutX="111.0" layoutY="482.0" mnemonicParsing="false" onMouseClicked="#saveConfig" prefHeight="30.0" prefWidth="96.0" text="保存" />
       <Button layoutX="268.0" layoutY="482.0" mnemonicParsing="false" onMouseClicked="#closeStage" prefHeight="30.0" prefWidth="96.0" text="关闭" />
+      <Label layoutX="347.0" layoutY="369.0" prefHeight="15.0" prefWidth="57.0" text="字体颜色" />
+      <ColorPicker fx:id="fontColorInput" layoutX="406.0" layoutY="360.0" prefHeight="30.0" prefWidth="32.0" />
    </children>
 </AnchorPane>

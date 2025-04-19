@@ -243,7 +243,7 @@ public class MemberRankPreview extends PreviewPane {
             String[] mArr = members.split(",");
             for (int j = 0; j < mArr.length; j++) {
                 TeamMemberRankData rankData = new TeamMemberRankData();
-                rankData.setScore(jsonObject.getInteger(mArr[j]));
+                rankData.setScore(Long.valueOf(jsonObject.getInteger(mArr[j])));
                 rankData.setTeam(item.getFullName());
                 rankData.setMember(mArr[j]);
                 rankList.add(rankData);
