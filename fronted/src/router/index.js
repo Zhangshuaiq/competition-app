@@ -3,6 +3,9 @@ import Router from 'vue-router';
 
 import SContestantIndex from '../components/score/ContestantIndex.vue';
 
+import BContestantIndex from '../components/buzz/ContestantIndex.vue';
+import BuzzPage from '../components/buzz/BuzzPage.vue';
+
 import ContestantIndex from '../components/member/ContestantIndex.vue';
 import WaitStart from "@/components/member/WaitStart.vue";
 import Model7 from "@/components/member/Model7.vue";
@@ -264,5 +267,18 @@ export default new Router({
             name: 'allScore',
             component: AllScore
         },
+
+        // 抢答界面
+        {
+            path: '/buzzLogin',
+            name: 'buzzLogin',
+            component: BContestantIndex
+        },
+        {
+            path: '/buzz',
+            name: 'buzz',
+            component: BuzzPage
+        },
+
     ],
 });

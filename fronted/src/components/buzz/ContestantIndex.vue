@@ -90,19 +90,9 @@ export default {
       this.enterWaitPage(this.teamItem);
     },
 
-
-    selectMember(teamItem){
-      this.teamItem = teamItem;
-      this.dialogFormVisible = true
-      this.form = {
-        member: '',
-        password: ''
-      }
-    },
-
     enterWaitPage(teamItem){
       sessionStorage.setItem("team", JSON.stringify(teamItem))
-      this.$router.push({name: "teamScore"});
+      this.$router.push({name: "buzz"});
     }
   },
   

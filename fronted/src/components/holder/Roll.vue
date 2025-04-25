@@ -105,7 +105,7 @@ export default {
   height: 150px;
   width: 150px;
   margin-left: calc(50vw - 75px);
-  margin-top: 35vh;
+  margin-top: 20vh;
   line-height: 150px;
   color: white;
   background-color: #C40000;
