@@ -23,32 +23,42 @@
             <div
                 class="fixed-layer-content"
                 v-show="buzzStatus"
-                :style="{ backgroundColor: buzzStatusColor[item.buzzStatus] }"
+                style="background-color: transparent"
             >
-              {{ item.buzzTime }}
+              <el-row>
+                <el-col span="22">
+                  <div class="board-item" :style="{ backgroundColor: buzzStatusColor[item.buzzStatus] }">
+                    {{ item.buzzTime }}
+                  </div>
+                </el-col>
+              </el-row>
             </div>
 
             <!-- 状态展示 -->
             <div class="fixed-layer-content" v-show="!buzzStatus && showStatus">
-              <div v-if="showMember" class="member-status-row">
-                <div
-                    v-for="(st, idx) in item.statusList"
-                    :key="idx"
-                    class="status-item"
-                    :style="{ backgroundColor: statusColor[st] }"
-                >
-                  {{ idx + 1 }}
-                </div>
-              </div>
-              <div
-                  v-else
-                  class="board-item"
-                  :style="{ backgroundColor: statusColor[item.status] }"
-              >
-                <div v-if="item.status === 2 || item.status === 3">
-                  {{ item.teamSelect }}
-                </div>
-              </div>
+              <el-row>
+                <el-col span="22">
+                  <div v-if="showMember" class="member-status-row">
+                    <div
+                        v-for="(st, idx) in item.statusList"
+                        :key="idx"
+                        class="status-item"
+                        :style="{ backgroundColor: statusColor[st] }"
+                    >
+                      {{ idx + 1 }}
+                    </div>
+                  </div>
+                  <div
+                      v-else
+                      class="board-item"
+                      :style="{ backgroundColor: statusColor[item.status] }"
+                  >
+                    <div v-if="item.status === 2 || item.status === 3">
+                      {{ item.teamSelect }}
+                    </div>
+                  </div>
+                </el-col>
+              </el-row>
             </div>
           </div>
         </div>
@@ -66,8 +76,8 @@ export default {
       teamList: [],
       showStatus: false,
       showMember: false,
-      statusColor: ['#FFFFFF', '#0070C0', '#00B050', '#FF0000'],
-      buzzStatusColor: ['#FFFFFF', '#00B050', '#FF0000'],
+      statusColor: ['#FFFFFF00', '#0070C0', '#00B050', '#FF0000'],
+      buzzStatusColor: ['#FFFFFF00', '#00B050', '#FF0000'],
       questionItem: sessionStorage.getItem('questionItem') || {}
     };
   },

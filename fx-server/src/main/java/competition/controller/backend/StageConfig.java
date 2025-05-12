@@ -53,8 +53,6 @@ public class StageConfig {
     private TextField stageNoText;
     
     
-    @FXML
-    private CheckBox answerShow;
 
     @Resource
     private StagesMapper stagesMapper;
@@ -109,7 +107,7 @@ public class StageConfig {
     ImageView previewImg;
     
     @FXML
-    CheckBox model6Check;
+    CheckBox model6Check, answerShow;
     
     @Resource
     private ControlPane controlPane;
@@ -177,6 +175,7 @@ public class StageConfig {
             public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
                 if (newValue) {
                     model6Check.setVisible(false);
+                    answerShow.setVisible(false);
                 }
             }
         });
@@ -186,6 +185,7 @@ public class StageConfig {
             public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
                 if (newValue) {
                     model6Check.setVisible(false);
+                    answerShow.setVisible(false);
                 }
             }
         });
@@ -195,6 +195,7 @@ public class StageConfig {
             public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
                 if (newValue) {
                     model6Check.setVisible(false);
+                    answerShow.setVisible(false);
                 }
             }
         });
@@ -204,6 +205,7 @@ public class StageConfig {
             public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
                 if (newValue) {
                     model6Check.setVisible(false);
+                    answerShow.setVisible(false);
                 }
             }
         });
@@ -213,6 +215,7 @@ public class StageConfig {
             public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
                 if (newValue) {
                     model6Check.setVisible(false);
+                    answerShow.setVisible(false);
                 }
             }
         });
@@ -222,6 +225,7 @@ public class StageConfig {
             public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
                 if (newValue) {
                     model6Check.setVisible(true);
+                    answerShow.setVisible(true);
                 }
             }
         });
@@ -231,6 +235,7 @@ public class StageConfig {
             public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
                 if (newValue) {
                     model6Check.setVisible(false);
+                    answerShow.setVisible(false);
                 }
             }
         });

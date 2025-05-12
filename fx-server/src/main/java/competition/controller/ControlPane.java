@@ -28,6 +28,7 @@ import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
+import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -48,6 +49,7 @@ import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.stage.Stage;
+import javafx.stage.WindowEvent;
 import lombok.SneakyThrows;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
@@ -227,6 +229,17 @@ public class ControlPane {
     @Resource
     private Model7StatusMapper model7StatusMapper;
 
+
+    private void loadConnectionStatsBar(){
+        Configs configs = configsMapper.selectById(12);
+        String config = configs.getConfig();
+        RuntimeUtil.showConnectionStatus = (Objects.equals("1", config));
+        if (RuntimeUtil.showConnectionStatus) {
+            Navigator.connectionBar("/view/board/preview/TeamConnectionBar.fxml", "", "/view/style.css", true);
+        }
+    }
+
+
     @FXML
     public void lastTeam() {
         int selectedIndex = teamComBox.getSelectionModel().getSelectedIndex();
@@ -377,6 +390,14 @@ public class ControlPane {
         }
     }
 
+    private boolean enterModelQuestionPage(){
+        return previewPane != null &&
+                ((previewPane instanceof QuestionPreviewPreview && (currentStage.getQuestionType() == 7 || currentStage.getQuestionType() == 6))
+                        || (previewPane instanceof CluePreviewPreview)
+                        || (previewPane instanceof Model7Preview)
+                );
+    }
+
     private boolean enterQuestionPage(){
         return previewPane != null &&
                 ((previewPane instanceof QuestionPreviewPreview)
@@ -391,7 +412,7 @@ public class ControlPane {
         Timeline timeline = new Timeline(new KeyFrame(javafx.util.Duration.millis(100), event -> {
 
             // 检测开始答题状态
-            if (enterQuestionPage()) {
+            if (enterModelQuestionPage()) {
                 startAnswerBtn.setDisable(false);
             } else {
                 startAnswerBtn.setDisable(true);
@@ -474,7 +495,9 @@ public class ControlPane {
                 } else if (event.getCode() == KeyCode.F) {
                     backLast();
                 } else if (event.getCode() == KeyCode.D) {
-                    showAnswer();
+                    if (enterQuestionPage()) {
+                        showAnswer();
+                    }
                 } else if (event.getCode() == KeyCode.F1) {
                     if (previewPane != null) {
                         previewPane.scrollUp();
@@ -514,7 +537,9 @@ public class ControlPane {
                 } else if (event.getCode() == KeyCode.F) {
                     backLast();
                 } else if (event.getCode() == KeyCode.D) {
-                    showAnswer();
+                    if (enterQuestionPage()) {
+                        showAnswer();
+                    }
                 } else if (event.getCode() == KeyCode.F1) {
                     if (previewPane != null) {
                         previewPane.scrollUp();
@@ -554,7 +579,9 @@ public class ControlPane {
                 } else if (event.getCode() == KeyCode.F) {
                     backLast();
                 } else if (event.getCode() == KeyCode.D) {
-                    showAnswer();
+                    if (enterQuestionPage()) {
+                        showAnswer();
+                    }
                 } else if (event.getCode() == KeyCode.F1) {
                     if (previewPane != null) {
                         previewPane.scrollUp();
@@ -594,7 +621,9 @@ public class ControlPane {
                 } else if (event.getCode() == KeyCode.F) {
                     backLast();
                 } else if (event.getCode() == KeyCode.D) {
-                    showAnswer();
+                    if (enterQuestionPage()) {
+                        showAnswer();
+                    }
                 } else if (event.getCode() == KeyCode.F1) {
                     if (previewPane != null) {
                         previewPane.scrollUp();
@@ -634,7 +663,9 @@ public class ControlPane {
                 } else if (event.getCode() == KeyCode.F) {
                     backLast();
                 } else if (event.getCode() == KeyCode.D) {
-                    showAnswer();
+                    if (enterQuestionPage()) {
+                        showAnswer();
+                    }
                 } else if (event.getCode() == KeyCode.F1) {
                     if (previewPane != null) {
                         previewPane.scrollUp();
@@ -763,6 +794,7 @@ public class ControlPane {
         });
 
         showScoreBoard();
+        loadConnectionStatsBar();
     }
 
     private void showStage() {
@@ -1194,7 +1226,7 @@ public class ControlPane {
         } else {
             if (startAnswerBtn.getText().equals("开始答题")) {
                 if (currentStage.getQuestionType() == 7) {
-
+                    startAnswerBtn.setDisable(false);
                     Model7RuntimeData.reset();
                     // 发送试题列表给前端
                     boolean random = currentStage.getrRandomSort() == 1;
@@ -1224,12 +1256,14 @@ public class ControlPane {
                     //messageHandler.sendModel7Start();
                     // 扩展屏显示题目信息
                 } else if (currentStage.getQuestionType() == 6) {
+                    startAnswerBtn.setDisable(false);
                     startTiming();
+                } else {
+                    startAnswerBtn.setDisable(true);
                 }
                 startAnswerBtn.setText("停止答题");
                 lastQBtn.setDisable(true);
                 nextQBtn.setDisable(true);
-                startAnswerBtn.setDisable(false);
                 startAnswerBtn.setTextFill(Color.WHITE);
                 startAnswerBtn.setStyle("-fx-background-color: #01a25a");
                 timingBtn.setDisable(true);
@@ -2385,17 +2419,6 @@ public class ControlPane {
                 if (previewPane != null) {
                     previewPane.showAnswer();
                 }
-
-//                if (!startAnswerBtn.getText().equals("开始答题")) {
-//                    timeReset();
-//                    startAnswerBtn.setDisable(false);
-//                    Model60RuntimeData.forceFinish();
-//                    startAnswerBtn.setText("开始答题");
-//                    startAnswerBtn.setTextFill(Color.BLACK);
-//                    lastQBtn.setDisable(false);
-//                    nextQBtn.setDisable(false);
-//                }
-
                 if (currentStage.getAnswerSingle() == 1) {
                     // 单独展示
                     if (GlobalCache.showAnswer) {
@@ -2565,6 +2588,10 @@ public class ControlPane {
                     StagePreviewPreview x = (StagePreviewPreview) last;
                     StagePreviewPreview.setParentStageId(x.getInnerStageID());
                     previewPane = Navigator.preview("/view/preview/StagePreview.fxml", "", "/view/style.css", true, true);
+                } else if (last instanceof Model3Preview) {
+                    Model3Preview x = (Model3Preview) last;
+                    Model3Preview.setPassedId(x.getParentStageId());
+                    previewPane = Navigator.preview("/view/preview/Model3Preview.fxml", "", "/view/style.css", true, true);
                 }
             } else {
                 enterMatch();
@@ -2594,7 +2621,7 @@ public class ControlPane {
     public void exitApp() {
         // 删除竞技模式缓存
         model7StatusMapper.delete(new LambdaQueryWrapper<>());
-        messageHandler.notifyPage("wait", null);
+        messageHandler.notifyPage("contestant", null);
         System.exit(0);
     }
 
@@ -2861,6 +2888,8 @@ public class ControlPane {
                             }
                         }
                         Platform.runLater(() -> {
+                            // 顺便更新抢答计分
+                            updateBuzzTimely();
                             Navigator.buzzResult("/view/preview/BuzzResult.fxml", "", "/view/style.css", true);
                         });
                     } else {
@@ -2901,6 +2930,8 @@ public class ControlPane {
                                     RuntimeUtil.buzzResult.containsKey(x.getShortName()) && !RuntimeUtil.buzzResult.get(x.getShortName())
                             )
                             .collect(Collectors.toList());
+                    // 顺便更新抢答计分
+                    updateBuzzTimely();
                     if (Objects.equals(1, buzz.getSuccessMusic())) {
                         MusicPlayer.playWithCallback(MusicResource.BUZZ_SUCCESS_BEFORE, () -> {
                             stopBuzz(teams, taotaiTeams, true, false, false);
@@ -2930,6 +2961,7 @@ public class ControlPane {
                     teams.setTeamScore(teams.getTeamScore() - currentStage.getDesValue());
                     teamsMapper.updateById(teams);
                 }
+                updateBuzzTimely();
                 stopBuzz(null, Collections.singletonList(teams), false, true, true);
                 Platform.runLater(() -> {
                     BuzzResultPreview.setTeams(teams, false);
@@ -2944,6 +2976,7 @@ public class ControlPane {
                 RuntimeUtil.buzzResult.put(team, true);
                 RuntimeUtil.buzzCalculate = 0;
                 stopBuzz(teams, new ArrayList<>(), true, false, true);
+                updateBuzzTimely();
                 Platform.runLater(() -> {
                     BuzzResultPreview.setTeams(teams, true);
                     Navigator.buzzResult("/view/preview/BuzzResult.fxml", "", "/view/style.css", true);
@@ -2971,8 +3004,20 @@ public class ControlPane {
 
     }
 
+    public void updateBuzzTimely(){
+        Platform.runLater(() -> {
+            if (previewPane != null && previewPane instanceof BuzzRankPreview) {
+                BuzzRankPreview brp = (BuzzRankPreview) previewPane;
+                brp.reload();
+            }
+        });
+    }
+
     public void reloadScoreBoard(){
-        scoreBoardPreview.reload();
+        if (scoreBoardPreview != null) {
+            scoreBoardPreview.reload();
+        }
+        updateBuzzTimely();
         messageHandler.notifyPage("", null);
     }
 

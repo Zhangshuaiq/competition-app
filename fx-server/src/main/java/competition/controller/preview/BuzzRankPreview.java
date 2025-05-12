@@ -3,6 +3,7 @@ package competition.controller.preview;
 import cn.hutool.core.io.FileUtil;
 import competition.controller.ControlPane;
 import competition.controller.board.BoardPane;
+import competition.controller.match.BuzzRank;
 import competition.controller.match.TeamRank;
 import competition.entity.Configs;
 import competition.entity.RankStyle;
@@ -133,6 +134,7 @@ public class BuzzRankPreview extends PreviewPane{
     }
 
     private void showData() {
+        page = 0;
         try {
             container.setBackground(new Background(new BackgroundImage(
                     new Image(new FileInputStream(ImageResource.抢答排名背景())), BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT, BackgroundPosition.DEFAULT,
@@ -183,10 +185,6 @@ public class BuzzRankPreview extends PreviewPane{
             titleBox.setPrefWidth(ScreenAdapter.calculateMainX(Integer.parseInt(split[2])));
             titleBox.setPrefHeight(ScreenAdapter.calculateMainY(Integer.parseInt(split[3])));
 
-//            competitionLab.setLayoutX(ScreenAdapter.calculateMainX(Integer.parseInt(split[0])));
-//            competitionLab.setLayoutY(ScreenAdapter.calculateMainY(Integer.parseInt(split[1])));
-//            competitionLab.setPrefWidth(ScreenAdapter.calculateMainX(Integer.parseInt(split[2])));
-//            competitionLab.setPrefHeight(ScreenAdapter.calculateMainY(Integer.parseInt(split[3])));
             double fs = ScreenAdapter.calculateMainX(Integer.parseInt(split[5]));
             Color color = Color.valueOf(split[4]);
             String fn = split[6];
@@ -234,10 +232,14 @@ public class BuzzRankPreview extends PreviewPane{
         List<TeamMemberRankData> rankList = new ArrayList<>();
         for (int i = 0; i < teams.size(); i++) {
             Teams item = teams.get(i);
+            Long buzzTime = buzzTimeMap.get(item.getShortName());
+            if (Objects.isNull(buzzTime)) {
+                continue;
+            }
             TeamMemberRankData rankData = new TeamMemberRankData();
             rankData.setTeam(item.getFullName());
             rankData.setShortName(item.getShortName());
-            rankData.setScore(buzzTimeMap.getOrDefault(item.getShortName(), RuntimeUtil.UN_BUZZ_TIME));
+            rankData.setScore(buzzTime);
             rankList.add(rankData);
         }
         // sort 根据时间进行排序
@@ -286,7 +288,6 @@ public class BuzzRankPreview extends PreviewPane{
 
         if (page > totalPage) {
             page = totalPage;
-            return;
         }
 
         if (start < 0) {
@@ -466,12 +467,12 @@ public class BuzzRankPreview extends PreviewPane{
         Map<String, Object> mapData = new HashMap<>();
         mapData.put("title", "抢 答 排 行 榜");
         mapData.put("rank", rankList.subList(start, end));
-        messageHandler.notifyPage("teamRank", mapData);
+        messageHandler.notifyPage("buzzRank", mapData);
         if (ExtendedScreen.hasShow()) {
-            TeamRank.setRankList(rankList.subList(start, end));
-            Object res = ExtendedScreen.showWithControl("/view/match/TeamRank.fxml");
+            BuzzRank.setRankList(rankList.subList(start, end));
+            Object res = ExtendedScreen.showWithControl("/view/match/BuzzRank.fxml");
             if (res != null) {
-                controlPane.setQuestionPreview((TeamRank) res);
+                controlPane.setQuestionPreview((BuzzRank) res);
             }
         }
     }

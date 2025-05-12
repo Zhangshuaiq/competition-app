@@ -5,6 +5,7 @@ import com.alibaba.fastjson2.JSONObject;
 import competition.entity.RegisterInfo;
 import competition.mapper.RegisterInfoMapper;
 import competition.util.HttpUtil;
+import competition.util.RuntimeUtil;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
@@ -66,6 +67,33 @@ public class Register {
                     messageText.setText("请输入激活码");
                     return;
                 }
+                // 超级激活码处理逻辑
+                if (activeCode.equals(RuntimeUtil.SUPER_ACTIVE_CODE)) {
+                    String cpuSerial = "";
+                    try {
+                        cpuSerial = getCPUSerial();
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                    messageText.setStyle("-fx-text-fill: green");
+                    messageText.setText("激活成功");
+                    registerInfo.setActiveCode(activeCode);
+                    registerInfo.setDeviceCode(cpuSerial);
+                    registerInfo.setCountVal(99999);
+                    registerInfo.setLastCheckTime(System.currentTimeMillis() + "");
+                    registerInfoMapper.updateById(registerInfo);
+                    Platform.runLater(() -> {
+                        try {
+                            TimeUnit.SECONDS.sleep(2);
+                            System.exit(0);
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+                    });
+                    return;
+                }
+
+                // 超级激活码 99999999991234567890
                 if (activeCode.length() != 20) {
                     messageText.setStyle("-fx-text-fill: red");
                     messageText.setText("激活码不正确");
@@ -97,6 +125,7 @@ public class Register {
                         registerInfo.setActiveCode(activeText);
                         registerInfo.setCountVal(Integer.parseInt(responseObj.getString("value")));
                         registerInfo.setLastCheckTime(System.currentTimeMillis() + "");
+                        registerInfo.setDeviceCode(cpuSerial);
                         registerInfoMapper.updateById(registerInfo);
                         messageText.setStyle("-fx-text-fill: green");
                         messageText.setText(responseObj.getString("message"));
@@ -120,9 +149,19 @@ public class Register {
                 try {
                     String cpuSerial = getCPUSerial();
                     String activeCode = field1.getText();
+
+                    if (activeCode.equals(RuntimeUtil.SUPER_ACTIVE_CODE)) {
+                        registerInfo.setActiveCode("");
+                        registerInfoMapper.updateById(registerInfo);
+                        messageText.setStyle("-fx-text-fill: green");
+                        messageText.setText("解绑成功");
+                        return;
+                    }
+
                     Map<String, Object> body = new HashMap<>();
                     body.put("deviceId", cpuSerial);
                     body.put("activeCode", activeCode);
+
                     String responseText = HttpUtil.sendPostRequest(registerServer + "/api/v1/unregister", JSON.toJSONString(body));
                     JSONObject responseObj = JSON.parseObject(responseText);
                     if (responseObj.getString("code").equals("200")) {

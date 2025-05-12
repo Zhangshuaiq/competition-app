@@ -5,7 +5,7 @@
     </div>
     <div style="margin-top: 10px; padding-left: 20px; font-weight: bold; font-size: x-large; " >
       <el-row>
-        <el-col span="4" v-if="stage"> 环节: {{ stage.name}}</el-col>
+<!--        <el-col span="4" v-if="stage"> 环节: {{ stage.name}}</el-col>-->
       </el-row>
     </div>
     <div id="container">

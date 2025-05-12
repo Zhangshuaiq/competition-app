@@ -159,6 +159,9 @@ public class RollPreview implements ReloadPane {
             stageName.prefHeight(ScreenAdapter.calculateExY(Integer.parseInt(detailArr[3])));
             stageName.setTextAlignment(AlignmentUtil.getTextAlign(detailArr[13]));
             title.setAlignment(AlignmentUtil.getAlign(detailArr[13]));
+            if (detailArr.length >= 16) {
+                stageName.setFill(Color.valueOf(detailArr[15]));
+            }
             Font font = FontMap.load(detailArr[7], ScreenAdapter.calculateExX(Integer.parseInt(detailArr[8])));
             
             stageName.setFont(font);

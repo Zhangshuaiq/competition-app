@@ -157,10 +157,11 @@ public class TimeBoardPreview extends PreviewPane {
         timeline = new Timeline(new KeyFrame(Duration.seconds(1), e -> {
             if (order) {
                 timeVal++;
-                if (timeVal >= endTime) {
+                if (timeVal == endTime) {
+                    MusicPlayer.play(MusicResource.SECOND_0);
                     close();
                     controlPane.resetTimeBtn();
-                } 
+                }
             } else {
                 int alertValue = Integer.parseInt(controlPane.getAlertTime());
                 timeVal--;

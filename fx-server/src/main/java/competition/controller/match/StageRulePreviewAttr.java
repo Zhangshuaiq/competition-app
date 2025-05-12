@@ -135,7 +135,7 @@ public class StageRulePreviewAttr {
     @Resource
     private StagesMapper stagesMapper;
     
-    private static int configId = 5;
+    private static int configId = 13;
     
     private static int stageId;
     

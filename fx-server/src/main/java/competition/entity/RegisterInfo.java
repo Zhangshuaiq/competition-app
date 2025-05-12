@@ -18,4 +18,6 @@ public class RegisterInfo {
     private int countVal;
 
     private String lastCheckTime;
+
+    private String deviceCode;
 }

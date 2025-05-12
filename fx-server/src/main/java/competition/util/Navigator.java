@@ -12,16 +12,12 @@ import competition.mapper.ConfigsMapper;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.ObservableList;
-import javafx.embed.swing.JFXPanel;
-import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
@@ -30,11 +26,7 @@ import javafx.stage.WindowEvent;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.util.StringUtils;
 
-import javax.swing.*;
-import java.awt.peer.ComponentPeer;
-import java.awt.peer.FramePeer;
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.concurrent.atomic.AtomicReference;
 
 public class Navigator {
@@ -356,12 +348,12 @@ public class Navigator {
             FXMLLoader loader = new FXMLLoader(Navigator.class.getResource(fxml));
             ConfigurableApplicationContext applicationContext = JavaFxApplication.getApplicationContext();
             ConfigsMapper configsMapper = applicationContext.getBean(ConfigsMapper.class);
-            Configs configs = configsMapper.selectById(1);
+            AtomicReference<Configs> configs = new AtomicReference<>(configsMapper.selectById(1));
+            AtomicReference<String> config = new AtomicReference<>(configs.get().getConfig());
             load = loader.load();
             Stage stage = timeBoardStage;
-            String config = configs.getConfig();
             if (!StringUtils.isEmpty(config)) {
-                String[] split = config.split(ConfigSpliter.SPLITER);
+                String[] split = config.get().split(ConfigSpliter.SPLITER);
                 stage.setX(ScreenAdapter.calculateMainX(Double.parseDouble(split[29])));
                 stage.setY(ScreenAdapter.calculateMainY(Double.parseDouble(split[30])));
             }
@@ -392,13 +384,15 @@ public class Navigator {
 
             load.setOnMouseReleased(event -> {
                 System.out.println("答题计时拖动后位置 ========================>");
+                configs.set(configsMapper.selectById(1));
+                config.set(configs.get().getConfig());
                 System.out.println(stage.getX());
                 System.out.println(stage.getY());
-                String[] split = config.split(ConfigSpliter.SPLITER);
+                String[] split = config.get().split(ConfigSpliter.SPLITER);
                 split[29] = stage.getX() + "";
                 split[30] = stage.getY() + "";
-                configs.setConfig(String.join(ConfigSpliter.SPLITER, split));
-                configsMapper.updateById(configs);
+                configs.get().setConfig(String.join(ConfigSpliter.SPLITER, split));
+                configsMapper.updateById(configs.get());
             });
 
             scene.getStylesheets().add(cssFile); // 应用 CSS
@@ -420,7 +414,6 @@ public class Navigator {
             AtomicReference<Double> yOffset = new AtomicReference<>((double) 0);
             FXMLLoader loader = new FXMLLoader(Navigator.class.getResource(fxml));
             ConfigurableApplicationContext applicationContext = JavaFxApplication.getApplicationContext();
-//            Configs configs = configsMapper.selectById(1);
             loader.setControllerFactory(applicationContext::getBean);
             Parent load = loader.load();
             TeamConnectionBarPreview controller = loader.getController();
@@ -504,41 +497,8 @@ public class Navigator {
             ConfigurableApplicationContext applicationContext = JavaFxApplication.getApplicationContext();
             ConfigsMapper configsMapper = applicationContext.getBean(ConfigsMapper.class);
 
-            Configs configs = configsMapper.selectById(1);
-            // 0x664db3ff%%
-            // 0xb3661aff%%
-            // 1%%
-            // 1%%
-            // 正确答案:%%
-            // 200%%
-            // 50%%
-            // 500%%
-            // 200%%
-            // 2%%
-            // 1%%
-            // 0x6848a9ff%%
-            // false%%
-            // 3%%
-            // 2%%
-            // 0x1a1a1aff%%
-            // 0x70dcdeff%%
-            // 300%%
-            // 600%%
-            // 200%%
-            // 50%%
-            // 0xffffffff%%
-            // 0x70dcdeff%%
-            // 0xffcce6ff%%
-            // 24%%
-            // 0x664db3ff%%
-            // 0xff6666ff%%
-            // 0xb3b34dff%%
-            // 0xffffffff%%
-            // 300%%
-            // 300
-            // 19 20 21 22
-           
-
+            AtomicReference<Configs> configs = new AtomicReference<>(configsMapper.selectById(1));
+            AtomicReference<String> config = new AtomicReference<>(configs.get().getConfig());
             loader.setControllerFactory(applicationContext::getBean);
             Parent load = loader.load();
 
@@ -546,23 +506,14 @@ public class Navigator {
             Stage stage = scoreBoardStage;
 
 
-            String config = configs.getConfig();
+
             if (!StringUtils.isEmpty(config)) {
-                String[] split = config.split(ConfigSpliter.SPLITER);
+                String[] split = config.get().split(ConfigSpliter.SPLITER);
                 stage.setX(ScreenAdapter.calculateMainX(Double.parseDouble(split[17])));
                 stage.setY(ScreenAdapter.calculateMainY(Double.parseDouble(split[18])));
             }
             stage.setTitle(title);
             Scene  scene = new Scene(load, Color.TRANSPARENT);
-
-
-//            scene.widthProperty().addListener((observable, oldValue, newValue) -> {
-//                stage.setWidth(newValue.doubleValue());
-//            });
-//
-//            scene.heightProperty().addListener((observable, oldValue, newValue) -> {
-//                stage.setHeight(newValue.doubleValue());
-//            });
 
             if (hiddenControl) {
                 //stage.initStyle(StageStyle.TRANSPARENT);
@@ -588,30 +539,18 @@ public class Navigator {
 
             load.setOnMouseReleased(event -> {
                 System.out.println("分数面板拖动后位置 ========================>");
+                configs.set(configsMapper.selectById(1));
+                config.set(configs.get().getConfig());
                 System.out.println(stage.getX());
                 System.out.println(stage.getY());
-                String[] split = config.split(ConfigSpliter.SPLITER);
+                String[] split = config.get().split(ConfigSpliter.SPLITER);
                 split[17] = stage.getX() + "";
                 split[18] = stage.getY() + "";
-                configs.setConfig(String.join(ConfigSpliter.SPLITER, split));
-                configsMapper.updateById(configs);
+                configs.get().setConfig(String.join(ConfigSpliter.SPLITER, split));
+                configsMapper.updateById(configs.get());
             });
             
             scene.getStylesheets().add(cssFile); // 应用 CSS
-
-//            SwingUtilities.invokeLater(() -> {
-//                JDialog dialog = new JDialog();
-//                dialog.setUndecorated(true); // 去掉对话框装饰
-//                dialog.setAlwaysOnTop(true); // 可选：保持对话框在最上层
-//                JFXPanel jfxPanel = new JFXPanel();
-//
-//                scene.setFill(null);
-//
-//                jfxPanel.setScene(scene);
-//                dialog.add(jfxPanel);
-//                dialog.setSize(1000, 200);
-//                dialog.setVisible(true);
-//            });
             
             stage.setScene(scene);
             stage.show();

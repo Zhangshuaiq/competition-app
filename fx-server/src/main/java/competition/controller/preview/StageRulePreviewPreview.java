@@ -124,13 +124,13 @@ public class StageRulePreviewPreview extends PreviewPane{
         }
         
         container.getChildren().clear();
-        final Configs ruleConfig = configsMapper.selectById(5);
+        final Configs ruleConfig = configsMapper.selectById(13);
 
         if (currentStage == null) {
             return;
         }
         
-        messageHandler.notifyPage("rule", currentStage.getRuleContent());
+        messageHandler.notifyPage("stagerule", currentStage.getRuleContent());
         String titleRuleStyle = currentStage.getTitleRuleStyle();
         String[] trsArr = {};
         if (!StringUtils.isEmpty(titleRuleStyle)) {

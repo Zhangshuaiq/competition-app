@@ -243,6 +243,9 @@ public class StagePreviewPreview extends PreviewPane {
                         stageName.setUnderline(Boolean.valueOf(detailArr[12]));
                         stageName.setStrikethrough(Boolean.valueOf(detailArr[9]));
                         stageName.setTextAlignment(AlignmentUtil.getTextAlign(detailArr[13]));
+                        if (detailArr.length >= 19) {
+                            stageName.setFill(Color.valueOf(detailArr[18]));
+                        }
                         stageNamePane.setAlignment(AlignmentUtil.getAlign(detailArr[13]));
                         if (detailArr.length >= 16) {
                             String text = stageName.getText();

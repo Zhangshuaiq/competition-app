@@ -97,11 +97,12 @@ public class Model7RuntimeData {
                         List<Teams> teams = TeamRuntime.getTeams();
                         for (Teams team : teams) {
                             if (team.getFullName().equals(data.getTeamName())) {
-                                team.setTeamScore(team.getTeamScore() + data.getScore());
-                                //teamsMapper.updateById(team);
-                                // 需要更新环节获取分数
-                                scoreService.addScore(null, team, controlPane.getCurrentStage().getName(), data.getQuestionNumber().toString(), null,
-                                        data.getScore(), team.getTeamScore().toString(), data.getUserSelect());
+                                if (controlPane.getCurrentStage().getCountTotal() == 1) {
+                                    team.setTeamScore(team.getTeamScore() + data.getScore());
+                                    // 需要更新环节获取分数
+                                    scoreService.addScore(null, team, controlPane.getCurrentStage().getName(), data.getQuestionNumber().toString(), null,
+                                            data.getScore(), team.getTeamScore().toString(), data.getUserSelect());
+                                }
                                 Platform.runLater(() -> {
                                     controlPane.teamScore.setText(team.getTeamScore().toString());
                                     PreviewPane previewPane = controlPane.getPreviewPane();
@@ -124,10 +125,12 @@ public class Model7RuntimeData {
                 List<Teams> teams = TeamRuntime.getTeams();
                 for (Teams team : teams) {
                     if (team.getFullName().equals(data.getTeamName())) {
-                        team.setTeamScore(team.getTeamScore() + data.getScore());
-                        //teamsMapper.updateById(team);
-                        scoreService.addScore(null, team, controlPane.getCurrentStage().getName(), data.getQuestionNumber().toString(), null, data.getScore(),
-                                team.getTeamScore().toString(), data.getUserSelect());
+                        if (controlPane.getCurrentStage().getCountTotal() == 1) {
+                            team.setTeamScore(team.getTeamScore() + data.getScore());
+                            scoreService.addScore(null, team, controlPane.getCurrentStage().getName(), data.getQuestionNumber().toString(), null, data.getScore(),
+                                    team.getTeamScore().toString(), data.getUserSelect());
+                        }
+
                         Platform.runLater(() -> {
                             controlPane.teamScore.setText(team.getTeamScore().toString());
                             //controlPane.updateScoreBoard();
@@ -144,12 +147,12 @@ public class Model7RuntimeData {
                 List<Teams> teams = TeamRuntime.getTeams();
                 for (Teams team : teams) {
                     if (team.getFullName().equals(data.getTeamName())) {
-                        Integer desValue = controlPane.getCurrentStage().getDesValue();
-                        team.setTeamScore(team.getTeamScore() - desValue);
-                        //teamsMapper.updateById(team);
-                        scoreService.addScore(null, team, controlPane.getCurrentStage().getName(), data.getQuestionNumber().toString(),
-                                null, -desValue, team.getTeamScore().toString(), data.getUserSelect());
-
+                        if (controlPane.getCurrentStage().getCountTotal() == 1) {
+                            Integer desValue = controlPane.getCurrentStage().getDesValue();
+                            team.setTeamScore(team.getTeamScore() - desValue);
+                            scoreService.addScore(null, team, controlPane.getCurrentStage().getName(), data.getQuestionNumber().toString(),
+                                    null, -desValue, team.getTeamScore().toString(), data.getUserSelect());
+                        }
                         Platform.runLater(() -> {
                             //controlPane.updateScoreBoard();
                             PreviewPane previewPane = controlPane.getPreviewPane();
@@ -190,8 +193,9 @@ public class Model7RuntimeData {
                 Teams teams = Model7RuntimeData.teams.get(i);
                 List<ModelData> modelData = runtimeData.get(i);
                 int size = modelData.size();
-                teams.setTeamScore(teams.getTeamScore() - (totalNumber - size) * controlPane.getCurrentStage().getDesValue());
-
+                if (controlPane.getCurrentStage().getCountTotal() == 1) {
+                    teams.setTeamScore(teams.getTeamScore() - (totalNumber - size) * controlPane.getCurrentStage().getDesValue());
+                }
                 fts.set(i, times.get(i));
                 finished.set(i, true);
             }

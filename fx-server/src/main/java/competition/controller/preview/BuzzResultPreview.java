@@ -61,12 +61,12 @@ public class BuzzResultPreview extends PreviewPane{
         if (inner == null) {
             return;
         }
-
+        ControlPane controlPane = JavaFxApplication.getApplicationContext().getBean(ControlPane.class);
+        controlPane.setBuzzResultPreview(this);
         if (ExtendedScreen.hasShow()) {
             BuzzResult.setTeams(inner, innerStatus);
             Object res = ExtendedScreen.buzzResult("/view/match/BuzzResult.fxml", "", "/view/style.css", true);
             if (res != null) {
-                ControlPane controlPane = JavaFxApplication.getApplicationContext().getBean(ControlPane.class);
                 controlPane.setBuzzResult((BuzzResult) res);
             }
         }

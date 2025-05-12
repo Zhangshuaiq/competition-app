@@ -10,8 +10,7 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.image.ImageView?>
 
-<AnchorPane prefHeight="827.0" prefWidth="1100.0" style="-fx-background-color: #e8e8e4;" xmlns="http://javafx.com/javafx/8"
-            xmlns:fx="http://javafx.com/fxml/1" fx:controller="competition.controller.backend.StageConfig">
+<AnchorPane prefHeight="827.0" prefWidth="1100.0" style="-fx-background-color: #e8e8e4;" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="competition.controller.backend.StageConfig">
    <children>
       <ScrollPane layoutX="14.0" layoutY="24.0" prefHeight="774.0" prefWidth="515.0">
          <content>
@@ -45,12 +44,12 @@
             <RadioButton fx:id="ccType4" layoutX="396.0" layoutY="296.0" mnemonicParsing="false" text="滚动选题" userData="4" />
             <RadioButton fx:id="ccType5" layoutX="45.0" layoutY="347.0" mnemonicParsing="false" text="线索题" userData="5" />
             <RadioButton fx:id="ccType6" layoutX="133.0" layoutY="347.0" mnemonicParsing="false" text="答题模式" userData="6" />
-            <RadioButton fx:id="ccType7" layoutX="335.0" layoutY="347.0" mnemonicParsing="false" text="竞技模式" userData="7" />
-            <CheckBox fx:id="randomSort2" layoutX="435.0" layoutY="347.0" mnemonicParsing="false" text="随机乱序" />
+            <RadioButton fx:id="ccType7" layoutX="46.0" layoutY="386.0" mnemonicParsing="false" text="竞技模式" userData="7" />
+            <CheckBox fx:id="randomSort2" layoutX="146.0" layoutY="386.0" mnemonicParsing="false" text="随机乱序" />
             <Button layoutX="171.0" layoutY="724.0" mnemonicParsing="false" onAction="#submitStage" prefHeight="30.0" prefWidth="265.0" text="确认" />
-            <Label layoutX="27.0" layoutY="438.0" prefHeight="20.0" prefWidth="71.0" text="抢答方式" />
-            <ComboBox fx:id="paChoice" layoutX="107.0" layoutY="433.0" prefHeight="30.0" prefWidth="390.0" />
-            <Label layoutX="28.0" layoutY="494.0" prefHeight="20.0" prefWidth="71.0" text="环节规则" />
+            <Label layoutX="27.0" layoutY="492.0" prefHeight="20.0" prefWidth="71.0" text="抢答方式" />
+            <ComboBox fx:id="paChoice" layoutX="107.0" layoutY="487.0" prefHeight="30.0" prefWidth="390.0" />
+            <Label layoutX="28.0" layoutY="550.0" prefHeight="20.0" prefWidth="71.0" text="环节规则" />
             <ComboBox fx:id="ruleChoice" layoutX="107.0" layoutY="489.0" prefHeight="30.0" prefWidth="390.0" visible="false" />
             <TextArea fx:id="ruleText" layoutX="108.0" layoutY="548.0" prefHeight="136.0" prefWidth="390.0" visible="true" />
             <Label fx:id="ruleImg" alignment="CENTER" layoutX="199.0" layoutY="548.0" prefHeight="136.0" prefWidth="136.0" style="-fx-border-image-width: 1; -fx-border-color: grey; -fx-border-style: dashed;" text="+" visible="false">
@@ -70,14 +69,14 @@
                   <Font size="6.0" />
                </font></Label>
             <TextField fx:id="desValue" layoutX="175.0" layoutY="70.0" prefHeight="30.0" prefWidth="42.0" text="0" />
-            <CheckBox fx:id="answerShow" layoutX="131.0" layoutY="253.0" mnemonicParsing="false" text="答案单独展示" />
+            <CheckBox fx:id="answerShow" layoutX="316.0" layoutY="347.0" mnemonicParsing="false" text="答案单独展示" visible="false"/>
             <Label layoutX="82.0" layoutY="75.0" text="+">
                <font>
                   <Font size="16.0" />
                </font>
             </Label>
-            <CheckBox fx:id="qdMode" layoutX="25.0" layoutY="398.0" mnemonicParsing="false" prefHeight="16.0" prefWidth="82.0" text="  抢答模式" />
-            <CheckBox fx:id="qdDescScore" layoutX="163.0" layoutY="398.0" mnemonicParsing="false" text="抢答犯规是否减分" />
+            <CheckBox fx:id="qdMode" layoutX="25.0" layoutY="443.0" mnemonicParsing="false" prefHeight="16.0" prefWidth="82.0" text="  抢答模式" />
+            <CheckBox fx:id="qdDescScore" layoutX="163.0" layoutY="443.0" mnemonicParsing="false" text="抢答犯规是否减分" />
          </children>
       </AnchorPane>
       <Label layoutX="550.0" layoutY="21.0" text="当前环节编号" />

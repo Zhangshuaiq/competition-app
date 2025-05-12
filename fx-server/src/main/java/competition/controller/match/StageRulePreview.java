@@ -94,7 +94,7 @@ public class StageRulePreview implements ReloadPane{
         }
 
         container.getChildren().clear();
-        final Configs ruleConfig = configsMapper.selectById(5);
+        final Configs ruleConfig = configsMapper.selectById(13);
 
         if (currentStage == null) {
             return;

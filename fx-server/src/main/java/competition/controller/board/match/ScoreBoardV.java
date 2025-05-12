@@ -33,10 +33,7 @@ import javax.annotation.Resource;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Component
@@ -72,7 +69,10 @@ public class ScoreBoardV implements BoardPane {
 
         ScoreStyle scoreStyle = scoreStyleMapper.selectById(1);
         String[] split = scoreStyle.getStyles().split(ConfigSpliter.SPLITER);
-
+        double rowSpan = 10;
+        if (split.length > 7) {
+            rowSpan = Double.parseDouble(split[7]);
+        }
         ScoreStyle scoreStyle1 = scoreStyleMapper.selectById(3);
         String[] ssplit = scoreStyle1.getStyles().split(ConfigSpliter.SPLITER);
 
@@ -90,10 +90,10 @@ public class ScoreBoardV implements BoardPane {
         container.setSpacing(ScreenAdapter.calculateExX(10));
 
         left.setPrefWidth(ScreenAdapter.calculateExX(100));
-        left.setSpacing(ScreenAdapter.calculateExY(10));
+        left.setSpacing(ScreenAdapter.calculateExY(rowSpan));
 
         right.setPrefWidth(ScreenAdapter.calculateExX(100));
-        right.setSpacing(ScreenAdapter.calculateExY(10));
+        right.setSpacing(ScreenAdapter.calculateExY(rowSpan));
 
 //        CheckBox selectAll = new CheckBox("全选");
 //        selectAll.setPrefWidth(100);
@@ -101,7 +101,7 @@ public class ScoreBoardV implements BoardPane {
         container.getChildren().addAll(left, right);
         List<Teams> teams = TeamRuntime.getTeams();
         for (int i = 0; i < teams.size(); i++) {
-            int count = 2;
+            int count = 1;
             Teams team = teams.get(i);
             VBox box = new VBox();
             box.setPrefWidth(ScreenAdapter.calculateExX(Double.parseDouble(cfgArr[19])));
@@ -163,7 +163,10 @@ public class ScoreBoardV implements BoardPane {
             if (Boolean.valueOf(ssplit[4])) {
                 teamScore.getTransforms().add(new Shear(-0.3, 0));
             }
-            box.getChildren().add(stackPane1);
+            if (RuntimeUtil.showScoreBar) {
+                count ++;
+                box.getChildren().add(stackPane1);
+            }
 
 
 
@@ -265,9 +268,11 @@ public class ScoreBoardV implements BoardPane {
                             }
                         }
                     }
+                    if (!Objects.equals(1, currentStage.getAnswerSingle())) {
+                        stackPane2.getChildren().add(userSelect);
+                        box.getChildren().add(stackPane2);
+                    }
 
-                    stackPane2.getChildren().add(userSelect);
-                    box.getChildren().add(stackPane2);
                 }
                 else if (questionType == 6 && m6 == 1) {
                     List<Model61RuntimeData.ModelData> runtimeData = Model61RuntimeData.getRuntimeData();
@@ -325,7 +330,7 @@ public class ScoreBoardV implements BoardPane {
 
             }
 
-            box.setPrefHeight(Integer.parseInt(cfgArr[20]) * count + count * 10);
+            box.setPrefHeight(Integer.parseInt(cfgArr[20]) * count + count * rowSpan);
 
         }
 //        selectAll.setOnMouseClicked(new EventHandler<MouseEvent>() {
@@ -341,16 +346,16 @@ public class ScoreBoardV implements BoardPane {
         double leftSize = left.getChildren().size();
         double rightSize = right.getChildren().size();
         // 补齐
+        double leftCount = ((VBox)left.getChildren().get(0)).getChildren().size();
         if (rightSize < leftSize) {
             VBox box = new VBox();
             box.setPrefWidth(ScreenAdapter.calculateMainX(Double.parseDouble(cfgArr[19])));
-            box.setPrefHeight(ScreenAdapter.calculateMainY(Double.parseDouble(cfgArr[20]) * 2 + 20));
+            box.setPrefHeight(ScreenAdapter.calculateMainY(Double.parseDouble(cfgArr[20]) * leftCount + (leftCount) * rowSpan));
             box.setSpacing(1);
             right.getChildren().add(box);
         }
-        double leftCount = ((VBox)left.getChildren().get(0)).getChildren().size();
         double size = (leftSize > rightSize)? leftSize : rightSize;
-        double prefHeight = ScreenAdapter.calculateExY(size * (Double.parseDouble(cfgArr[20]) * leftCount) + (size - 1) * 10);
+        double prefHeight = ScreenAdapter.calculateExY(size * (Double.parseDouble(cfgArr[20]) * leftCount) + (size - 1) * rowSpan);
         container.setPrefHeight(prefHeight);
         ExtendedScreen.scoreBoardStage.setWidth(container.getPrefWidth());
         ExtendedScreen.scoreBoardStage.setHeight(container.getPrefHeight());

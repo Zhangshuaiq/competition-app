@@ -32,7 +32,7 @@ public class StagePreviewAttr {
     private CheckBox deleteChoice;
 
     @FXML
-    private ColorPicker colorInput;
+    private ColorPicker colorInput, fontColorInput;
 
     @FXML
     private ComboBox<String> textAlignSelector;
@@ -194,6 +194,9 @@ public class StagePreviewAttr {
         if (detailArr.length >= 18) {
             colSpaceInput.setText(detailArr[17]);
         }
+        if (detailArr.length >= 19) {
+            fontColorInput.setValue(Color.valueOf(detailArr[18].replace("0x", "#")));
+        }
     }
 
     public void closeStage(MouseEvent event) {
@@ -210,6 +213,7 @@ public class StagePreviewAttr {
         String height = heightInput.getText();
         boolean fillBackground = backgroundChoice.isSelected();
         final String backgroundColor = colorInput.getValue().toString();
+        final String fontColor = fontColorInput.getValue().toString();
         String backgroundImage = backgroundPath.getText();
         final String fontFamily = fontSelector.getValue();
         String fsize = fontSize.getText();
@@ -252,7 +256,8 @@ public class StagePreviewAttr {
                 + rowSpace + ConfigSpliter.SPLITER
                 + wordInput.getText() + ConfigSpliter.SPLITER
                 + colNumber.getText() + ConfigSpliter.SPLITER
-                + colSpace
+                + colSpace + ConfigSpliter.SPLITER
+                + fontColor
                 ;
         configs.setConfig(huanjieVal);
         

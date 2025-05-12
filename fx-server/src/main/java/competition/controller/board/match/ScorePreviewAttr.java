@@ -8,6 +8,7 @@ import competition.mapper.ScoreStyleMapper;
 import competition.util.ConfigSpliter;
 import competition.util.ExtendedScreen;
 import competition.util.FontMap;
+import competition.util.RuntimeUtil;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.scene.control.CheckBox;
@@ -28,7 +29,7 @@ public class ScorePreviewAttr {
     private ScoreStyleMapper scoreStyleMapper;
     
     @FXML
-    private CheckBox secondOpenBox;
+    private CheckBox secondOpenBox, scoreShowBox;
 
     @FXML
     private CheckBox deleteChoice, sdeleteChoice;
@@ -52,20 +53,23 @@ public class ScorePreviewAttr {
     private ControlPane controlPane;
     
     
-    // 列间距控制
+    // 列间距控制 & 行间距控制 == > 行间距只对 对联模式生效
     @FXML
-    private TextField colSpan;
+    private TextField colSpan, rowSpan;
     
     
     @FXML
     public void initialize(){
 
         // 队伍名称字体设置
+        scoreShowBox.setSelected(RuntimeUtil.showScoreBar);
         fontSelector.setItems(FXCollections.observableList(FontMap.fontNames()));
         ScoreStyle scoreStyle = scoreStyleMapper.selectById(1);
         fontSelector.setValue(FontMap.defaultFontName());
         fontSize.setText(12 + "");
         colSpan.setText("0");
+        // 默认 10
+        rowSpan.setText("10");
         if (scoreStyle != null) {
             String styles = scoreStyle.getStyles();
             if (!StringUtils.isEmpty(styles)) {
@@ -79,6 +83,9 @@ public class ScorePreviewAttr {
                 underlineChoice.setSelected(Boolean.valueOf(split[5]));
                 if (split.length >= 7) {
                     colSpan.setText(split[6]);
+                }
+                if (split.length >= 8) {
+                    rowSpan.setText(split[7]);
                 }
             }
         }
@@ -112,7 +119,8 @@ public class ScorePreviewAttr {
                 + boldChoice.isSelected() + ConfigSpliter.SPLITER
                 + iticChoice.isSelected() + ConfigSpliter.SPLITER
                 + underlineChoice.isSelected()  + ConfigSpliter.SPLITER
-                + colSpan.getText();
+                + colSpan.getText() + ConfigSpliter.SPLITER
+                + rowSpan.getText();
         ScoreStyle scoreStyle = scoreStyleMapper.selectById(1);
         scoreStyle.setStyles(value);
         scoreStyleMapper.updateById(scoreStyle);
@@ -136,6 +144,8 @@ public class ScorePreviewAttr {
                 ExtendedScreen.scoreBoardStage.hide();
             }
         }
+
+        RuntimeUtil.showScoreBar = scoreShowBox.isSelected();
 
         BoardPane scoreBoardPreview = controlPane.getScoreBoardPreview();
         if (scoreBoardPreview != null) {

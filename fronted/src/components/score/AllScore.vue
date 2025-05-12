@@ -5,7 +5,7 @@
       <el-row v-for="x in rows" :key="x">
         <el-col :span="24 / cols" v-for="y in cols" :key="y">
           <div v-if="teamList[(x - 1) * cols + y - 1]" class="score-item" :style="scoreItemStyle(teamList[(x - 1) * cols + y - 1].buzzStatus)">
-            <div >
+            <div v-if="teamList[(x - 1) * cols + y - 1].buzzStatus === 0">
               <div class="codeOutStyle" :style="codeOutStyle">
                 <div :style="codeStyle">
                   {{teamList[(x - 1) * cols + y - 1].code}}
@@ -58,6 +58,12 @@ export default {
       scoreCfg: {
         color: 'black'
       },
+      showCfg1: {
+        color: 'black'
+      },
+      showCfg2: {
+        color: 'black'
+      }
     }
   },
 
@@ -94,6 +100,7 @@ export default {
         fontSize: `${this.codeCfg.size }px`,
         alignItems: 'center',
         justifyContent: 'center',
+        display: this.showCfg1.show === 1? 'block': 'none'
       }
     },
 
@@ -106,6 +113,7 @@ export default {
         height: `${this.teamCfg.size }px`,
         color: this.teamCfg.color.replace('0x', '#'),
         fontSize: `${this.teamCfg.size }px`,
+        display: this.showCfg2.show === 1? 'block': 'none'
       }
     },
 
@@ -167,12 +175,16 @@ export default {
     queryStyle(){
       scoreStyle().then(res => {
         const result = res.data.total
-        console.log(result)
         this.codeCfg = result[0]
         this.teamCfg = result[1]
         this.scoreCfg = result[2]
         this.rows =  this.codeCfg.rows
         this.cols =  this.codeCfg.cols
+
+
+        const showResult = res.data.item
+        this.showCfg1 = showResult[0]
+        this.showCfg2 = showResult[1]
       })
     },
   },

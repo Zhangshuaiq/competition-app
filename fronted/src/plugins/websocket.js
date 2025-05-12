@@ -24,9 +24,10 @@ export default {
             }
             let teamId = "";
             const user = sessionStorage.getItem('user');
+            const member = sessionStorage.getItem("member")
             console.log(user)
             if (user) {
-                teamId = JSON.parse(user).shortName;
+                teamId = JSON.parse(user).shortName + "-" +member;
             }
             stompClient.connect({teamId: teamId}, frame => {
                 connected = true;

@@ -99,5 +99,10 @@ public class Questions {
     @TableField(exist = false)
     @ExcelIgnore
     private String txbz;
+
+    // 是否显示题号
+    @ExcelIgnore
+    @TableField(exist = false)
+    private Integer showNumber;
     
 }

@@ -1,7 +1,7 @@
 <!--  选手页面 -->
 <template>
   <div id="container-box" :style="containerBoxStyle">
-    <div id="container">
+    <div id="container" v-if="this.teamItem.buzzStatus === 0">
       <div class="codeOutStyle" :style="codeOutStyle">
         <div :style="codeStyle">
           {{ teamItem.code }}

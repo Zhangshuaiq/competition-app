@@ -36,10 +36,7 @@ import javax.annotation.Resource;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Component
@@ -105,7 +102,7 @@ public class ScoreBoardHPreview extends PreviewPane implements BoardPane {
 
         List<Teams> teams = TeamRuntime.getTeams();
         for (Teams team : teams) {
-            int count = 2;
+            int count = 1;
             VBox box = new VBox();
             box.setPrefWidth(ScreenAdapter.calculateMainX(Integer.parseInt(cfgArr[19])));
             box.setMaxHeight(Double.MAX_VALUE);
@@ -161,7 +158,10 @@ public class ScoreBoardHPreview extends PreviewPane implements BoardPane {
             if (Boolean.valueOf(ssplit[4])) {
                 teamScore.getTransforms().add(new Shear(-0.3, 0));
             }
-            box.getChildren().add(stackPane1);
+            if (RuntimeUtil.showScoreBar) {
+                count ++;
+                box.getChildren().add(stackPane1);
+            }
 
 
             // 抢答分时面板
@@ -215,44 +215,48 @@ public class ScoreBoardHPreview extends PreviewPane implements BoardPane {
                 Integer m6 = currentStage.getM6();
                 Integer questionType = currentStage.getQuestionType();
                 if (questionType == 6 && m6 == 0) {
-                    List<Model60RuntimeData.ModelData> runtimeData = Model60RuntimeData.getRuntimeData();
-                    Map<String, Model60RuntimeData.ModelData> answerMap = runtimeData.stream().collect(Collectors.toMap(x -> x.getTeamName(), x -> x));
-                    count ++;
-                    StackPane stackPane2 = new StackPane();
-                    stackPane2.setMaxHeight(Double.MAX_VALUE);
-                    VBox.setVgrow(stackPane2, Priority.NEVER);
-                    stackPane2.setPrefSize(ScreenAdapter.calculateMainX(Integer.parseInt(cfgArr[19])), ScreenAdapter.calculateMainY(Integer.parseInt(cfgArr[20])));
-                    Model60RuntimeData.ModelData userData = answerMap.get(team.getFullName());
-                    Text userSelect = new Text();
-                    // fix bug: 用户未选择答案的情况
-                    userSelect.setTextAlignment(TextAlignment.CENTER);
-                    userSelect.setFont(statusFont);
-                    userSelect.setFill(statusColor);
-                    if (team.getStatus() == 1) {
-                        // 回答但是未展示答案
-                        stackPane2.setBackground(new Background(new BackgroundFill(Color.valueOf(cfgArr[26]), new CornerRadii(10), Insets.EMPTY)));
-                    } else {
-                        if (StringUtils.isEmpty(userData.getUserSelect())) {
-                            if (team.getStatus() == 3) {
-                                // 答题已结束，展示错误的状态
-                                stackPane2.setBackground(new Background(new BackgroundFill(Color.valueOf(cfgArr[28]), new CornerRadii(10), Insets.EMPTY)));
-                            } else {
-                                // 答题未结束，展示未选择状态
-                                stackPane2.setBackground(new Background(new BackgroundFill(Color.valueOf(cfgArr[25]), new CornerRadii(10), Insets.EMPTY)));
-                            }
+                    // 答案单独展示情况下不显示回答
+                        List<Model60RuntimeData.ModelData> runtimeData = Model60RuntimeData.getRuntimeData();
+                        Map<String, Model60RuntimeData.ModelData> answerMap = runtimeData.stream().collect(Collectors.toMap(x -> x.getTeamName(), x -> x));
+                        count ++;
+                        StackPane stackPane2 = new StackPane();
+                        stackPane2.setMaxHeight(Double.MAX_VALUE);
+                        VBox.setVgrow(stackPane2, Priority.NEVER);
+                        stackPane2.setPrefSize(ScreenAdapter.calculateMainX(Integer.parseInt(cfgArr[19])), ScreenAdapter.calculateMainY(Integer.parseInt(cfgArr[20])));
+                        Model60RuntimeData.ModelData userData = answerMap.get(team.getFullName());
+                        Text userSelect = new Text();
+                        // fix bug: 用户未选择答案的情况
+                        userSelect.setTextAlignment(TextAlignment.CENTER);
+                        userSelect.setFont(statusFont);
+                        userSelect.setFill(statusColor);
+                        if (team.getStatus() == 1) {
+                            // 回答但是未展示答案
+                            stackPane2.setBackground(new Background(new BackgroundFill(Color.valueOf(cfgArr[26]), new CornerRadii(10), Insets.EMPTY)));
                         } else {
-                            userSelect.setText(userData.getUserSelect().replace("\u00A0", " "));
-                            if (userData.getAnswer().replace("\u00A0", " ").equals(userData.getUserSelect().replace("\u00A0", " "))) {
-                                stackPane2.setBackground(new Background(new BackgroundFill(Color.valueOf(cfgArr[27]), new CornerRadii(10), Insets.EMPTY)));
+                            if (StringUtils.isEmpty(userData.getUserSelect())) {
+                                if (team.getStatus() == 3) {
+                                    // 答题已结束，展示错误的状态
+                                    stackPane2.setBackground(new Background(new BackgroundFill(Color.valueOf(cfgArr[28]), new CornerRadii(10), Insets.EMPTY)));
+                                } else {
+                                    // 答题未结束，展示未选择状态
+                                    stackPane2.setBackground(new Background(new BackgroundFill(Color.valueOf(cfgArr[25]), new CornerRadii(10), Insets.EMPTY)));
+                                }
                             } else {
-                                stackPane2.setBackground(new Background(new BackgroundFill(Color.valueOf(cfgArr[28]), new CornerRadii(10), Insets.EMPTY)));
+                                userSelect.setText(userData.getUserSelect().replace("\u00A0", " "));
+                                if (userData.getAnswer().replace("\u00A0", " ").equals(userData.getUserSelect().replace("\u00A0", " "))) {
+                                    stackPane2.setBackground(new Background(new BackgroundFill(Color.valueOf(cfgArr[27]), new CornerRadii(10), Insets.EMPTY)));
+                                } else {
+                                    stackPane2.setBackground(new Background(new BackgroundFill(Color.valueOf(cfgArr[28]), new CornerRadii(10), Insets.EMPTY)));
+                                }
                             }
                         }
-                    }
+                        if (!Objects.equals(1, currentStage.getAnswerSingle())) {
+                            stackPane2.getChildren().add(userSelect);
+                            box.getChildren().add(stackPane2);
+                        }
 
-                    stackPane2.getChildren().add(userSelect);
-                    box.getChildren().add(stackPane2);
                 }
+
                 else if (questionType == 6 && m6 == 1) {
                     List<Model61RuntimeData.ModelData> runtimeData = Model61RuntimeData.getRuntimeData();
                     Map<String, Model61RuntimeData.ModelData> dataMap = runtimeData.stream().collect(Collectors.toMap(x -> x.getTeamName() + "-" + x.getUserName(), x -> x));

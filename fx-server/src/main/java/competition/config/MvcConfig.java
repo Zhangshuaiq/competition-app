@@ -4,10 +4,7 @@ import com.alibaba.fastjson2.JSON;
 import com.alibaba.fastjson2.JSONObject;
 import competition.entity.RegisterInfo;
 import competition.mapper.RegisterInfoMapper;
-import competition.util.BaseDir;
-import competition.util.GlobalCache;
-import competition.util.HttpUtil;
-import competition.util.NetworkChecker;
+import competition.util.*;
 import javafx.application.Platform;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
@@ -21,6 +18,7 @@ import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
 @Configuration
@@ -93,6 +91,31 @@ public class MvcConfig implements WebMvcConfigurer {
             return;
         }
 
+        // 超级激活码
+        if (RuntimeUtil.SUPER_ACTIVE_CODE.equals(registerInfo.getActiveCode())) {
+            String cpuSerial = "";
+            try {
+                cpuSerial = getCPUSerial();
+                if (Objects.equals(cpuSerial, registerInfo.getDeviceCode()) ) {
+                    GlobalCache.MAX_TEAM_NUMBER = 9999;
+                    registry.addResourceHandler("/resource/**", "/**")
+                            .addResourceLocations("file:" + BaseDir.TIKU_RES_DIR, "file:" + BaseDir.PB_RES_DIR, "classpath:/frontend/");
+                } else {
+                    registerInfo.setActiveCode("");
+                    registerInfo.setLastCheckTime("");
+                    registerInfo.setDeviceCode("");
+                    registerInfoMapper.updateById(registerInfo);
+                    return;
+                }
+            } catch (Exception e) {
+                registerInfo.setActiveCode("");
+                registerInfo.setLastCheckTime("");
+                registerInfo.setDeviceCode("");
+                registerInfoMapper.updateById(registerInfo);
+            }
+            return;
+        }
+
         // 检测网络匹配
         boolean internetAvailable = NetworkChecker.isInternetAvailable();
         if (internetAvailable) {
@@ -100,6 +123,7 @@ public class MvcConfig implements WebMvcConfigurer {
             if (!checked){
                 registerInfo.setActiveCode("");
                 registerInfo.setLastCheckTime("");
+                registerInfo.setDeviceCode("");
                 registerInfoMapper.updateById(registerInfo);
                 return;
             }
@@ -109,6 +133,7 @@ public class MvcConfig implements WebMvcConfigurer {
             if (System.currentTimeMillis() - checkTime > (1000L * 60 * 60 * 24 * 30)) {
                 registerInfo.setActiveCode("");
                 registerInfo.setLastCheckTime("");
+                registerInfo.setDeviceCode("");
                 registerInfoMapper.updateById(registerInfo);
                 return;
             }
@@ -121,6 +146,7 @@ public class MvcConfig implements WebMvcConfigurer {
             if (activeCode.length() != 36) {
                 registerInfo.setActiveCode("");
                 registerInfo.setLastCheckTime("");
+                registerInfo.setDeviceCode("");
                 registerInfoMapper.updateById(registerInfo);
                 return;
             }
@@ -131,6 +157,7 @@ public class MvcConfig implements WebMvcConfigurer {
                 if (!cpuSerial.equals(deviceId)) {
                     registerInfo.setActiveCode("");
                     registerInfo.setLastCheckTime("");
+                    registerInfo.setDeviceCode("");
                     registerInfoMapper.updateById(registerInfo);
                     return;
                 }
@@ -143,6 +170,7 @@ public class MvcConfig implements WebMvcConfigurer {
             if (Long.parseLong(endTime.substring(1)) < System.currentTimeMillis() && endTime.charAt(0) == '0') {
                 registerInfo.setActiveCode("");
                 registerInfo.setLastCheckTime("");
+                registerInfo.setDeviceCode("");
                 registerInfoMapper.updateById(registerInfo);
                 return;
             }
@@ -156,6 +184,7 @@ public class MvcConfig implements WebMvcConfigurer {
             if (bitCount > 4) {
                 registerInfo.setActiveCode("");
                 registerInfo.setLastCheckTime("");
+                registerInfo.setDeviceCode("");
                 registerInfoMapper.updateById(registerInfo);
                 return;
             }

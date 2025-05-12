@@ -53,19 +53,38 @@
         <div id="question-info"  v-if="questionItem && !showResult">
           <div id="question-name">
             <div v-if="questionItem.txbz === '4'">
-              {{ questionItem.questionNumber }} &nbsp; {{ questionItem.question }}
+              <div v-if="questionItem.showNumber === 1">
+                {{ questionItem.questionNumber }} &nbsp; {{ questionItem.question }}
+              </div>
+              <div v-else>
+                {{ questionItem.question }}
+              </div>
             </div>
             <div v-if="questionItem.txbz === '3'">
-              {{ questionItem.questionNumber }} &nbsp;&nbsp; {{questionItem.questionType}} &nbsp;&nbsp; {{ questionItem.question }}
+              <div v-if="questionItem.showNumber === 1">
+                {{ questionItem.questionNumber }} &nbsp;&nbsp; {{questionItem.questionType}} &nbsp;&nbsp; {{ questionItem.question }}
+              </div>
+              <div v-else>
+                {{questionItem.questionType}} &nbsp;&nbsp; {{ questionItem.question }}
+              </div>
             </div>
             <div v-if="questionItem.txbz === '2'">
-              {{ questionItem.questionNumber }} &nbsp; ({{questionItem.questionType}}) &nbsp; {{ questionItem.question }}
+              <div v-if="questionItem.showNumber === 1">
+                {{ questionItem.questionNumber }} &nbsp; ({{questionItem.questionType}}) &nbsp; {{ questionItem.question }}
+              </div>
+              <div v-else>
+                ({{questionItem.questionType}}) &nbsp; {{ questionItem.question }}
+              </div>
             </div>
 
             <div v-if="questionItem.txbz === '1'">
-              {{ questionItem.questionNumber }} &nbsp; [{{questionItem.questionType}}] &nbsp; {{ questionItem.question }}
+              <div v-if="questionItem.showNumber === 1">
+                {{ questionItem.questionNumber }} &nbsp; [{{questionItem.questionType}}] &nbsp; {{ questionItem.question }}
+              </div>
+              <div v-else>
+                [{{questionItem.questionType}}] &nbsp; {{ questionItem.question }}
+              </div>
             </div>
-<!--            {{ questionItem.questionNumber }} &nbsp; ({{questionItem.questionType}}) &nbsp; {{ questionItem.question }}-->
           </div>
           <div id="answer-selection">
             <div class="selection-item"  v-if="questionItem.choiceA">

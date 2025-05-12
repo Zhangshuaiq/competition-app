@@ -35,10 +35,7 @@ import org.springframework.util.StringUtils;
 import javax.annotation.Resource;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 // 竞技模式显示控制
 @Component
@@ -89,6 +86,9 @@ public class Model7Preview extends PreviewPane {
         List<Questions> questions = questionsMapper.selectList(new LambdaQueryWrapper<Questions>()
                 .eq(Questions::getStageNumber, inner.getSortVal())
         );
+        for (Questions question : questions) {
+            question.setShowNumber(inner.getShowNumber());
+        }
         messageHandler.notifyPage("model7", questions);
 
         Model7RuntimeData.totalNumber = questions.size();
@@ -374,7 +374,12 @@ public class Model7Preview extends PreviewPane {
                     vbx.setSpacing(ScreenAdapter.calculateMainY(2));
                     vbx.setPrefWidth(downArea.getPrefWidth());
                     downArea.getChildren().addAll(vbx);
-                    Label q = new Label(last.getQuestionNumber() + ". " + last.getQuestion());
+                    Label q = new Label();
+                    if (Objects.equals(inner.getShowNumber(), 1)) {
+                        q.setText(last.getQuestionNumber() + ". " + last.getQuestion());
+                    } else {
+                        q.setText( last.getQuestion());
+                    }
                     if (GlobalCache.MAX_TEAM_NUMBER <= 0) {
                         q.setText(q.getText() + "(未注册)");
                     }

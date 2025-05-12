@@ -297,8 +297,6 @@ public class ExtendedScreen {
                 stage.setY(event.getScreenY() - yOffset.get());
             });
 
-
-
             scene.getStylesheets().add(cssFile); // 应用 CSS
 
             stage.setScene(scene);

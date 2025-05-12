@@ -6,6 +6,7 @@ import competition.JavaFxApplication;
 import competition.entity.RegisterInfo;
 import competition.mapper.RegisterInfoMapper;
 import competition.util.HttpUtil;
+import competition.util.RuntimeUtil;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
@@ -48,6 +49,13 @@ public class Unregister {
     public void initialize(){
         RegisterInfo registerInfo = registerInfoMapper.selectById(1001);
         String activeVal = registerInfo.getActiveCode();
+        if (RuntimeUtil.SUPER_ACTIVE_CODE.equals(activeVal)) {
+            activeTime.setText("永久");
+            dueTime.setText("永久");
+            unbindCount.setText("无限制");
+            leftBindCount.setText("无限制");
+            return;
+        }
         String activeCode = activeVal.substring(8, 28);
         long endTime = Long.parseLong(activeCode.substring(1, 14));
         Date endData = new Date(endTime);
@@ -89,6 +97,20 @@ public class Unregister {
     public void unBind(){
         RegisterInfo registerInfo = registerInfoMapper.selectById(1001);
         String activeVal = registerInfo.getActiveCode();
+        if (RuntimeUtil.SUPER_ACTIVE_CODE.equals(activeVal)) {
+            registerInfo.setActiveCode("");
+            registerInfoMapper.updateById(registerInfo);
+            Platform.runLater(() -> {
+                try {
+                    TimeUnit.SECONDS.sleep(2);
+                    //JavaFxApplication.restartJavaFxApplication();
+                    System.exit(0);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            });
+            return;
+        }
         String activeCode = activeVal.substring(8, 28);
         try {
             String cpuSerial = getCPUSerial();

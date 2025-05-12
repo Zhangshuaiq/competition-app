@@ -22,9 +22,11 @@ import ClueQuestion from "@/components/member/ClueQuestion.vue";
 import Rule from "@/components/member/Rule.vue";
 import StageRank from "@/components/member/StageRank.vue";
 import TeamRank from "@/components/member/TeamRank.vue";
+import BuzzRank from "@/components/member/BuzzRank.vue";
 import MemberRank from "@/components/member/MemberRank.vue";
+import StageRule from "@/components/member/StageRule.vue";
 
-
+import HStageRule from "@/components/holder/StageRule.vue";
 import HWaitStart from "@/components/holder/WaitStart";
 import HModel7 from "@/components/holder/Model7";
 import HModel60 from "@/components/holder/Model60";
@@ -40,6 +42,7 @@ import HClueQuestion from "@/components/holder/ClueQuestion";
 import HRule from "@/components/holder/Rule";
 import HStageRank from "@/components/holder/StageRank";
 import HTeamRank from "@/components/holder/TeamRank";
+import HBuzzRank from "@/components/holder/BuzzRank.vue";
 import HMemberRank from "@/components/holder/MemberRank";
 import TeamScore from "@/components/score/TeamScore";
 import AllScore from "@/components/score/AllScore";
@@ -123,6 +126,12 @@ export default new Router({
         },
 
         {
+            path: '/stagerule',
+            name: 'stagerule',
+            component: StageRule
+        },
+
+        {
             path: '/roll',
             name: 'roll',
             component: Roll
@@ -143,6 +152,12 @@ export default new Router({
             path: '/teamRank',
             name: 'teamRank',
             component: TeamRank
+        },
+
+        {
+            path: '/buzzRank',
+            name: 'buzzRank',
+            component: BuzzRank
         },
 
         {
@@ -219,7 +234,11 @@ export default new Router({
             name: 'hrule',
             component: HRule
         },
-
+        {
+            path: '/hstagerule',
+            name: 'hstagerule',
+            component: HStageRule
+        },
         {
             path: '/hroll',
             name: 'hroll',
@@ -241,6 +260,12 @@ export default new Router({
             path: '/hteamRank',
             name: 'hteamRank',
             component: HTeamRank
+        },
+
+        {
+            path: '/hbuzzRank',
+            name: 'hbuzzRank',
+            component: HBuzzRank
         },
 
         {

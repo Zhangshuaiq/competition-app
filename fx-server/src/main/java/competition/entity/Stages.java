@@ -19,7 +19,8 @@ public class Stages {
     private String name;
     
     private Integer randomSort;
-    
+
+    // 显示题号
     private Integer showNumber;
     
     private Integer selectGrey;

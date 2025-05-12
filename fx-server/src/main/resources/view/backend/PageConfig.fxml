@@ -20,15 +20,15 @@
       <TextField fx:id="hj" layoutX="443.0" layoutY="14.0" prefHeight="30.0" prefWidth="60.0" visible="false" />
       <Label layoutX="278.0" layoutY="19.0" text="答案前缀" />
       <TextField fx:id="daqz" layoutX="343.0" layoutY="14.0" prefHeight="30.0" prefWidth="86.0" />
-      <Label layoutX="448.0" layoutY="19.0" text="坐标" />
-      <Label layoutX="489.0" layoutY="19.0" prefHeight="20.0" prefWidth="8.0" text="x" />
-      <TextField fx:id="dtx" layoutX="506.0" layoutY="14.0" prefHeight="30.0" prefWidth="60.0" />
-      <Label layoutX="576.0" layoutY="19.0" text="y" />
-      <TextField fx:id="dty" layoutX="591.0" layoutY="14.0" prefHeight="30.0" prefWidth="60.0" />
-      <Label layoutX="662.0" layoutY="19.0" text="宽" />
-      <TextField fx:id="dtk" layoutX="685.0" layoutY="14.0" prefHeight="30.0" prefWidth="60.0" />
-      <TextField fx:id="dtg" layoutX="776.0" layoutY="14.0" prefHeight="30.0" prefWidth="60.0" />
-      <Label layoutX="755.0" layoutY="19.0" text="高" />
+      <Label layoutX="688.0" layoutY="22.0" text="坐标" />
+      <Label layoutX="729.0" layoutY="17.0" prefHeight="20.0" prefWidth="8.0" text="x" />
+      <TextField fx:id="dtx" layoutX="746.0" layoutY="14.0" prefHeight="30.0" prefWidth="60.0" />
+      <Label layoutX="816.0" layoutY="19.0" text="y" />
+      <TextField fx:id="dty" layoutX="831.0" layoutY="14.0" prefHeight="30.0" prefWidth="60.0" />
+      <Label layoutX="902.0" layoutY="19.0" text="宽" />
+      <TextField fx:id="dtk" layoutX="925.0" layoutY="14.0" prefHeight="30.0" prefWidth="60.0" />
+      <TextField fx:id="dtg" layoutX="1016.0" layoutY="14.0" prefHeight="30.0" prefWidth="60.0" />
+      <Label layoutX="995.0" layoutY="19.0" text="高" />
       <Label layoutX="100.0" layoutY="56.0" text="题型" />
       <RadioButton fx:id="thq" layoutX="142.0" layoutY="56.0" mnemonicParsing="false" text="题号前" userData="1" />
       <RadioButton fx:id="thh" layoutX="244.0" layoutY="56.0" mnemonicParsing="false" text="题号后" userData="2" />
@@ -92,7 +92,7 @@
       <ColorPicker fx:id="hjmc" layoutX="164.0" layoutY="280.0" prefHeight="30.0" prefWidth="30.0" />
       <Label layoutX="226.0" layoutY="285.0" text="名称背景" />
       <ColorPicker fx:id="mcbj" layoutX="295.0" layoutY="280.0" prefHeight="30.0" prefWidth="30.0" />
-      <Label layoutX="679.0" layoutY="290.0" text="坐标" />
+      <Label layoutX="700.0" layoutY="289.0" text="坐标" />
       <Label layoutX="732.0" layoutY="287.0" prefHeight="20.0" prefWidth="8.0" text="x" />
       <TextField fx:id="hjx" layoutX="744.0" layoutY="282.0" prefHeight="30.0" prefWidth="60.0" />
       <Label layoutX="815.0" layoutY="287.0" text="y" />

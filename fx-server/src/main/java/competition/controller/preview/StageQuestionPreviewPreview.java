@@ -240,6 +240,9 @@ public class StageQuestionPreviewPreview extends PreviewPane {
             stageName.prefWidth(ScreenAdapter.calculateMainX(Integer.parseInt(detailArr[2])));
             stageName.prefHeight(ScreenAdapter.calculateMainY(Integer.parseInt(detailArr[3])));
             stageName.setTextAlignment(AlignmentUtil.getTextAlign(detailArr[13]));
+            if (detailArr.length >= 16) {
+                stageName.setFill(Color.valueOf(detailArr[15]));
+            }
             title.setAlignment(AlignmentUtil.getAlign(detailArr[13]));
             Font font = FontMap.load(detailArr[7], ScreenAdapter.calculateMainX(Integer.parseInt(detailArr[8])));
             stageName.setFont(font);

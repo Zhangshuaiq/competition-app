@@ -289,7 +289,7 @@ public class BuzzRank implements ReloadPane {
             teamItemPane.getChildren().add(teamD);
 
             StackPane scoreItemPane = new StackPane();
-            Text scoreD = new Text(rankData.getScore() + "");
+            Text scoreD = new Text( NumberUtil.fix2PointWithDefault(rankData.getScore()));
             scoreD.setFill(fcolor);
             scoreItemPane.setPrefHeight(height);
             scoreItemPane.setPrefWidth(w2w);

@@ -42,10 +42,10 @@
       <ComboBox fx:id="fontSelector" layoutX="111.0" layoutY="317.0" prefWidth="150.0" />
       <Label layoutX="286.0" layoutY="322.0" text="大小" />
       <TextField fx:id="fontSize" layoutX="327.0" layoutY="316.0" prefHeight="20.0" prefWidth="96.0" />
-      <CheckBox fx:id="deleteChoice" layoutX="53.0" layoutY="352.0" mnemonicParsing="false" text="删除线" />
-      <CheckBox fx:id="boldChoice" layoutX="139.0" layoutY="352.0" mnemonicParsing="false" text="加粗" />
-      <CheckBox fx:id="iticChoice" layoutX="232.0" layoutY="352.0" mnemonicParsing="false" text="斜体" />
-      <CheckBox fx:id="underlineChoice" layoutX="316.0" layoutY="352.0" mnemonicParsing="false" text="下划线" />
+      <CheckBox fx:id="deleteChoice" layoutX="41.0" layoutY="352.0" mnemonicParsing="false" text="删除线" />
+      <CheckBox fx:id="boldChoice" layoutX="119.0" layoutY="352.0" mnemonicParsing="false" text="加粗" />
+      <CheckBox fx:id="iticChoice" layoutX="179.0" layoutY="352.0" mnemonicParsing="false" text="斜体" />
+      <CheckBox fx:id="underlineChoice" layoutX="245.0" layoutY="352.0" mnemonicParsing="false" text="下划线" />
       <Label layoutX="91.0" layoutY="404.0" text="水平" />
       <ComboBox fx:id="textAlignSelector" layoutX="136.0" layoutY="399.0" prefHeight="30.0" prefWidth="103.0" />
       <Label layoutX="77.0" layoutY="445.0" text="行间距" />
@@ -70,5 +70,7 @@
       <TextField fx:id="wordInput" layoutX="349.0" layoutY="399.0" prefHeight="30.0" prefWidth="58.0" />
       <Label layoutX="243.0" layoutY="445.0" text="列间距" />
       <TextField fx:id="colSpaceInput" layoutX="303.0" layoutY="438.0" prefHeight="30.0" prefWidth="60.0" />
+      <ColorPicker fx:id="fontColorInput" layoutX="407.0" layoutY="345.0" prefHeight="30.0" prefWidth="32.0" />
+      <Label layoutX="340.0" layoutY="353.0" text="字体颜色" />
    </children>
 </AnchorPane>

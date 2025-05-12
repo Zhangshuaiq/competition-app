@@ -91,7 +91,6 @@ public class Model60RuntimeData {
             for (Teams team : teams) {
                 if (team.getFullName().equals(data.getTeamName())) {
                     team.setStatus(1);
-
                     if (data.getUserSelect().equals(data.getAnswer())) {
 
                         // 需要判断是否计入总分

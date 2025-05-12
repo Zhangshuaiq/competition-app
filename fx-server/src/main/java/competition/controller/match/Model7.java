@@ -30,6 +30,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.util.List;
+import java.util.Objects;
 
 // 竞技模式显示控制
 @Component
@@ -246,7 +247,15 @@ public class Model7 implements ReloadPane {
                     vbx.setSpacing(ScreenAdapter.calculateExY(2));
                     vbx.setPrefWidth(downArea.getPrefWidth());
                     downArea.getChildren().addAll(vbx);
-                    Label q = new Label(last.getQuestionNumber() + ". " + last.getQuestion());
+                    Label q = new Label();
+                    if (Objects.equals(currentStage.getShowNumber(), 1)) {
+                        q.setText(last.getQuestionNumber() + ". " + last.getQuestion());
+                    } else {
+                        q.setText( last.getQuestion());
+                    }
+                    if (GlobalCache.MAX_TEAM_NUMBER <= 0) {
+                        q.setText(q.getText() + "(未注册)");
+                    }
                     q.setWrapText(true);
                     vbx.getChildren().add(q);
                     if (!StringUtils.isEmpty(last.getChoiceA())) {

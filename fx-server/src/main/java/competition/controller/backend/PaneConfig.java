@@ -42,10 +42,7 @@ import javax.annotation.Resource;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.net.*;
-import java.util.Collections;
-import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 @Component
 public class PaneConfig {
@@ -159,6 +156,11 @@ public class PaneConfig {
     
     @FXML
     public void initialize(){
+
+        Configs configs = configsMapper.selectById(12);
+        String config = configs.getConfig();
+        connectionStateControl.setSelected(Objects.equals("1", config));
+
         connectionStateControl.selectedProperty().addListener((observable, oldValue, newValue) -> {
             System.out.println("链接状态展示.......");
             System.out.println(newValue);
@@ -166,7 +168,11 @@ public class PaneConfig {
             if (RuntimeUtil.showConnectionStatus) {
                 // 展示前端链接状态
                 Navigator.connectionBar("/view/board/preview/TeamConnectionBar.fxml", "", "/view/style.css", true);
+                configs.setConfig("1");
+                configsMapper.updateById(configs);
             } else {
+                configs.setConfig("0");
+                configsMapper.updateById(configs);
                 WindowEvent closeEvent = new WindowEvent( Navigator.connectionStage, WindowEvent.WINDOW_CLOSE_REQUEST);
                 Event.fireEvent( Navigator.connectionStage, closeEvent);  // 这会触发 setOnCloseRequest()
             }

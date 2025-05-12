@@ -56,7 +56,7 @@ public class StageQuestionPreviewAttr {
     private TextField nameBackgroundPath;
 
     @FXML
-    private ColorPicker nameColorInput;
+    private ColorPicker nameColorInput, fontColorInput;
 
     @FXML
     private CheckBox nameIticChoice;
@@ -199,6 +199,7 @@ public class StageQuestionPreviewAttr {
         String height = nameHeightInput.getText();
         boolean fillBackground = nameBackgroundChoice.isSelected();
         final String backgroundColor = nameColorInput.getValue().toString();
+        final String fontColor = fontColorInput.getValue().toString();
         String backgroundImage = nameBackgroundPath.getText();
         final String fontFamily = nameFontSelector.getValue();
         String fsize = nameFontSize.getText();
@@ -226,7 +227,8 @@ public class StageQuestionPreviewAttr {
                     + itic + ConfigSpliter.SPLITER
                     + underlne + ConfigSpliter.SPLITER
                     + alignValue + ConfigSpliter.SPLITER
-                    + (StringUtils.isEmpty(nameSpaceInput.getText()) ? "0" : nameSpaceInput.getText());
+                    + (StringUtils.isEmpty(nameSpaceInput.getText()) ? "0" : nameSpaceInput.getText()) + ConfigSpliter.SPLITER
+                    + fontColor;
             if (nameArr.length > 1) {
                 detail = detail + ConfigSpliter.DIFFER + nameArr[1];
             } else {
@@ -489,6 +491,9 @@ public class StageQuestionPreviewAttr {
         nameUnderlineChoice.setSelected(Boolean.valueOf(cfgArr[12]));
         nameTextAlignSelector.setValue(cfgArr[13]);
         nameSpaceInput.setText(cfgArr[14]);
+        if (cfgArr.length >= 16) {
+            fontColorInput.setValue(Color.valueOf(cfgArr[15]));
+        }
     }
 
 }

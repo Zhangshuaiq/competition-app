@@ -198,6 +198,9 @@ public class StageQuestionPreview implements ReloadPane {
             stageName.prefWidth(ScreenAdapter.calculateExX(Integer.parseInt(detailArr[2])));
             stageName.prefHeight(ScreenAdapter.calculateExY(Integer.parseInt(detailArr[3])));
             stageName.setTextAlignment(AlignmentUtil.getTextAlign(detailArr[13]));
+            if (detailArr.length >= 16) {
+                stageName.setFill(Color.valueOf(detailArr[15]));
+            }
             title.setAlignment(AlignmentUtil.getAlign(detailArr[13]));
             Font font = FontMap.load(detailArr[7], ScreenAdapter.calculateExX(Integer.parseInt(detailArr[8])));;
             

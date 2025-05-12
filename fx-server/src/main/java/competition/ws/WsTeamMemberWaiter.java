@@ -25,15 +25,18 @@ public class WsTeamMemberWaiter {
     // 添加连接的队伍，登录时调用
     public static void addConnectedTeam(String clientId, String member) {
         TeamRuntime.getTeams().stream().filter(team -> member.contains(team.getFullName())).findFirst().ifPresent(team -> {
-            connectTeams.get(team.getShortName()).add(clientId);
-            connectMembers.get(team.getShortName()).add(member.split("-")[1].trim());
+            if (!connectTeams.get(team.getShortName()).contains(clientId)) {
+                connectTeams.get(team.getShortName()).add(clientId);
+                connectMembers.get(team.getShortName()).add(member.split("-")[1].trim());
+            }
         });
     }
 
 
     // 添加重连的队伍，重连时调用
     public static void addReconnectedTeam(String clientId, String member) {
-        TeamRuntime.getTeams().stream().filter(team -> member.equals(team.getShortName())).findFirst().ifPresent(team -> {
+
+        TeamRuntime.getTeams().stream().filter(team -> member.startsWith(team.getShortName())).findFirst().ifPresent(team -> {
             if ( connectMembers.get(team.getShortName()).contains(member.split("-")[1].trim()) ) {
                 // 防止多个链接进入
                 return;

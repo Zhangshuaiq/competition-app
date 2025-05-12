@@ -201,6 +201,9 @@ public class StagePreview implements ReloadPane {
                         stageName.setStrikethrough(Boolean.valueOf(detailArr[9]));
                         stageName.setTextAlignment(AlignmentUtil.getTextAlign(detailArr[13]));
                         stageNamePane.setAlignment(AlignmentUtil.getAlign(detailArr[13]));
+                        if (detailArr.length >= 19) {
+                            stageName.setFill(Color.valueOf(detailArr[18]));
+                        }
                         if (detailArr.length >= 16) {
                             String text = stageName.getText();
                             char[] chars = text.toCharArray();

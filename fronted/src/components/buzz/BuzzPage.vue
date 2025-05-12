@@ -32,7 +32,7 @@ export default {
   data() {
     return {
       contactText: '',
-      imageUrl: `${baseUrl}/resource/默认背景.jpg?${new Date().getTime()}`,
+      imageUrl: `${baseUrl}/resource/抢答背景.jpg?${new Date().getTime()}`,
       defaultImageUrl: `${baseUrl}/resource/默认背景.jpg?${new Date().getTime()}`,
       iconUrl: `${baseUrl}/resource/图标.jpg?${new Date().getTime()}`,
       team: '',
@@ -111,7 +111,7 @@ export default {
   color: white;            /* White text color */
   border-radius: 50%;      /* Circular shape */
   text-align: center;      /* Center text */
-  font-size: 50px;         /* Font size */
+  font-size: 80px;         /* Font size */
   font-family: 'Microsoft YaHei', sans-serif; /* Font */
   border: 10px solid #e5e0e0;  /* Border color */
   margin: 0 auto;          /* Center horizontally */
