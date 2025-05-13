@@ -2,6 +2,7 @@ package competition.controller.board.match;
 
 import competition.controller.ControlPane;
 import competition.controller.board.BoardPane;
+import competition.controller.preview.ShowAnswerPreview;
 import competition.entity.Configs;
 import competition.entity.ScoreStyle;
 import competition.entity.Stages;
@@ -235,7 +236,11 @@ public class ScoreBoardH implements BoardPane {
                             }
                         }
 
-                        if (!Objects.equals(1, currentStage.getAnswerSingle())) {
+
+                        if (Objects.equals(1, currentStage.getAnswerSingle()) && controlPane.getPreviewPane() instanceof ShowAnswerPreview) {
+
+                        } else {
+                            userSelect.setText("");
                             stackPane2.getChildren().add(userSelect);
                             box.getChildren().add(stackPane2);
                         }
