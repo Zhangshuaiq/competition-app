@@ -1,5 +1,7 @@
 package competition.controller.board.preview;
 
+import competition.util.Navigator;
+import competition.util.ScreenAdapter;
 import competition.util.TeamRuntime;
 import competition.ws.WsTeamMemberWaiter;
 import javafx.animation.KeyFrame;
@@ -52,6 +54,7 @@ public class TeamConnectionBarPreview {
         Map<String, String> seqMap = TeamRuntime.getSeqMap();
         Map<String, List<String>> teamMemberMapping = TeamRuntime.getTeamMemberMapping();
         LinkedHashMap<String, List<String>> connectMembers = WsTeamMemberWaiter.getConnectMembers();
+        int row = 1;
         for (Map.Entry<String, List<String>> entry : WsTeamMemberWaiter.getConnectTeams().entrySet()) {
             String teamId = entry.getKey();
             List<String> clientIdList = entry.getValue();
@@ -83,9 +86,18 @@ public class TeamConnectionBarPreview {
                 currentRow = new HBox();
                 currentRow.setSpacing(10);
                 container.getChildren().add(currentRow);
+                row ++;
             }
         }
-        this.container.autosize();
+        container.setPrefHeight(ScreenAdapter.calculateMainY(40 * row + (row - 1) * 10));
+        if (row > 1) {
+            container.setPrefWidth(ScreenAdapter.calculateMainX(40 * 20 + (20 - 1) * 10));
+        } else {
+            int size = currentRow.getChildren().size();
+            container.setPrefWidth(ScreenAdapter.calculateMainX(40 * size + (size - 1) * 10));
+        }
+        Navigator.connectionStage.setWidth(container.getPrefWidth());
+        Navigator.connectionStage.setHeight(container.getPrefHeight());
     }
 
 

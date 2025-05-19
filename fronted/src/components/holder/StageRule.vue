@@ -9,7 +9,7 @@
       </el-row>
     </div>
     <div id="container">
-      <div  style="padding: 100px; text-align: center; font-size: xx-large; white-space: pre-line"  v-html="rule">
+      <div  style="padding: 100px; text-align: left; font-size: xx-large; white-space: pre-line"  v-html="rule">
       </div>
     </div>
   </div>

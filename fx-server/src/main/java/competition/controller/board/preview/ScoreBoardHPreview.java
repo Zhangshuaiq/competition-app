@@ -255,7 +255,9 @@ public class ScoreBoardHPreview extends PreviewPane implements BoardPane {
                     if (Objects.equals(1, currentStage.getAnswerSingle()) && controlPane.getPreviewPane() instanceof ShowAnswerPreview) {
 
                     } else {
-                        userSelect.setText("");
+                        if (Objects.equals(1, currentStage.getAnswerSingle())) {
+                            userSelect.setText("");
+                        }
                         stackPane2.getChildren().add(userSelect);
                         box.getChildren().add(stackPane2);
                     }

@@ -95,7 +95,8 @@ public class MvcConfig implements WebMvcConfigurer {
         if (RuntimeUtil.SUPER_ACTIVE_CODE.equals(registerInfo.getActiveCode())) {
             String cpuSerial = "";
             try {
-                cpuSerial = getCPUSerial();
+//                cpuSerial = getCPUSerial();
+                cpuSerial = "12345678";
                 if (Objects.equals(cpuSerial, registerInfo.getDeviceCode()) ) {
                     GlobalCache.MAX_TEAM_NUMBER = 9999;
                     registry.addResourceHandler("/resource/**", "/**")

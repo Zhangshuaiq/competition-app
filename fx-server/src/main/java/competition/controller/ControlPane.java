@@ -2607,6 +2607,7 @@ public class ControlPane {
         ExtendedScreen.close();
         secondScreenBtn.setText("扩展  关");
         secondScreenBtn.setTextFill(Color.BLACK);
+        secondScreenBtn.setStyle("");
         messageHandler.notifyPage("wait", null);
     }
 
