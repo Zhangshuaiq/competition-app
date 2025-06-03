@@ -1246,6 +1246,7 @@ public class ControlPane {
                         question.setScore(currentStage.getScorePerQ());
                         question.setDesValue(controlStage.getDesValue());
                         question.setTxbz(txbz);
+                        question.setShowNumber(currentStage.getShowNumber());
                     }
                     messageHandler.sendQuestionGroup(
                             questions,
@@ -2311,6 +2312,7 @@ public class ControlPane {
                 //CurrentQuestions.recordAnswer(tihao);
                 questions.setHasAnswer(true);
                 questions.setScore(currentStage.getScorePerQ());
+                questions.setShowNumber(currentStage.getShowNumber());
                 questionsMapper.updateById(questions);
                 // 内屏更新题目
                 if (currentStage.getQuestionType() == 2 || currentStage.getQuestionType() == 1 || currentStage.getQuestionType() == 4) {

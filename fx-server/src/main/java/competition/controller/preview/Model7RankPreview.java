@@ -374,7 +374,7 @@ public class Model7RankPreview extends PreviewPane {
                         }
                     }
                 }
-                String team = Model7RuntimeData.getTeams().get(i).getShortName();
+                String team = Model7RuntimeData.getTeams().get(i).getFullName();
                 
                 String time = timeData.get(i);
 

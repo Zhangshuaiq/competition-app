@@ -5,7 +5,6 @@ import competition.controller.ControlPane;
 import competition.controller.preview.PreviewPane;
 import competition.entity.Stages;
 import competition.mapper.StagesMapper;
-import competition.util.FontMap;
 import competition.util.ImageResource;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -25,14 +24,12 @@ import javafx.scene.text.Font;
 import javafx.stage.FileChooser;
 import lombok.SneakyThrows;
 import org.springframework.stereotype.Component;
-import org.springframework.util.CollectionUtils;
-import org.springframework.util.StringUtils;
-
 import javax.annotation.Resource;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.util.*;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 @Component
@@ -448,92 +445,124 @@ public class StageConfig {
             }
         });
     }
-    
-    private void sortStage(Stages stages, boolean up){
+
+
+    private void sortStage(Stages stages, boolean up) {
         Integer level = stages.getLevel();
-        List<Stages> list = stagesMapper.selectList(new LambdaQueryWrapper<>());
-        List<Stages> filtered = list.stream().filter(x -> x.getLevel().equals(level)).sorted(Comparator.comparing(Stages::getSortVal)).collect(Collectors.toList());
-        if (up) {
-            if (filtered.get(0).getSortVal().equals(stages.getSortVal())) {
-                return;
-            }
-            List<Stages> collect = filtered.stream().filter(x -> x.getSortVal().compareTo(stages.getSortVal()) < 0).collect(Collectors.toList());
-            String sortVal = stages.getSortVal();
-            Stages changed = collect.get(collect.size() - 1);
-          
-            // update children's sort value
+        List<Stages> allStages = stagesMapper.selectList(new LambdaQueryWrapper<>());
 
-            List<Stages> nextLevelStages = list.stream().filter(x -> x.getLevel() >= (level + 1))
-                    .sorted(Comparator.comparing(Stages::getSortVal))
-                    .collect(Collectors.toList());
+        // 获取同级别的兄弟环节
+        List<Stages> siblings = getSiblingsOfStage(allStages, stages);
 
-            // 修复顺序错乱
-            for (int i = 0; i < nextLevelStages.size(); i++) {
-                String ends = (i + 1) + "";
-                if (!nextLevelStages.get(i).getSortVal().endsWith(ends)) {
-                    String updatedSortVal = nextLevelStages.get(i).getSortVal().substring(0, nextLevelStages.get(i).getSortVal().length() - 1) + ends;
-                    nextLevelStages.get(i).setSortVal(updatedSortVal);
-                }
+        // 找到当前环节在兄弟环节中的位置
+        int currentIndex = -1;
+        for (int i = 0; i < siblings.size(); i++) {
+            if (siblings.get(i).getId().equals(stages.getId())) {
+                currentIndex = i;
+                break;
             }
-            for (Stages levelStage : nextLevelStages) {
-                if (levelStage.getSortVal().startsWith(changed.getSortVal())) {
-                    levelStage.setSortVal(levelStage.getSortVal().replaceFirst(changed.getSortVal(), sortVal));
-                    stagesMapper.updateById(levelStage);
-                }
-
-                if (levelStage.getSortVal().startsWith(sortVal)) {
-                    levelStage.setSortVal(levelStage.getSortVal().replaceFirst(sortVal, changed.getSortVal()));
-                    stagesMapper.updateById(levelStage);
-                }
-            }
-            
-
-            stages.setSortVal(changed.getSortVal());
-            changed.setSortVal(sortVal);
-            stagesMapper.updateById(changed);
-            stagesMapper.updateById(stages);
-        } else {
-            if (filtered.get(filtered.size() - 1).getSortVal().equals(stages.getSortVal())) {
-                return;
-            }
-            List<Stages> collect = filtered.stream().filter(x -> x.getSortVal().compareTo(stages.getSortVal()) > 0).collect(Collectors.toList());
-            String sortVal = stages.getSortVal();
-            Stages changed = collect.get(0);
-
-            List<Stages> nextLevelStages = list.stream().filter(x -> x.getLevel() >= (level + 1))
-                    .sorted(Comparator.comparing(Stages::getSortVal))
-                    .collect(Collectors.toList());
-            // 修复顺序错乱
-            for (int i = 0; i < nextLevelStages.size(); i++) {
-                String ends = (i + 1) + "";
-                if (!nextLevelStages.get(i).getSortVal().endsWith(ends)) {
-                    String updatedSortVal = nextLevelStages.get(i).getSortVal().substring(0, nextLevelStages.get(i).getSortVal().length() - 1) + ends;
-                    nextLevelStages.get(i).setSortVal(updatedSortVal);
-                }
-            }
-            for (Stages levelStage : nextLevelStages) {
-                if (levelStage.getSortVal().startsWith(changed.getSortVal())) {
-                    levelStage.setSortVal(levelStage.getSortVal().replaceFirst(changed.getSortVal(), sortVal));
-                    stagesMapper.updateById(levelStage);
-                }
-
-                if (levelStage.getSortVal().startsWith(sortVal)) {
-                    levelStage.setSortVal(levelStage.getSortVal().replaceFirst(sortVal, changed.getSortVal()));
-                    stagesMapper.updateById(levelStage);
-                }
-            }
-            
-            stages.setSortVal(changed.getSortVal());
-            changed.setSortVal(sortVal);
-            stagesMapper.updateById(changed);
-            stagesMapper.updateById(stages);
         }
+
+        if (currentIndex == -1) return;
+
+        // 确定要交换的目标环节
+        Stages targetStage = null;
+        if (up && currentIndex > 0) {
+            targetStage = siblings.get(currentIndex - 1);
+        } else if (!up && currentIndex < siblings.size() - 1) {
+            targetStage = siblings.get(currentIndex + 1);
+        }
+
+        if (targetStage == null) return; // 无法移动
+
+        // 执行交换
+        swapStagesAndChildren(allStages, stages, targetStage);
+
+        // 刷新显示
+        refreshStageDisplay();
+    }
+
+    /**
+     * 获取指定环节的所有兄弟环节（包括自己）
+     */
+    private List<Stages> getSiblingsOfStage(List<Stages> allStages, Stages stage) {
+        if (stage.getLevel() == 1) {
+            // 顶级环节：parentId为null的所有环节
+            return allStages.stream()
+                .filter(x -> x.getLevel() == 1 && x.getParentId() == null)
+                .sorted(Comparator.comparing(Stages::getSortVal))
+                .collect(Collectors.toList());
+        } else {
+            // 子环节：相同parentId的所有环节
+            return allStages.stream()
+                .filter(x -> x.getLevel().equals(stage.getLevel()) &&
+                    Objects.equals(x.getParentId(), stage.getParentId()))
+                .sorted(Comparator.comparing(Stages::getSortVal))
+                .collect(Collectors.toList());
+        }
+    }
+
+    private void swapStagesAndChildren(List<Stages> allStages, Stages stage1, Stages stage2) {
+        String originalSortVal1 = stage1.getSortVal();
+        String originalSortVal2 = stage2.getSortVal();
+
+        System.out.println("交换前: " + originalSortVal1 + " <-> " + originalSortVal2);
+
+        // 第一步：交换两个主环节的序号
+        stage1.setSortVal(originalSortVal2);
+        stage2.setSortVal(originalSortVal1);
+        stagesMapper.updateById(stage1);
+        stagesMapper.updateById(stage2);
+
+        System.out.println("交换后: " + stage1.getSortVal() + " <-> " + stage2.getSortVal());
+
+        // 第二步：递归更新stage1的所有子孙环节
+        updateAllDescendants(allStages, stage1.getId(), originalSortVal1, originalSortVal2);
+
+        // 第三步：递归更新stage2的所有子孙环节
+        updateAllDescendants(allStages, stage2.getId(), originalSortVal2, originalSortVal1);
+    }
+
+    /**
+     * 递归更新指定环节的所有子孙环节的序号
+     * @param allStages 所有环节列表
+     * @param parentId 父环节ID
+     * @param oldPrefix 旧的序号前缀
+     * @param newPrefix 新的序号前缀
+     */
+    private void updateAllDescendants(List<Stages> allStages, Integer parentId, String oldPrefix, String newPrefix) {
+        // 找到所有直接子环节
+        List<Stages> directChildren = allStages.stream()
+            .filter(x -> Objects.equals(x.getParentId(), parentId))
+            .collect(Collectors.toList());
+
+        for (Stages child : directChildren) {
+            String oldChildSortVal = child.getSortVal();
+
+            // 更新子环节的序号：将旧前缀替换为新前缀
+            String newChildSortVal = oldChildSortVal.replaceFirst("^" + Pattern.quote(oldPrefix), newPrefix);
+
+            System.out.println("  子环节更新: " + oldChildSortVal + " -> " + newChildSortVal);
+
+            child.setSortVal(newChildSortVal);
+            stagesMapper.updateById(child);
+
+            // 递归更新这个子环节的所有子孙环节
+            updateAllDescendants(allStages, child.getId(), oldChildSortVal, newChildSortVal);
+        }
+    }
+
+    /**
+     * 刷新环节显示
+     */
+    private void refreshStageDisplay() {
         firstBox.getChildren().clear();
         secondBox.getChildren().clear();
         thirdBox.getChildren().clear();
         showStageData();
     }
-    
+
+
     private void deleteStage(Stages stages) {
         stagesMapper.deleteById(stages.getId());
         List<Stages> waitForDelete = new ArrayList<>();

@@ -38,7 +38,7 @@
             <div class="question-name">
               <div v-if="questionItem.txbz === '4'">
                 <div v-if="questionItem.showNumber === 1">
-                  {{ questionItem.order }} &nbsp; {{ questionItem.question }}
+                  {{ questionItem.order }}、&nbsp; {{ questionItem.question }}
                 </div>
                 <div v-else>
                   {{ questionItem.question }}
@@ -46,7 +46,7 @@
               </div>
               <div v-if="questionItem.txbz === '3'">
                 <div v-if="questionItem.showNumber === 1">
-                  {{ questionItem.order }} &nbsp;&nbsp; {{questionItem.questionType}} &nbsp;&nbsp; {{ questionItem.question }}
+                  {{ questionItem.order }}、&nbsp;&nbsp; {{questionItem.questionType}} &nbsp;&nbsp; {{ questionItem.question }}
                 </div>
                 <div v-else>
                   {{questionItem.questionType}} &nbsp;&nbsp; {{ questionItem.question }}
@@ -54,7 +54,7 @@
               </div>
               <div v-if="questionItem.txbz === '2'">
                 <div v-if="questionItem.showNumber === 1">
-                  {{ questionItem.order }} &nbsp; ({{questionItem.questionType}}) &nbsp; {{ questionItem.question }}
+                  {{ questionItem.order }}、&nbsp; ({{questionItem.questionType}}) &nbsp; {{ questionItem.question }}
                 </div>
                 <div v-else>
                   ({{questionItem.questionType}}) &nbsp; {{ questionItem.question }}
@@ -64,7 +64,7 @@
 
               <div v-if="questionItem.txbz === '1'">
                 <div v-if="questionItem.showNumber === 1">
-                  {{ questionItem.order }} &nbsp; [{{questionItem.questionType}}] &nbsp; {{ questionItem.question }}
+                  {{ questionItem.order }}、&nbsp; [{{questionItem.questionType}}] &nbsp; {{ questionItem.question }}
                 </div>
                 <div v-else>
                   [{{questionItem.questionType}}] &nbsp; {{ questionItem.question }}
@@ -110,7 +110,7 @@
 
               <div v-if="questionItem.txbz === '4'">
                 <div v-if="questionItem.showNumber === 1">
-                  {{ questionItem.order }} &nbsp; {{ questionItem.question }}
+                  {{ questionItem.order }}、&nbsp; {{ questionItem.question }}
                 </div>
                 <div v-else>
                   {{ questionItem.question }}
@@ -118,7 +118,7 @@
               </div>
               <div v-if="questionItem.txbz === '3'">
                 <div v-if="questionItem.showNumber === 1">
-                  {{ questionItem.order }} &nbsp;&nbsp; {{questionItem.questionType}} &nbsp;&nbsp; {{ questionItem.question }}
+                  {{ questionItem.order }}、&nbsp;&nbsp; {{questionItem.questionType}} &nbsp;&nbsp; {{ questionItem.question }}
                 </div>
                 <div v-else>
                   {{questionItem.questionType}} &nbsp;&nbsp; {{ questionItem.question }}
@@ -126,7 +126,7 @@
               </div>
               <div v-if="questionItem.txbz === '2'">
                 <div v-if="questionItem.showNumber === 1">
-                  {{ questionItem.order }} &nbsp; ({{questionItem.questionType}}) &nbsp; {{ questionItem.question }}
+                  {{ questionItem.order }}、&nbsp; ({{questionItem.questionType}}) &nbsp; {{ questionItem.question }}
                 </div>
                 <div v-else>
                   ({{questionItem.questionType}}) &nbsp; {{ questionItem.question }}
@@ -136,7 +136,7 @@
 
               <div v-if="questionItem.txbz === '1'">
                 <div v-if="questionItem.showNumber === 1">
-                  {{ questionItem.order }} &nbsp; [{{questionItem.questionType}}] &nbsp; {{ questionItem.question }}
+                  {{ questionItem.order }}、&nbsp; [{{questionItem.questionType}}] &nbsp; {{ questionItem.question }}
                 </div>
                 <div v-else>
                   [{{questionItem.questionType}}] &nbsp; {{ questionItem.question }}
@@ -318,6 +318,8 @@ export default {
     this.stage = this.$store.state.stage
     this.answerUrl  = ''
     this.isResourceAvailable = false;
+    console.log("yyyyyyyyyyyyyyy")
+    console.log(data)
     this.questionItem = data
     if (this.questionItem.resourceType === '图片') {
       this.resourceUrl = `${baseUrl}/resource/${this.questionItem.question}`
@@ -349,6 +351,8 @@ export default {
     this.teamInfo = JSON.parse(item)
     const data = this.$store.state.data
     this.stage = this.$store.state.stage
+    console.log("xxxxxxxxxxxxxxxxxx")
+    console.log(data)
     this.questionItem = data
     if (this.questionItem.resourceType === '图片') {
       this.resourceUrl = `${baseUrl}/resource/${this.questionItem.question}`

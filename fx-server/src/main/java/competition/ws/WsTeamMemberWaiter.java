@@ -1,12 +1,15 @@
 package competition.ws;
 
+import competition.entity.Teams;
 import competition.util.TeamRuntime;
 import javafx.beans.property.MapProperty;
+import org.springframework.util.CollectionUtils;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 public class WsTeamMemberWaiter {
 
@@ -35,8 +38,12 @@ public class WsTeamMemberWaiter {
 
     // 添加重连的队伍，重连时调用
     public static void addReconnectedTeam(String clientId, String member) {
-
-        TeamRuntime.getTeams().stream().filter(team -> member.startsWith(team.getShortName())).findFirst().ifPresent(team -> {
+        if (CollectionUtils.isEmpty(connectMembers)) {
+            return;
+        }
+        List<Teams> teams = TeamRuntime.getTeams();
+        Optional<Teams> first = teams.stream().filter(team -> member.startsWith(team.getShortName())).findFirst();
+        first.ifPresent(team -> {
             if ( connectMembers.get(team.getShortName()).contains(member.split("-")[1].trim()) ) {
                 // 防止多个链接进入
                 return;

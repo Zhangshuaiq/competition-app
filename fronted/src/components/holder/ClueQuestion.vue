@@ -25,7 +25,7 @@
           <div id="question-name">
             <div v-if="questionItem.txbz === '4'">
               <div v-if="questionItem.showNumber === 1">
-                {{ questionItem.order }} &nbsp; {{ questionItem.question }}
+                {{ questionItem.order }}、&nbsp; {{ questionItem.question }}
               </div>
               <div v-else>
                 {{ questionItem.question }}
@@ -33,7 +33,7 @@
             </div>
             <div v-if="questionItem.txbz === '3'">
               <div v-if="questionItem.showNumber === 1">
-                {{ questionItem.order }} &nbsp;&nbsp; {{questionItem.questionType}} &nbsp;&nbsp; {{ questionItem.question }}
+                {{ questionItem.order }}、&nbsp;&nbsp; {{questionItem.questionType}} &nbsp;&nbsp; {{ questionItem.question }}
               </div>
               <div v-else>
                 {{questionItem.questionType}} &nbsp;&nbsp; {{ questionItem.question }}
@@ -41,7 +41,7 @@
             </div>
             <div v-if="questionItem.txbz === '2'">
               <div v-if="questionItem.showNumber === 1">
-                {{ questionItem.order }} &nbsp; ({{questionItem.questionType}}) &nbsp; {{ questionItem.question }}
+                {{ questionItem.order }}、&nbsp; ({{questionItem.questionType}}) &nbsp; {{ questionItem.question }}
               </div>
               <div v-else>
                 ({{questionItem.questionType}}) &nbsp; {{ questionItem.question }}
@@ -51,7 +51,7 @@
 
             <div v-if="questionItem.txbz === '1'">
               <div v-if="questionItem.showNumber === 1">
-                {{ questionItem.order }} &nbsp; [{{questionItem.questionType}}] &nbsp; {{ questionItem.question }}
+                {{ questionItem.order }}、&nbsp; [{{questionItem.questionType}}] &nbsp; {{ questionItem.question }}
               </div>
               <div v-else>
                 [{{questionItem.questionType}}] &nbsp; {{ questionItem.question }}

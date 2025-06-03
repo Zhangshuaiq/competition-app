@@ -171,10 +171,14 @@ public class StagePreviewPreview extends PreviewPane {
                // stageContainer.height
 
                 if (detailArr.length > 0) {
+
                     stageContainer.setLayoutX(ScreenAdapter.calculateMainX(Integer.parseInt(detailArr[0])));
                     stageContainer.setLayoutY(ScreenAdapter.calculateMainY(Integer.parseInt(detailArr[1])));
                     stageContainer.prefWidth(ScreenAdapter.calculateMainX(Integer.parseInt(detailArr[2])));
+                    width = ScreenAdapter.calculateMainX(Integer.parseInt(detailArr[2]));
                     height =  ScreenAdapter.calculateMainY(Integer.parseInt(detailArr[3]));
+                    x = ScreenAdapter.calculateMainX(Integer.parseInt(detailArr[0]));
+                    y = ScreenAdapter.calculateMainY(Integer.parseInt(detailArr[1]));
                     if (detailArr.length >= 18) {
                         stageContainer.setHgap(ScreenAdapter.calculateMainY(Integer.parseInt(detailArr[17])));
                     }
@@ -245,6 +249,12 @@ public class StagePreviewPreview extends PreviewPane {
                         stageName.setTextAlignment(AlignmentUtil.getTextAlign(detailArr[13]));
                         if (detailArr.length >= 19) {
                             stageName.setFill(Color.valueOf(detailArr[18]));
+                            if (Boolean.valueOf(detailArr[10])) {
+                                stageName.setStroke(stageName.getFill());
+                                stageName.setStrokeWidth(1);
+                            } else {
+                                stageName.setStroke(null);
+                            }
                         }
                         stageNamePane.setAlignment(AlignmentUtil.getAlign(detailArr[13]));
                         if (detailArr.length >= 16) {

@@ -64,4 +64,8 @@ public class GlobalCache {
     public static boolean isRecord(Integer code){
         return stageMap.getOrDefault(code, false);
     }
+
+    public static void clearStage() {
+        stageMap.clear();
+    }
 }

@@ -247,7 +247,7 @@ public class StageQuestionPreviewPreview extends PreviewPane {
             Font font = FontMap.load(detailArr[7], ScreenAdapter.calculateMainX(Integer.parseInt(detailArr[8])));
             stageName.setFont(font);
             if (Boolean.valueOf(detailArr[10])) {
-                stageName.setStroke(Color.valueOf(stageConfigAttrSplit[2]));
+                stageName.setStroke(stageName.getFill());
                 stageName.setStrokeWidth(1);
             } else {
                 stageName.setStroke(null);
@@ -369,6 +369,7 @@ public class StageQuestionPreviewPreview extends PreviewPane {
 //                    for (Questions q : CurrentQuestions.getQuestionList()) {
 //                        q.setScore(inner.getScorePerQ());
 //                    }
+                    questions.setShowNumber(inner.getShowNumber());
                     if (inner.getQuestionType() == 7) {
                         Model7Preview.setCurrentStage(inner);
                         Model7RuntimeData.setTeams(TeamRuntime.getTeams());

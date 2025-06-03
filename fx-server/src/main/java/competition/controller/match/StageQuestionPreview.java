@@ -206,7 +206,7 @@ public class StageQuestionPreview implements ReloadPane {
             
             stageName.setFont(font);
             if (Boolean.valueOf(detailArr[10])) {
-                stageName.setStroke(Color.valueOf(stageConfigAttrSplit[2]));
+                stageName.setStroke(stageName.getFill());
             } else {
                 stageName.setStroke(null);
 

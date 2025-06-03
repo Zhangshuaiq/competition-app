@@ -36,12 +36,12 @@
           <!--    视频需要播放      -->
           <!--    文字则正常展示      -->
 
-          <div v-else-if="questionItem.questionType === '单选题' || questionItem.questionType === '多选题' || questionItem.questionType === '不定项选择题'">
+          <div v-else-if="questionItem.questionType === '单选题' || questionItem.questionType === '多选题' || questionItem.questionType === '不定项选择题' || questionItem.questionType === '案例分析'">
             <div class="question-name">
 
               <div v-if="questionItem.txbz === '4'">
                 <div v-if="questionItem.showNumber === 1">
-                  {{ questionItem.order }} &nbsp; {{ questionItem.question }}
+                  {{ questionItem.order }}、&nbsp; {{ questionItem.question }}
                 </div>
                 <div v-else>
                   {{ questionItem.question }}
@@ -49,7 +49,7 @@
               </div>
               <div v-if="questionItem.txbz === '3'">
                 <div v-if="questionItem.showNumber === 1">
-                  {{ questionItem.order }} &nbsp;&nbsp; {{questionItem.questionType}} &nbsp;&nbsp; {{ questionItem.question }}
+                  {{ questionItem.order }}、&nbsp;&nbsp; {{questionItem.questionType}} &nbsp;&nbsp; {{ questionItem.question }}
                 </div>
                 <div v-else>
                   {{questionItem.questionType}} &nbsp;&nbsp; {{ questionItem.question }}
@@ -57,7 +57,7 @@
               </div>
               <div v-if="questionItem.txbz === '2'">
                 <div v-if="questionItem.showNumber === 1">
-                  {{ questionItem.order }} &nbsp; ({{questionItem.questionType}}) &nbsp; {{ questionItem.question }}
+                  {{ questionItem.order }}、&nbsp; ({{questionItem.questionType}}) &nbsp; {{ questionItem.question }}
                 </div>
                 <div v-else>
                   ({{questionItem.questionType}}) &nbsp; {{ questionItem.question }}
@@ -67,7 +67,7 @@
 
               <div v-if="questionItem.txbz === '1'">
                 <div v-if="questionItem.showNumber === 1">
-                  {{ questionItem.order }} &nbsp; [{{questionItem.questionType}}] &nbsp; {{ questionItem.question }}
+                  {{ questionItem.order }}、&nbsp; [{{questionItem.questionType}}] &nbsp; {{ questionItem.question }}
                 </div>
                 <div v-else>
                   [{{questionItem.questionType}}] &nbsp; {{ questionItem.question }}
@@ -113,7 +113,7 @@
 
               <div v-if="questionItem.txbz === '4'">
                 <div v-if="questionItem.showNumber === 1">
-                  {{ questionItem.order }} &nbsp; {{ questionItem.question }}
+                  {{ questionItem.order }}、&nbsp; {{ questionItem.question }}
                 </div>
                 <div v-else>
                   {{ questionItem.question }}
@@ -121,7 +121,7 @@
               </div>
               <div v-if="questionItem.txbz === '3'">
                 <div v-if="questionItem.showNumber === 1">
-                  {{ questionItem.order }} &nbsp;&nbsp; {{questionItem.questionType}} &nbsp;&nbsp; {{ questionItem.question }}
+                  {{ questionItem.order }}、&nbsp;&nbsp; {{questionItem.questionType}} &nbsp;&nbsp; {{ questionItem.question }}
                 </div>
                 <div v-else>
                   {{questionItem.questionType}} &nbsp;&nbsp; {{ questionItem.question }}
@@ -129,7 +129,7 @@
               </div>
               <div v-if="questionItem.txbz === '2'">
                 <div v-if="questionItem.showNumber === 1">
-                  {{ questionItem.order }} &nbsp; ({{questionItem.questionType}}) &nbsp; {{ questionItem.question }}
+                  {{ questionItem.order }}、&nbsp; ({{questionItem.questionType}}) &nbsp; {{ questionItem.question }}
                 </div>
                 <div v-else>
                   ({{questionItem.questionType}}) &nbsp; {{ questionItem.question }}
@@ -139,7 +139,7 @@
 
               <div v-if="questionItem.txbz === '1'">
                 <div v-if="questionItem.showNumber === 1">
-                  {{ questionItem.order }} &nbsp; [{{questionItem.questionType}}] &nbsp; {{ questionItem.question }}
+                  {{ questionItem.order }}、&nbsp; [{{questionItem.questionType}}] &nbsp; {{ questionItem.question }}
                 </div>
                 <div v-else>
                   [{{questionItem.questionType}}] &nbsp; {{ questionItem.question }}
@@ -209,7 +209,7 @@
                 </el-col>
               </el-row>
             </div>
-            <div v-else-if="questionItem.questionType === '多选题' || questionItem.questionType === '不定项选择题'">
+            <div v-else-if="questionItem.questionType === '多选题' || questionItem.questionType === '不定项选择题' || questionItem.questionType === '案例分析'">
               <el-row type="flex" justify="center" style="text-align: center">
                 <el-col span="4" class="column-center"  v-if="questionItem.choiceA">
                   <div class="multi-answer-item" :class="{ 'blue-background': activeDiv.indexOf('A') >= 0 }" @click="appendActiveDiv('A')">

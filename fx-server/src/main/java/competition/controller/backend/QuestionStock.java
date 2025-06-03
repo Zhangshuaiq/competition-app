@@ -10,6 +10,7 @@ import competition.mapper.StagesMapper;
 import competition.util.BaseDir;
 import competition.util.CurrentQuestions;
 import competition.util.ExcelParser;
+import competition.util.GlobalCache;
 import competition.util.RuntimeQuestionStock;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -100,6 +101,9 @@ public class QuestionStock {
     
     @FXML
     public void questionReset(){
+        // 复位选后变灰
+        GlobalCache.clearStage();
+
         ObservableList<Questions> selectedItems = tableView.getSelectionModel().getSelectedItems();
         for (Questions selectedItem : selectedItems) {
             selectedItem.setHasAnswer(false);

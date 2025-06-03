@@ -136,7 +136,7 @@ public class Model7Preview extends PreviewPane {
                     }
                 }
             }
-            String team = Model7RuntimeData.getTeams().get(i).getShortName();
+            String team = Model7RuntimeData.getTeams().get(i).getFullName();
 
             String time = timeData.get(i);
 
@@ -251,7 +251,7 @@ public class Model7Preview extends PreviewPane {
             upArea.setPrefWidth(anchorPane.getPrefWidth());
             // 背景颜色
             upArea.setBackground(new Background(new BackgroundFill(Color.BLUE, new CornerRadii(10), Insets.EMPTY)));
-            upArea.setPrefHeight(ScreenAdapter.calculateMainY(37));
+            upArea.setPrefHeight(ScreenAdapter.calculateMainY(22));
 
             // 第二行
             GridPane row2 = new GridPane();
@@ -268,6 +268,7 @@ public class Model7Preview extends PreviewPane {
                     .eq(Questions::getStageNumber, inner.getSortVal())
             );             
             int cols = (int) ((anchorPane.getPrefWidth() - 4) / (2 * ScreenAdapter.calculateMainX(radius ) + 1));
+            int finalRows = 0;
             for (int i1 = 0; i1 < questions.size(); i1++) {
                 Circle c = new Circle();
                 c.setStrokeWidth(1);
@@ -276,9 +277,10 @@ public class Model7Preview extends PreviewPane {
                 c.setFill(Color.WHITE);
                 int colIndex = i1 % cols;
                 int rowIndex = i1 / cols;
+                finalRows = rowIndex;
                 row2.add(c, colIndex, rowIndex );
             }
-
+            finalRows ++;
             for (int i1 = 0; i1 < modelData.size(); i1++) {
                 Model7RuntimeData.ModelData m = modelData.get(i1);
                 if (m.getUserSelect() == null) {
@@ -305,30 +307,50 @@ public class Model7Preview extends PreviewPane {
             row1.setPadding(new Insets(0, 3, 0, 3));
             row1.setPrefWidth(anchorPane.getPrefWidth());
             upArea.setSpacing(5);
-            Label label = new Label(teams.get(i).getFullName());
-            label.setPrefWidth(anchorPane.getPrefWidth() / 4);
+            Label label = new Label(teams.get(i).getShortName());
+            label.setPrefWidth(anchorPane.getPrefWidth() * 0.2);
             label.setTextFill(Color.WHITE);
             Label scoreL = new Label(score + "分");
-            scoreL.setPrefWidth(anchorPane.getPrefWidth() / 4);
+            scoreL.setPrefWidth(anchorPane.getPrefWidth() * 0.2);
             scoreL.setTextFill(Color.WHITE);
             Label timeL = new Label("完成" + finish + "题 答对" + correct +"题|用时" + timeValue);
             if (Model7RuntimeData.getFinished().get(i)) {
                 timeL.setText("完成" + finish + "题 答对" + correct + "题|用时" + Model7RuntimeData.getFts().get(i));
             }
-            timeL.setPrefWidth(anchorPane.getPrefWidth() / 2);
+            timeL.setPrefWidth(anchorPane.getPrefWidth() * 0.6);
             timeL.setTextFill(Color.WHITE);
 
             row1.getChildren().addAll(label, scoreL, timeL);
-            upArea.getChildren().addAll(row1, row2);
+
+            String[] split = model3Style.getHeadStyle().split(",");
+
+            upArea.getChildren().addAll(row1);
+            boolean hideCircles = true;
+            if (split.length > 1) {
+                if (!Boolean.parseBoolean(split[1])) {
+                    upArea.getChildren().add(row2);
+                    hideCircles = false;
+                }
+            } else {
+                upArea.getChildren().add(row2);
+                hideCircles = true;
+            }
+            int circleRowHeight = hideCircles ? 0 : finalRows * 15;
+            upArea.setPrefHeight(ScreenAdapter.calculateMainY(22 + circleRowHeight));
 
             AnchorPane downArea = new AnchorPane();
             downArea.setPrefWidth(anchorPane.getPrefWidth());
             downArea.setStyle("-fx-border-color: black; -fx-border-width: 1; -fx-background-color: white");
-            if (!Boolean.parseBoolean(model3Style.getHeadStyle())) {
+            downArea.setLayoutY(ScreenAdapter.calculateMainY(upArea.getLayoutY() + upArea.getPrefHeight() + 5));
+            double downAreaHeight = height - ScreenAdapter.calculateMainY(22 + circleRowHeight);
+            downArea.setPrefHeight(downAreaHeight);
+            if (split.length > 0) {
+                if (!Boolean.parseBoolean(split[0])) {
+                    anchorPane.getChildren().add(downArea);
+                }
+            } else {
                 anchorPane.getChildren().add(downArea);
             }
-            downArea.setLayoutY(ScreenAdapter.calculateMainY(52));
-            downArea.setPrefHeight(height - ScreenAdapter.calculateMainY(37));
 
             // 回答完毕
             if (Model7RuntimeData.getFinished().get(i)) {

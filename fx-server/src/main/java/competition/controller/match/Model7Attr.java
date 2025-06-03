@@ -34,7 +34,7 @@ public class Model7Attr {
     private TextField heightInput;
 
     @FXML
-    private CheckBox hideCtl;
+    private CheckBox hideCtl, hideCtl1;
 
     @FXML
     private TextField scInput;
@@ -50,7 +50,17 @@ public class Model7Attr {
     public void initialize(){
         Model3Style model3Style = model3Mapper.selectById(2);
         String titleStyle = model3Style.getTitleStyle();
-        hideCtl.setSelected(Boolean.parseBoolean(model3Style.getHeadStyle()));
+        String[] split1 = model3Style.getHeadStyle().split(",");
+        if (split1.length > 0) {
+            hideCtl.setSelected(Boolean.parseBoolean(split1[0]));
+        } else {
+            hideCtl.setSelected(false);
+        }
+        if (split1.length > 1) {
+            hideCtl1.setSelected(Boolean.parseBoolean(split1[1]));
+        } else {
+            hideCtl1.setSelected(false);
+        }
         if (StringUtils.isEmpty(titleStyle)) {
             colInput.setText("4");
             srInput.setText("20");
@@ -84,7 +94,8 @@ public class Model7Attr {
         yInput.getText();
         Model3Style model3Style = model3Mapper.selectById(2);
         model3Style.setTitleStyle(value);
-        model3Style.setHeadStyle(hideCtl.isSelected() + "");
+        String headStyle = hideCtl.isSelected() + "," + hideCtl1.isSelected();
+        model3Style.setHeadStyle(headStyle);
         model3Mapper.updateById(model3Style);
         PreviewStack.reloadStyle();
     }
