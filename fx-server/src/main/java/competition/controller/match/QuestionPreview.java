@@ -253,7 +253,7 @@ public class QuestionPreview implements ReloadPane{
                 }
             }
 
-            if (controlPane.getCurrentStage().getShowNumber() == 0) {
+            if (inner.getShowNumber() == 0) {
                 tiganLabel.setText(tiganLabel.getText().replace(inner.getOrder() + "、", ""));
             }
 

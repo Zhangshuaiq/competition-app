@@ -49,10 +49,8 @@ public class QuestionPreviewPreview extends PreviewPane {
     @FXML
     private VBox buzzBox;
 
-
     @FXML
     private StackPane backPane, stagePane;
-    
 
     @FXML
     private Text daanLabel, stageLabel;
@@ -275,19 +273,6 @@ public class QuestionPreviewPreview extends PreviewPane {
                 imageQ.setVisible(false);
             }
 
-//            if (questionType.equals("单选题")) {
-//                
-//            } else if (questionType.equals("多选题")) {
-//                
-//            }  else if (questionType.equals("填空题")) {
-//
-//            }  else if (questionType.equals("简答题")) {
-//
-//            }  else if (questionType.equals("判断题")) {
-//
-//            }
-
-
             // 题型
             String tx = split[9];
             // 题型标注
@@ -332,7 +317,7 @@ public class QuestionPreviewPreview extends PreviewPane {
                 }
             }
 
-            if (controlPane.getCurrentStage().getShowNumber() == 0) {
+            if (inner.getShowNumber() == 0) {
                 tiganLabel.setText(tiganLabel.getText().replace(inner.getOrder() + "、", ""));
             }
 
@@ -521,12 +506,6 @@ public class QuestionPreviewPreview extends PreviewPane {
                                             ScreenAdapter.calculateMainX(Integer.parseInt(split1[2])),
                                             ScreenAdapter.calculateMainY(Integer.parseInt(split1[3])),
                                             false, false, false, false))));
-//                            scrollPane.setBackground(new Background(new BackgroundImage(new Image(new FileInputStream(split1[6])),
-//                                    BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT, BackgroundPosition.DEFAULT,
-//                                    new BackgroundSize(
-//                                            ScreenAdapter.calculateMainX(Integer.parseInt(split1[2])),
-//                                            ScreenAdapter.calculateMainY(Integer.parseInt(split1[3])),
-//                                            false, false, false, false))));
                         } catch (FileNotFoundException e) {
                             tiganBox.setBackground(new Background(new BackgroundFill(Color.TRANSPARENT, new CornerRadii(ScreenAdapter.calculateMainX(10)), Insets.EMPTY)));
 

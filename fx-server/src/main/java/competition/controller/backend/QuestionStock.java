@@ -2,6 +2,7 @@ package competition.controller.backend;
 
 import cn.hutool.core.io.FileUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import competition.controller.ControlPane;
 import competition.entity.QuestionStyle;
 import competition.entity.Questions;
 import competition.entity.Stages;
@@ -11,7 +12,10 @@ import competition.util.BaseDir;
 import competition.util.CurrentQuestions;
 import competition.util.ExcelParser;
 import competition.util.GlobalCache;
+import competition.util.Information;
 import competition.util.RuntimeQuestionStock;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -49,11 +53,15 @@ public class QuestionStock {
     @Resource 
     private StagesMapper stagesMapper;
 
+    @Resource
+    private ControlPane controlPane;
+
     @FXML
     private TableColumn<Questions, String> stageNumberCol, stageNameCol, questionTypeCol, resourceTypeCol, resourceCol,
             questionCol, choiceACol, choiceBCol, choiceCCol, choiceDCol,
             choiceECol, choiceFCol, answerCol, remarkCol;
 
+    private boolean changeStock;
 
     @FXML
     public void initialize() {
@@ -81,6 +89,8 @@ public class QuestionStock {
             stockList.getItems().add(fileName);
         }
 
+        stockList.valueProperty().addListener((observable, oldValue, newValue) -> changeStock = true);
+
         List<Questions> questions = questionsMapper.selectList(new LambdaQueryWrapper<>());
         if (!CollectionUtils.isEmpty(questions)) {
             tableView.setItems(FXCollections.observableList(questions));
@@ -91,6 +101,8 @@ public class QuestionStock {
                 showData();
             }
         }
+
+
     }
 
     public void showData() {
@@ -117,29 +129,56 @@ public class QuestionStock {
         if (StringUtils.isEmpty(stockList.getValue())) {
             return;
         }
-        showData();
-        List<Questions> questions = RuntimeQuestionStock.loadQuestion(BaseDir.TIKU_DIR + stockList.getValue());
-        questionsMapper.delete(new LambdaQueryWrapper<>());
-        Map<String, List<Questions>> collect = questions.stream().collect(Collectors.groupingBy(Questions::getStageNumber));
-        for (Map.Entry<String, List<Questions>> entry : collect.entrySet()) {
-            List<Questions> list = entry.getValue();
-//            Stages stages = stagesMapper.selectOne(new LambdaQueryWrapper<Stages>()
-//                    .eq(Stages::getSortVal, list.get(0).getStageNumber())
-//                    .last(" LIMIT 1 "));
-            for (int i = 0; i < list.size(); i++) {
-                Questions q = list.get(i);
-                q.setQuestionNumber(i + 1);
-                q.setGroup(stockList.getValue());
-                questionsMapper.insert(q);
+        // 添加窗口确认
+        if (changeStock) {
+            boolean ret = Information.infoWithConfirm("切换题库需要重新进入比赛，是否要切换?");
+            if (ret) {
+                showData();
+                List<Questions> questions = RuntimeQuestionStock.loadQuestion(BaseDir.TIKU_DIR + stockList.getValue());
+                questionsMapper.delete(new LambdaQueryWrapper<>());
+                Map<String, List<Questions>> collect = questions.stream().collect(Collectors.groupingBy(Questions::getStageNumber));
+                for (Map.Entry<String, List<Questions>> entry : collect.entrySet()) {
+                    List<Questions> list = entry.getValue();
+                    for (int i = 0; i < list.size(); i++) {
+                        Questions q = list.get(i);
+                        q.setQuestionNumber(i + 1);
+                        q.setGroup(stockList.getValue());
+                        questionsMapper.insert(q);
+                    }
+                    // 乱序
+                    Collections.shuffle(list);
+                    for (int i = 0; i < list.size(); i++) {
+                        Questions q = list.get(i);
+                        q.setViewSort(i + 1);
+                        questionsMapper.updateById(q);
+                    }
+                }
+                controlPane.closeWindow();
             }
-            // 乱序
-            Collections.shuffle(list);
-            for (int i = 0; i < list.size(); i++) {
-                Questions q = list.get(i);
-                q.setViewSort(i + 1);
-                questionsMapper.updateById(q);
+        } else {
+            showData();
+            List<Questions> questions = RuntimeQuestionStock.loadQuestion(BaseDir.TIKU_DIR + stockList.getValue());
+            questionsMapper.delete(new LambdaQueryWrapper<>());
+            Map<String, List<Questions>> collect = questions.stream().collect(Collectors.groupingBy(Questions::getStageNumber));
+            for (Map.Entry<String, List<Questions>> entry : collect.entrySet()) {
+                List<Questions> list = entry.getValue();
+                for (int i = 0; i < list.size(); i++) {
+                    Questions q = list.get(i);
+                    q.setQuestionNumber(i + 1);
+                    q.setGroup(stockList.getValue());
+                    questionsMapper.insert(q);
+                }
+                // 乱序
+                Collections.shuffle(list);
+                for (int i = 0; i < list.size(); i++) {
+                    Questions q = list.get(i);
+                    q.setViewSort(i + 1);
+                    questionsMapper.updateById(q);
+                }
             }
         }
+
+
     }
     
 //    @FXML

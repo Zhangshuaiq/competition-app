@@ -34,22 +34,20 @@ import java.util.stream.Collectors;
 
 @Component
 public class StageConfig {
-    
+
     private boolean add;
-    
+
     private int addLevel;
-    
+
     private Stages current;
 
     private ToggleGroup timeCountType;
 
     // 出题方式
     private ToggleGroup ccType;
-    
+
     @FXML
     private TextField stageNoText;
-    
-    
 
     @Resource
     private StagesMapper stagesMapper;
@@ -66,7 +64,7 @@ public class StageConfig {
 
     @FXML
     private CheckBox countTotal;
-    
+
     @FXML
     private TextField desValue;
 
@@ -102,16 +100,16 @@ public class StageConfig {
 
     @FXML
     ImageView previewImg;
-    
+
     @FXML
     CheckBox model6Check, answerShow;
-    
+
     @Resource
     private ControlPane controlPane;
-    
+
     @FXML
     CheckBox timeOrder;
-    
+
     private Map<Integer, String> dataMap = new HashMap<>();
 
     private VBox firstBox = new VBox();
@@ -121,19 +119,19 @@ public class StageConfig {
     private VBox thirdBox = new VBox();
 
     private List<VBox> levelList;
-    
+
     private List<Integer> recorded;
-    
+
     private String filePath;
-    
+
     @FXML
     public void initialize() {
-        
+
         recorded = new ArrayList<>();
         firstBox.getChildren().clear();
         secondBox.getChildren().clear();
         thirdBox.getChildren().clear();
-        
+
         firstBox.setPrefWidth(171);
         firstBox.setPrefHeight(772);
         firstBox.setSpacing(10);
@@ -152,7 +150,6 @@ public class StageConfig {
         stageAddress.getChildren().add(secondBox);
         stageAddress.getChildren().add(thirdBox);
 
-
         dataMap.put(1, "连续出题");
         dataMap.put(2, "自选题目");
         dataMap.put(3, "自选题组");
@@ -165,7 +162,6 @@ public class StageConfig {
 
         ccType = new ToggleGroup();
         ccType.getToggles().addAll(ccType1, ccType2, ccType3, ccType4, ccType5, ccType6, ccType7);
-
 
         ccType1.selectedProperty().addListener(new ChangeListener<Boolean>() {
             @Override
@@ -216,7 +212,7 @@ public class StageConfig {
                 }
             }
         });
-        
+
         ccType6.selectedProperty().addListener(new ChangeListener<Boolean>() {
             @Override
             public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
@@ -238,8 +234,8 @@ public class StageConfig {
         });
 
         paChoice.getItems().addAll("直接抢答",
-                "标准模式",
-                "淘汰模式"
+            "标准模式",
+            "淘汰模式"
         );
 
         ruleChoice.valueProperty().addListener(new ChangeListener<String>() {
@@ -258,8 +254,8 @@ public class StageConfig {
         });
 
         ruleChoice.getItems().addAll(
-                "文字",
-                "图片"
+            "文字",
+            "图片"
         );
         ruleChoice.setValue("文字");
 
@@ -268,7 +264,7 @@ public class StageConfig {
         ruleImg.setOnMouseClicked(this::handleUpload);
         showStageData();
     }
-    
+
     private void showStageData(){
         List<Stages> stages = stagesMapper.selectList(new LambdaQueryWrapper<>());
         final List<Stages> firstStages = stages.stream().filter(x -> x.getParentId() == null).sorted(Comparator.comparing(Stages::getSortVal)).collect(Collectors.toList());
@@ -278,13 +274,10 @@ public class StageConfig {
             e.printStackTrace();
         }
     }
-    
+
     private void nextStageData(List<Stages> firstStages, VBox firstBox, int level) throws FileNotFoundException {
         for (int i = 0; i < firstStages.size(); i++) {
             Stages stage = firstStages.get(i);
-//            if (recorded.contains(stage.getId())) {
-//                continue;
-//            }
             HBox row = new HBox();
             row.setPrefHeight(50);
             row.setPrefWidth(171);
@@ -314,8 +307,8 @@ public class StageConfig {
             Label up = new Label();
             up.setPrefWidth(20);
             up.setPrefHeight(20);
-            up.setBackground(new Background(new BackgroundImage(new Image("file:" + ImageResource.UP()), BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT, BackgroundPosition.CENTER, 
-                    new BackgroundSize(20, 20, false, false, false, false))));
+            up.setBackground(new Background(new BackgroundImage(new Image("file:" + ImageResource.UP()), BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT, BackgroundPosition.CENTER,
+                new BackgroundSize(20, 20, false, false, false, false))));
             up.setTextFill(Color.WHITE);
             up.setAlignment(Pos.CENTER);
             up.setOnMouseClicked(new EventHandler<MouseEvent>() {
@@ -328,7 +321,7 @@ public class StageConfig {
             down.setPrefWidth(20);
             down.setPrefHeight(20);
             down.setBackground(new Background(new BackgroundImage(new Image("file:" + ImageResource.DOWN()), BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT, BackgroundPosition.CENTER,
-                    new BackgroundSize(20, 20, false, false, false, false))));
+                new BackgroundSize(20, 20, false, false, false, false))));
             down.setTextFill(Color.WHITE);
             down.setAlignment(Pos.CENTER);
             down.setOnMouseClicked(new EventHandler<MouseEvent>() {
@@ -337,14 +330,12 @@ public class StageConfig {
                     sortStage(stage, false);
                 }
             });
-            
-            
-            
+
             Label delete = new Label();
             delete.setPrefWidth(20);
             delete.setPrefHeight(20);
             delete.setBackground(new Background(new BackgroundImage(new Image("file:" + ImageResource.DELETE()), BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT, BackgroundPosition.CENTER,
-                    new BackgroundSize(20, 20, false, false, false, false))));
+                new BackgroundSize(20, 20, false, false, false, false))));
             delete.setTextFill(Color.WHITE);
             delete.setAlignment(Pos.CENTER);
             delete.setOnMouseClicked(new EventHandler<MouseEvent>() {
@@ -353,8 +344,7 @@ public class StageConfig {
                     deleteStage(stage);
                 }
             });
-            
-            
+
             operarions.getChildren().addAll(up, down, delete);
             rightArea.getChildren().add(operarions);
             row.getChildren().addAll(title, rightArea);
@@ -373,7 +363,7 @@ public class StageConfig {
                     // 显示下一阶段的数据
                     List<Stages> stages = stagesMapper.selectList(new LambdaQueryWrapper<>());
                     final List<Stages> firstStages = stages.stream().filter(x -> Objects.equals(current.getId(), x.getParentId()))
-                            .sorted(Comparator.comparing(Stages::getSortVal)).collect(Collectors.toList());
+                        .sorted(Comparator.comparing(Stages::getSortVal)).collect(Collectors.toList());
                     Integer level = current.getLevel();
                     // 清除子环节
                     for (int i1 = 0; i1 < levelList.size(); i1++) {
@@ -392,13 +382,12 @@ public class StageConfig {
         StackPane stackPane = new StackPane();
         Label addLab = new Label();
         addLab.setBackground(new Background(new BackgroundImage(new Image(new FileInputStream(ImageResource.添加()), 171, 50, true, true),
-                BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT, BackgroundPosition.CENTER, BackgroundSize.DEFAULT)));
+            BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT, BackgroundPosition.CENTER, BackgroundSize.DEFAULT)));
         addLab.setPrefHeight(50);
         addLab.setPrefWidth(171);
         addLab.setAlignment(Pos.CENTER);
         addLab.setTextFill(Color.BLACK);
         addLab.setFont(Font.font(24));
-        //addLab.setFont(Font.loadFont(FontMap.defaultFont(),24));
         stackPane.getChildren().add(addLab);
         firstBox.getChildren().add(stackPane);
         stackPane.setOnMouseClicked(new EventHandler<MouseEvent>() {
@@ -411,18 +400,18 @@ public class StageConfig {
 
                 if (addLevel == 1) {
                     int size = stagesMapper.selectList(new LambdaQueryWrapper<Stages>()
-                            .isNull(Stages::getParentId)).size() + 1;
+                        .isNull(Stages::getParentId)).size() + 1;
                     stageNoText.setText((size) + "");
                 } else  if (addLevel == 2) {
                     if (current.getLevel() == 1) {
                         int size = stagesMapper.selectList(new LambdaQueryWrapper<Stages>()
-                                .eq(Stages::getParentId, current.getId())
+                            .eq(Stages::getParentId, current.getId())
                         ).size() + 1;
                         stageNoText.setText(current.getSortVal() + "." + (size));
                     } else if (current.getLevel() == 2) {
                         Stages p = stagesMapper.selectById(current.getParentId());
                         int size = stagesMapper.selectList(new LambdaQueryWrapper<Stages>()
-                                .eq(Stages::getParentId, p.getId())
+                            .eq(Stages::getParentId, p.getId())
                         ).size() + 1;
                         stageNoText.setText(p.getSortVal() + "." + (size));
                     }
@@ -430,22 +419,21 @@ public class StageConfig {
                 } else  if (addLevel == 3) {
                     if (current.getLevel() == 2) {
                         int size = stagesMapper.selectList(new LambdaQueryWrapper<Stages>()
-                                .eq(Stages::getParentId, current.getId())
+                            .eq(Stages::getParentId, current.getId())
                         ).size() + 1;
                         stageNoText.setText(current.getSortVal() + "." + (size));
                     } else if (current.getLevel() == 3) {
                         Stages p = stagesMapper.selectById(current.getParentId());
                         int size = stagesMapper.selectList(new LambdaQueryWrapper<Stages>()
-                                .eq(Stages::getParentId, p.getId())
+                            .eq(Stages::getParentId, p.getId())
                         ).size() + 1;
                         stageNoText.setText(p.getSortVal() + "." + (size));
                     }
                 }
-                
+
             }
         });
     }
-
 
     private void sortStage(Stages stages, boolean up) {
         Integer level = stages.getLevel();
@@ -553,40 +541,149 @@ public class StageConfig {
     }
 
     /**
+     * 修复后的删除环节方法
+     */
+    private void deleteStage(Stages stages) {
+        // 1. 记录被删除环节的信息，用于后续重新排序
+        String deletedSortVal = stages.getSortVal();
+        Integer deletedLevel = stages.getLevel();
+        Integer deletedParentId = stages.getParentId();
+
+        // 2. 删除指定环节
+        stagesMapper.deleteById(stages.getId());
+
+        // 3. 递归删除所有子环节
+        deleteAllChildrenRecursively(stages.getId());
+
+        // 4. 重新排序同级环节
+        reorderSiblingsAfterDeletion(deletedSortVal, deletedLevel, deletedParentId);
+
+        // 5. 刷新显示
+        refreshStageDisplay();
+    }
+
+    /**
+     * 递归删除所有子环节
+     */
+    private void deleteAllChildrenRecursively(Integer parentId) {
+        List<Stages> waitForDelete = new ArrayList<>();
+        List<Stages> stagesList = stagesMapper.selectList(new LambdaQueryWrapper<Stages>()
+            .eq(Stages::getParentId, parentId)
+        );
+
+        while (!stagesList.isEmpty()) {
+            waitForDelete.addAll(stagesList);
+            List<Integer> parentIds = stagesList.stream().map(Stages::getId).collect(Collectors.toList());
+            stagesList = stagesMapper.selectList(new LambdaQueryWrapper<Stages>()
+                .in(Stages::getParentId, parentIds)
+            );
+        }
+
+        if (!waitForDelete.isEmpty()) {
+            List<Integer> deleteIds = waitForDelete.stream().map(Stages::getId).collect(Collectors.toList());
+            stagesMapper.deleteBatchIds(deleteIds);
+        }
+    }
+
+    /**
+     * 删除后重新排序同级环节
+     */
+    private void reorderSiblingsAfterDeletion(String deletedSortVal, Integer deletedLevel, Integer deletedParentId) {
+        // 获取所有环节
+        List<Stages> allStages = stagesMapper.selectList(new LambdaQueryWrapper<>());
+
+        // 获取被删除环节的同级环节
+        List<Stages> siblings;
+        if (deletedLevel == 1) {
+            // 顶级环节：parentId为null的所有环节
+            siblings = allStages.stream()
+                .filter(x -> x.getLevel() == 1 && x.getParentId() == null)
+                .sorted(Comparator.comparing(Stages::getSortVal))
+                .collect(Collectors.toList());
+        } else {
+            // 子环节：相同parentId的所有环节
+            siblings = allStages.stream()
+                .filter(x -> x.getLevel().equals(deletedLevel) &&
+                    Objects.equals(x.getParentId(), deletedParentId))
+                .sorted(Comparator.comparing(Stages::getSortVal))
+                .collect(Collectors.toList());
+        }
+
+        // 重新分配序号
+        if (deletedLevel == 1) {
+            // 顶级环节：重新分配为 1, 2, 3, ...
+            reorderTopLevelStages(siblings, allStages);
+        } else {
+            // 子环节：重新分配序号
+            reorderChildLevelStages(siblings, deletedParentId, allStages);
+        }
+    }
+
+    /**
+     * 重新排序顶级环节
+     */
+    private void reorderTopLevelStages(List<Stages> topLevelSiblings, List<Stages> allStages) {
+        for (int i = 0; i < topLevelSiblings.size(); i++) {
+            Stages stage = topLevelSiblings.get(i);
+            String oldSortVal = stage.getSortVal();
+            String newSortVal = String.valueOf(i + 1);
+
+            if (!oldSortVal.equals(newSortVal)) {
+                System.out.println("顶级环节重新排序: " + oldSortVal + " -> " + newSortVal);
+
+                // 更新当前环节
+                stage.setSortVal(newSortVal);
+                stagesMapper.updateById(stage);
+
+                // 递归更新所有子孙环节
+                updateAllDescendants(allStages, stage.getId(), oldSortVal, newSortVal);
+            }
+        }
+    }
+
+    /**
+     * 重新排序子级环节
+     */
+    private void reorderChildLevelStages(List<Stages> childSiblings, Integer parentId, List<Stages> allStages) {
+        // 获取父环节信息
+        Stages parentStage = allStages.stream()
+            .filter(x -> x.getId().equals(parentId))
+            .findFirst()
+            .orElse(null);
+
+        if (parentStage == null) return;
+
+        String parentSortVal = parentStage.getSortVal();
+
+        for (int i = 0; i < childSiblings.size(); i++) {
+            Stages stage = childSiblings.get(i);
+            String oldSortVal = stage.getSortVal();
+            String newSortVal = parentSortVal + "." + (i + 1);
+
+            if (!oldSortVal.equals(newSortVal)) {
+                System.out.println("子环节重新排序: " + oldSortVal + " -> " + newSortVal);
+
+                // 更新当前环节
+                stage.setSortVal(newSortVal);
+                stagesMapper.updateById(stage);
+
+                // 递归更新所有子孙环节
+                updateAllDescendants(allStages, stage.getId(), oldSortVal, newSortVal);
+            }
+        }
+    }
+
+    /**
      * 刷新环节显示
      */
     private void refreshStageDisplay() {
         firstBox.getChildren().clear();
         secondBox.getChildren().clear();
         thirdBox.getChildren().clear();
+        recorded.clear();
         showStageData();
     }
 
-
-    private void deleteStage(Stages stages) {
-        stagesMapper.deleteById(stages.getId());
-        List<Stages> waitForDelete = new ArrayList<>();
-        List<Stages> stagesList = stagesMapper.selectList(new LambdaQueryWrapper<Stages>()
-                .eq(Stages::getParentId, stages.getId())
-        );
-        while (!stagesList.isEmpty()) {
-            waitForDelete.addAll(stagesList);
-            List<Integer> parentId = stagesList.stream().map(x -> x.getId()).collect(Collectors.toList());
-            stagesList = stagesMapper.selectList(new LambdaQueryWrapper<Stages>()
-                    .in(Stages::getParentId, parentId)
-            );
-        }
-        if (!waitForDelete.isEmpty()) {
-            List<Integer> deleteIds = waitForDelete.stream().map(x -> x.getId()).collect(Collectors.toList());
-            stagesMapper.deleteBatchIds(deleteIds);
-        }
-       
-        firstBox.getChildren().clear();
-        secondBox.getChildren().clear();
-        thirdBox.getChildren().clear();
-        showStageData();
-    }
-    
     private void clearClicked(){
         final ObservableList<Node> children = stageAddress.getChildren();
         for (Node child : children) {
@@ -604,7 +701,7 @@ public class StageConfig {
             }
         }
     }
-    
+
     private void showCurrentInfo(){
         if (current != null) {
             stageNoText.setText(current.getSortVal());
@@ -643,32 +740,8 @@ public class StageConfig {
             ruleImg.setVisible(false);
             ruleText.setText(current.getRuleContent());
             previewImg.setVisible(false);
-//            if (current.getRuleType().equals("文字")){
-//                ruleText.setVisible(true);
-//                ruleImg.setVisible(false);
-//                ruleText.setText(current.getRuleContent());
-//                previewImg.setVisible(false);
-//            } else {
-//                
-//                if (StringUtils.isEmpty(current.getRuleContent())) {
-//                    ruleText.setVisible(false);
-//                    ruleImg.setVisible(true);
-//                    previewImg.setVisible(false);
-//                } else {
-//                    ruleText.setVisible(false);
-//                    ruleImg.setVisible(false);
-//                    previewImg.setVisible(true);
-//                    try {
-//                        previewImg.setImage(new Image(new FileInputStream(current.getRuleContent())));
-//                    } catch (FileNotFoundException e) {
-//                        e.printStackTrace();
-//                    }
-//                }
-//              
-//            }
         }
     }
-
 
     public void handleUpload(MouseEvent event) {
         FileChooser imageChooser = new FileChooser();
@@ -684,8 +757,7 @@ public class StageConfig {
             }
         }
     }
-    
-    
+
     @FXML
     public void updateStage(){
         if (current == null) {
@@ -753,16 +825,12 @@ public class StageConfig {
         current.setCountTotal(countTotal.isSelected()? 1: 0);
         current.setAnswerSingle(answerShow.isSelected()?1: 0);
         stagesMapper.updateById(current);
-        
-        firstBox.getChildren().clear();
-        secondBox.getChildren().clear();
-        thirdBox.getChildren().clear();
-        showStageData();
+
+        refreshStageDisplay();
         PreviewPane previewPane = controlPane.getPreviewPane();
         if (previewPane != null) {
             previewPane.reload();
         }
-
     }
 
     @FXML
@@ -832,16 +900,16 @@ public class StageConfig {
         stages.setAnswerSingle(answerShow.isSelected()?1: 0);
         stages.setOrderVal(timeOrder.isSelected()? 1: 0);
         if (addLevel == 1) {
-                int size = stagesMapper.selectList(new LambdaQueryWrapper<Stages>()
-                        .isNull(Stages::getParentId)).size() + 1;
-                stages.setLevel(1);
-                stages.setSortVal((size) + "");
+            int size = stagesMapper.selectList(new LambdaQueryWrapper<Stages>()
+                .isNull(Stages::getParentId)).size() + 1;
+            stages.setLevel(1);
+            stages.setSortVal((size) + "");
         } else  if (addLevel == 2) {
             if (current.getLevel() == 1) {
                 stages.setParentId(current.getId());
                 stages.setLevel(current.getLevel() + 1);
                 int size = stagesMapper.selectList(new LambdaQueryWrapper<Stages>()
-                        .eq(Stages::getParentId, current.getId())
+                    .eq(Stages::getParentId, current.getId())
                 ).size() + 1;
                 stages.setSortVal(current.getSortVal() + "." + (size));
             } else if (current.getLevel() == 2) {
@@ -849,17 +917,17 @@ public class StageConfig {
                 stages.setParentId(p.getId());
                 stages.setLevel(p.getLevel() + 1);
                 int size = stagesMapper.selectList(new LambdaQueryWrapper<Stages>()
-                        .eq(Stages::getParentId, p.getId())
+                    .eq(Stages::getParentId, p.getId())
                 ).size() + 1;
                 stages.setSortVal(p.getSortVal() + "." + (size));
             }
-           
+
         } else  if (addLevel == 3) {
             if (current.getLevel() == 2) {
                 stages.setParentId(current.getId());
                 stages.setLevel(current.getLevel() + 1);
                 int size = stagesMapper.selectList(new LambdaQueryWrapper<Stages>()
-                        .eq(Stages::getParentId, current.getId())
+                    .eq(Stages::getParentId, current.getId())
                 ).size() + 1;
                 stages.setSortVal(current.getSortVal() + "." + (size));
             } else if (current.getLevel() == 3) {
@@ -867,16 +935,13 @@ public class StageConfig {
                 stages.setParentId(p.getId());
                 stages.setLevel(p.getLevel() + 1);
                 int size = stagesMapper.selectList(new LambdaQueryWrapper<Stages>()
-                        .eq(Stages::getParentId, p.getId())
+                    .eq(Stages::getParentId, p.getId())
                 ).size() + 1;
                 stages.setSortVal(p.getSortVal() + "." + (size));
             }
         }
-        
+
         stagesMapper.insert(stages);
-        firstBox.getChildren().clear();
-        secondBox.getChildren().clear();
-        thirdBox.getChildren().clear();
-        showStageData();
+        refreshStageDisplay();
     }
 }

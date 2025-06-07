@@ -44,12 +44,18 @@ public class ScoreService {
             new Thread(() -> {
                 // 需要闪灯则闪灯 1 秒
                 if (light) {
+                    if (instance == null) {
+                        return;
+                    }
                     instance.send(Command.SHOW, SerialPortConfig.buildScreenData(screenDevice, Integer.parseInt(totalScore), true));
                     try {
                         TimeUnit.SECONDS.sleep(3);
                     } catch (InterruptedException e) {
                         throw new RuntimeException(e);
                     }
+                }
+                if (instance == null) {
+                    return;
                 }
                 instance.send(Command.SHOW, SerialPortConfig.buildScreenData(screenDevice, Integer.parseInt(totalScore), false));
             }).start();

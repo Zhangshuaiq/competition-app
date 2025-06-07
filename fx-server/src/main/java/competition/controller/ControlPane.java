@@ -1348,9 +1348,13 @@ public class ControlPane {
         if (!StringUtils.isEmpty(text)) {
             time = Integer.parseInt(text);
         }
-
-        timeBoardPreview = (ReloadPane) Navigator.timeWithPos("/view/board/preview/TimeBoard.fxml", "", "/view/style.css", true);
-
+        if (timeBoardPreview != null) {
+            timeReset();
+            timeBoardPreview = null;
+        }
+        if (timeBoardPreview == null) {
+            timeBoardPreview = (ReloadPane) Navigator.timeWithPos("/view/board/preview/TimeBoard.fxml", "", "/view/style.css", true);
+        }
 
         if (timeBoardPreview != null) {
             if (controlStage == null) {

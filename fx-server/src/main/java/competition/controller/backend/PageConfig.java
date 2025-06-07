@@ -364,7 +364,14 @@ public class PageConfig {
     
     @Resource
     private ConfigsMapper configsMapper;
-    
+
+    // 抢答时间字号
+    @FXML
+    private TextField qdzh;
+
+    // 抢答时间字体颜色
+    @FXML
+    private ColorPicker qdys;
     
     @FXML
     public void initialize(){
@@ -445,6 +452,20 @@ public class PageConfig {
                 djsct.setSelected(Boolean.parseBoolean(split[35]));
             } else {
                 djsct.setSelected(false);
+            }
+
+            // 抢答时间的字号
+            if (split.length >= 37) {
+                qdzh.setText(split[36]);
+            } else {
+                qdzh.setText("12");
+            }
+
+            // 抢答时间的字体颜色
+            if (split.length >= 38) {
+                qdys.setValue(Color.valueOf(split[37]));
+            } else {
+                qdys.setValue(Color.BLACK);
             }
           
         }
@@ -600,6 +621,8 @@ public class PageConfig {
         final String daojishiy = djsy.getText();
         final String ztzihao = ztzh.getText();
         final String ztyanse = ztys.getValue().toString();
+        final String qdzyzh = qdzh.getText();
+        final String qdztys = qdys.getValue().toString();
         
         
         
@@ -638,7 +661,9 @@ public class PageConfig {
                 + ztyanse + ConfigSpliter.SPLITER
                 + fontSelector.getValue() + ConfigSpliter.SPLITER
                 + djsbj.getValue().toString() + ConfigSpliter.SPLITER
-                + djsct.isSelected()
+                + djsct.isSelected() + ConfigSpliter.SPLITER
+                + qdzyzh + ConfigSpliter.SPLITER
+                + qdztys
                 ;
 
 

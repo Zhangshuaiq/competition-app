@@ -29,6 +29,8 @@ import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.Clipboard;
+import javafx.scene.input.ClipboardContent;
 import javafx.scene.layout.Background;
 import javafx.scene.layout.BackgroundFill;
 import javafx.scene.layout.StackPane;
@@ -148,6 +150,8 @@ public class PaneConfig {
 
     @Resource
     private ControlPane controlPane;
+
+
 
     
     private SimpleStringProperty ipaddr = new SimpleStringProperty("");
@@ -442,6 +446,42 @@ public class PaneConfig {
             e.printStackTrace();
         }
     }
+
+
+    @FXML
+    public void copy1(){
+        doCopy("http://" + ipaddr.get() + ":8080/index.html#/");
+    }
+
+    @FXML
+    public void copy2(){
+        doCopy("http://" + ipaddr.get() + ":8080/index.html#/hwait");
+    }
+
+    @FXML
+    public void copy3(){
+        doCopy("http://" + ipaddr.get() + ":8080/index.html#/allScore");
+    }
+
+    @FXML
+    public void copy4(){
+        doCopy("http://" + ipaddr.get() + ":8080/index.html#/scoreLogin");
+    }
+
+    @FXML
+    public void copy5(){
+        doCopy("http://" + ipaddr.get() + ":8080/index.html#/buzzLogin");
+    }
+
+    private void doCopy(String text){
+        Clipboard clipboard = Clipboard.getSystemClipboard();
+        ClipboardContent content = new ClipboardContent();
+        // 设置文本内容
+        content.putString(text);
+        // 将内容放入剪贴板
+        clipboard.setContent(content);
+    }
+
 
     @FXML
     public void update5(){

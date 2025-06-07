@@ -45,6 +45,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 @Component
 @Scope("prototype")
@@ -465,7 +466,17 @@ public class CluePreviewPreview extends PreviewPane{
                         ch.setLineSpacing(ScreenAdapter.calculateMainY(Integer.parseInt(split1[14])));
                     }
                 }
+
+                // 如果有一行空行
+                if (split1.length > 16 && Boolean.parseBoolean(split1[16])) {
+                    Text blankLine = new Text("11");
+                    blankLine.setFont(font);
+                    blankLine.setVisible(false);
+                    tiganBox.getChildren().add(1, blankLine);
+                }
             }
+
+
 
             {
 
@@ -619,9 +630,12 @@ public class CluePreviewPreview extends PreviewPane{
     public void showClue(){
         ObservableList<Node> children = tiganBox.getChildren();
         for (Node child : children) {
-            if (!child.isVisible()) {
-                child.setVisible(true);
-                break;
+            if (child instanceof Text) {
+                Text text = (Text) child;
+                if (!text.isVisible() && !Objects.equals(text.getText(), "11")) {
+                    text.setVisible(true);
+                    break;
+                }
             }
         }
         Questions questions = JSON.parseObject(JSON.toJSONString(inner), Questions.class);
