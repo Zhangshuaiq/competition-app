@@ -3,11 +3,11 @@
     <div>
       <ScoreBoard></ScoreBoard>
     </div>
-    <div style="margin-top: 10px; padding-left: 20px; font-weight: bold;" >
+    <div style="margin-top: 10px; padding-left: 20px; font-weight: bold; ">
       <el-row>
         <el-col span="4"> 组号: {{ teamInfo.shortName }}</el-col>
-        <el-col span="4"> 组名: {{ teamInfo.fullName }}</el-col>
-        <el-col span="4"> 选手: {{ member }}</el-col>
+        <el-col span="6"> 组名: {{ teamInfo.fullName }}</el-col>
+        <el-col span="6"> 选手: {{ member }}</el-col>
         <el-col span="4"> 环节: {{ stage.name}}</el-col>
         <el-col span="4">
           <div v-if="second >= 0" style="color: red; ">
