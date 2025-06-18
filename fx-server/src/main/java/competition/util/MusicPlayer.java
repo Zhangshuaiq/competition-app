@@ -3,6 +3,7 @@ package competition.util;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
 import javafx.util.Duration;
+import lombok.extern.slf4j.Slf4j;
 
 import java.io.File;
 import java.util.HashMap;
@@ -10,6 +11,7 @@ import java.util.LinkedList;
 import java.util.Map;
 import java.util.Queue;
 
+@Slf4j
 public class MusicPlayer {
 
    // private static Map<String, MediaPlayer> musicsMap = new HashMap<>();
@@ -156,7 +158,7 @@ public class MusicPlayer {
 
     public static void playQueued(String path) {
         if (!new File(path).exists()) {
-            System.out.println("File does not exist: " + path);
+            log.warn("File does not exist: {}", path);
             return;
         }
 
@@ -167,7 +169,7 @@ public class MusicPlayer {
     public static void playNext() {
         String nextPath = mediaQueue.poll();
         if (nextPath == null) {
-            System.out.println("Queue is empty. Playback finished.");
+            log.warn("Queue is empty. Playback finished.");
             return; // 队列为空，停止播放
         }
 
@@ -185,7 +187,7 @@ public class MusicPlayer {
             });
 
             mediaPlayer.setOnError(() -> {
-                System.err.println("Error occurred while playing: " + nextPath);
+                log.error("Error occurred while playing: {}", nextPath);
                 playNext(); // 播放下一个文件
             });
 

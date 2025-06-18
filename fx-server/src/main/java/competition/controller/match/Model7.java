@@ -42,7 +42,7 @@ public class Model7 implements ReloadPane {
     @FXML
     private GridPane container;
 
-    private String timeValue = "00秒";
+    private String timeValue = "00:00";
 
     @Resource
     private ControlPane controlPane;
@@ -331,9 +331,9 @@ public class Model7 implements ReloadPane {
             Label scoreL = new Label(score + "分");
             scoreL.setPrefWidth(anchorPane.getPrefWidth() / 4);
             scoreL.setTextFill(Color.WHITE);
-            Label timeL = new Label("完成" + finish + "题 答对" + correct +"题|用时" + timeValue);
+            Label timeL = new Label("完成" + finish + "题 答对" + correct +"题|" + timeValue);
             if (Model7RuntimeData.getFinished().get(i)) {
-                timeL.setText("完成" + finish + "题 答对" + correct + "题|用时" + Model7RuntimeData.getFts().get(i));
+                timeL.setText("完成" + finish + "题 答对" + correct + "题|" + Model7RuntimeData.getFts().get(i));
             }
             timeL.setPrefWidth(anchorPane.getPrefWidth() / 2);
             timeL.setTextFill(Color.WHITE);

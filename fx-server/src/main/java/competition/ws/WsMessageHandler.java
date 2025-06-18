@@ -12,6 +12,7 @@ import competition.util.GlobalCache;
 import competition.util.RuntimeUtil;
 import competition.util.TeamRuntime;
 import javafx.application.Platform;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.messaging.handler.annotation.Header;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
@@ -25,11 +26,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
+@Slf4j
 @Controller
 public class WsMessageHandler {
 
@@ -75,9 +79,19 @@ public class WsMessageHandler {
     // 优化相关的字段
     private final Object dataLock = new Object(); // 数据同步锁
     private final Map<String, Integer> teamIndexCache = new ConcurrentHashMap<>(); // 团队索引缓存
-    private final AtomicLong lastUpdateTime = new AtomicLong(0); // 上次更新时间
     private volatile ControlPane cachedControlPane; // 缓存ControlPane
-    private final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1); // 定时调度器
+
+    // 新增：UI更新相关字段
+    private final AtomicBoolean dataChanged = new AtomicBoolean(false); // 数据变化标记
+    private final AtomicBoolean uiUpdateActive = new AtomicBoolean(false); // UI更新是否激活
+    private final ScheduledExecutorService uiUpdateScheduler = Executors.newSingleThreadScheduledExecutor(
+        r -> {
+            Thread t = new Thread(r, "ui-update-scheduler");
+            t.setDaemon(true);
+            return t;
+        }
+    ); // UI更新定时器
+    private volatile ScheduledFuture<?> uiUpdateTask; // UI更新任务引用
 
     @PostConstruct
     private void init() {
@@ -85,8 +99,8 @@ public class WsMessageHandler {
         Model7RuntimeData.setUIUpdateCallback(new Model7RuntimeData.UIUpdateCallback() {
             @Override
             public void onDataUpdated(String teamName, int teamIndex) {
-                // 使用现有的防抖机制
-                scheduleUIUpdate();
+                // 标记数据已变化，但不立即更新UI
+                dataChanged.set(true);
             }
         });
     }
@@ -96,8 +110,56 @@ public class WsMessageHandler {
         String jsonText = new String(msg, StandardCharsets.UTF_8);
         Map parse = JSON.parseObject(jsonText, Map.class);
         String team = parse.get("team").toString();
-        System.out.println("团队" + team + "加入,标识为：" + sessionId);
+        log.info("团队{}加入,标识为：{}", team, sessionId);
         WsTeamMemberWaiter.addConnectedTeam(sessionId, team);
+    }
+
+    /**
+     * 启动每秒一次的UI更新定时器
+     */
+    public void startPeriodicUIUpdate() {
+        if (uiUpdateActive.compareAndSet(false, true)) {
+            log.info("启动UI定时更新，每秒更新一次");
+            uiUpdateTask = uiUpdateScheduler.scheduleAtFixedRate(() -> {
+                // 检查是否有数据变化
+                if (dataChanged.getAndSet(false)) {
+                    performUIUpdate();
+                }
+            }, 1, 100, TimeUnit.MILLISECONDS); // 每秒执行一次
+        }
+    }
+
+    /**
+     * 停止UI更新定时器
+     */
+    public void stopPeriodicUIUpdate() {
+        if (uiUpdateActive.compareAndSet(true, false)) {
+           log.info("停止UI定时更新");
+            if (uiUpdateTask != null && !uiUpdateTask.isCancelled()) {
+                uiUpdateTask.cancel(false);
+                uiUpdateTask = null;
+            }
+
+            // 停止前做最后一次UI更新，确保最终状态正确
+            performUIUpdate();
+        }
+    }
+
+    /**
+     * 检查是否所有团队都已完成答题
+     */
+    private boolean isAllTeamsFinished() {
+        List<Boolean> finished = Model7RuntimeData.getFinished();
+        if (finished.isEmpty()) {
+            return false;
+        }
+
+        for (Boolean teamFinished : finished) {
+            if (!teamFinished) {
+                return false;
+            }
+        }
+        return true;
     }
 
     /**
@@ -114,11 +176,17 @@ public class WsMessageHandler {
             String teamName = data.getTeamName();
             String second = parse.get("second").toString();
 
-            // 2. 线程安全的数据更新 - 现在这里会通过回调触发防抖UI更新
+            // 2. 线程安全的数据更新 - 现在这里会通过回调标记数据变化
             updateTeamDataSafely(teamName, data, time, second);
 
+            // 3. 检查是否所有团队都完成了答题
+            if (isAllTeamsFinished()) {
+               log.info("所有团队答题完成，停止UI定时更新");
+                stopPeriodicUIUpdate();
+            }
+
         } catch (Exception e) {
-            System.err.println("处理Model7提交时发生错误: " + e.getMessage());
+            log.error("处理Model7提交时发生错误: {}", e.getMessage());
             e.printStackTrace();
         }
     }
@@ -131,13 +199,13 @@ public class WsMessageHandler {
             try {
                 Integer teamIndex = getTeamIndexFromCache(teamName);
                 if (teamIndex != null) {
-                    // 这里会触发回调，进而触发防抖UI更新
+                    // 这里会触发回调，进而标记数据变化
                     Model7RuntimeData.setRuntimeData(teamIndex, data, time, second);
                     return true;
                 }
                 return false;
             } catch (Exception e) {
-                System.err.println("更新团队数据失败: " + e.getMessage());
+                log.error("更新团队数据失败: {}", e.getMessage());
                 return false;
             }
         }
@@ -159,23 +227,7 @@ public class WsMessageHandler {
     }
 
     /**
-     * 防抖的UI更新调度
-     */
-    private void scheduleUIUpdate() {
-        long currentTime = System.currentTimeMillis();
-        lastUpdateTime.set(currentTime);
-
-        // 延迟100ms更新，如果在此期间有新的更新请求，则重新计时
-        scheduler.schedule(() -> {
-            // 检查是否有更新的请求
-            if (System.currentTimeMillis() - lastUpdateTime.get() >= 100) {
-                performUIUpdate();
-            }
-        }, 100, TimeUnit.MILLISECONDS);
-    }
-
-    /**
-     * 执行UI更新 - 同时更新分数显示
+     * 执行UI更新 - 现在每秒最多执行一次
      */
     private void performUIUpdate() {
         Platform.runLater(() -> {
@@ -192,7 +244,7 @@ public class WsMessageHandler {
                     }
                 }
             } catch (Exception e) {
-                System.err.println("UI更新失败: " + e.getMessage());
+                log.error("UI更新失败: {}", e.getMessage());
             }
         });
     }
@@ -210,7 +262,7 @@ public class WsMessageHandler {
                 controlPane.teamScore.setText(currentTeam.getTeamScore().toString());
             }
         } catch (Exception e) {
-            System.err.println("更新团队分数显示失败: " + e.getMessage());
+            log.error("更新团队分数显示失败: {}", e.getMessage());
         }
     }
 
@@ -280,6 +332,9 @@ public class WsMessageHandler {
 
     // 强制结束
     public void model7Finish(){
+        log.info("强制结束答题，停止UI定时更新");
+        stopPeriodicUIUpdate(); // 强制结束时也要停止定时器
+
         Map<String, String> dataMap = new HashMap<>();
         dataMap.put("type", "finish");
         messagingTemplate.convertAndSend(QUESTION_GROUP_TOPIC, JSON.toJSONString(dataMap));
@@ -358,15 +413,17 @@ public class WsMessageHandler {
      */
     @PreDestroy
     public void cleanup() {
+        stopPeriodicUIUpdate(); // 确保定时器被停止
         clearCache();
-        if (scheduler != null && !scheduler.isShutdown()) {
-            scheduler.shutdown();
+
+        if (uiUpdateScheduler != null && !uiUpdateScheduler.isShutdown()) {
+            uiUpdateScheduler.shutdown();
             try {
-                if (!scheduler.awaitTermination(1, TimeUnit.SECONDS)) {
-                    scheduler.shutdownNow();
+                if (!uiUpdateScheduler.awaitTermination(1, TimeUnit.SECONDS)) {
+                    uiUpdateScheduler.shutdownNow();
                 }
             } catch (InterruptedException e) {
-                scheduler.shutdownNow();
+                uiUpdateScheduler.shutdownNow();
                 Thread.currentThread().interrupt();
             }
         }

@@ -51,6 +51,7 @@ import javafx.scene.shape.Circle;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 import lombok.SneakyThrows;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
@@ -64,6 +65,7 @@ import java.util.concurrent.locks.AbstractQueuedSynchronizer;
 import java.util.stream.Collectors;
 
 @Component
+@Slf4j
 public class ControlPane {
 
 
@@ -361,27 +363,6 @@ public class ControlPane {
     @Resource
     private RegisterInfoMapper registerInfoMapper;
 
-
-    public static String getCPUSerial() throws Exception {
-        String result = "";
-        String command = "powershell -Command \"Get-CimInstance Win32_Processor | Select-Object -ExpandProperty ProcessorId\"";
-        Process process = Runtime.getRuntime().exec(command);
-        process.getOutputStream().close();
-        BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
-        String line;
-        while ((line = reader.readLine()) != null) {
-            if (line.contains("ProcessorId")) {
-                continue;
-            }
-            result = line.trim();
-            if (!result.isEmpty()) {
-                break;
-            }
-        }
-        reader.close();
-        return result;
-    }
-
     private void setBackendStatus() {
         if (GlobalCache.MAX_TEAM_NUMBER > 0) {
             backendCfgBtn.setDisable(false);
@@ -475,7 +456,7 @@ public class ControlPane {
                     entity.setTime(Integer.parseInt(newValue));
                     timeMapper.updateById(entity);
                 } catch (Exception ex) {
-                    System.out.println("设置失败");
+                    log.error("设置失败");
                 }
             }
         });
@@ -483,7 +464,6 @@ public class ControlPane {
         Navigator.timeBoardStage.addEventFilter(KeyEvent.KEY_PRESSED, new EventHandler<KeyEvent>() {
             @Override
             public void handle(KeyEvent event) {
-                System.out.println(event.getCode());
                 if (event.getCode() == KeyCode.S) {
                     lastQuestion();
                 } else if (event.getCode() == KeyCode.X) {
@@ -525,7 +505,6 @@ public class ControlPane {
         Navigator.previewStage.addEventFilter(KeyEvent.KEY_PRESSED, new EventHandler<KeyEvent>() {
             @Override
             public void handle(KeyEvent event) {
-                System.out.println(event.getCode());
                 if (event.getCode() == KeyCode.S) {
                     lastQuestion();
                 } else if (event.getCode() == KeyCode.X) {
@@ -567,7 +546,6 @@ public class ControlPane {
         ExtendedScreen.extendScreen.addEventFilter(KeyEvent.KEY_PRESSED, new EventHandler<KeyEvent>() {
             @Override
             public void handle(KeyEvent event) {
-                System.out.println(event.getCode());
                 if (event.getCode() == KeyCode.S) {
                     lastQuestion();
                 } else if (event.getCode() == KeyCode.X) {
@@ -609,7 +587,6 @@ public class ControlPane {
         Navigator.scoreBoardStage.addEventFilter(KeyEvent.KEY_PRESSED, new EventHandler<KeyEvent>() {
             @Override
             public void handle(KeyEvent event) {
-                System.out.println(event.getCode());
                 if (event.getCode() == KeyCode.S) {
                     lastQuestion();
                 } else if (event.getCode() == KeyCode.X) {
@@ -651,7 +628,6 @@ public class ControlPane {
         parentPane.setOnKeyPressed(new EventHandler<KeyEvent>() {
             @Override
             public void handle(KeyEvent event) {
-                System.out.println(event.getCode());
                 if (event.getCode() == KeyCode.S) {
                     lastQuestion();
                 } else if (event.getCode() == KeyCode.X) {
@@ -1226,6 +1202,7 @@ public class ControlPane {
         } else {
             if (startAnswerBtn.getText().equals("开始答题")) {
                 if (currentStage.getQuestionType() == 7) {
+                    Model7RuntimeData.executeStart = true;
                     startAnswerBtn.setDisable(false);
                     Model7RuntimeData.reset();
                     // 发送试题列表给前端
@@ -1252,9 +1229,11 @@ public class ControlPane {
                             questions,
                             random
                     );
+
                     startTiming();
                     timeBoardPreview.hideTime();
-                    //messageHandler.sendModel7Start();
+                    // 开始启动每秒一次的 UI 更新
+                    messageHandler.startPeriodicUIUpdate();
                     // 扩展屏显示题目信息
                 } else if (currentStage.getQuestionType() == 6) {
                     startAnswerBtn.setDisable(false);
@@ -2919,8 +2898,6 @@ public class ControlPane {
                             } else {
                                 t.setBuzzStatus(2);
                             }
-                            System.out.println("抢答犯规 ...................................");
-                            System.out.println(RuntimeUtil.buzzTimeMap.get(t.getShortName()));
                             t.setBuzzTime(NumberUtil.fix2Point(RuntimeUtil.buzzTimeMap.getOrDefault(t.getShortName(), 0L) / 1000000000.0));
                         }
                         Platform.runLater(this::reloadScoreBoard);
@@ -2962,8 +2939,6 @@ public class ControlPane {
                 RuntimeUtil.buzzStart = 0;
                 RuntimeUtil.buzzResult.put(team, false);
                 RuntimeUtil.buzzTimeMap.put(team, -Math.abs(slipTime - timeGap));
-                System.out.println("抢答犯规 ...................................");
-                System.out.println(RuntimeUtil.buzzTimeMap.get(team));
                 if (currentStage != null && currentStage.getQdDesc() != null && currentStage.getQdDesc() == 1) {
                     teams.setTeamScore(teams.getTeamScore() - currentStage.getDesValue());
                     teamsMapper.updateById(teams);
@@ -3175,12 +3150,6 @@ public class ControlPane {
             ScreenDevice screenDevice = SerialPortConfig.getScreenDevice(team.getCode());
             SerialPortConnector instance = SerialPortConnector.getInstance();
             if (instance != null && instance.isConnected()) {
-                instance.send(Command.SHOW, SerialPortConfig.buildScreenData(screenDevice, team.getTeamScore(), true));
-                try {
-                    TimeUnit.SECONDS.sleep(1);
-                } catch (InterruptedException e) {
-                    throw new RuntimeException(e);
-                }
                 instance.send(Command.SHOW, SerialPortConfig.buildScreenData(screenDevice, team.getTeamScore(), false));
             }
 

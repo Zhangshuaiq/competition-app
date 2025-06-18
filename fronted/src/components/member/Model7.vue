@@ -32,22 +32,22 @@
           </div>
 
           <div v-if="questionItem" style="padding: 10px; color: white">
-<!--            <el-row>-->
-<!--              <el-col v-for="i in questionList.length" :key="i" span="1">-->
-<!--                <div v-if="i <= questionList.length" style="padding: 10px 0">-->
-<!--                  <div v-if="i > userSelects.length" style="height: 20px; width: 20px; border-radius: 10px; background-color: white">-->
+            <!--            <el-row>-->
+            <!--              <el-col v-for="i in questionList.length" :key="i" span="1">-->
+            <!--                <div v-if="i <= questionList.length" style="padding: 10px 0">-->
+            <!--                  <div v-if="i > userSelects.length" style="height: 20px; width: 20px; border-radius: 10px; background-color: white">-->
 
-<!--                  </div>-->
-<!--                  <div v-else-if="userSelects[i-1] === questionList[i-1].answer" style="height: 20px; width: 20px; border-radius: 10px; background-color: green">-->
+            <!--                  </div>-->
+            <!--                  <div v-else-if="userSelects[i-1] === questionList[i-1].answer" style="height: 20px; width: 20px; border-radius: 10px; background-color: green">-->
 
-<!--                  </div>-->
-<!--                  <div v-else style="height: 20px; width: 20px; border-radius: 10px; background-color: red">-->
+            <!--                  </div>-->
+            <!--                  <div v-else style="height: 20px; width: 20px; border-radius: 10px; background-color: red">-->
 
-<!--                  </div>-->
-<!--                </div>-->
+            <!--                  </div>-->
+            <!--                </div>-->
 
-<!--              </el-col>-->
-<!--            </el-row>-->
+            <!--              </el-col>-->
+            <!--            </el-row>-->
           </div>
         </div>
         <div id="question-info"  v-if="questionItem && !showResult">
@@ -242,7 +242,7 @@
 
 <script>
 import baseUrl from "@/config";
-import {queryStatus, saveStatus} from "@/api";
+import {queryStatus, saveStatus, queryModel7Questions} from "@/api";
 export default {
   name: "Model7M",
   data(){
@@ -250,7 +250,7 @@ export default {
 
       retryTimer: null, // 用于重试逻辑的计时器
       retryInterval: 500, // 重试间隔时间，例如5秒
-      
+
       btnClicked : false,
       subscription: null,
       questionList: [],
@@ -279,7 +279,7 @@ export default {
         height: '100vh',
       };
     },
-    
+
     correctCount(){
       let count = 0
       for (let i = 0; i < this.questionList.length; i++) {
@@ -290,8 +290,27 @@ export default {
       return count
     },
   },
-  
+
   methods: {
+
+    queryQuestions() {
+      queryModel7Questions().then(res => {
+        const random = res.data.random
+        if (random) {
+          this.questionList = this.shuffleArray(res.data.questions)
+        } else {
+          this.questionList =  res.data.questions
+        }
+        this.questionIndex = 0;
+        this.questionItem = this.questionList[this.questionIndex]
+        this.questionItem.teamName = this.teamInfo.fullName
+        this.userSelects = []
+        this.showWait = false
+        this.showResult = false
+        this.score = 0
+        this.saveData()
+      })
+    },
 
     handleBeforeClose(event){
       console.log(event)
@@ -316,11 +335,11 @@ export default {
       img.onerror = () => callback(false);
       img.src = url;
     },
-    
+
     submitAnswer(){
       // 提交答案到后台
       console.log(this.activeDiv)
-      
+
       const submited = JSON.parse(JSON.stringify(this.questionItem))
       const selected = this.activeDiv
       if (selected === this.questionItem.answer) {
@@ -341,40 +360,51 @@ export default {
           time: this.formatTime(this.second),
           second: this.second
         })
-         if ( this.questionIndex < this.questionList.length - 1) {
-           this.questionIndex ++;
-           this.questionItem = this.questionList[this.questionIndex]
-           this.activeDiv = ''
-           this.questionItem.teamName =  this.teamInfo.fullName
-         } else {
-           this.hasStart = false
-           // 显示结果 div
-           this.showResult = true
-           this.btnClicked = false
-           this.saveData()
-         }
-         this.saveCurrentStatus()
+        if ( this.questionIndex < this.questionList.length - 1) {
+          this.questionIndex ++;
+          this.questionItem = this.questionList[this.questionIndex]
+          this.activeDiv = ''
+          this.questionItem.teamName =  this.teamInfo.fullName
+        } else {
+          this.hasStart = false
+          // 显示结果 div
+          this.showResult = true
+          this.btnClicked = false
+          this.saveData()
+        }
+        this.saveCurrentStatus()
       }
     },
 
     formatTime() {
       const seconds = this.second;
       if (seconds <= 0) {
-        return `0 分 00 秒`;
+        return `00:00`;
       }
-      const minutes = Math.floor(seconds / 60); // 计算总分钟数
+      let minutes = Math.floor(seconds / 60); // 计算总分钟数
+      if (minutes < 10) {
+        minutes = `0${minutes}`; // 如果分钟数小于10，前面补0
+      }
       const remainingSeconds = seconds % 60; // 计算剩余秒数
       // 将剩余秒数格式化为两位数
       const formattedSeconds = remainingSeconds.toString().padStart(2, '0');
-      return `${minutes} 分 ${formattedSeconds} 秒`;
+      return `${minutes}:${formattedSeconds}`;
     },
-    
+
+    // 修复undefined问题：只存储有效数据
     saveData(){
       sessionStorage.setItem("time", this.second + "")
       sessionStorage.setItem("score", this.score + "")
       sessionStorage.setItem("showWait", this.showWait + "")
       sessionStorage.setItem("showResult", this.showResult + "")
-      sessionStorage.setItem("questionItem", JSON.stringify(this.questionItem))
+
+      // 只有当questionItem存在时才存储，避免存储undefined
+      if (this.questionItem !== null && this.questionItem !== undefined) {
+        sessionStorage.setItem("questionItem", JSON.stringify(this.questionItem))
+      } else {
+        sessionStorage.removeItem("questionItem")
+      }
+
       sessionStorage.setItem("userSelects", JSON.stringify(this.userSelects))
       sessionStorage.setItem("questionList", JSON.stringify(this.questionList))
       sessionStorage.setItem("questionIndex", JSON.stringify(this.questionIndex))
@@ -389,8 +419,9 @@ export default {
         this.subscribeQuestionGroup();
       }, this.retryInterval);
     },
-    
-    loadData(){
+
+    // 修复undefined问题：安全读取sessionStorage
+    loadData() {
 
       const score = sessionStorage.getItem("score")
       if (score && score !== 'null') {
@@ -405,23 +436,56 @@ export default {
       if (result && result !== 'null') {
         this.showResult = result === 'true'
       }
-      
+
+      // 修复：检查并排除undefined字符串
       const item = sessionStorage.getItem("questionItem");
-      if (item && item !== 'null') {
-        this.questionItem = JSON.parse(item)
+      if (item && item !== 'null' && item !== 'undefined') {
+        try {
+          this.questionItem = JSON.parse(item)
+        } catch (e) {
+          console.error('解析questionItem失败:', e);
+          this.questionItem = null;
+        }
+      } else {
+        this.questionItem = null;
       }
+
       const list = sessionStorage.getItem("questionList");
-      if (list && list !== 'null') {
-        this.questionList = JSON.parse(list)
+      if (list && list !== 'null' && list !== 'undefined') {
+        try {
+          this.questionList = JSON.parse(list)
+        } catch (e) {
+          console.error('解析questionList失败:', e);
+          this.questionList = [];
+        }
+      } else {
+        this.questionList = [];
       }
+
       const selects = sessionStorage.getItem("userSelects");
-      if (selects && selects !== 'null') {
-        this.userSelects = JSON.parse(selects)
+      if (selects && selects !== 'null' && selects !== 'undefined') {
+        try {
+          this.userSelects = JSON.parse(selects)
+        } catch (e) {
+          console.error('解析userSelects失败:', e);
+          this.userSelects = [];
+        }
+      } else {
+        this.userSelects = [];
       }
+
       const index = sessionStorage.getItem("questionIndex");
-      if (index && index !== 'null') {
-        this.questionIndex = JSON.parse(index)
+      if (index && index !== 'null' && index !== 'undefined') {
+        try {
+          this.questionIndex = JSON.parse(index)
+        } catch (e) {
+          console.error('解析questionIndex失败:', e);
+          this.questionIndex = -1;
+        }
+      } else {
+        this.questionIndex = -1;
       }
+
       console.log(this.questionItem)
     },
 
@@ -445,8 +509,8 @@ export default {
       }
       return array;
     },
-    
-    subscribeQuestionGroup(){
+
+    subscribeQuestionGroup() {
       this.subscription = this.$websocket.subscribe('/topic/question/group', (message) => {
         console.log("=========================")
         console.log(message)
@@ -463,46 +527,42 @@ export default {
         } else if (message.type === 'finish') {
           if (!this.showResult) {
             if (this.questionIndex + 1 === this.questionList.length) {
-              this.score = this.score -  this.questionItem.desValue
+              this.score = this.score - this.questionItem.desValue
             } else {
               this.score = this.score - ((this.questionList.length - this.questionIndex) * this.questionItem.desValue)
             }
             this.showResult = true
           }
           this.saveData()
-        } else {
-          queryStatus(this.teamInfo.code).then(res => {
-            if (res.data) {
-              console.log("已经获取过数据了......")
-            } else {
-              const random = message.random
-              // 随机乱序题序
-              if (random) {
-                this.questionList = this.shuffleArray(message.data)
-              } else {
-                this.questionList = message.data
-              }
-              this.questionIndex = 0;
-              this.questionItem = this.questionList[this.questionIndex]
-              this.questionItem.teamName = this.teamInfo.fullName
-              this.userSelects = []
-              this.showWait = false
-              this.showResult = false
-              this.score = 0
-              this.saveData()
-            }
-          })
         }
-        
+        else {
+          const random = message.random
+          // 随机乱序题序
+          if (random) {
+            this.questionList = this.shuffleArray(message.data)
+          } else {
+            this.questionList = message.data
+          }
+          this.questionIndex = 0;
+          this.questionItem = this.questionList[this.questionIndex]
+          this.questionItem.teamName = this.teamInfo.fullName
+          this.userSelects = []
+          this.showWait = false
+          this.showResult = false
+          this.score = 0
+          this.saveData()
+        }
+
       })
-      
+
     },
 
-    
+
   },
-  
-  
+
+
   mounted() {
+    //this.queryQuestions()
     this.checkImageUrl(this.imageUrl, (isValid) => {
       if (!isValid) {
         console.log("invalid....................")
@@ -520,7 +580,7 @@ export default {
     console.log(this.teamInfo)
     this.loadData();
     const time = sessionStorage.getItem("time")
-    if (time && time !== "null"){
+    if (time && time !== "null") {
       this.second = parseInt(time)
     }
 
@@ -561,8 +621,8 @@ export default {
     }
     next()
   },
-  
-}                                                                             
+
+}
 </script>
 
 <style scoped>
@@ -578,7 +638,6 @@ export default {
   margin: 0 0 20px 0;
   border-radius: 10px;
 }
-
 
 
 #container {
@@ -597,7 +656,7 @@ export default {
 }
 
 .selection-item {
-  padding: 5px ;
+  padding: 5px;
 }
 
 .answer-item {

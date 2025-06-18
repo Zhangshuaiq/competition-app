@@ -7,6 +7,7 @@ import javafx.application.Application;
 import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.scheduling.annotation.EnableAsync;
 
 import javax.swing.*;
 
@@ -14,11 +15,8 @@ import javax.swing.*;
 @MapperScan("competition.mapper")
 public class Main {
 
-    
     public static void main(String[] args) throws Exception {
-//        System.out.println(System.currentTimeMillis());
         Application.launch(JavaFxApplication.class, args);
-        //System.out.println("333");
         // 启动 springboot ，主要作为 ws 服务器接收数据
         SpringApplication.run(Main.class, args);
         //

@@ -48,7 +48,7 @@ public class Model7Preview extends PreviewPane {
     @Resource
     private WsMessageHandler messageHandler;
 
-    private String timeValue = "00秒";
+    private String timeValue = "00:00";
 
     @Resource
     private ControlPane controlPane;
@@ -490,9 +490,9 @@ public class Model7Preview extends PreviewPane {
             Label scoreL = new Label(score + "分");
             scoreL.setPrefWidth(anchorPane.getPrefWidth() * 0.2);
             scoreL.setTextFill(Color.WHITE);
-            Label timeL = new Label("完成" + finish + "题 答对" + correct +"题|用时" + timeValue);
+            Label timeL = new Label("完成" + finish + "题 答对" + correct +"题|" + timeValue);
             if (Model7RuntimeData.getFinished().get(i)) {
-                timeL.setText("完成" + finish + "题 答对" + correct + "题|用时" + Model7RuntimeData.getFts().get(i));
+                timeL.setText("完成" + finish + "题 答对" + correct + "题|" + Model7RuntimeData.getFts().get(i));
             }
             timeL.setPrefWidth(anchorPane.getPrefWidth() * 0.6);
             timeL.setTextFill(Color.WHITE);
@@ -658,6 +658,11 @@ public class Model7Preview extends PreviewPane {
     public void reload() {
         // 标记排名数据需要更新
         rankDataNeedsUpdate = true;
+        if ( Model7RuntimeData.executeStart) {
+            this.timeValue = "00:00";
+            messageHandler.sendModel7Time("0");
+            Model7RuntimeData.executeStart = false;
+        }
         showData();
     }
 

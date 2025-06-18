@@ -10,13 +10,17 @@ import competition.mapper.TeamsMapper;
 import competition.service.ScoreService;
 import competition.util.TeamRuntime;
 import lombok.Data;
+import lombok.extern.slf4j.Slf4j;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
 // 竞技模式实时更新数据,后端使用
+@Slf4j
 public class Model7RuntimeData {
+
+    public static volatile boolean executeStart = false; // 是否从 0 计时
     // 实时回答状态
     private static List<List<ModelData>> runtimeData = new ArrayList<>();
 
@@ -72,9 +76,9 @@ public class Model7RuntimeData {
         Model7RuntimeData.teams = teams;
         for (Teams team : teams) {
             runtimeData.add(new ArrayList<>());
-            times.add("0分00秒");
+            times.add("00:00");
             seconds.add(0);
-            fts.add("0分00秒");
+            fts.add("00:00");
             finished.add(false);
         }
     }
@@ -159,19 +163,52 @@ public class Model7RuntimeData {
             }
         }
 
-        // 答题完成
+        // 检查答题完成状态
         List<Questions> questions = questionsMapper.selectList(new LambdaQueryWrapper<Questions>()
             .eq(Questions::getStageNumber, controlPane.getCurrentStage().getSortVal())
         );
+
+        boolean teamJustFinished = false;
         if (modelData.size() == questions.size()) {
             fts.set(i, times.get(i));
             finished.set(i, true);
             dataChanged = true;
+            teamJustFinished = true;
+            log.info("团队 {} 答题完成", data.getTeamName());
         }
 
-        // 通过回调通知UI更新，而不是直接调用Platform.runLater
+        // 通过回调通知UI更新
         if (dataChanged && uiUpdateCallback != null) {
             uiUpdateCallback.onDataUpdated(data.getTeamName(), i);
+        }
+
+        // 如果有团队刚完成答题，检查是否所有团队都完成了
+        if (teamJustFinished) {
+            checkAllTeamsFinished();
+        }
+    }
+
+    /**
+     * 检查是否所有团队都已完成答题
+     */
+    private static void checkAllTeamsFinished() {
+        boolean allFinished = true;
+        for (Boolean teamFinished : finished) {
+            if (!teamFinished) {
+                allFinished = false;
+                break;
+            }
+        }
+
+        if (allFinished) {
+            log.info("所有团队答题完成！");
+            // 通知WsMessageHandler停止定时器
+            try {
+                WsMessageHandler wsMessageHandler = JavaFxApplication.getApplicationContext().getBean(WsMessageHandler.class);
+                wsMessageHandler.stopPeriodicUIUpdate();
+            } catch (Exception e) {
+                log.error("通知停止UI更新失败: {}", e.getMessage());
+            }
         }
     }
 
@@ -205,6 +242,15 @@ public class Model7RuntimeData {
         // 通知UI更新
         if (dataChanged && uiUpdateCallback != null) {
             uiUpdateCallback.onDataUpdated("", -1); // 全局更新
+        }
+
+        // 强制结束后，通知停止定时器
+        try {
+            WsMessageHandler wsMessageHandler = JavaFxApplication.getApplicationContext().getBean(WsMessageHandler.class);
+            wsMessageHandler.stopPeriodicUIUpdate();
+           log.info("强制结束答题，已停止UI定时更新");
+        } catch (Exception e) {
+            log.error("通知停止UI更新失败: {}", e.getMessage());
         }
 
         new Thread(() -> {
@@ -242,9 +288,9 @@ public class Model7RuntimeData {
         fts.clear();
         for (Teams team : teams) {
             runtimeData.add(new ArrayList<>());
-            times.add("0分00秒");
+            times.add("00:00");
             seconds.add(0);
-            fts.add("0分00秒");
+            fts.add("00:00");
             finished.add(false);
         }
 

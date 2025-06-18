@@ -28,46 +28,7 @@
         </div>
 
       </div>
-
-      <!--      <el-row>-->
-      <!--        <el-col v-for="(item, index) in teamList"-->
-      <!--                :key="index"-->
-      <!--                span=6-->
-      <!--        >-->
-      <!--          <div style="height: 80px">-->
-      <!--            <el-row>-->
-      <!--              <el-col span="6">-->
-      <!--                <div class="haotai" style="width: 100%;" >-->
-      <!--                  {{item.code}}-->
-      <!--                </div>-->
-      <!--              </el-col>-->
-      <!--              <el-col span="18">-->
-      <!--                <div class="haotai" @click="selectMember(item)">-->
-      <!--                  {{item.shortName}}-->
-      <!--                </div>-->
-      <!--              </el-col>-->
-      <!--            </el-row>-->
-      <!--          </div>-->
-
-      <!--        </el-col>-->
-      <!--      </el-row>-->
     </div>
-
-
-    <!--    <el-dialog title="登陆验证" :visible.sync="dialogFormVisible">-->
-    <!--      <el-form :model="form" @submit.native.prevent>-->
-    <!--          <el-form-item label="请输入选手姓名" label-width="120">-->
-    <!--            <el-input v-model="form.member" autocomplete="off" @keyup.enter.native="validPassword"></el-input>-->
-    <!--          </el-form-item>-->
-    <!--          <el-form-item label="请输入密码" label-width="120">-->
-    <!--            <el-input v-model="form.password" autocomplete="off" @keyup.enter.native="validPassword"></el-input>-->
-    <!--           </el-form-item>-->
-    <!--      </el-form>-->
-    <!--      <div slot="footer" class="dialog-footer">-->
-    <!--        <el-button @click="dialogFormVisible = false">取 消</el-button>-->
-    <!--        <el-button type="primary" @click="validPassword" >确 定</el-button>-->
-    <!--      </div>-->
-    <!--    </el-dialog>-->
   </div>
 
 </template>
