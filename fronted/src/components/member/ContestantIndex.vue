@@ -34,7 +34,7 @@
 </template>
 
 <script>
-import {answerPrefix, queryTeams, queryStatus} from "@/api";
+import {answerPrefix, queryTeams} from "@/api";
 import baseUrl from "@/config";
 
 export default {
@@ -107,16 +107,18 @@ export default {
     doLogin(member) {
       this.member = member
       // 查询是否应该进入竞技模式
-      queryStatus(this.teamItem.code).then(res => {
-        if (res.data) {
-          sessionStorage.setItem("lastStatus", 'true')
-          sessionStorage.setItem("user", JSON.stringify(this.teamItem))
-          sessionStorage.setItem("member", this.member)
-          this.$router.push({name: "model7"});
-        } else {
-          this.enterWaitPage(this.teamItem, this.member);
-        }
-      })
+      this.enterWaitPage(this.teamItem, this.member);
+      // queryStatus(this.teamItem.code).then(res => {
+      //   if (res.data) {
+      //     sessionStorage.setItem("lastStatus", 'true')
+      //     sessionStorage.setItem("user", JSON.stringify(this.teamItem))
+      //     sessionStorage.setItem("member", this.member)
+      //     this.$websocket.send('/app/enter', {team: this.teamItem.fullName + "-" + this.member})
+      //     this.$router.push({name: "model7"});
+      //   } else {
+      //     this.enterWaitPage(this.teamItem, this.member);
+      //   }
+      // })
     },
 
     selectMember(teamItem) {

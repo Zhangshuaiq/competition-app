@@ -301,11 +301,11 @@ export default {
         } else {
           this.questionList =  res.data.questions
         }
-        this.questionIndex = 0;
-        this.questionItem = this.questionList[this.questionIndex]
-        this.questionItem.teamName = this.teamInfo.fullName
+        this.questionIndex = -1;
+        // this.questionItem = this.questionList[this.questionIndex]
+        // this.questionItem.teamName = this.teamInfo.fullName
         this.userSelects = []
-        this.showWait = false
+        this.showWait = true
         this.showResult = false
         this.score = 0
         this.saveData()
@@ -399,7 +399,7 @@ export default {
       sessionStorage.setItem("showResult", this.showResult + "")
 
       // 只有当questionItem存在时才存储，避免存储undefined
-      if (this.questionItem !== null && this.questionItem !== undefined) {
+      if (this.questionItem && this.questionItem !== null && this.questionItem !== undefined) {
         sessionStorage.setItem("questionItem", JSON.stringify(this.questionItem))
       } else {
         sessionStorage.removeItem("questionItem")
@@ -536,19 +536,13 @@ export default {
           this.saveData()
         }
         else {
-          const random = message.random
-          // 随机乱序题序
-          if (random) {
-            this.questionList = this.shuffleArray(message.data)
-          } else {
-            this.questionList = message.data
-          }
           this.questionIndex = 0;
           this.questionItem = this.questionList[this.questionIndex]
           this.questionItem.teamName = this.teamInfo.fullName
           this.userSelects = []
           this.showWait = false
           this.showResult = false
+          this.activeDiv = ''
           this.score = 0
           this.saveData()
         }
@@ -562,7 +556,7 @@ export default {
 
 
   mounted() {
-    //this.queryQuestions()
+    this.queryQuestions()
     this.checkImageUrl(this.imageUrl, (isValid) => {
       if (!isValid) {
         console.log("invalid....................")
@@ -588,8 +582,10 @@ export default {
       if (res.data) {
         this.questionList = JSON.parse(res.data.questionText)
         this.questionIndex = (res.data.currentNo)
-        this.questionItem = this.questionList[this.questionIndex]
-        this.questionItem.teamName = this.teamInfo.fullName
+        if (this.questionIndex > -1) {
+          this.questionItem = this.questionList[this.questionIndex]
+          this.questionItem.teamName = this.teamInfo.fullName
+        }
         this.userSelects = JSON.parse(res.data.userSelects)
         this.showWait = false
         this.showResult = false

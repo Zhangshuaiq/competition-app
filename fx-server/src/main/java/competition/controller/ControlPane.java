@@ -215,7 +215,7 @@ public class ControlPane {
 
     @FXML
     // 抢答按钮
-    private Button buzzBtn;
+    private Button buzzBtn, backBtn;
 
     // 计时显示控制
     @FXML
@@ -397,6 +397,13 @@ public class ControlPane {
                 startAnswerBtn.setDisable(false);
             } else {
                 startAnswerBtn.setDisable(true);
+            }
+
+            // 检测返回按钮状态
+            if (!Objects.equals("开始答题", startAnswerBtn.getText())) {
+                backBtn.setDisable(true);
+            } else {
+                backBtn.setDisable(false);
             }
 
             SerialPortConnector instance = SerialPortConnector.getInstance();
@@ -1230,6 +1237,13 @@ public class ControlPane {
                             random
                     );
 
+                    // sleep 1 second
+                    try {
+                        TimeUnit.MILLISECONDS.sleep(500);
+                    } catch (InterruptedException e) {
+                        throw new RuntimeException(e);
+                    }
+
                     startTiming();
                     timeBoardPreview.hideTime();
                     // 开始启动每秒一次的 UI 更新
@@ -1478,13 +1492,16 @@ public class ControlPane {
                 StageQuestionPreviewPreview.setCurrentStage(stages);
                 previewPane = Navigator.preview("/view/preview/StageQuestionPreview.fxml", "", "/view/style.css", true, true);
             } else if (stages.getQuestionType() == 7) {
-                // 竞技模式
                 StageQuestionPreviewPreview.setCurrentStage(stages);
                 previewPane = Navigator.preview("/view/preview/StageQuestionPreview.fxml", "", "/view/style.css", true, true);
             }
 
         } else if (last instanceof Model7Preview) {
             Model7Preview model7Preview = (Model7Preview) last;
+            // 结束当前答题状态,如果在答题中的话
+            if (!startAnswerBtn.getText().equals("开始答题")) {
+                startAnswerQuestion();
+            }
             Stages stages = stagesMapper.selectById(model7Preview.getInnerId());
             StageQuestionPreviewPreview.setCurrentStage(stages);
             previewPane = Navigator.preview("/view/preview/StageQuestionPreview.fxml", "", "/view/style.css", true, true);

@@ -131,7 +131,6 @@ public class Navigator {
                 }
             });
             PreviewPane previewPane =  loader.getController();
-            previewPane.setScene(previewScene);
             return previewPane;
         } catch (IOException e) {
             e.printStackTrace();

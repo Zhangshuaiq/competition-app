@@ -11,6 +11,9 @@ import org.springframework.core.io.UrlResource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.messaging.handler.annotation.MessageMapping;
+import org.springframework.messaging.handler.annotation.Payload;
+import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
@@ -238,6 +241,16 @@ public class RestApi {
         res.put("random", random);
         res.put("questions", questions);
         return JsonResp.success(res);
+    }
+
+    @MessageMapping("/heartbeat")
+    @SendTo("/topic/heartbeat")
+    public Map<String, Object> handleHeartbeat(@Payload String heartbeatData) {
+        Map<String, Object> response = new HashMap<>();
+        response.put("type", "pong");
+        response.put("timestamp", System.currentTimeMillis());
+
+        return response;
     }
     
 }

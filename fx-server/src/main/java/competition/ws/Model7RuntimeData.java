@@ -11,6 +11,7 @@ import competition.service.ScoreService;
 import competition.util.TeamRuntime;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.util.CollectionUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -219,10 +220,6 @@ public class Model7RuntimeData {
         QuestionsMapper questionsMapper = JavaFxApplication.getApplicationContext().getBean(QuestionsMapper.class);
         TeamsMapper teamsMapper = JavaFxApplication.getApplicationContext().getBean(TeamsMapper.class);
 
-        List<Questions> questionList = questionsMapper.selectList(new LambdaQueryWrapper<Questions>()
-            .eq(Questions::getStageNumber, controlPane.getCurrentStage().getSortVal())
-        );
-
         boolean dataChanged = false;
         for (int i = 0; i < teams.size(); i++) {
             if (!finished.get(i)) {
@@ -253,30 +250,42 @@ public class Model7RuntimeData {
             log.error("通知停止UI更新失败: {}", e.getMessage());
         }
 
+        List<Questions> questionList = questionsMapper.selectList(new LambdaQueryWrapper<Questions>()
+            .eq(Questions::getStageNumber, controlPane.getCurrentStage().getSortVal())
+        );
+        // 防止空指针出现
+        if (CollectionUtils.isEmpty(questionList)) {
+            return;
+        }
         new Thread(() -> {
-            for (int i = 0; i < teams.size(); i++) {
-                // 异步操作减少代码执行时间
-                Teams teams = Model7RuntimeData.teams.get(i);
-                List<ModelData> modelData = runtimeData.get(i);
-                int size = modelData.size();
-                teamsMapper.updateById(teams);
-                // 均没回答
-                if (size == 0) {
-                    for (Questions questions : questionList) {
-                        scoreService.addScore(null, teams, controlPane.getCurrentStage().getName(), questions.getQuestionNumber().toString(),
-                            null, -controlPane.getCurrentStage().getDesValue(), teams.getTeamScore().toString(), "");
-                    }
-                } else {
-                    // 回答一部分
-                    List<Integer> total = questionList.stream().map(Questions::getQuestionNumber).collect(Collectors.toList());
-                    List<Integer> answered = modelData.stream().map(ModelData::getQuestionNumber).collect(Collectors.toList());
-                    total.removeAll(answered);
-                    for (Integer integer : total) {
-                        scoreService.addScore(null, teams, controlPane.getCurrentStage().getName(), integer.toString(), null,
-                            -controlPane.getCurrentStage().getDesValue(), teams.getTeamScore().toString(), "");
+            try {
+                for (int i = 0; i < teams.size(); i++) {
+                    // 异步操作减少代码执行时间
+                    Teams teams = Model7RuntimeData.teams.get(i);
+                    List<ModelData> modelData = runtimeData.get(i);
+                    int size = modelData.size();
+                    teamsMapper.updateById(teams);
+                    // 均没回答
+                    if (size == 0) {
+                        for (Questions questions : questionList) {
+                            scoreService.addScore(null, teams, controlPane.getCurrentStage().getName(), questions.getQuestionNumber().toString(),
+                                null, -controlPane.getCurrentStage().getDesValue(), teams.getTeamScore().toString(), "");
+                        }
+                    } else {
+                        // 回答一部分
+                        List<Integer> total = questionList.stream().map(Questions::getQuestionNumber).collect(Collectors.toList());
+                        List<Integer> answered = modelData.stream().map(ModelData::getQuestionNumber).collect(Collectors.toList());
+                        total.removeAll(answered);
+                        for (Integer integer : total) {
+                            scoreService.addScore(null, teams, controlPane.getCurrentStage().getName(), integer.toString(), null,
+                                -controlPane.getCurrentStage().getDesValue(), teams.getTeamScore().toString(), "");
+                        }
                     }
                 }
+            } catch (Exception ex) {
+                log.error("强制结束答题时记录分数发生错误: {}", ex.getMessage());
             }
+
         }).start();
     }
 

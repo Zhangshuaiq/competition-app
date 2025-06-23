@@ -72,6 +72,7 @@ export default {
                     startHeartbeat(); // 保持原有心跳机制
                     startConnectionMonitoring();
                     startDeadConnectionMonitoring(); // 新增：启动僵死连接监控
+                    setupHeartbeatSubscription(); // 新增：设置心跳响应订阅
 
                     // 恢复之前的订阅
                     restoreSubscriptions();
@@ -93,6 +94,38 @@ export default {
                     }, 1000);
                 }
             );
+        };
+
+        /**
+         * 新增：设置心跳响应订阅
+         */
+        const setupHeartbeatSubscription = () => {
+            if (!stompClient || !stompClient.connected) {
+                return;
+            }
+
+            try {
+                // 订阅可能的心跳响应频道
+                const heartbeatChannels = [
+                    '/topic/heartbeat',
+                    '/user/topic/heartbeat',
+                    '/topic/heartbeat-response'
+                ];
+
+                heartbeatChannels.forEach(channel => {
+                    try {
+                        stompClient.subscribe(channel, message => {
+                            console.log(`💓 [${channel}] 收到心跳响应:`, message.body);
+                            lastMessageTime = Date.now();
+                        });
+                        console.log(`✅ 心跳订阅成功: ${channel}`);
+                    } catch (e) {
+                        console.log(`⚠️ 心跳订阅失败: ${channel}`, e);
+                    }
+                });
+            } catch (error) {
+                console.error('设置心跳订阅失败:', error);
+            }
         };
 
         /**
@@ -172,7 +205,7 @@ export default {
         };
 
         /**
-         * 新增：僵死连接监控 - 仅检测长时间无消息的情况
+         * 新增：僵死连接监控 - 放宽检测条件
          */
         const startDeadConnectionMonitoring = () => {
             if (deadConnectionCheckTimer) {
@@ -183,12 +216,12 @@ export default {
                 const now = Date.now();
                 const timeSinceLastMessage = now - lastMessageTime;
 
-                // 只有在超过2分钟没有收到任何消息时才认为连接可能僵死
-                if (connected && timeSinceLastMessage > 120000) { // 2分钟
+                // 放宽到5分钟，减少误判
+                if (connected && timeSinceLastMessage > 300000) { // 5分钟
                     console.log(`⚠️ 检测到可能的僵死连接: ${timeSinceLastMessage/1000}秒无消息`);
                     handleDeadConnection();
                 }
-            }, 60000); // 每60秒检查一次
+            }, 120000); // 每2分钟检查一次
         };
 
         /**
@@ -401,12 +434,14 @@ export default {
         };
 
         /**
-         * 启动心跳检测 - 保持原有逻辑
+         * 启动心跳检测 - 修复版本
          */
         const startHeartbeat = () => {
             stopHeartbeat();
 
-            heartbeatTimer = setInterval(async () => {
+            console.log('🚀 启动心跳机制...');
+
+            heartbeatTimer = setInterval(() => {
                 if (!connected || !stompClient || !stompClient.connected) {
                     console.log('💔 连接已断开，停止心跳检测');
                     stopHeartbeat();
@@ -414,10 +449,17 @@ export default {
                 }
 
                 try {
-                    stompClient.send('/app/heartbeat', JSON.stringify({
+                    const heartbeatData = {
                         type: 'ping',
                         timestamp: Date.now()
-                    }), {});
+                    };
+
+                    console.log('💓 发送心跳:', heartbeatData);
+                    stompClient.send('/app/heartbeat', JSON.stringify(heartbeatData), {});
+
+                    // 关键修复：发送心跳后立即更新时间
+                    lastMessageTime = Date.now();
+                    console.log('✅ 心跳发送成功，时间已更新');
 
                 } catch (error) {
                     console.log('💔 心跳发送失败，连接可能已断开');
@@ -427,7 +469,7 @@ export default {
                         handleConnectionError(error);
                     }
                 }
-            }, 15000);
+            }, 15000); // 15秒发送一次心跳
         };
 
         /**
@@ -437,6 +479,7 @@ export default {
             if (heartbeatTimer) {
                 clearInterval(heartbeatTimer);
                 heartbeatTimer = null;
+                console.log('💔 心跳机制已停止');
             }
         };
 
@@ -471,6 +514,13 @@ export default {
                         if (stompClient && stompClient.connected) {
                             const subscription = stompClient.subscribe(endpoint, message => {
                                 lastMessageTime = Date.now(); // 更新最后消息时间
+
+                                // 过滤心跳响应，避免传递给业务回调
+                                if (message.body && (message.body.includes('pong') || message.body.includes('"type":"pong"'))) {
+                                    console.log('💓 收到心跳响应，已过滤');
+                                    return;
+                                }
+
                                 console.log(`📨 [${endpoint}] 收到消息:`, message.body);
 
                                 try {
@@ -558,18 +608,35 @@ export default {
             forceRecovery: () => {
                 console.log('🔧 手动触发连接恢复...');
                 handleDeadConnection();
+            },
+
+            // 新增：获取连接健康度
+            getConnectionHealth: () => {
+                const now = Date.now();
+                return {
+                    connected,
+                    lastMessageTime,
+                    timeSinceLastMessage: now - lastMessageTime,
+                    subscriptionCount: subscriptions.size,
+                    isHealthy: (now - lastMessageTime) < 300000 // 5分钟内算健康
+                };
             }
         };
 
         // 监听页面可见性变化
         document.addEventListener('visibilitychange', () => {
-            if (document.visibilityState === 'visible' && !connected && !isManualDisconnect) {
-                console.log('👁️ 页面重新可见，检查连接状态...');
-                setTimeout(() => {
-                    if (!connected) {
-                        connect();
-                    }
-                }, 1000);
+            if (document.visibilityState === 'visible') {
+                console.log('👁️ 页面重新可见，重置消息时间...');
+                lastMessageTime = Date.now(); // 页面恢复时重置时间，避免误判
+
+                if (!connected && !isManualDisconnect) {
+                    console.log('页面恢复，尝试重连...');
+                    setTimeout(() => {
+                        if (!connected) {
+                            connect();
+                        }
+                    }, 1000);
+                }
             }
         });
 

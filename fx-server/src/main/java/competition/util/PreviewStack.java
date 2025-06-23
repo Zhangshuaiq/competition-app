@@ -1,6 +1,5 @@
 package competition.util;
 
-import competition.controller.match.ReloadPane;
 import competition.controller.preview.PreviewPane;
 
 import java.util.Stack;

@@ -380,8 +380,8 @@ public class WsMessageHandler {
     public void sendQuestionGroup(List<Questions> questionsList, boolean random) {
         Map<String, Object> dataMap = new HashMap<>();
         dataMap.put("type", "G");
-        dataMap.put("data", questionsList);
-        dataMap.put("random", random);
+//        dataMap.put("data", questionsList);
+//        dataMap.put("random", random);
         messagingTemplate.convertAndSend(QUESTION_GROUP_TOPIC, JSON.toJSONString(dataMap));
     }
 
