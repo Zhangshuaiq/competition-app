@@ -2,7 +2,6 @@ package competition;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import competition.mapper.Model7StatusMapper;
-import competition.mapper.RegisterInfoMapper;
 import competition.util.*;
 import competition.ws.WsMessageHandler;
 import javafx.application.Application;

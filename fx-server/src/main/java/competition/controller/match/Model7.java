@@ -2,10 +2,12 @@ package competition.controller.match;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import competition.controller.ControlPane;
+import competition.entity.Configs;
 import competition.entity.Model3Style;
 import competition.entity.Questions;
 import competition.entity.Stages;
 import competition.entity.Teams;
+import competition.mapper.ConfigsMapper;
 import competition.mapper.Model3Mapper;
 import competition.mapper.QuestionsMapper;
 import competition.util.*;
@@ -26,11 +28,11 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
 import javax.annotation.Resource;
-import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.util.List;
 import java.util.Objects;
+import java.util.concurrent.atomic.AtomicLong;
 
 // 竞技模式显示控制
 @Component
@@ -40,7 +42,7 @@ public class Model7 implements ReloadPane {
     @FXML
     private GridPane container;
 
-    private String timeValue = "00秒";
+    private String timeValue = "00:00";
 
     @Resource
     private ControlPane controlPane;
@@ -49,14 +51,26 @@ public class Model7 implements ReloadPane {
     private Model3Mapper model3Mapper;
 
     private static Stages currentStage;
-    
-    public static void setCurrentStage(Stages stages) {
-        currentStage = stages;
-    }
-    
+
     @Resource
     private QuestionsMapper questionsMapper;
 
+    @Resource
+    private ConfigsMapper configsMapper;
+
+    // 优化相关的缓存字段
+    private List<Questions> cachedQuestions;
+    private String cachedStageNumber;
+    private final AtomicLong lastUpdateTime = new AtomicLong(0);
+    private static final long UPDATE_INTERVAL = 100; // 100ms防抖间隔
+
+    // 题型标注配置缓存
+    private String cachedTx = "3";      // 题型位置
+    private String cachedTxbz = "4";    // 题型标注样式
+
+    public static void setCurrentStage(Stages stages) {
+        currentStage = stages;
+    }
 
     public void stopTiming() {
     }
@@ -68,16 +82,144 @@ public class Model7 implements ReloadPane {
 
     @FXML
     public void initialize() {
+        // 初始化时加载题型标注配置
+        loadQuestionTypeConfig();
         reload();
     }
 
+    /**
+     * 加载题型标注配置
+     */
+    private void loadQuestionTypeConfig() {
+        try {
+            Configs configs = configsMapper.selectById(1);
+            String cfgVal = configs.getConfig();
+            if (!StringUtils.isEmpty(cfgVal)) {
+                String[] split = cfgVal.split(ConfigSpliter.SPLITER);
+                if (split.length > 10) {
+                    cachedTx = split[9];     // 题型
+                    cachedTxbz = split[10];  // 题型标注
+                }
+            }
+        } catch (Exception e) {
+            System.err.println("加载题型标注配置失败: " + e.getMessage());
+            // 使用默认值
+            cachedTx = "3";
+            cachedTxbz = "4";
+        }
+    }
+
+    /**
+     * 根据题型标注配置格式化题目文本
+     */
+    private String formatQuestionText(Model7RuntimeData.ModelData questionData) {
+        String questionText = "";
+        String questionType = questionData.getQuestionType();
+        Integer questionNumber = questionData.getQuestionNumber();
+        String question = questionData.getQuestion();
+
+        // 如果不显示题号，则不添加题号
+        if (Objects.equals(currentStage.getShowNumber(), 0)) {
+            // 无题型标注
+            if (cachedTxbz.equals("4")) {
+                questionText = question;
+            } else if (cachedTxbz.equals("3")) {
+                if (cachedTx.equals("3")) {
+                    questionText = question + " " + questionType;
+                } else if (cachedTx.equals("2")) {
+                    questionText = questionType + question;
+                } else if (cachedTx.equals("1")) {
+                    questionText = questionType + " " + question;
+                }
+            } else if (cachedTxbz.equals("2")) {
+                if (cachedTx.equals("3")) {
+                    questionText = question + "(" + questionType + ")";
+                } else if (cachedTx.equals("2")) {
+                    questionText = "(" + questionType + ")" + question;
+                } else if (cachedTx.equals("1")) {
+                    questionText = "(" + questionType + ")" + question;
+                }
+            } else if (cachedTxbz.equals("1")) {
+                if (cachedTx.equals("3")) {
+                    questionText = question + "[" + questionType + "]";
+                } else if (cachedTx.equals("2")) {
+                    questionText = "[" + questionType + "]" + question;
+                } else if (cachedTx.equals("1")) {
+                    questionText = "[" + questionType + "]" + question;
+                }
+            }
+        } else {
+            // 显示题号
+            // 无题型标注
+            if (cachedTxbz.equals("4")) {
+                questionText = questionNumber + ". " + question;
+            } else if (cachedTxbz.equals("3")) {
+                if (cachedTx.equals("3")) {
+                    questionText = questionNumber + ". " + question + " " + questionType;
+                } else if (cachedTx.equals("2")) {
+                    questionText = questionNumber + ". " + questionType + question;
+                } else if (cachedTx.equals("1")) {
+                    questionText = questionType + " " + questionNumber + ". " + question;
+                }
+            } else if (cachedTxbz.equals("2")) {
+                if (cachedTx.equals("3")) {
+                    questionText = questionNumber + ". " + question + "(" + questionType + ")";
+                } else if (cachedTx.equals("2")) {
+                    questionText = questionNumber + ". " + "(" + questionType + ")" + question;
+                } else if (cachedTx.equals("1")) {
+                    questionText = "(" + questionType + ")" + questionNumber + ". " + question;
+                }
+            } else if (cachedTxbz.equals("1")) {
+                if (cachedTx.equals("3")) {
+                    questionText = questionNumber + ". " + question + "[" + questionType + "]";
+                } else if (cachedTx.equals("2")) {
+                    questionText = questionNumber + ". " + "[" + questionType + "]" + question;
+                } else if (cachedTx.equals("1")) {
+                    questionText = "[" + questionType + "]" + questionNumber + ". " + question;
+                }
+            }
+        }
+
+        // 添加未注册标记
+        if (GlobalCache.MAX_TEAM_NUMBER <= 0) {
+            questionText = questionText + "(未注册)";
+        }
+
+        return questionText;
+    }
+
+    /**
+     * 获取题目数据（带缓存）
+     */
+    private List<Questions> getQuestionsWithCache() {
+        if (cachedQuestions == null || !Objects.equals(cachedStageNumber, currentStage.getSortVal())) {
+            cachedQuestions = questionsMapper.selectList(
+                new LambdaQueryWrapper<Questions>()
+                    .eq(Questions::getStageNumber, currentStage.getSortVal())
+            );
+            cachedStageNumber = currentStage.getSortVal();
+        }
+        return cachedQuestions;
+    }
+
+    /**
+     * 简单的防抖检查
+     */
+    private boolean shouldUpdate() {
+        long currentTime = System.currentTimeMillis();
+        long lastTime = lastUpdateTime.get();
+        if (currentTime - lastTime >= UPDATE_INTERVAL) {
+            lastUpdateTime.set(currentTime);
+            return true;
+        }
+        return false;
+    }
 
     private void showData() {
-
         try {
             container.setBackground(new Background(new BackgroundImage(
-                    new Image(new FileInputStream(ImageResource.竞技模式背景())), BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT, BackgroundPosition.DEFAULT,
-                    new BackgroundSize(ExtendedScreen.getWidth(), ExtendedScreen.getHeight(), false, false, false, false)
+                new Image(new FileInputStream(ImageResource.竞技模式背景())), BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT, BackgroundPosition.DEFAULT,
+                new BackgroundSize(ExtendedScreen.getWidth(), ExtendedScreen.getHeight(), false, false, false, false)
             )));
         } catch (FileNotFoundException e) {
             container.setBackground(new Background(new BackgroundFill(Color.TRANSPARENT, new CornerRadii(10), Insets.EMPTY)));
@@ -108,6 +250,10 @@ public class Model7 implements ReloadPane {
         container.getChildren().clear();
         container.setVgap(vgap);
         container.setHgap(hgap);
+
+        // 使用缓存的questions，避免重复数据库查询
+        List<Questions> questionsList = getQuestionsWithCache();
+
         // 添加
         List<List<Model7RuntimeData.ModelData>> runtimeData = Model7RuntimeData.getRuntimeData();
         List<Teams> teams = TeamRuntime.getTeams();
@@ -126,7 +272,7 @@ public class Model7 implements ReloadPane {
             upArea.setPrefWidth(anchorPane.getPrefWidth());
             // 背景颜色
             upArea.setBackground(new Background(new BackgroundFill(Color.BLUE, new CornerRadii(10), Insets.EMPTY)));
-            upArea.setPrefHeight(ScreenAdapter.calculateExY(37));
+            upArea.setPrefHeight(ScreenAdapter.calculateExY(22));
 
             // 第二行
             GridPane row2 = new GridPane();
@@ -138,10 +284,10 @@ public class Model7 implements ReloadPane {
             int score = 0;
             int finish = 0;
             int correct = 0;
-            List<Questions> questionsList = questionsMapper.selectList(new LambdaQueryWrapper<Questions>()
-                    .eq(Questions::getStageNumber, currentStage.getSortVal())
-            );
+
+            // 使用缓存的questionsList，而不是在循环中重复查询
             int cols = (int) ((anchorPane.getPrefWidth() - 4) / (2 * radius + 1));
+            int finalRows = 0;
             for (int i1 = 0; i1 < questionsList.size(); i1++) {
                 Circle c = new Circle();
                 c.setStrokeWidth(1);
@@ -150,10 +296,10 @@ public class Model7 implements ReloadPane {
                 c.setFill(Color.WHITE);
                 int colIndex = i1 % cols;
                 int rowIndex = i1 / cols;
-                System.out.print(colIndex + ",");
-                System.out.println(rowIndex);
+                finalRows = rowIndex;
                 row2.add(c, colIndex, rowIndex );
             }
+            finalRows ++;
             for (int i1 = 0; i1 < modelData.size(); i1++) {
                 Model7RuntimeData.ModelData m = modelData.get(i1);
                 if (m.getUserSelect() == null) {
@@ -179,30 +325,51 @@ public class Model7 implements ReloadPane {
             row1.setPadding(new Insets(0, 3, 0, 3));
             row1.setPrefWidth(anchorPane.getPrefWidth());
             upArea.setSpacing(ScreenAdapter.calculateExY(5));
-            Label label = new Label(teams.get(i).getFullName());
+            Label label = new Label(teams.get(i).getShortName());
             label.setPrefWidth(anchorPane.getPrefWidth() / 4);
             label.setTextFill(Color.WHITE);
             Label scoreL = new Label(score + "分");
             scoreL.setPrefWidth(anchorPane.getPrefWidth() / 4);
             scoreL.setTextFill(Color.WHITE);
-            Label timeL = new Label("完成" + finish + "题 答对" + correct +"题|用时" + timeValue);
+            Label timeL = new Label("完成" + finish + "题 答对" + correct +"题|" + timeValue);
             if (Model7RuntimeData.getFinished().get(i)) {
-                timeL.setText("完成" + finish + "题 答对" + correct + "题|用时" + Model7RuntimeData.getFts().get(i));
+                timeL.setText("完成" + finish + "题 答对" + correct + "题|" + Model7RuntimeData.getFts().get(i));
             }
             timeL.setPrefWidth(anchorPane.getPrefWidth() / 2);
             timeL.setTextFill(Color.WHITE);
 
             row1.getChildren().addAll(label, scoreL, timeL);
-            upArea.getChildren().addAll(row1, row2);
+
+            String[] split = model3Style.getHeadStyle().split(",");
+
+            upArea.getChildren().addAll(row1);
+            boolean hideCircles = true;
+            if (split.length > 1) {
+                if (!Boolean.parseBoolean(split[1])) {
+                    upArea.getChildren().add(row2);
+                    hideCircles = false;
+                }
+            }else {
+                upArea.getChildren().add(row2);
+                hideCircles = true;
+            }
+            int circleRowHeight = hideCircles ? 0 : finalRows * 15;
+            upArea.setPrefHeight(ScreenAdapter.calculateExY(22 + circleRowHeight));
 
             AnchorPane downArea = new AnchorPane();
             downArea.setPrefWidth(anchorPane.getPrefWidth());
             downArea.setStyle("-fx-border-color: black; -fx-border-width: 1; -fx-background-color: white");
-            if (!Boolean.parseBoolean(model3Style.getHeadStyle())) {
+
+            downArea.setLayoutY(ScreenAdapter.calculateExY(upArea.getLayoutY() + upArea.getPrefHeight() + 5));
+            double downAreaHeight = height - ScreenAdapter.calculateExY(22 + circleRowHeight);
+            downArea.setPrefHeight(downAreaHeight);
+            if (split.length > 0) {
+                if (!Boolean.parseBoolean(split[0])) {
+                    anchorPane.getChildren().add(downArea);
+                }
+            } else {
                 anchorPane.getChildren().add(downArea);
             }
-            downArea.setLayoutY(ScreenAdapter.calculateExY(52));
-            downArea.setPrefHeight(height - ScreenAdapter.calculateExY(37));
 
             // 回答完毕
             Font font = FontMap.load(FontMap.defaultFontName(), ScreenAdapter.calculateExX(32));
@@ -247,17 +414,14 @@ public class Model7 implements ReloadPane {
                     vbx.setSpacing(ScreenAdapter.calculateExY(2));
                     vbx.setPrefWidth(downArea.getPrefWidth());
                     downArea.getChildren().addAll(vbx);
+
+                    // 使用题型标注格式化题目文本
                     Label q = new Label();
-                    if (Objects.equals(currentStage.getShowNumber(), 1)) {
-                        q.setText(last.getQuestionNumber() + ". " + last.getQuestion());
-                    } else {
-                        q.setText( last.getQuestion());
-                    }
-                    if (GlobalCache.MAX_TEAM_NUMBER <= 0) {
-                        q.setText(q.getText() + "(未注册)");
-                    }
+                    String formattedQuestionText = formatQuestionText(last);
+                    q.setText(formattedQuestionText);
                     q.setWrapText(true);
                     vbx.getChildren().add(q);
+
                     if (!StringUtils.isEmpty(last.getChoiceA())) {
                         Label c = new Label("A. " + last.getChoiceA());
                         c.setWrapText(true);
@@ -321,22 +485,40 @@ public class Model7 implements ReloadPane {
                     }
                 }
             }
-
-
         }
     }
 
-
     @Override
     public void reload() {
-        showData();
+        // 简单的防抖检查
+        if (shouldUpdate()) {
+            showData();
+        }
     }
-
 
     @Override
     public void reload(int time, String timeTxt) {
         this.timeValue = timeTxt;
-        showData();
+        // 简单的防抖检查
+        if (shouldUpdate()) {
+            showData();
+        }
     }
 
+    /**
+     * 清理缓存的方法
+     */
+    public void clearCache() {
+        cachedQuestions = null;
+        cachedStageNumber = null;
+    }
+
+    /**
+     * 重新加载样式时同时重新加载题型标注配置
+     */
+    public void reloadStyle() {
+        // 重新加载题型标注配置
+        loadQuestionTypeConfig();
+        reload();
+    }
 }

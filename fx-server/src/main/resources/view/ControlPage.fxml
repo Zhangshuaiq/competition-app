@@ -107,7 +107,7 @@
                   <Font size="10.0" />
                </font>
             </Button>
-            <Button layoutX="106.0" layoutY="71.0" mnemonicParsing="false" onMouseClicked="#backLast" prefHeight="25.0" prefWidth="60.0" text="返回">
+            <Button fx:id="backBtn" layoutX="106.0" layoutY="71.0" mnemonicParsing="false" onMouseClicked="#backLast" prefHeight="25.0" prefWidth="60.0" text="返回">
                <font>
                   <Font size="10.0" />
                </font>

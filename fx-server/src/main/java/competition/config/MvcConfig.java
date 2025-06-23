@@ -6,6 +6,7 @@ import competition.entity.RegisterInfo;
 import competition.mapper.RegisterInfoMapper;
 import competition.util.*;
 import javafx.application.Platform;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.util.StringUtils;
@@ -21,6 +22,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
+@Slf4j
 @Configuration
 public class MvcConfig implements WebMvcConfigurer {
 
@@ -38,31 +40,11 @@ public class MvcConfig implements WebMvcConfigurer {
         // registry.addInterceptor(interceptor).addPathPatterns("/**");
     }
 
-    public static String getCPUSerial() throws Exception {
-        String result = "";
-        String command = "powershell -Command \"Get-CimInstance Win32_Processor | Select-Object -ExpandProperty ProcessorId\"";
-        Process process = Runtime.getRuntime().exec(command);
-        process.getOutputStream().close();
-        BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
-        String line;
-        while ((line = reader.readLine()) != null) {
-            if (line.contains("ProcessorId")) {
-                continue;
-            }
-            result = line.trim();
-            if (!result.isEmpty()) {
-                break;
-            }
-        }
-        reader.close();
-        return result;
-    }
-
     private boolean checkNetwork() {
         // 有网络，验证是否合法
         RegisterInfo registerInfo = registerInfoMapper.selectById(1001);
         try {
-            String cpuSerial = getCPUSerial();
+            String cpuSerial = CPUSerialUtils.getCPUSerial();
             Map<String, Object> body = new HashMap<>();
             body.put("deviceId", cpuSerial);
             String responseText = HttpUtil.sendPostRequest(registerServer + "/api/v1/valid", JSON.toJSONString(body));
@@ -95,7 +77,18 @@ public class MvcConfig implements WebMvcConfigurer {
         if (RuntimeUtil.SUPER_ACTIVE_CODE.equals(registerInfo.getActiveCode())) {
             String cpuSerial = "";
             try {
-                cpuSerial = getCPUSerial();
+                String osName = System.getProperty("os.name").toLowerCase();
+                 if (osName.contains("mac")) {
+                     // 开发环境
+                     cpuSerial = "12345678";
+                     log.info("开发环境，使用默认CPU序列号：{}", cpuSerial);
+
+                 } else {
+                     cpuSerial = CPUSerialUtils.getCPUSerial();
+                     log.info("生产环境，使用默认CPU序列号：{}", cpuSerial);
+                 }
+
+
                 if (Objects.equals(cpuSerial, registerInfo.getDeviceCode()) ) {
                     GlobalCache.MAX_TEAM_NUMBER = 9999;
                     registry.addResourceHandler("/resource/**", "/**")
@@ -153,7 +146,7 @@ public class MvcConfig implements WebMvcConfigurer {
             String deviceId = activeCode.substring(0, 8) + activeCode.substring(28);
 
             try {
-                String cpuSerial = getCPUSerial();
+                String cpuSerial = CPUSerialUtils.getCPUSerial();
                 if (!cpuSerial.equals(deviceId)) {
                     registerInfo.setActiveCode("");
                     registerInfo.setLastCheckTime("");

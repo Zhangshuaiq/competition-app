@@ -23,12 +23,14 @@ import javafx.stage.Screen;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import javafx.stage.WindowEvent;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.util.StringUtils;
 
 import java.io.IOException;
 import java.util.concurrent.atomic.AtomicReference;
 
+@Slf4j
 public class Navigator {
     
     
@@ -81,13 +83,6 @@ public class Navigator {
                 GlobalCache.backendOpen = false;
             }
         });
-
-//        activeStage.setOnCloseRequest(new EventHandler<WindowEvent>() {
-//            @Override
-//            public void handle(WindowEvent event) {
-//                System.exit(0);
-//            }
-//        });
         activeStage.setAlwaysOnTop(true);
         activeStage.setTitle("软件激活");
     }
@@ -136,7 +131,6 @@ public class Navigator {
                 }
             });
             PreviewPane previewPane =  loader.getController();
-            previewPane.setScene(previewScene);
             return previewPane;
         } catch (IOException e) {
             e.printStackTrace();
@@ -247,9 +241,6 @@ public class Navigator {
 
 
             load.setOnMouseReleased(event -> {
-                System.out.println("抢答提示框拖动后位置 ========================>");
-                System.out.println(stage.getX());
-                System.out.println(stage.getY());
                 if (!StringUtils.isEmpty(config)) {
                     JSONObject jsonObject = JSON.parseObject(config);
                     jsonObject.put("x", stage.getX() + "");
@@ -317,9 +308,6 @@ public class Navigator {
             });
 
             load.setOnMouseReleased(event -> {
-                System.out.println("抢答计时拖动后位置 ========================>");
-                System.out.println(stage.getX());
-                System.out.println(stage.getY());
                 BuzzMapper buzzMapper = JavaFxApplication.getApplicationContext().getBean(BuzzMapper.class);
                 Buzz buzz = buzzMapper.selectById(1);
                 buzz.setX(stage.getX() + "");
@@ -383,11 +371,8 @@ public class Navigator {
             });
 
             load.setOnMouseReleased(event -> {
-                System.out.println("答题计时拖动后位置 ========================>");
                 configs.set(configsMapper.selectById(1));
                 config.set(configs.get().getConfig());
-                System.out.println(stage.getX());
-                System.out.println(stage.getY());
                 String[] split = config.get().split(ConfigSpliter.SPLITER);
                 split[29] = stage.getX() + "";
                 split[30] = stage.getY() + "";
@@ -449,32 +434,8 @@ public class Navigator {
 //                ExtendedScreen.scoreBoardStage.setY(bounds.getMinY() + ScreenAdapter.calculateExY(event.getScreenY() - yOffset.get()));
             });
 
-//            load.setOnMouseReleased(event -> {
-//                System.out.println("状态面板拖动后位置 ========================>");
-//                System.out.println(stage.getX());
-//                System.out.println(stage.getY());
-//                String[] split = config.split(ConfigSpliter.SPLITER);
-//                split[17] = stage.getX() + "";
-//                split[18] = stage.getY() + "";
-//                configs.setConfig(String.join(ConfigSpliter.SPLITER, split));
-//                configsMapper.updateById(configs);
-//            });
 
             scene.getStylesheets().add(cssFile); // 应用 CSS
-
-//            SwingUtilities.invokeLater(() -> {
-//                JDialog dialog = new JDialog();
-//                dialog.setUndecorated(true); // 去掉对话框装饰
-//                dialog.setAlwaysOnTop(true); // 可选：保持对话框在最上层
-//                JFXPanel jfxPanel = new JFXPanel();
-//
-//                scene.setFill(null);
-//
-//                jfxPanel.setScene(scene);
-//                dialog.add(jfxPanel);
-//                dialog.setSize(1000, 200);
-//                dialog.setVisible(true);
-//            });
 
             stage.setScene(scene);
             stage.show();
@@ -538,11 +499,8 @@ public class Navigator {
             });
 
             load.setOnMouseReleased(event -> {
-                System.out.println("分数面板拖动后位置 ========================>");
                 configs.set(configsMapper.selectById(1));
                 config.set(configs.get().getConfig());
-                System.out.println(stage.getX());
-                System.out.println(stage.getY());
                 String[] split = config.get().split(ConfigSpliter.SPLITER);
                 split[17] = stage.getX() + "";
                 split[18] = stage.getY() + "";

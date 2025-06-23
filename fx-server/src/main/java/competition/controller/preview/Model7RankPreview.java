@@ -374,7 +374,7 @@ public class Model7RankPreview extends PreviewPane {
                         }
                     }
                 }
-                String team = Model7RuntimeData.getTeams().get(i).getShortName();
+                String team = Model7RuntimeData.getTeams().get(i).getFullName();
                 
                 String time = timeData.get(i);
 
@@ -496,8 +496,8 @@ public class Model7RankPreview extends PreviewPane {
 
         StackPane timePane = new StackPane();
         Text timeL = new Text("时间");
-        if (lines.size() >= 4) {
-            timeL.setText(lines.get(3));
+        if (lines.size() > 4) {
+            timeL.setText(lines.get(4));
         }
         timeL.setFill(fcolor);
         timePane.setPrefHeight(height);

@@ -5,16 +5,15 @@ import competition.controller.ControlPane;
 import competition.controller.board.BoardPane;
 import competition.controller.match.Model7;
 import competition.controller.match.ReloadPane;
-import competition.entity.Model3Style;
-import competition.entity.Questions;
-import competition.entity.Stages;
-import competition.entity.Teams;
+import competition.entity.*;
+import competition.mapper.ConfigsMapper;
 import competition.mapper.Model3Mapper;
 import competition.mapper.QuestionsMapper;
 import competition.modal.Model7RankData;
 import competition.util.*;
 import competition.ws.Model7RuntimeData;
 import competition.ws.WsMessageHandler;
+import javafx.application.Platform;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.geometry.Insets;
@@ -36,6 +35,7 @@ import javax.annotation.Resource;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.util.*;
+import java.util.concurrent.CompletableFuture;
 
 // 竞技模式显示控制
 @Component
@@ -48,20 +48,36 @@ public class Model7Preview extends PreviewPane {
     @Resource
     private WsMessageHandler messageHandler;
 
-    private String timeValue = "00秒";
+    private String timeValue = "00:00";
 
     @Resource
     private ControlPane controlPane;
 
     @Resource
     private Model3Mapper model3Mapper;
-    
+
     @Resource
     private QuestionsMapper questionsMapper;
 
+    @Resource
+    private ConfigsMapper configsMapper;
+
     private static Stages currentStage;
-    
+
     private Stages inner;
+
+    // 优化相关的缓存字段
+    private volatile boolean rankDataNeedsUpdate = true;
+    private List<Model7RankData> cachedRankData = new ArrayList<>();
+    private final Object rankCalculationLock = new Object();
+
+    // Questions查询缓存
+    private List<Questions> cachedQuestions;
+    private String cachedStageNumber;
+
+    // 题型标注配置缓存
+    private String cachedTx = "3";
+    private String cachedTxbz = "4";
 
     public static void setCurrentStage(Stages currentStage) {
         Model7Preview.currentStage = currentStage;
@@ -82,10 +98,9 @@ public class Model7Preview extends PreviewPane {
             scoreBoardPreview.getSelected().clear();
         }
         inner = currentStage;
-        calculatePW();
-        List<Questions> questions = questionsMapper.selectList(new LambdaQueryWrapper<Questions>()
-                .eq(Questions::getStageNumber, inner.getSortVal())
-        );
+
+        // 获取题目数据并缓存
+        List<Questions> questions = getQuestionsWithCache();
         for (Questions question : questions) {
             question.setShowNumber(inner.getShowNumber());
         }
@@ -93,6 +108,7 @@ public class Model7Preview extends PreviewPane {
 
         Model7RuntimeData.totalNumber = questions.size();
         PreviewStack.addPreview(this);
+
         container.setOnMouseClicked(new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent event) {
@@ -101,23 +117,179 @@ public class Model7Preview extends PreviewPane {
                 }
             }
         });
+
+        // 初始化时加载题型标注配置
+        loadQuestionTypeConfig();
+
+        // 初始化时异步计算排名
+        calculatePWAsync();
         reload();
     }
-    
-    private void calculatePW(){
-        // 评委端数据
+
+    /**
+     * 加载题型标注配置
+     */
+    private void loadQuestionTypeConfig() {
+        try {
+            Configs configs = configsMapper.selectById(1);
+            String cfgVal = configs.getConfig();
+            if (!StringUtils.isEmpty(cfgVal)) {
+                String[] split = cfgVal.split(ConfigSpliter.SPLITER);
+                if (split.length > 10) {
+                    cachedTx = split[9];     // 题型
+                    cachedTxbz = split[10];  // 题型标注
+                }
+            }
+        } catch (Exception e) {
+            System.err.println("加载题型标注配置失败: " + e.getMessage());
+            // 使用默认值
+            cachedTx = "3";
+            cachedTxbz = "4";
+        }
+    }
+
+    /**
+     * 根据题型标注配置格式化题目文本
+     */
+    private String formatQuestionText(Model7RuntimeData.ModelData questionData) {
+        String questionText = "";
+        String questionType = questionData.getQuestionType();
+        Integer questionNumber = questionData.getQuestionNumber();
+        String question = questionData.getQuestion();
+
+        // 如果不显示题号，则不添加题号
+        if (Objects.equals(inner.getShowNumber(), 0)) {
+            // 无题型标注
+            if (cachedTxbz.equals("4")) {
+                questionText = question;
+            } else if (cachedTxbz.equals("3")) {
+                if (cachedTx.equals("3")) {
+                    questionText = question + " " + questionType;
+                } else if (cachedTx.equals("2")) {
+                    questionText = questionType + question;
+                } else if (cachedTx.equals("1")) {
+                    questionText = questionType + " " + question;
+                }
+            } else if (cachedTxbz.equals("2")) {
+                if (cachedTx.equals("3")) {
+                    questionText = question + "(" + questionType + ")";
+                } else if (cachedTx.equals("2")) {
+                    questionText = "(" + questionType + ")" + question;
+                } else if (cachedTx.equals("1")) {
+                    questionText = "(" + questionType + ")" + question;
+                }
+            } else if (cachedTxbz.equals("1")) {
+                if (cachedTx.equals("3")) {
+                    questionText = question + "[" + questionType + "]";
+                } else if (cachedTx.equals("2")) {
+                    questionText = "[" + questionType + "]" + question;
+                } else if (cachedTx.equals("1")) {
+                    questionText = "[" + questionType + "]" + question;
+                }
+            }
+        } else {
+            // 显示题号
+            // 无题型标注
+            if (cachedTxbz.equals("4")) {
+                questionText = questionNumber + ". " + question;
+            } else if (cachedTxbz.equals("3")) {
+                if (cachedTx.equals("3")) {
+                    questionText = questionNumber + ". " + question + " " + questionType;
+                } else if (cachedTx.equals("2")) {
+                    questionText = questionNumber + ". " + questionType + question;
+                } else if (cachedTx.equals("1")) {
+                    questionText = questionType + " " + questionNumber + ". " + question;
+                }
+            } else if (cachedTxbz.equals("2")) {
+                if (cachedTx.equals("3")) {
+                    questionText = questionNumber + ". " + question + "(" + questionType + ")";
+                } else if (cachedTx.equals("2")) {
+                    questionText = questionNumber + ". " + "(" + questionType + ")" + question;
+                } else if (cachedTx.equals("1")) {
+                    questionText = "(" + questionType + ")" + questionNumber + ". " + question;
+                }
+            } else if (cachedTxbz.equals("1")) {
+                if (cachedTx.equals("3")) {
+                    questionText = questionNumber + ". " + question + "[" + questionType + "]";
+                } else if (cachedTx.equals("2")) {
+                    questionText = questionNumber + ". " + "[" + questionType + "]" + question;
+                } else if (cachedTx.equals("1")) {
+                    questionText = "[" + questionType + "]" + questionNumber + ". " + question;
+                }
+            }
+        }
+
+        // 添加未注册标记
+        if (GlobalCache.MAX_TEAM_NUMBER <= 0) {
+            questionText = questionText + "(未注册)";
+        }
+
+        return questionText;
+    }
+
+    /**
+     * 获取题目数据（带缓存）
+     */
+    private List<Questions> getQuestionsWithCache() {
+        if (cachedQuestions == null || !Objects.equals(cachedStageNumber, inner.getSortVal())) {
+            cachedQuestions = questionsMapper.selectList(
+                new LambdaQueryWrapper<Questions>()
+                    .eq(Questions::getStageNumber, inner.getSortVal())
+            );
+            cachedStageNumber = inner.getSortVal();
+        }
+        return cachedQuestions;
+    }
+
+    /**
+     * 异步计算排名数据
+     */
+    private void calculatePWAsync() {
+        // 标记需要更新
+        rankDataNeedsUpdate = true;
+
+        // 在后台线程计算
+        CompletableFuture.supplyAsync(() -> {
+            synchronized (rankCalculationLock) {
+                if (!rankDataNeedsUpdate) {
+                    return cachedRankData; // 如果不需要更新，返回缓存数据
+                }
+
+                return calculateRankData();
+            }
+        }).thenAcceptAsync(rankData -> {
+            // 更新缓存
+            synchronized (rankCalculationLock) {
+                cachedRankData = rankData;
+                rankDataNeedsUpdate = false;
+            }
+
+            // 通知前端
+            Map<String, Object> mapData = new HashMap<>();
+            mapData.put("rank", rankData);
+            messageHandler.notifyPage("hmodel7", mapData);
+        }, Platform::runLater);
+    }
+
+    /**
+     * 实际的排名计算逻辑（从原calculatePW方法提取）
+     */
+    private List<Model7RankData> calculateRankData() {
         List<Model7RankData> rankList = new ArrayList<>();
         List<List<Model7RuntimeData.ModelData>> runtimeData = Model7RuntimeData.getRuntimeData();
         List<String> timeData = Model7RuntimeData.getFts();
         List<Integer> seconds = Model7RuntimeData.getSeconds();
+
         boolean finish = true;
         List<Boolean> finished = Model7RuntimeData.getFinished();
         for (Boolean b : finished) {
             finish = finish & b;
         }
+
         for (int i = 0; i < runtimeData.size(); i++) {
             List<Model7RuntimeData.ModelData> questionList = runtimeData.get(i);
             int score = 0;
+
             if (finish) {
                 for (Model7RuntimeData.ModelData data : questionList) {
                     if (data.getUserSelect() != null && data.getUserSelect().equals(data.getAnswer())) {
@@ -136,8 +308,8 @@ public class Model7Preview extends PreviewPane {
                     }
                 }
             }
-            String team = Model7RuntimeData.getTeams().get(i).getShortName();
 
+            String team = Model7RuntimeData.getTeams().get(i).getFullName();
             String time = timeData.get(i);
 
             Model7RankData rankData = new Model7RankData();
@@ -147,7 +319,8 @@ public class Model7Preview extends PreviewPane {
             rankData.setTime(time);
             rankList.add(rankData);
         }
-        
+
+        // 排序
         rankList.sort((o1, o2) -> {
             if (o1.getScore() < o2.getScore()) {
                 return 1;
@@ -158,6 +331,7 @@ public class Model7Preview extends PreviewPane {
             }
         });
 
+        // 设置排名
         int rank = 1;
         Model7RankData first = rankList.get(0);
         for (Model7RankData rankData : rankList) {
@@ -167,23 +341,25 @@ public class Model7Preview extends PreviewPane {
             rankData.setRank(rank);
             first = rankData;
         }
-        Map<String, Object> mapData = new HashMap<>();
-        mapData.put("rank", rankList);
-        messageHandler.notifyPage("hmodel7", mapData);
+
+        return rankList;
     }
 
-
     private void showData() {
-
         try {
             container.setBackground(new Background(new BackgroundImage(
-                    new Image(new FileInputStream(ImageResource.竞技模式背景())), BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT, BackgroundPosition.DEFAULT,
-                    new BackgroundSize(Navigator.getWidth(), Navigator.getHeight(), false, false, false, false)
+                new Image(new FileInputStream(ImageResource.竞技模式背景())), BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT, BackgroundPosition.DEFAULT,
+                new BackgroundSize(Navigator.getWidth(), Navigator.getHeight(), false, false, false, false)
             )));
         } catch (FileNotFoundException e) {
             container.setBackground(new Background(new BackgroundFill(Color.TRANSPARENT, new CornerRadii(10), Insets.EMPTY)));
         }
-        calculatePW();
+
+        // 如果排名数据需要更新，异步计算（替代原来的calculatePW调用）
+        if (rankDataNeedsUpdate) {
+            calculatePWAsync();
+        }
+
         Model3Style model3Style = model3Mapper.selectById(2);
         String titleStyle = model3Style.getTitleStyle();
 
@@ -200,7 +376,7 @@ public class Model7Preview extends PreviewPane {
             col = Integer.parseInt(split[0]);
             x = ScreenAdapter.calculateMainX(Integer.parseInt(split[5]));
             y = ScreenAdapter.calculateMainY(Integer.parseInt(split[6]));
-            
+
             width = ScreenAdapter.calculateMainX(Integer.parseInt(split[3]));
             height = ScreenAdapter.calculateMainY(Integer.parseInt(split[4]));
             vgap = ScreenAdapter.calculateMainY(Integer.parseInt(split[1]));
@@ -233,6 +409,7 @@ public class Model7Preview extends PreviewPane {
         container.getChildren().clear();
         container.setVgap(vgap);
         container.setHgap(hgap);
+
         // 添加
         List<List<Model7RuntimeData.ModelData>> runtimeData = Model7RuntimeData.getRuntimeData();
         List<Teams> teams = TeamRuntime.getTeams();
@@ -251,7 +428,7 @@ public class Model7Preview extends PreviewPane {
             upArea.setPrefWidth(anchorPane.getPrefWidth());
             // 背景颜色
             upArea.setBackground(new Background(new BackgroundFill(Color.BLUE, new CornerRadii(10), Insets.EMPTY)));
-            upArea.setPrefHeight(ScreenAdapter.calculateMainY(37));
+            upArea.setPrefHeight(ScreenAdapter.calculateMainY(22));
 
             // 第二行
             GridPane row2 = new GridPane();
@@ -259,15 +436,16 @@ public class Model7Preview extends PreviewPane {
             row2.setPrefWidth(anchorPane.getPrefWidth());
             List<Model7RuntimeData.ModelData> modelData = runtimeData.get(i);
             double radius = 5.0;
-            
+
             Model7RuntimeData.ModelData last = null;
             int score = 0;
             int finish = 0;
             int correct = 0;
-            List<Questions> questions = questionsMapper.selectList(new LambdaQueryWrapper<Questions>()
-                    .eq(Questions::getStageNumber, inner.getSortVal())
-            );             
+
+            // 使用缓存的questions
+            List<Questions> questions = getQuestionsWithCache();
             int cols = (int) ((anchorPane.getPrefWidth() - 4) / (2 * ScreenAdapter.calculateMainX(radius ) + 1));
+            int finalRows = 0;
             for (int i1 = 0; i1 < questions.size(); i1++) {
                 Circle c = new Circle();
                 c.setStrokeWidth(1);
@@ -276,9 +454,10 @@ public class Model7Preview extends PreviewPane {
                 c.setFill(Color.WHITE);
                 int colIndex = i1 % cols;
                 int rowIndex = i1 / cols;
+                finalRows = rowIndex;
                 row2.add(c, colIndex, rowIndex );
             }
-
+            finalRows ++;
             for (int i1 = 0; i1 < modelData.size(); i1++) {
                 Model7RuntimeData.ModelData m = modelData.get(i1);
                 if (m.getUserSelect() == null) {
@@ -295,7 +474,7 @@ public class Model7Preview extends PreviewPane {
                 }
                 last = m;
             }
-            
+
             // 补充未答题的分数扣除
             if (Model7RuntimeData.getFinished().get(i)) {
                 score -= controlPane.getCurrentStage().getDesValue() * (Model7RuntimeData.totalNumber - modelData.size());
@@ -305,30 +484,50 @@ public class Model7Preview extends PreviewPane {
             row1.setPadding(new Insets(0, 3, 0, 3));
             row1.setPrefWidth(anchorPane.getPrefWidth());
             upArea.setSpacing(5);
-            Label label = new Label(teams.get(i).getFullName());
-            label.setPrefWidth(anchorPane.getPrefWidth() / 4);
+            Label label = new Label(teams.get(i).getShortName());
+            label.setPrefWidth(anchorPane.getPrefWidth() * 0.2);
             label.setTextFill(Color.WHITE);
             Label scoreL = new Label(score + "分");
-            scoreL.setPrefWidth(anchorPane.getPrefWidth() / 4);
+            scoreL.setPrefWidth(anchorPane.getPrefWidth() * 0.2);
             scoreL.setTextFill(Color.WHITE);
-            Label timeL = new Label("完成" + finish + "题 答对" + correct +"题|用时" + timeValue);
+            Label timeL = new Label("完成" + finish + "题 答对" + correct +"题|" + timeValue);
             if (Model7RuntimeData.getFinished().get(i)) {
-                timeL.setText("完成" + finish + "题 答对" + correct + "题|用时" + Model7RuntimeData.getFts().get(i));
+                timeL.setText("完成" + finish + "题 答对" + correct + "题|" + Model7RuntimeData.getFts().get(i));
             }
-            timeL.setPrefWidth(anchorPane.getPrefWidth() / 2);
+            timeL.setPrefWidth(anchorPane.getPrefWidth() * 0.6);
             timeL.setTextFill(Color.WHITE);
 
             row1.getChildren().addAll(label, scoreL, timeL);
-            upArea.getChildren().addAll(row1, row2);
+
+            String[] split = model3Style.getHeadStyle().split(",");
+
+            upArea.getChildren().addAll(row1);
+            boolean hideCircles = true;
+            if (split.length > 1) {
+                if (!Boolean.parseBoolean(split[1])) {
+                    upArea.getChildren().add(row2);
+                    hideCircles = false;
+                }
+            } else {
+                upArea.getChildren().add(row2);
+                hideCircles = true;
+            }
+            int circleRowHeight = hideCircles ? 0 : finalRows * 15;
+            upArea.setPrefHeight(ScreenAdapter.calculateMainY(22 + circleRowHeight));
 
             AnchorPane downArea = new AnchorPane();
             downArea.setPrefWidth(anchorPane.getPrefWidth());
             downArea.setStyle("-fx-border-color: black; -fx-border-width: 1; -fx-background-color: white");
-            if (!Boolean.parseBoolean(model3Style.getHeadStyle())) {
+            downArea.setLayoutY(ScreenAdapter.calculateMainY(upArea.getLayoutY() + upArea.getPrefHeight() + 5));
+            double downAreaHeight = height - ScreenAdapter.calculateMainY(22 + circleRowHeight);
+            downArea.setPrefHeight(downAreaHeight);
+            if (split.length > 0) {
+                if (!Boolean.parseBoolean(split[0])) {
+                    anchorPane.getChildren().add(downArea);
+                }
+            } else {
                 anchorPane.getChildren().add(downArea);
             }
-            downArea.setLayoutY(ScreenAdapter.calculateMainY(52));
-            downArea.setPrefHeight(height - ScreenAdapter.calculateMainY(37));
 
             // 回答完毕
             if (Model7RuntimeData.getFinished().get(i)) {
@@ -345,7 +544,7 @@ public class Model7Preview extends PreviewPane {
                 scoreLab.setPrefHeight(downArea.getPrefHeight() / 5);
                 scoreLab.setLayoutY(downArea.getPrefHeight() * 0.4);
                 scoreLab.setFont(FontMap.load(FontMap.defaultFontName(), ScreenAdapter.calculateMainX(32)));
-                
+
                 scoreLab.setTextAlignment(TextAlignment.CENTER);
                 scoreLab.setAlignment(Pos.CENTER);
                 List<String> fts = Model7RuntimeData.getFts();
@@ -374,17 +573,14 @@ public class Model7Preview extends PreviewPane {
                     vbx.setSpacing(ScreenAdapter.calculateMainY(2));
                     vbx.setPrefWidth(downArea.getPrefWidth());
                     downArea.getChildren().addAll(vbx);
+
+                    // 使用题型标注格式化题目文本
                     Label q = new Label();
-                    if (Objects.equals(inner.getShowNumber(), 1)) {
-                        q.setText(last.getQuestionNumber() + ". " + last.getQuestion());
-                    } else {
-                        q.setText( last.getQuestion());
-                    }
-                    if (GlobalCache.MAX_TEAM_NUMBER <= 0) {
-                        q.setText(q.getText() + "(未注册)");
-                    }
+                    String formattedQuestionText = formatQuestionText(last);
+                    q.setText(formattedQuestionText);
                     q.setWrapText(true);
                     vbx.getChildren().add(q);
+
                     if (!StringUtils.isEmpty(last.getChoiceA())) {
                         Label c = new Label("A. " + last.getChoiceA());
                         c.setWrapText(true);
@@ -448,35 +644,38 @@ public class Model7Preview extends PreviewPane {
                     }
                 }
             }
-
-
         }
     }
 
     @Override
     public void reloadStyle() {
+        // 重新加载题型标注配置
+        loadQuestionTypeConfig();
         this.reload();
     }
 
     @Override
     public void reload() {
+        // 标记排名数据需要更新
+        rankDataNeedsUpdate = true;
+        if ( Model7RuntimeData.executeStart) {
+            this.timeValue = "00:00";
+            messageHandler.sendModel7Time("0");
+            Model7RuntimeData.executeStart = false;
+        }
         showData();
     }
-
 
     @Override
     public void reload(int time, String timeTxt) {
         this.timeValue = timeTxt;
         messageHandler.sendModel7Time(time + "");
+        // 标记排名数据需要更新
+        rankDataNeedsUpdate = true;
         showData();
-//        ReloadPane questionPreview = controlPane.getQuestionPreview();
-//        if (questionPreview != null) {
-//            questionPreview.reload(time, timeTxt);
-//        }
     }
-    
+
     public Integer getInnerId(){
         return inner.getId();
     }
-
 }

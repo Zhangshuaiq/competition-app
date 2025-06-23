@@ -197,12 +197,21 @@ public class ScoreBoardHPreview extends PreviewPane implements BoardPane {
                 buzzTime.setFont(Font.font(ScreenAdapter.calculateMainX(12)));
                 buzzTime.setUnderline(Boolean.valueOf(split[5]));
                 buzzTime.setStrikethrough(Boolean.valueOf(split[2]));
+
+                if (cfgArr.length >= 37) {
+                    buzzTime.setFont( Font.font(ScreenAdapter.calculateMainX(Double.parseDouble(cfgArr[36]))));
+                } else {
+                    buzzTime.setFont(Font.font(ScreenAdapter.calculateMainX(12)));
+                }
+                if (cfgArr.length >= 38) {
+                    buzzTime.setFill(Color.valueOf(cfgArr[37]));
+                }
+
                 if (Boolean.valueOf(split[3])) {
                     buzzTime.setStroke(teamScore.getFill());
                     buzzTime.setStrokeWidth(1);
                 } else {
                     buzzTime.setStroke(null);
-
                 }
                 buzzTime.getTransforms().clear();
                 buzzPane.getChildren().add(buzzTime);
@@ -255,7 +264,9 @@ public class ScoreBoardHPreview extends PreviewPane implements BoardPane {
                     if (Objects.equals(1, currentStage.getAnswerSingle()) && controlPane.getPreviewPane() instanceof ShowAnswerPreview) {
 
                     } else {
-                        userSelect.setText("");
+                        if (Objects.equals(1, currentStage.getAnswerSingle())) {
+                            userSelect.setText("");
+                        }
                         stackPane2.getChildren().add(userSelect);
                         box.getChildren().add(stackPane2);
                     }

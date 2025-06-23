@@ -1,5 +1,7 @@
 package competition.controller.match;
 
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import competition.controller.preview.data.PageData;
 import competition.entity.Teams;
 import competition.util.RuntimeUtil;
 import javafx.scene.Node;
@@ -46,4 +48,8 @@ public interface ReloadPane {
     default void scrollUpAnswer(){}
     
     default void scrollDownAnswer(){}
+
+    default PageData getData() {
+        return new PageData.NullData();
+    }
 }

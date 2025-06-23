@@ -7,12 +7,14 @@ import competition.JavaFxApplication;
 import competition.controller.ControlPane;
 import competition.util.CRC16;
 import competition.util.Information;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.util.StringUtils;
 
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 
+@Slf4j
 public class SerialPortConnector {
 
 
@@ -57,7 +59,7 @@ public class SerialPortConnector {
 
     public void connect() {
         if (serialPort.openPort()) {
-            System.out.println("Port opened successfully.");
+           log.info("Port opened successfully.");
             serialPort.addDataListener(new SerialPortDataListener() {
                 @Override
                 public int getListeningEvents() {
@@ -81,66 +83,66 @@ public class SerialPortConnector {
                                 String responseData = FRAME_HEAD + s.trim();
                                 switch (Command.valueOf(responseData.substring(7, 11))) {
                                     case HEAT:
-                                        System.out.println(" 心跳包:" + Command.HEAT);
+                                        log.info(" 心跳包:{}", Command.HEAT);
                                         break;
                                     case SMOD:
                                         response = responseData;
-                                        System.out.println("response: " + Command.SMOD);
-                                        System.out.println("Received Data: " +responseData);
+                                       log.info("response: " + Command.SMOD);
+                                       log.info("Received Data: " +responseData);
                                         break;
                                     case STAR:
                                         response = responseData;
-                                        System.out.println("response: " + Command.STAR);
-                                        System.out.println("Received Data: " +responseData);
+                                       log.info("response: " + Command.STAR);
+                                       log.info("Received Data: " +responseData);
                                         break;
                                     case EEND:
                                         response = responseData;
-                                        System.out.println("response: " + Command.EEND);
-                                        System.out.println("Received Data: " +responseData);
+                                       log.info("response: " + Command.EEND);
+                                       log.info("Received Data: " +responseData);
                                         break;
                                     case SBLK:
                                         response = responseData;
-                                        System.out.println("response: " + Command.SBLK);
-                                        System.out.println("Received Data: " +responseData);
+                                       log.info("response: " + Command.SBLK);
+                                       log.info("Received Data: " +responseData);
                                         break;
                                     case SDSP:
                                         response = responseData;
-                                        System.out.println("response: " + Command.SDSP);
-                                        System.out.println("Received Data: " +responseData);
+                                       log.info("response: " + Command.SDSP);
+                                       log.info("Received Data: " +responseData);
                                         break;
                                     case SHOW:
                                         response = responseData;
-                                        System.out.println("response: " + Command.SHOW);
-                                        System.out.println("Received Data: " +responseData);
+                                       log.info("response: " + Command.SHOW);
+                                       log.info("Received Data: " +responseData);
                                         break;
                                     case SKEY:
                                         response = responseData;
-                                        System.out.println("response: " + Command.SKEY);
-                                        System.out.println("Received Data: " +responseData);
+                                       log.info("response: " + Command.SKEY);
+                                       log.info("Received Data: " +responseData);
                                         break;
                                     case UKEY:
                                         //response = responseData;
-                                        System.out.println("response: " + Command.UKEY);
-                                        System.out.println("Received Data: " +responseData);
+                                       log.info("response: " + Command.UKEY);
+                                       log.info("Received Data: " +responseData);
                                         handleBuzzResult(responseData);
                                         break;
                                     case SMAT:
                                         response = responseData;
-                                        System.out.println("response: " + Command.SMAT);
-                                        System.out.println("Received Data: " +responseData);
+                                       log.info("response: " + Command.SMAT);
+                                       log.info("Received Data: " +responseData);
                                         break;
                                     case SKUP:
                                         response = responseData;
-                                        System.out.println("response: " + Command.SKUP);
-                                        System.out.println("Received Data: " +responseData);
+                                       log.info("response: " + Command.SKUP);
+                                       log.info("Received Data: " +responseData);
                                         break;
                                     case SDUP:
                                         response = responseData;
-                                        System.out.println("response: " + Command.SDUP);
-                                        System.out.println("Received Data: " +responseData);
+                                       log.info("response: " + Command.SDUP);
+                                       log.info("Received Data: " +responseData);
                                         break;
                                     default:
-                                        System.out.println("Received Data: " +responseData);
+                                       log.info("Received Data: " +responseData);
                                         break;
                                 }
                             }
@@ -177,7 +179,7 @@ public class SerialPortConnector {
     public static List<String> getAvailableSerialPorts() {
         List<String> serialPorts = new ArrayList<String>();
         SerialPort[] ports = SerialPort.getCommPorts();
-        System.out.println("Available serial ports:");
+       log.info("Available serial ports:");
         for (SerialPort port : ports) {
             serialPorts.add(port.getSystemPortName());
         }
@@ -195,7 +197,7 @@ public class SerialPortConnector {
 
     public void send(String cmd) {
         serialPort.writeBytes(cmd.getBytes(), cmd.length());
-        System.out.println("Data sent: " + cmd);
+        log.info("Data sent: {}", cmd);
     }
 
     public String send(Command cmd, String data) {
@@ -231,7 +233,7 @@ public class SerialPortConnector {
     public static void main(String[] args) throws InterruptedException {
         // #,0030,SHOW,0,123,123,7,6A43,&
         // #,0030,SHOW,1,230,211,7,36F5,&
-        SerialPortConnector connector = new SerialPortConnector("COM3");
+        SerialPortConnector connector = new SerialPortConnector("tty.usbmodem4996186432581");
         connector.connect();
         Thread.sleep(1000);
         connector.send("#,0030,SHOW,0,123,123,7,6A43,&");

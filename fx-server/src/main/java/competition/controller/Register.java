@@ -4,6 +4,7 @@ import com.alibaba.fastjson2.JSON;
 import com.alibaba.fastjson2.JSONObject;
 import competition.entity.RegisterInfo;
 import competition.mapper.RegisterInfoMapper;
+import competition.util.CPUSerialUtils;
 import competition.util.HttpUtil;
 import competition.util.RuntimeUtil;
 import javafx.application.Platform;
@@ -71,7 +72,7 @@ public class Register {
                 if (activeCode.equals(RuntimeUtil.SUPER_ACTIVE_CODE)) {
                     String cpuSerial = "";
                     try {
-                        cpuSerial = getCPUSerial();
+                        cpuSerial = CPUSerialUtils.getCPUSerial();
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
@@ -112,7 +113,16 @@ public class Register {
 
                 // 激活
                 try {
-                    String cpuSerial = getCPUSerial();
+                    String cpuSerial = CPUSerialUtils.getCPUSerial();
+                    if (StringUtils.isEmpty(cpuSerial)) {
+                        messageText.setStyle("-fx-text-fill: red");
+                        messageText.setText("获取电脑信息失败，请检查系统环境");
+                        return;
+                    }
+//                    if (cpuSerial.length() != 16) {
+//                       // 补充特殊字符0填充到长度为 16
+//                        cpuSerial = String.format("%-16s", cpuSerial).replace(' ', '0');
+//                    }
                     String starter = cpuSerial.substring(0, 8);
                     String ender = cpuSerial.substring(8, 16);
                     String activeText = starter + activeCode + ender;
@@ -147,7 +157,7 @@ public class Register {
             } else {
                 // 解绑
                 try {
-                    String cpuSerial = getCPUSerial();
+                    String cpuSerial = CPUSerialUtils.getCPUSerial();
                     String activeCode = field1.getText();
 
                     if (activeCode.equals(RuntimeUtil.SUPER_ACTIVE_CODE)) {

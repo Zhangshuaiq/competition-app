@@ -20,6 +20,7 @@ import javafx.scene.image.Image;
 import javafx.scene.input.MouseEvent;
 import javafx.stage.Stage;
 import javafx.util.Duration;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
@@ -30,6 +31,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 
 @Component
+@Slf4j
 public class Valid {
 
     @FXML
@@ -146,7 +148,7 @@ public class Valid {
                     try {
                         primaryStage.getIcons().add(new Image(new FileInputStream(BaseDir.SUCAI_DIR + "图标.jpg")));
                     } catch (Exception ex) {
-                        System.out.println("加载不到图片");
+                       log.error("加载不到图片");
                     }
                     primaryStage.show();
                 }

@@ -133,7 +133,12 @@ public class StagePreview implements ReloadPane {
                     stageContainer.setLayoutX(ScreenAdapter.calculateExX(Integer.parseInt(detailArr[0])));
                     stageContainer.setLayoutY(ScreenAdapter.calculateExY(Integer.parseInt(detailArr[1])));
                     stageContainer.prefWidth(ScreenAdapter.calculateExX(Integer.parseInt(detailArr[2])));
+
+
+                    width = ScreenAdapter.calculateExX(Integer.parseInt(detailArr[2]));
                     height =  ScreenAdapter.calculateExY(Integer.parseInt(detailArr[3]));
+                    x = ScreenAdapter.calculateExX(Integer.parseInt(detailArr[0]));
+                    y = ScreenAdapter.calculateExY(Integer.parseInt(detailArr[1]));
                     if (detailArr.length >= 18) {
                         stageContainer.setHgap(ScreenAdapter.calculateExY(Integer.parseInt(detailArr[17])));
                     }
@@ -203,6 +208,12 @@ public class StagePreview implements ReloadPane {
                         stageNamePane.setAlignment(AlignmentUtil.getAlign(detailArr[13]));
                         if (detailArr.length >= 19) {
                             stageName.setFill(Color.valueOf(detailArr[18]));
+                            if (Boolean.valueOf(detailArr[10])) {
+                                stageName.setStroke(stageName.getFill());
+                                stageName.setStrokeWidth(1);
+                            } else {
+                                stageName.setStroke(null);
+                            }
                         }
                         if (detailArr.length >= 16) {
                             String text = stageName.getText();

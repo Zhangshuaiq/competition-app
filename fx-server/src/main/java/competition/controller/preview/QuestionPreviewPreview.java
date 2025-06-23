@@ -16,9 +16,7 @@ import competition.ws.WsMessageHandler;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.geometry.Insets;
-import javafx.geometry.Pos;
 import javafx.scene.Node;
-import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -51,10 +49,8 @@ public class QuestionPreviewPreview extends PreviewPane {
     @FXML
     private VBox buzzBox;
 
-
     @FXML
     private StackPane backPane, stagePane;
-    
 
     @FXML
     private Text daanLabel, stageLabel;
@@ -126,6 +122,11 @@ public class QuestionPreviewPreview extends PreviewPane {
         tiganBox.toFront();
         backPane.toFront();
         inner = current;
+        String stageNumber = inner.getStageNumber();
+        Stages belongStage = stagesMapper.selectOne(new LambdaQueryWrapper<Stages>()
+            .eq(Stages::getSortVal, stageNumber)
+        );
+        inner.setShowNumber(belongStage.getShowNumber());
         PreviewStack.addPreview(this);
         container.setOnMouseClicked(new EventHandler<MouseEvent>() {
             @Override
@@ -272,19 +273,6 @@ public class QuestionPreviewPreview extends PreviewPane {
                 imageQ.setVisible(false);
             }
 
-//            if (questionType.equals("单选题")) {
-//                
-//            } else if (questionType.equals("多选题")) {
-//                
-//            }  else if (questionType.equals("填空题")) {
-//
-//            }  else if (questionType.equals("简答题")) {
-//
-//            }  else if (questionType.equals("判断题")) {
-//
-//            }
-
-
             // 题型
             String tx = split[9];
             // 题型标注
@@ -329,7 +317,7 @@ public class QuestionPreviewPreview extends PreviewPane {
                 }
             }
 
-            if (controlPane.getCurrentStage().getShowNumber() == 0) {
+            if (inner.getShowNumber() == 0) {
                 tiganLabel.setText(tiganLabel.getText().replace(inner.getOrder() + "、", ""));
             }
 
@@ -340,6 +328,8 @@ public class QuestionPreviewPreview extends PreviewPane {
             tiganLabel.setText(tiganLabel.getText().replace("\u00A0", " "));
             // 只有选择题展示选项
             tiganBox.getChildren().add(tiganLabel);
+
+
             if (questionType.equals("单选题") || questionType.equals("多选题") || questionType.equals("不定项选择题")) {
                 if (!StringUtils.isEmpty(inner.getChoiceA())) {
                     Text chA = new Text("A." + inner.getChoiceA());
@@ -493,6 +483,9 @@ public class QuestionPreviewPreview extends PreviewPane {
                         }
                         tiganLabel.setText(String.join(sli, cs));
                         for (Node child : tiganBox.getChildren()) {
+                            if (child instanceof AnchorPane) {
+                                continue;
+                            }
                             Text text = (Text) child;
                             List<String> cs1 = new ArrayList<>();
                             for (char aChar : text.getText().toCharArray()) {
@@ -513,12 +506,6 @@ public class QuestionPreviewPreview extends PreviewPane {
                                             ScreenAdapter.calculateMainX(Integer.parseInt(split1[2])),
                                             ScreenAdapter.calculateMainY(Integer.parseInt(split1[3])),
                                             false, false, false, false))));
-//                            scrollPane.setBackground(new Background(new BackgroundImage(new Image(new FileInputStream(split1[6])),
-//                                    BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT, BackgroundPosition.DEFAULT,
-//                                    new BackgroundSize(
-//                                            ScreenAdapter.calculateMainX(Integer.parseInt(split1[2])),
-//                                            ScreenAdapter.calculateMainY(Integer.parseInt(split1[3])),
-//                                            false, false, false, false))));
                         } catch (FileNotFoundException e) {
                             tiganBox.setBackground(new Background(new BackgroundFill(Color.TRANSPARENT, new CornerRadii(ScreenAdapter.calculateMainX(10)), Insets.EMPTY)));
 
@@ -572,6 +559,13 @@ public class QuestionPreviewPreview extends PreviewPane {
                         ch.setTextAlignment(AlignmentUtil.getTextAlign(split1[13]));
                         ch.setLineSpacing(ScreenAdapter.calculateMainY(Integer.parseInt(split1[14])));
                     }
+                }
+                // 如果有一行空行
+                if (split1.length > 16 && Boolean.parseBoolean(split1[16])) {
+                    Text blankLine = new Text("11");
+                    blankLine.setFont(font);
+                    blankLine.setVisible(false);
+                    tiganBox.getChildren().add(1, blankLine);
                 }
             }
 
@@ -700,6 +694,9 @@ public class QuestionPreviewPreview extends PreviewPane {
         //scrollPane.setPrefWidth(tiganBox.getPrefWidth());
         scrollPane.setFitToWidth(true);
         for (Node child : tiganBox.getChildren()) {
+            if (child instanceof AnchorPane) {
+                continue;
+            }
             Text t = (Text) child;
             t.setWrappingWidth(tiganBox.getPrefWidth() - ScreenAdapter.calculateMainX(40));
         }

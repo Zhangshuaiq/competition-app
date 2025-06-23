@@ -11,6 +11,10 @@ import org.springframework.core.io.UrlResource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.messaging.handler.annotation.MessageMapping;
+import org.springframework.messaging.handler.annotation.Payload;
+import org.springframework.messaging.handler.annotation.SendTo;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
@@ -42,6 +46,9 @@ public class RestApi {
 
     @Resource
     private Model7StatusMapper statusMapper;
+
+    @Resource
+    private QuestionsMapper questionsMapper;
     
     
     
@@ -203,6 +210,47 @@ public class RestApi {
         }
         controlPane.notifyBuzz(team, member);
         return JsonResp.success("true");
+    }
+
+    // 获取当前环节的题目列表 - 竞技模式
+    @GetMapping("/currentStageQuestions")
+    public JsonResp getCurrentStageQuestions() {
+        ControlPane controlPane = JavaFxApplication.getApplicationContext().getBean(ControlPane.class);
+        Stages currentStage = controlPane.getCurrentStage();
+
+        boolean random = currentStage.getrRandomSort() == 1;
+        List<Questions> questions = questionsMapper.selectList(
+            new LambdaQueryWrapper<Questions>().eq(Questions::getStageNumber, currentStage.getSortVal())
+        );
+
+        Configs configs = configsMapper.selectById(1);
+        String cfgVal = configs.getConfig();
+        String txbz = "4";
+        if (!StringUtils.isEmpty(cfgVal)) {
+            String[] split = cfgVal.split(ConfigSpliter.SPLITER);
+            txbz = split[10];
+        }
+
+        for (Questions question : questions) {
+            question.setScore(currentStage.getScorePerQ());
+            question.setDesValue(currentStage.getDesValue());
+            question.setTxbz(txbz);
+            question.setShowNumber(currentStage.getShowNumber());
+        }
+        Map<String, Object> res = new HashMap<>();
+        res.put("random", random);
+        res.put("questions", questions);
+        return JsonResp.success(res);
+    }
+
+    @MessageMapping("/heartbeat")
+    @SendTo("/topic/heartbeat")
+    public Map<String, Object> handleHeartbeat(@Payload String heartbeatData) {
+        Map<String, Object> response = new HashMap<>();
+        response.put("type", "pong");
+        response.put("timestamp", System.currentTimeMillis());
+
+        return response;
     }
     
 }

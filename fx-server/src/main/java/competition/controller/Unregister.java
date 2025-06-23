@@ -5,6 +5,7 @@ import com.alibaba.fastjson2.JSONObject;
 import competition.JavaFxApplication;
 import competition.entity.RegisterInfo;
 import competition.mapper.RegisterInfoMapper;
+import competition.util.CPUSerialUtils;
 import competition.util.HttpUtil;
 import competition.util.RuntimeUtil;
 import javafx.application.Platform;
@@ -113,7 +114,7 @@ public class Unregister {
         }
         String activeCode = activeVal.substring(8, 28);
         try {
-            String cpuSerial = getCPUSerial();
+            String cpuSerial = CPUSerialUtils.getCPUSerial();
             Map<String, Object> body = new HashMap<>();
             body.put("deviceId", cpuSerial);
             body.put("activeCode", activeCode);

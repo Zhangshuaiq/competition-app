@@ -260,8 +260,8 @@ public class Model7Rank implements ReloadPane{
 
         StackPane timePane = new StackPane();
         Text timeL = new Text("时间");
-        if (lines.size() >= 4) {
-            timeL.setText(lines.get(3));
+        if (lines.size() > 4) {
+            timeL.setText(lines.get(4));
         }
         timeL.setFill(fcolor);
         timePane.setPrefHeight(height);

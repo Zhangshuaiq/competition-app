@@ -253,7 +253,7 @@ public class QuestionPreview implements ReloadPane{
                 }
             }
 
-            if (controlPane.getCurrentStage().getShowNumber() == 0) {
+            if (inner.getShowNumber() == 0) {
                 tiganLabel.setText(tiganLabel.getText().replace(inner.getOrder() + "、", ""));
             }
 
@@ -417,6 +417,9 @@ public class QuestionPreview implements ReloadPane{
                         }
                         tiganLabel.setText(String.join(sli, cs));
                         for (Node child : tiganBox.getChildren()) {
+                            if (child instanceof AnchorPane) {
+                                continue;
+                            }
                             Text text = (Text) child;
                             List<String> cs1 = new ArrayList<>();
                             for (char aChar : text.getText().toCharArray()) {
@@ -489,6 +492,14 @@ public class QuestionPreview implements ReloadPane{
                         ch.setTextAlignment(AlignmentUtil.getTextAlign(split1[13]));
                         ch.setLineSpacing(ScreenAdapter.calculateExY(Integer.parseInt(split1[14])));
                     }
+                }
+
+                // 如果有一行空行
+                if (split1.length > 16 && Boolean.parseBoolean(split1[16])) {
+                    Text blankLine = new Text("11");
+                    blankLine.setFont(font);
+                    blankLine.setVisible(false);
+                    tiganBox.getChildren().add(1, blankLine);
                 }
             }
 
@@ -613,6 +624,9 @@ public class QuestionPreview implements ReloadPane{
         scrollPane.setLayoutY(tiganBox.getLayoutY());
         scrollPane.setFitToWidth(true);
         for (Node child : tiganBox.getChildren()) {
+            if (child instanceof AnchorPane) {
+                continue;
+            }
             Text t = (Text) child;
             t.setWrappingWidth(tiganBox.getPrefWidth() - ScreenAdapter.calculateExX(40));
         }

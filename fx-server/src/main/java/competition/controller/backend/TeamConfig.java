@@ -273,14 +273,14 @@ public class TeamConfig {
         FileChooser fileChooser = new FileChooser();
 
         // 设置文件选择器的标题
-        fileChooser.setTitle("Select Excel File");
+        fileChooser.setTitle("选择文件");
 
         // 设置初始目录(可选)
         fileChooser.setInitialDirectory(new File(System.getProperty("user.home")));
 
         // 添加文件过滤器以只显示Excel文件
         FileChooser.ExtensionFilter extFilter =
-                new FileChooser.ExtensionFilter("Excel files (*.xls, *.xlsx)", "*.xls", "*.xlsx");
+                new FileChooser.ExtensionFilter("Excel 文件 (*.xls, *.xlsx)", "*.xls", "*.xlsx");
         fileChooser.getExtensionFilters().add(extFilter);
 
         File selectedFile = fileChooser.showOpenDialog(null);
@@ -312,6 +312,7 @@ public class TeamConfig {
                 teamsMapper.insert(teams);
             }
             TeamRuntime.setTeams(teamsList);
+            WsTeamMemberWaiter.initData();
         }
 
         // 显示最新的队伍信息

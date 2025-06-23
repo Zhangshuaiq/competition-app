@@ -159,6 +159,9 @@ public class QuestionPreviewAttr {
     @Resource
     private QuestionsMapper questionsMapper;
 
+    @FXML
+    private CheckBox spaceLineChoice;
+
 
     private static Questions questions;
 
@@ -359,6 +362,9 @@ public class QuestionPreviewAttr {
             if (split.length >= 16) {
                 wordSpaceInput.setText(split[15]);
             }
+            if (split.length >= 17) {
+                spaceLineChoice.setSelected(Boolean.valueOf(split[16]));
+            }
         }
     }
     
@@ -466,7 +472,8 @@ public class QuestionPreviewAttr {
                         nameUnderlineChoice.isSelected() + ConfigSpliter.SPLITER +
                         nameTextAlignSelector.getValue() + ConfigSpliter.SPLITER +
                         (StringUtils.isEmpty(nameSpaceInput.getText())?"0":nameSpaceInput.getText()) + ConfigSpliter.SPLITER +
-                        (StringUtils.isEmpty(wordSpaceInput.getText())?"0":wordSpaceInput.getText())
+                        (StringUtils.isEmpty(wordSpaceInput.getText())?"0":wordSpaceInput.getText()) + ConfigSpliter.SPLITER +
+                        spaceLineChoice.isSelected()
                         ;
         for (QuestionStyle questionStyle : questionStyleList) {
             if (questionStyle.getStageNo().equals(questions.getStageNumber())) {
@@ -514,7 +521,8 @@ public class QuestionPreviewAttr {
                         nameUnderlineChoice.isSelected() + ConfigSpliter.SPLITER +
                         nameTextAlignSelector.getValue() + ConfigSpliter.SPLITER +
                         (StringUtils.isEmpty(nameSpaceInput.getText())?"0":nameSpaceInput.getText()) + ConfigSpliter.SPLITER +
-                        (StringUtils.isEmpty(wordSpaceInput.getText())?"0":wordSpaceInput.getText())
+                        (StringUtils.isEmpty(wordSpaceInput.getText())?"0":wordSpaceInput.getText()) + ConfigSpliter.SPLITER +
+                        spaceLineChoice.isSelected()
                 ;
         for (QuestionStyle questionStyle : questionStyleList) {
             questionStyle.setStyle1(style1);
@@ -612,7 +620,8 @@ public class QuestionPreviewAttr {
                         nameUnderlineChoice.isSelected() + ConfigSpliter.SPLITER +
                         nameTextAlignSelector.getValue() + ConfigSpliter.SPLITER +
                         (StringUtils.isEmpty(nameSpaceInput.getText())?"0":nameSpaceInput.getText()) + ConfigSpliter.SPLITER +
-                        (StringUtils.isEmpty(wordSpaceInput.getText())?"0":wordSpaceInput.getText())
+                        (StringUtils.isEmpty(wordSpaceInput.getText())?"0":wordSpaceInput.getText()) + ConfigSpliter.SPLITER +
+                        spaceLineChoice.isSelected()
                 ;
         questionStyleList.get(questions.getSort()).setStyle1(style1);
         ExcelParser.write(ExcelParser.S_PATH, questionStyleList, QuestionStyle.class);

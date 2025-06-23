@@ -469,9 +469,14 @@ public class Model3Preview extends PreviewPane{
                         if (event.getButton() != MouseButton.PRIMARY){
                             return;
                         }
-                        
+                        // 展示对应的分值和时间
+                        String stageNumber = questions.getStageNumber();
+                        Stages belongStage = stagesMapper.selectOne(new LambdaQueryWrapper<Stages>()
+                            .eq(Stages::getSortVal, stageNumber)
+                        );
                         // 进入题目详情
                         questions.setHasAnswer(true);
+                        questions.setShowNumber(belongStage.getShowNumber());
 //                        Questions questions = CurrentQuestions.getQ(tihao);
 //                        CurrentQuestions.recordAnswer(tihao);
                         // 设置当前需要显示的题目
@@ -482,11 +487,7 @@ public class Model3Preview extends PreviewPane{
                                 Navigator.preview("/view/preview/QuestionPreview.fxml", "", "/view/style.css", true, true)
                         );
                         
-                        // 展示对应的分值和时间
-                        String stageNumber = questions.getStageNumber();
-                        Stages belongStage = stagesMapper.selectOne(new LambdaQueryWrapper<Stages>()
-                                .eq(Stages::getSortVal, stageNumber)
-                        );
+
                         controlPane.configTimeAndScore(belongStage, questions.getOrder().toString());
                         MusicPlayer.play(MusicResource.SHOW_QUESTION);
                         // 控制面板选择题号

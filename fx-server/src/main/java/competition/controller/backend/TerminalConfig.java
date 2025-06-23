@@ -365,7 +365,7 @@ public class TerminalConfig {
         SerialPortConnector instance = SerialPortConnector.getInstance();
         String response;
         int retryCount = 0;
-        while (StringUtils.isEmpty(response = instance.getResponse()) && retryCount < 10) {
+        while (StringUtils.isEmpty(response = instance.getResponse())) {
             try {
                 Thread.sleep(100);
             } catch (InterruptedException e) {
@@ -373,6 +373,7 @@ public class TerminalConfig {
             }
             retryCount++;
         }
+        System.out.println(retryCount + "次尝试后获取到响应: " + response);
         return response;
     }
 

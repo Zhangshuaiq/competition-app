@@ -179,10 +179,10 @@ public class TimeBoardPreview extends PreviewPane {
             messageHandler.sendQuestionTime(timeVal + "", "false");
             messageHandler.sendModel7Time(timeVal + "");
             for (int i = 0; i < Model7RuntimeData.getSeconds().size(); i++) {
-                Model7RuntimeData.getTimes().set(i, timeValue.replace(":", "分") + "秒");
+                Model7RuntimeData.getTimes().set(i, timeValue);
                 if (!Model7RuntimeData.getFinished().get(i)) {
                     Model7RuntimeData.getSeconds().set(i, timeVal);
-                    Model7RuntimeData.getFts().set(i, timeValue.replace(":", "分") + "秒");
+                    Model7RuntimeData.getFts().set(i, timeValue);
                 }
             }
 

@@ -9,9 +9,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 public class RuntimeQuestionStock {
-    
-//    private static List<Questions> questions =  ExcelParser.parse(ExcelParser.Q_PATH, Questions.class);
-    
+
     private static Map<String, List<Questions>> quesMap = new HashMap<>();
     
     public static List<Questions> loadQuestion(String path) {
