@@ -3,11 +3,11 @@
     <div>
       <ScoreBoard></ScoreBoard>
     </div>
-    <div style="margin-top: 10px; padding-left: 20px; font-weight: bold;  " >
+    <div style="margin-top: 10px; padding-left: 20px; font-weight: bold;" >
       <el-row>
         <el-col span="4"> 组号: {{ teamInfo.shortName }}</el-col>
-        <el-col span="4"> 组名: {{ teamInfo.fullName }}</el-col>
-        <el-col span="4"> 选手: {{ member }}</el-col>
+        <el-col span="6"> 组名: {{ teamInfo.fullName }}</el-col>
+        <el-col span="6"> 选手: {{ member }}</el-col>
         <el-col span="4"> 环节: {{ stage.name}}</el-col>
         <el-col span="4">
           <div v-if="second >= 0" style="color: red; ">
@@ -37,17 +37,39 @@
           <div v-else-if="questionItem.questionType === '单选题' || questionItem.questionType === '多选题' || questionItem.questionType === '不定项选择题'">
             <div class="question-name">
               <div v-if="questionItem.txbz === '4'">
-                {{ questionItem.order }} &nbsp; {{ questionItem.question }}
+                <div v-if="questionItem.showNumber === 1">
+                  {{ questionItem.order }}、&nbsp; {{ questionItem.question }}
+                </div>
+                <div v-else>
+                  {{ questionItem.question }}
+                </div>
               </div>
               <div v-if="questionItem.txbz === '3'">
-                {{ questionItem.order }} &nbsp;&nbsp; {{questionItem.questionType}} &nbsp;&nbsp; {{ questionItem.question }}
+                <div v-if="questionItem.showNumber === 1">
+                  {{ questionItem.order }}、&nbsp;&nbsp; {{questionItem.questionType}} &nbsp;&nbsp; {{ questionItem.question }}
+                </div>
+                <div v-else>
+                  {{questionItem.questionType}} &nbsp;&nbsp; {{ questionItem.question }}
+                </div>
               </div>
               <div v-if="questionItem.txbz === '2'">
-                {{ questionItem.order }} &nbsp; ({{questionItem.questionType}}) &nbsp; {{ questionItem.question }}
+                <div v-if="questionItem.showNumber === 1">
+                  {{ questionItem.order }}、&nbsp; ({{questionItem.questionType}}) &nbsp; {{ questionItem.question }}
+                </div>
+                <div v-else>
+                  ({{questionItem.questionType}}) &nbsp; {{ questionItem.question }}
+                </div>
+
               </div>
 
               <div v-if="questionItem.txbz === '1'">
-                {{ questionItem.order }} &nbsp; [{{questionItem.questionType}}] &nbsp; {{ questionItem.question }}
+                <div v-if="questionItem.showNumber === 1">
+                  {{ questionItem.order }}、&nbsp; [{{questionItem.questionType}}] &nbsp; {{ questionItem.question }}
+                </div>
+                <div v-else>
+                  [{{questionItem.questionType}}] &nbsp; {{ questionItem.question }}
+                </div>
+
               </div>
             </div>
             <div v-if="questionItem.resourceType === '视频'">
@@ -85,20 +107,42 @@
           </div>
           <div v-else>
             <div class="question-name">
+
               <div v-if="questionItem.txbz === '4'">
-                {{ questionItem.order }} &nbsp; {{ questionItem.question }}
+                <div v-if="questionItem.showNumber === 1">
+                  {{ questionItem.order }}、&nbsp; {{ questionItem.question }}
+                </div>
+                <div v-else>
+                  {{ questionItem.question }}
+                </div>
               </div>
               <div v-if="questionItem.txbz === '3'">
-                {{ questionItem.order }} &nbsp;&nbsp; {{questionItem.questionType}} &nbsp;&nbsp; {{ questionItem.question }}
+                <div v-if="questionItem.showNumber === 1">
+                  {{ questionItem.order }}、&nbsp;&nbsp; {{questionItem.questionType}} &nbsp;&nbsp; {{ questionItem.question }}
+                </div>
+                <div v-else>
+                  {{questionItem.questionType}} &nbsp;&nbsp; {{ questionItem.question }}
+                </div>
               </div>
               <div v-if="questionItem.txbz === '2'">
-                {{ questionItem.order }} &nbsp; ({{questionItem.questionType}}) &nbsp; {{ questionItem.question }}
+                <div v-if="questionItem.showNumber === 1">
+                  {{ questionItem.order }}、&nbsp; ({{questionItem.questionType}}) &nbsp; {{ questionItem.question }}
+                </div>
+                <div v-else>
+                  ({{questionItem.questionType}}) &nbsp; {{ questionItem.question }}
+                </div>
+
               </div>
 
               <div v-if="questionItem.txbz === '1'">
-                {{ questionItem.order }} &nbsp; [{{questionItem.questionType}}] &nbsp; {{ questionItem.question }}
-              </div>
+                <div v-if="questionItem.showNumber === 1">
+                  {{ questionItem.order }}、&nbsp; [{{questionItem.questionType}}] &nbsp; {{ questionItem.question }}
+                </div>
+                <div v-else>
+                  [{{questionItem.questionType}}] &nbsp; {{ questionItem.question }}
+                </div>
 
+              </div>
             </div>
             <div v-if="questionItem.resourceType === '视频'">
               <video width="320" height="240" controls muted>
@@ -274,6 +318,8 @@ export default {
     this.stage = this.$store.state.stage
     this.answerUrl  = ''
     this.isResourceAvailable = false;
+    console.log("yyyyyyyyyyyyyyy")
+    console.log(data)
     this.questionItem = data
     if (this.questionItem.resourceType === '图片') {
       this.resourceUrl = `${baseUrl}/resource/${this.questionItem.question}`
@@ -305,6 +351,8 @@ export default {
     this.teamInfo = JSON.parse(item)
     const data = this.$store.state.data
     this.stage = this.$store.state.stage
+    console.log("xxxxxxxxxxxxxxxxxx")
+    console.log(data)
     this.questionItem = data
     if (this.questionItem.resourceType === '图片') {
       this.resourceUrl = `${baseUrl}/resource/${this.questionItem.question}`

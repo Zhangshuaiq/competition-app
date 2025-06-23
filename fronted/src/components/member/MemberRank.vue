@@ -7,36 +7,36 @@
       <div class="member-answer" style="margin-top: 20px">
         <el-row>
           <el-row>
-            <el-col span="6">
+            <el-col span="4">
               <div class="answer-info">排名</div>
             </el-col>
-            <el-col span="6">
+            <el-col span="12">
               <div class="answer-info">团队</div>
             </el-col>
-            <el-col span="6">
+            <el-col span="4">
               <div class="answer-info">队员</div>
             </el-col>
-            <el-col span="6">
+            <el-col span="4">
               <div class="answer-info">分数</div>
             </el-col>
           </el-row>
           <el-col span="24" v-for="(item, index) in resultData.rank" :key="index">
             <div style="border-color: black; border-style: solid; border-width: 1px">
               <el-row>
-                <el-col span="6">
+                <el-col span="4">
                   <div class="score-info">{{item.rank}}</div>
                 </el-col>
-                <el-col span="6">
+                <el-col span="12">
                   <div class="score-info" style="width: 100%; /* 根据需要调整宽度 */
                             height: 60px;
                             white-space: nowrap;
                             overflow: hidden;
                             text-overflow: ellipsis;">{{item.team}}</div>
                 </el-col>
-                <el-col span="6">
+                <el-col span="4">
                   <div class="score-info">{{item.member}}</div>
                 </el-col>
-                <el-col span="6">
+                <el-col span="4">
                   <div class="score-info">{{item.score}}</div>
                 </el-col>
               </el-row>

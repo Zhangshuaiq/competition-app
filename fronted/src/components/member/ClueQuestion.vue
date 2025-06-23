@@ -3,11 +3,11 @@
     <div>
       <ScoreBoard></ScoreBoard>
     </div>
-    <div style="margin-top: 10px; padding-left: 20px; font-weight: bold;" >
+    <div style="margin-top: 10px; padding-left: 20px; font-weight: bold; ">
       <el-row>
         <el-col span="4"> 组号: {{ teamInfo.shortName }}</el-col>
-        <el-col span="4"> 组名: {{ teamInfo.fullName }}</el-col>
-        <el-col span="4"> 选手: {{ member }}</el-col>
+        <el-col span="6"> 组名: {{ teamInfo.fullName }}</el-col>
+        <el-col span="6"> 选手: {{ member }}</el-col>
         <el-col span="4"> 环节: {{ stage.name}}</el-col>
         <el-col span="4">
           <div v-if="second >= 0" style="color: red; ">
@@ -24,17 +24,39 @@
         <div id="question-info"  v-if="questionItem">
           <div id="question-name">
             <div v-if="questionItem.txbz === '4'">
-              {{ questionItem.order }} &nbsp; {{ questionItem.question }}
+              <div v-if="questionItem.showNumber === 1">
+                {{ questionItem.order }}、&nbsp; {{ questionItem.question }}
+              </div>
+              <div v-else>
+                {{ questionItem.question }}
+              </div>
             </div>
             <div v-if="questionItem.txbz === '3'">
-              {{ questionItem.order }} &nbsp;&nbsp; {{questionItem.questionType}} &nbsp;&nbsp; {{ questionItem.question }}
+              <div v-if="questionItem.showNumber === 1">
+                {{ questionItem.order }}、&nbsp;&nbsp; {{questionItem.questionType}} &nbsp;&nbsp; {{ questionItem.question }}
+              </div>
+              <div v-else>
+                {{questionItem.questionType}} &nbsp;&nbsp; {{ questionItem.question }}
+              </div>
             </div>
             <div v-if="questionItem.txbz === '2'">
-              {{ questionItem.order }} &nbsp; ({{questionItem.questionType}}) &nbsp; {{ questionItem.question }}
+              <div v-if="questionItem.showNumber === 1">
+                {{ questionItem.order }}、&nbsp; ({{questionItem.questionType}}) &nbsp; {{ questionItem.question }}
+              </div>
+              <div v-else>
+                ({{questionItem.questionType}}) &nbsp; {{ questionItem.question }}
+              </div>
+
             </div>
 
             <div v-if="questionItem.txbz === '1'">
-              {{ questionItem.order }} &nbsp; [{{questionItem.questionType}}] &nbsp; {{ questionItem.question }}
+              <div v-if="questionItem.showNumber === 1">
+                {{ questionItem.order }}、&nbsp; [{{questionItem.questionType}}] &nbsp; {{ questionItem.question }}
+              </div>
+              <div v-else>
+                [{{questionItem.questionType}}] &nbsp; {{ questionItem.question }}
+              </div>
+
             </div>
           </div>
           <div id="answer-selection">
