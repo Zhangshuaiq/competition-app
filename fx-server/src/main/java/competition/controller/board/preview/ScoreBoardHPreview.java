@@ -1,6 +1,5 @@
 package competition.controller.board.preview;
 
-import com.sun.javafx.stage.EmbeddedWindow;
 import competition.controller.ControlPane;
 import competition.controller.board.BoardPane;
 import competition.controller.board.match.ScoreBoardH;
@@ -19,9 +18,7 @@ import javafx.collections.ObservableList;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.geometry.Insets;
-import javafx.geometry.Pos;
 import javafx.scene.Node;
-import javafx.scene.Scene;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
@@ -29,14 +26,10 @@ import javafx.scene.paint.Color;
 import javafx.scene.text.*;
 import javafx.scene.transform.Shear;
 import javafx.stage.Stage;
-import javafx.stage.Window;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
 import javax.annotation.Resource;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -58,7 +51,7 @@ public class ScoreBoardHPreview extends PreviewPane implements BoardPane {
     private ScoreStyleMapper scoreStyleMapper;
 
     @FXML
-    public void initialize() {
+    public void initPage() {
         show();
     }
 

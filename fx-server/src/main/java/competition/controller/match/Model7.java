@@ -36,8 +36,7 @@ import java.util.concurrent.atomic.AtomicLong;
 
 // 竞技模式显示控制
 @Component
-@Scope("prototype")
-public class Model7 implements ReloadPane {
+public class Model7 implements ReloadPane<Stages> {
 
     @FXML
     private GridPane container;
@@ -50,7 +49,7 @@ public class Model7 implements ReloadPane {
     @Resource
     private Model3Mapper model3Mapper;
 
-    private static Stages currentStage;
+    private Stages currentStage;
 
     @Resource
     private QuestionsMapper questionsMapper;
@@ -68,8 +67,9 @@ public class Model7 implements ReloadPane {
     private String cachedTx = "3";      // 题型位置
     private String cachedTxbz = "4";    // 题型标注样式
 
-    public static void setCurrentStage(Stages stages) {
-        currentStage = stages;
+    @Override
+    public void setData(Stages data) {
+        currentStage = data;
     }
 
     public void stopTiming() {
@@ -81,7 +81,7 @@ public class Model7 implements ReloadPane {
     }
 
     @FXML
-    public void initialize() {
+    public void initPage() {
         // 初始化时加载题型标注配置
         loadQuestionTypeConfig();
         reload();

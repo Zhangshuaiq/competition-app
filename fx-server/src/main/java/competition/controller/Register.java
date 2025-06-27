@@ -25,7 +25,6 @@ import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 @Component
-@Scope("prototype")
 public class Register {
 
     @Resource

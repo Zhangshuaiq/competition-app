@@ -36,8 +36,7 @@ import java.util.*;
 
 // 风险题
 @Component
-@Scope("prototype")
-public class Model3Preview extends PreviewPane{
+public class Model3Preview extends PreviewPane<Integer>{
     
     @FXML
     private AnchorPane container;
@@ -65,25 +64,31 @@ public class Model3Preview extends PreviewPane{
     
     private Integer parentStageId;
     
-    private static Integer passedId;
-    
+
     private List<Stages> children;
     
     
     @Resource
     private WsMessageHandler messageHandler;
 
-    public static void setPassedId(Integer passedId) {
-        Model3Preview.passedId = passedId;
-    }
 
     @Override
     public Node getPane() {
         return container;
     }
-    
+
+    @Override
+    public void setData(Integer data) {
+        parentStageId = data;
+    }
+
+    @Override
+    public Integer getData() {
+        return parentStageId;
+    }
+
     @FXML
-    public void initialize(){
+    public void initPage(){
         BoardPane scoreBoardPreview = controlPane.getScoreBoardPreview();
         if (scoreBoardPreview != null) {
             scoreBoardPreview.getSelected().clear();
@@ -98,10 +103,7 @@ public class Model3Preview extends PreviewPane{
             }
         });
         
-        // id 内部化
-        this.parentStageId = passedId;
-        
-        
+
         try {
             container.setBackground(new Background(new BackgroundImage(
                     new Image(new FileInputStream(ImageResource.风险题背景())), BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT, BackgroundPosition.DEFAULT,
@@ -140,8 +142,7 @@ public class Model3Preview extends PreviewPane{
 
         // 外屏展示
         if (ExtendedScreen.hasShow()) {
-            Model3.setPassedId(this.parentStageId);
-            Object res = ExtendedScreen.showWithControl("/view/match/Model3.fxml");
+            Object res = ExtendedScreen.showWithControl("/view/match/Model3.fxml", parentStageId);
             if (res != null) {
                 controlPane.setQuestionPreview((Model3) res);
             }
@@ -482,9 +483,8 @@ public class Model3Preview extends PreviewPane{
                         // 设置当前需要显示的题目
                         // 内屏更新
                         questionsMapper.updateById(questions);
-                        QuestionPreviewPreview.setCurrent(questions);
                         controlPane.setPreviewPane(
-                                Navigator.preview("/view/preview/QuestionPreview.fxml", "", "/view/style.css", true, true)
+                                Navigator.preview( "/view/preview/QuestionPreview.fxml", "", "/view/style.css", true, questions)
                         );
                         
 
@@ -510,7 +510,4 @@ public class Model3Preview extends PreviewPane{
         this.reload();
     }
 
-    public Integer getParentStageId() {
-        return parentStageId;
-    }
 }

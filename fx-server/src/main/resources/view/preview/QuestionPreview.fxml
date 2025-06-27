@@ -13,7 +13,8 @@
 <?import javafx.scene.text.Text?>
 <?import javafx.scene.text.TextFlow?>
 
-<AnchorPane fx:id="container" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="competition.controller.preview.QuestionPreviewPreview">
+<AnchorPane fx:id="container" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8"
+            xmlns:fx="http://javafx.com/fxml/1" fx:controller="competition.controller.preview.QuestionPreviewPreview">
     <children>
         <ImageView fx:id="imageQ" fitHeight="300.0" fitWidth="517.0" pickOnBounds="true" preserveRatio="true" visible="false" />
 

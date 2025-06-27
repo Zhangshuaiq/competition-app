@@ -48,7 +48,7 @@ public class ScoreBoardH implements BoardPane {
     private ScoreStyleMapper scoreStyleMapper;
 
     @FXML
-    public void initialize() {
+    public void initPage() {
         show();
     }
 

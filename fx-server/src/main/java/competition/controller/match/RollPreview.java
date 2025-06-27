@@ -32,8 +32,7 @@ import java.util.List;
 
 // 滚动选题
 @Component
-@Scope("prototype")
-public class RollPreview implements ReloadPane {
+public class RollPreview implements ReloadPane<Stages> {
 
     @FXML
     private AnchorPane container;
@@ -55,15 +54,14 @@ public class RollPreview implements ReloadPane {
     private Text questionText, stageName;
 
 
-    private static Stages currentStage;
 
 
     private Stages inner;
 
-    public static void setCurrentStage(Stages currentStage) {
-        RollPreview.currentStage = currentStage;
+    @Override
+    public void setData(Stages data) {
+        inner = data;
     }
-
 
     @Override
     public AnchorPane getPane() {
@@ -71,8 +69,7 @@ public class RollPreview implements ReloadPane {
     }
 
     @FXML
-    public void initialize() {
-        inner = currentStage;
+    public void initPage() {
         showData();
     }
 
@@ -105,14 +102,14 @@ public class RollPreview implements ReloadPane {
         );
 
         String questionStyle = "560%%240%%800%%100%%false%%0x990000ff%%%%默认.ttf%%40%%false%%false%%false%%false%%居中对齐%%0###920%%400%%80%%80%%false%%0x990000ff%%%%默认.ttf%%36%%false%%true%%false%%false%%居中对齐%%0%%1";
-        if (!StringUtils.isEmpty(currentStage.getQuestionStyle())) {
-            questionStyle = currentStage.getQuestionStyle();
+        if (!StringUtils.isEmpty(inner.getQuestionStyle())) {
+            questionStyle = inner.getQuestionStyle();
         }
 
         String[] styleArr = questionStyle.split(ConfigSpliter.DIFFER);
 
         // 标题名称
-        stageName.setText(currentStage.getName());
+        stageName.setText(inner.getName());
         // 环节标题的字体颜色和背景色
         stageName.setFill(Color.valueOf(stageConfigAttrSplit[2]));
         title.setBackground(new Background(new BackgroundFill(Color.valueOf(stageConfigAttrSplit[3]), new CornerRadii(10), Insets.EMPTY)));

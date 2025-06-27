@@ -64,7 +64,7 @@ public class ScoreBoardVPreview extends PreviewPane implements BoardPane {
     private VBox right;
 
     @FXML
-    public void initialize() {
+    public void initPage() {
         show();
     }
 

@@ -30,7 +30,7 @@ public class EmptyPreview implements ReloadPane {
     private AnchorPane container;
 
     @FXML
-    public void initialize() {
+    public void initPage() {
         reload();
     }
 

@@ -31,8 +31,7 @@ import java.io.FileNotFoundException;
 import java.util.*;
 
 @Component
-@Scope("prototype")
-public class StageQuestionPreview implements ReloadPane {
+public class StageQuestionPreview implements ReloadPane<Stages> {
 
 
     @FXML
@@ -40,9 +39,6 @@ public class StageQuestionPreview implements ReloadPane {
 
     @Resource
     private ConfigsMapper configsMapper;
-
-    @Resource
-    private ControlPane controlPane;
 
     
     @Resource
@@ -56,8 +52,9 @@ public class StageQuestionPreview implements ReloadPane {
 
     private Stages inner;
 
-    public static void setCurrentStage(Stages currentStage) {
-        StageQuestionPreview.currentStage = currentStage;
+    @Override
+    public void setData(Stages data) {
+        inner = data;
     }
 
 
@@ -67,7 +64,7 @@ public class StageQuestionPreview implements ReloadPane {
     }
 
     @FXML
-    public void initialize() {
+    public void initPage() {
         inner = currentStage;
         showData();
     }

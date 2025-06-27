@@ -39,7 +39,6 @@ import java.util.concurrent.CompletableFuture;
 
 // 竞技模式显示控制
 @Component
-@Scope("prototype")
 public class Model7Preview extends PreviewPane {
 
     @FXML
@@ -92,7 +91,7 @@ public class Model7Preview extends PreviewPane {
     }
 
     @FXML
-    public void initialize() {
+    public void initPage() {
         BoardPane scoreBoardPreview = controlPane.getScoreBoardPreview();
         if (scoreBoardPreview != null) {
             scoreBoardPreview.getSelected().clear();
@@ -388,18 +387,15 @@ public class Model7Preview extends PreviewPane {
             ReloadPane questionPreview = controlPane.getQuestionPreview();
             if (questionPreview != null) {
                 if (questionPreview instanceof Model7) {
-                    Model7.setCurrentStage(inner);
                     questionPreview.reload(1, this.timeValue);
                 } else {
-                    Model7.setCurrentStage(inner);
-                    Object res = ExtendedScreen.showWithControl("/view/match/Model7.fxml");
+                    Object res = ExtendedScreen.showWithControl("/view/match/Model7.fxml", inner);
                     if (res != null) {
                         controlPane.setQuestionPreview((Model7) res);
                     }
                 }
             } else {
-                Model7.setCurrentStage(inner);
-                Object res = ExtendedScreen.showWithControl("/view/match/Model7.fxml");
+                Object res = ExtendedScreen.showWithControl("/view/match/Model7.fxml", inner);
                 if (res != null) {
                     controlPane.setQuestionPreview((Model7) res);
                 }

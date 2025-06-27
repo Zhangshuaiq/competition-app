@@ -38,8 +38,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Component
-@Scope("prototype")
-public class TeamRank implements ReloadPane {
+public class TeamRank implements ReloadPane<List<TeamMemberRankData>> {
 
     @FXML
     private AnchorPane container;
@@ -62,15 +61,15 @@ public class TeamRank implements ReloadPane {
     @Resource
     private RankStyleMapper rankStyleMapper;
 
-    private static List<TeamMemberRankData> rankList;
+    private List<TeamMemberRankData> rankList;
 
-    public static void setRankList(List<TeamMemberRankData> rankList) {
-        TeamRank.rankList = rankList;
+    @Override
+    public void setData(List<TeamMemberRankData> data) {
+        rankList = data;
     }
 
-
     @FXML
-    public void initialize() {
+    public void initPage() {
         this.showData();
     }
 

@@ -3,17 +3,18 @@ package competition.controller.preview.data;
 /**
  * 界面上展示的数据类
  */
-public class PageData {
+public class PreviewData {
 
     // preview 页面的类型，不同的类型展示的数据不一样
-    public Class<?> type;
+    private Class<?> type;
+    private int page;
 
-    public PageData(Class<?> type) {
+    public PreviewData(Class<?> type) {
         this.type = type;
     }
 
 
-    public static class NullData extends PageData {
+    public static class NullData extends PreviewData {
 
         public NullData() {
             super(Void.class);

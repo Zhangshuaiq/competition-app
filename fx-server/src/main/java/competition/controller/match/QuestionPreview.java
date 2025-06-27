@@ -36,8 +36,7 @@ import java.util.List;
 
 // 试题显示大屏内容
 @Component
-@Scope("prototype")
-public class QuestionPreview implements ReloadPane{
+public class QuestionPreview implements ReloadPane<Questions>{
 
 
     @FXML
@@ -74,13 +73,12 @@ public class QuestionPreview implements ReloadPane{
     private StagesMapper stagesMapper;
 
 
-    private static Questions current;
 
     private Questions inner;
 
-
-    public static void setCurrent(Questions current) {
-        QuestionPreview.current = current;
+    @Override
+    public void setData(Questions data) {
+        inner = data;
     }
 
     @Override
@@ -109,7 +107,7 @@ public class QuestionPreview implements ReloadPane{
     }
 
     @FXML
-    public void initialize() {
+    public void initPage() {
         scrollPane.addEventFilter(ScrollEvent.SCROLL, event -> {
             if (event.getDeltaY() != 0) {
                 event.consume();
@@ -124,7 +122,6 @@ public class QuestionPreview implements ReloadPane{
         scrollPane.toFront();
         tiganBox.toFront();
         backPane.toFront();
-        inner = current;
         showData();
     }
 
@@ -132,14 +129,6 @@ public class QuestionPreview implements ReloadPane{
     private void showData() {
         tiganBox.setPadding(new Insets(ScreenAdapter.calculateExX(20)));
         backPane.setPadding(new Insets(0, ScreenAdapter.calculateExX(20), 0, ScreenAdapter.calculateExX(20)));
-        inner = current;
-
-        // 是否自动计时
-//        if (currentStage.getTimeCType() == 2) {
-//            //controlPane.timeReset();
-//            controlPane.startTiming();
-//        }
-
         try {
             container.setBackground(new Background(new BackgroundImage(
                     new Image(new FileInputStream(ImageResource.答题背景())), BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT, BackgroundPosition.DEFAULT,

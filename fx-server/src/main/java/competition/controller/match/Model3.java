@@ -29,8 +29,7 @@ import java.util.*;
 
 // 风险题
 @Component
-@Scope("prototype")
-public class Model3 implements ReloadPane {
+public class Model3 implements ReloadPane<Integer> {
     
     @FXML
     private AnchorPane container;
@@ -52,17 +51,17 @@ public class Model3 implements ReloadPane {
     
     private Integer parentStageId;
     
-    private static Integer passedId;
-    
+
     private List<Stages> children;
 
-    
+    @Override
+    public void setData(Integer data) {
+        parentStageId = data;
+    }
+
     @Resource
     private QuestionsMapper questionsMapper;
 
-    public static void setPassedId(Integer passedId) {
-        Model3.passedId = passedId;
-    }
 
     @Override
     public Node getPane() {
@@ -70,11 +69,8 @@ public class Model3 implements ReloadPane {
     }
     
     @FXML
-    public void initialize(){
+    public void initPage(){
         // id 内部化
-        this.parentStageId = passedId;
-        
-        
         try {
             container.setBackground(new Background(new BackgroundImage(
                     new Image(new FileInputStream(ImageResource.风险题背景())), BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT, BackgroundPosition.DEFAULT,

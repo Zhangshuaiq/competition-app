@@ -44,8 +44,7 @@ import java.util.List;
 import java.util.Objects;
 
 @Component
-@Scope("prototype")
-public class CluePreview implements ReloadPane {
+public class CluePreview implements ReloadPane<Questions> {
 
 
     @FXML
@@ -79,13 +78,12 @@ public class CluePreview implements ReloadPane {
     private ConfigsMapper configsMapper;
 
 
-    private static Questions current;
 
     private Questions inner;
 
-
-    public static void setCurrent(Questions current) {
-        CluePreview.current = current;
+    @Override
+    public void setData(Questions data) {
+        inner = data;
     }
 
     @Override
@@ -113,7 +111,7 @@ public class CluePreview implements ReloadPane {
     }
 
     @FXML
-    public void initialize() {
+    public void initPage() {
         scrollPane.addEventFilter(ScrollEvent.SCROLL, event -> {
             if (event.getDeltaY() != 0) {
                 event.consume();
@@ -127,7 +125,6 @@ public class CluePreview implements ReloadPane {
         scrollPane.toFront();
         tiganBox.toFront();
         backPane.toFront();
-        inner = current;
         showData();
     }
 
@@ -135,7 +132,6 @@ public class CluePreview implements ReloadPane {
     private void showData() {
         tiganBox.setPadding(new Insets(ScreenAdapter.calculateExX(20)));
         backPane.setPadding(new Insets(0, ScreenAdapter.calculateExX(20), 0, ScreenAdapter.calculateExX(20)));
-        inner = current;
         Questions questions = JSON.parseObject(JSON.toJSONString(inner), Questions.class);
         questions.setChoiceA("");
         questions.setChoiceB("");

@@ -48,8 +48,7 @@ import java.util.Map;
 import java.util.Objects;
 
 @Component
-@Scope("prototype")
-public class CluePreviewPreview extends PreviewPane{
+public class CluePreviewPreview extends PreviewPane<Questions>{
 
 
     @FXML
@@ -86,15 +85,13 @@ public class CluePreviewPreview extends PreviewPane{
     @Resource
     private WsMessageHandler messageHandler;
 
-
-    private static Questions current;
-
     private Questions inner;
 
     private String txbz;
 
-    public static void setCurrent(Questions current) {
-        CluePreviewPreview.current = current;
+    @Override
+    public void setData(Questions inner) {
+        this.inner = inner;
     }
 
     @Override
@@ -136,7 +133,7 @@ public class CluePreviewPreview extends PreviewPane{
     }
 
     @FXML
-    public void initialize() {
+    public void initPage() {
         BoardPane scoreBoardPreview = controlPane.getScoreBoardPreview();
         if (scoreBoardPreview != null) {
             scoreBoardPreview.getSelected().clear();
@@ -157,7 +154,6 @@ public class CluePreviewPreview extends PreviewPane{
         scrollPane.toFront();
         tiganBox.toFront();
         backPane.toFront();
-        inner = current;
         buttonPane.prefWidth(Navigator.getWidth());
         buttonPane.setPrefWidth(Navigator.getWidth());
         buttonPane.setLayoutY(ScreenAdapter.calculateMainY(buttonPane.getLayoutY()));
@@ -167,7 +163,7 @@ public class CluePreviewPreview extends PreviewPane{
             public void handle(MouseEvent event) {
                 // 鼠标右键打开详细的界面设置
                 if (event.getButton() == MouseButton.SECONDARY) {
-                    QuestionPreviewAttr.setQuestions(current);
+                    QuestionPreviewAttr.setQuestions(inner);
                     Navigator.navigatorTo("/view/match/QuestionPreviewAttr.fxml", "", "/view/style.css", false, false);
                 }
             }
@@ -185,7 +181,6 @@ public class CluePreviewPreview extends PreviewPane{
     private void showData() {
         tiganBox.setPadding(new Insets(ScreenAdapter.calculateMainX(20)));
         backPane.setPadding(new Insets(0, ScreenAdapter.calculateMainX(20), 0, ScreenAdapter.calculateMainX(20)));
-        inner = current;
         Questions questions = JSON.parseObject(JSON.toJSONString(inner), Questions.class);
 
 //        questions.setChoiceA("");
@@ -196,9 +191,8 @@ public class CluePreviewPreview extends PreviewPane{
 //        questions.setChoiceF("");
 //        messageHandler.notifyPage("clue", questions);
         if (ExtendedScreen.hasShow()) {
-            CluePreview.setCurrent(inner);
             // 进入比赛
-            Object res = ExtendedScreen.showWithControl("/view/match/CluePreview.fxml");
+            Object res = ExtendedScreen.showWithControl("/view/match/CluePreview.fxml", inner);
             if (res != null) {
                 controlPane.setQuestionPreview((CluePreview) res);
             }

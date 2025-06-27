@@ -1,37 +1,28 @@
 package competition.controller.match;
 
-import competition.controller.preview.PreviewPane;
 import competition.entity.AnswerStyle;
 import competition.mapper.AnswerStyleMapper;
 import competition.modal.TeamResult;
 import competition.util.*;
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.geometry.Insets;
 import javafx.scene.Node;
 import javafx.scene.image.Image;
-import javafx.scene.input.MouseButton;
-import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
-import javafx.scene.text.FontPosture;
-import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 import javafx.scene.transform.Shear;
-import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
 import javax.annotation.Resource;
-import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.util.List;
 
 @Component
-@Scope("prototype")
-public class ShowAnswer implements ReloadPane {
+public class ShowAnswer implements ReloadPane<TeamResult> {
 
     @FXML
     private AnchorPane container;
@@ -51,14 +42,15 @@ public class ShowAnswer implements ReloadPane {
     @Resource
     private AnswerStyleMapper answerStyleMapper;
 
-    private static TeamResult teamResult;
+    private TeamResult teamResult;
 
-    public static void setTeamResult(TeamResult teamResult) {
-        ShowAnswer.teamResult = teamResult;
+    @Override
+    public void setData(TeamResult data) {
+        teamResult = data;
     }
 
     @FXML
-    public void initialize() {
+    public void initPage() {
         this.showData();
     }
 

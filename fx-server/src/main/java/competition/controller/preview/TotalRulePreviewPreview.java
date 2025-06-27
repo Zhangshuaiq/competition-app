@@ -54,7 +54,7 @@ public class TotalRulePreviewPreview extends PreviewPane {
 
 
     @FXML
-    public void initialize() {
+    public void initPage() {
         BoardPane scoreBoardPreview = controlPane.getScoreBoardPreview();
         if (scoreBoardPreview != null) {
             scoreBoardPreview.getSelected().clear();
@@ -78,7 +78,7 @@ public class TotalRulePreviewPreview extends PreviewPane {
 
         if (ExtendedScreen.hasShow()) {
             // 外屏展示总规则
-            Object res = ExtendedScreen.showWithControl("/view/match/TotalRulePreview.fxml");
+            Object res = ExtendedScreen.showWithControl("/view/match/TotalRulePreview.fxml", null);
             if (res != null) {
                 controlPane.setQuestionPreview((TotalRulePreview) res);
             }

@@ -40,12 +40,9 @@ public class TotalRulePreview implements ReloadPane {
     @Resource
     private ConfigsMapper configsMapper;
 
-    @Resource
-    private ControlPane controlPane;
-
 
     @FXML
-    public void initialize() {
+    public void initPage() {
         reload();
     }
 

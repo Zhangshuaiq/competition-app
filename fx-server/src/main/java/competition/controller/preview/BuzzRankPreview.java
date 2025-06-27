@@ -37,7 +37,6 @@ import java.nio.charset.StandardCharsets;
 import java.util.*;
 
 @Component
-@Scope("prototype")
 public class BuzzRankPreview extends PreviewPane{
 
     @FXML
@@ -68,7 +67,7 @@ public class BuzzRankPreview extends PreviewPane{
 
 
     @FXML
-    public void initialize() {
+    public void initPage() {
         BoardPane scoreBoardPreview = controlPane.getScoreBoardPreview();
         if (scoreBoardPreview != null) {
             scoreBoardPreview.getSelected().clear();
@@ -469,8 +468,7 @@ public class BuzzRankPreview extends PreviewPane{
         mapData.put("rank", rankList.subList(start, end));
         messageHandler.notifyPage("buzzRank", mapData);
         if (ExtendedScreen.hasShow()) {
-            BuzzRank.setRankList(rankList.subList(start, end));
-            Object res = ExtendedScreen.showWithControl("/view/match/BuzzRank.fxml");
+            Object res = ExtendedScreen.showWithControl("/view/match/BuzzRank.fxml", rankList.subList(start, end));
             if (res != null) {
                 controlPane.setQuestionPreview((BuzzRank) res);
             }

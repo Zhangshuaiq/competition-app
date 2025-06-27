@@ -28,9 +28,10 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
 import javax.annotation.Resource;
+import java.util.HashMap;
+import java.util.Map;
 
 @Component
-@Scope("prototype")
 public class BuzzResultPreview extends PreviewPane{
 
     @FXML
@@ -50,7 +51,7 @@ public class BuzzResultPreview extends PreviewPane{
     }
 
     @FXML
-    public void initialize() {
+    public void initPage() {
         inner = teams;
         innerStatus = success;
         this.shows();
@@ -64,8 +65,10 @@ public class BuzzResultPreview extends PreviewPane{
         ControlPane controlPane = JavaFxApplication.getApplicationContext().getBean(ControlPane.class);
         controlPane.setBuzzResultPreview(this);
         if (ExtendedScreen.hasShow()) {
-            BuzzResult.setTeams(inner, innerStatus);
-            Object res = ExtendedScreen.buzzResult("/view/match/BuzzResult.fxml", "", "/view/style.css", true);
+            Map<String, Object> data = new HashMap<>();
+            data.put("teams", inner);
+            data.put("success", innerStatus);
+            Object res = ExtendedScreen.buzzResult("/view/match/BuzzResult.fxml", "", "/view/style.css", true, data);
             if (res != null) {
                 controlPane.setBuzzResult((BuzzResult) res);
             }

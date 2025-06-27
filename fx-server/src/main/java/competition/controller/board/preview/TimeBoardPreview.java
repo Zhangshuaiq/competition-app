@@ -60,7 +60,7 @@ public class TimeBoardPreview extends PreviewPane {
     }
 
     @FXML
-    public void initialize() {
+    public void initPage() {
         stackPane.getChildren().add(teamScore);
         container.getChildren().add(stackPane);
         showData();

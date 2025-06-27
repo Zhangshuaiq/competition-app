@@ -38,13 +38,20 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
-
-// 试题显示主控屏幕
+// 试题显示主控屏幕 - 优化版本
 @Component
-@Scope("prototype")
-public class QuestionPreviewPreview extends PreviewPane {
+public class QuestionPreviewPreview extends PreviewPane<Questions> {
 
+    // 字体缓存，避免重复加载
+    private static final Map<String, Font> FONT_CACHE = new ConcurrentHashMap<>();
+
+    // UI组件复用
+    private Text choiceAText, choiceBText, choiceCText, choiceDText, choiceEText, choiceFText;
+    private Image currentQuestionImage, currentAnswerImage, currentBackgroundImage;
+    private boolean componentsInitialized = false;
 
     @FXML
     private VBox buzzBox;
@@ -63,85 +70,183 @@ public class QuestionPreviewPreview extends PreviewPane {
 
     @FXML
     public VBox tiganBox;
-    
+
     @FXML
     public ScrollPane scrollPane;
 
     @FXML
     private Text tiganLabel;
-    
+
     @FXML
     private ImageView imageQ;
 
-    
     @Resource
     private WsMessageHandler messageHandler;
 
     @Resource
     private ConfigsMapper configsMapper;
-    
+
     @Resource
     private StagesMapper stagesMapper;
 
-
-    private static Questions current;
-
     private Questions inner;
 
+    private EventHandler<MouseEvent> mouseClickHandler;
 
-    public static void setCurrent(Questions current) {
-        QuestionPreviewPreview.current = current;
-    }
 
     @Override
     public AnchorPane getPane() {
         return container;
     }
 
+    public void setData(Questions inner) {
+        this.inner = inner;
+    }
+
+    /**
+     * 初始化可复用的UI组件
+     */
+    private void initializeReusableComponents() {
+        if (componentsInitialized) {
+            return;
+        }
+
+        // 初始化选项Text组件
+        choiceAText = createChoiceText();
+        choiceBText = createChoiceText();
+        choiceCText = createChoiceText();
+        choiceDText = createChoiceText();
+        choiceEText = createChoiceText();
+        choiceFText = createChoiceText();
+
+        componentsInitialized = true;
+    }
+
+    /**
+     * 创建选项Text组件
+     */
+    private Text createChoiceText() {
+        Text text = new Text();
+        text.setVisible(false); // 默认隐藏
+        return text;
+    }
+
+    /**
+     * 获取缓存的字体
+     */
+    private Font getCachedFont(String fontName, double size) {
+        String key = fontName + "_" + size;
+        return FONT_CACHE.computeIfAbsent(key, k -> FontMap.load(fontName, size));
+    }
+
+    /**
+     * 安全地设置图片
+     */
+    private void setImageSafely(ImageView imageView, String imagePath, double width, double height) {
+        try {
+            // 释放旧图片
+            if (imageView == imageQ) {
+                if (currentQuestionImage != null) {
+                    currentQuestionImage = null;
+                }
+                currentQuestionImage = new Image(new FileInputStream(new File(imagePath)), width, height, false, true);
+                imageView.setImage(currentQuestionImage);
+            }
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+            imageView.setImage(null);
+        }
+    }
+
+    /**
+     * 安全地设置背景图片
+     */
+    private void setBackgroundImageSafely(Region region, String imagePath, double width, double height) {
+        try {
+            // 释放旧背景图片
+            if (currentBackgroundImage != null) {
+                currentBackgroundImage = null;
+            }
+            currentBackgroundImage = new Image(new FileInputStream(imagePath));
+            region.setBackground(new Background(new BackgroundImage(
+                    currentBackgroundImage, BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT,
+                    BackgroundPosition.DEFAULT, new BackgroundSize(width, height, false, false, false, false)
+            )));
+        } catch (FileNotFoundException e) {
+            region.setBackground(new Background(new BackgroundFill(Color.TRANSPARENT,
+                    new CornerRadii(ScreenAdapter.calculateMainX(10)), Insets.EMPTY)));
+        }
+    }
 
     @FXML
-    public void initialize() {
+    public void initPage() {
         container.toBack();
+
+        // 初始化可复用组件
+        initializeReusableComponents();
+
         BoardPane scoreBoardPreview = controlPane.getScoreBoardPreview();
         if (scoreBoardPreview != null) {
             scoreBoardPreview.getSelected().clear();
         }
+
+        // 配置ScrollPane
+        configureScrollPane();
+        PreviewStack.addPreview(this);
+
+        if (inner != null) {
+            String stageNumber = inner.getStageNumber();
+            Stages belongStage = stagesMapper.selectOne(new LambdaQueryWrapper<Stages>()
+                    .eq(Stages::getSortVal, stageNumber)
+            );
+            if (belongStage != null) {
+                inner.setShowNumber(belongStage.getShowNumber());
+            }
+        }
+
+
+        // 设置鼠标事件处理器
+        setupMouseHandler();
+
+        showData();
+    }
+
+    /**
+     * 配置ScrollPane
+     */
+    private void configureScrollPane() {
         scrollPane.addEventFilter(ScrollEvent.SCROLL, event -> {
             if (event.getDeltaY() != 0) {
                 event.consume();
             }
         });
 
-        
-        
         scrollPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
-        scrollPane.setStyle("-fx-background: rgba(0, 0, 0, 0); -fx-background-color: transparent; -fx-border-color: transparent; -fx-border-radius: 10px; -fx-border-width: 0; -fx-background-radius: 10px;");
         scrollPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
-      
+        scrollPane.setStyle("-fx-background: rgba(0, 0, 0, 0); -fx-background-color: transparent; " +
+                "-fx-border-color: transparent; -fx-border-radius: 10px; -fx-border-width: 0; " +
+                "-fx-background-radius: 10px;");
+
         scrollPane.toFront();
         tiganBox.toFront();
         backPane.toFront();
-        inner = current;
-        String stageNumber = inner.getStageNumber();
-        Stages belongStage = stagesMapper.selectOne(new LambdaQueryWrapper<Stages>()
-            .eq(Stages::getSortVal, stageNumber)
-        );
-        inner.setShowNumber(belongStage.getShowNumber());
-        PreviewStack.addPreview(this);
-        container.setOnMouseClicked(new EventHandler<MouseEvent>() {
+    }
+
+    /**
+     * 设置鼠标事件处理器
+     */
+    private void setupMouseHandler() {
+        mouseClickHandler = new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent event) {
-                // 鼠标右键打开详细的界面设置
                 if (event.getButton() == MouseButton.SECONDARY) {
-                    QuestionPreviewAttr.setQuestions(current);
+                    QuestionPreviewAttr.setQuestions(inner);
                     Navigator.navigatorTo("/view/match/QuestionPreviewAttr.fxml", "", "/view/style.css", false, false);
                 }
             }
-        });
-        
-        showData();
+        };
+        container.setOnMouseClicked(mouseClickHandler);
     }
-
 
     @Override
     public void scrollDown() {
@@ -156,13 +261,13 @@ public class QuestionPreviewPreview extends PreviewPane {
 
     @Override
     public void scrollDownAnswer() {
+        // 实现答案向下滚动逻辑
     }
 
     @Override
     public void scrollUpAnswer() {
+        // 实现答案向上滚动逻辑
     }
-
-
 
     @Override
     public void scrollUp() {
@@ -175,84 +280,165 @@ public class QuestionPreviewPreview extends PreviewPane {
         }
     }
 
-
+    /**
+     * 优化的showData方法
+     */
     private void showData() {
+        if (inner == null) {
+            return;
+        }
+
+        // 设置基本布局
         tiganBox.setPadding(new Insets(ScreenAdapter.calculateMainX(20)));
         backPane.setPadding(new Insets(0, ScreenAdapter.calculateMainX(20), 0, ScreenAdapter.calculateMainX(20)));
-        inner = current;
+
         Stages currentStage = controlPane.getCurrentStage();
-//        if (currentStage.getQuestionType() == 6) {
-//          if (currentStage.getM6() == 0) {
-//              messageHandler.notifyPage("model60", inner);
-//          }  else {
-//              messageHandler.notifyPage("model61", inner);
-//          }
-//        } else {
-//            messageHandler.notifyPage("question", inner);
-//        }
-        
+
+        // 处理扩展屏幕
+        handleExtendedScreen();
+
+        // 处理自动计时
+        handleAutoTiming(currentStage);
+
+        // 设置背景
+        setContainerBackground();
+
+        // 清理旧的选项组件（但不重新创建）
+        clearAndResetChoices();
+
+        // 获取配置
+        Configs configs = configsMapper.selectById(1);
+        if (configs == null || StringUtils.isEmpty(configs.getConfig())) {
+            return;
+        }
+
+        String cfgVal = configs.getConfig();
+        String[] split = cfgVal.split(ConfigSpliter.SPLITER);
+
+        // 应用基本样式
+        applyBasicStyles(split);
+
+        // 处理资源类型
+        handleResourceType(split);
+
+        // 处理题型和选项
+        handleQuestionTypeAndChoices(split);
+
+        // 处理样式
+        handleStyles();
+
+        // 处理阶段显示
+        handleStageDisplay(split);
+
+        // 配置滚动面板
+        configureScrollPaneLayout();
+
+        // 强制垃圾回收（谨慎使用）
+        suggestGarbageCollection();
+    }
+
+    /**
+     * 处理扩展屏幕
+     */
+    private void handleExtendedScreen() {
         if (ExtendedScreen.hasShow()) {
-            QuestionPreview.setCurrent(inner);
-            // 进入比赛
-            Object res = ExtendedScreen.showWithControl("/view/match/QuestionPreview.fxml");
+            Object res = ExtendedScreen.showWithControl("/view/match/QuestionPreview.fxml",inner);
             if (res != null) {
                 controlPane.setQuestionPreview((QuestionPreview) res);
             }
         }
+    }
 
-        // 是否自动计时
-        if (currentStage.getTimeCType() == 2) {
-            //controlPane.timeReset();
+    /**
+     * 处理自动计时
+     */
+    private void handleAutoTiming(Stages currentStage) {
+        if (currentStage != null && currentStage.getTimeCType() == 2) {
             controlPane.startTiming();
         }
-        
+    }
+
+    /**
+     * 设置容器背景
+     */
+    private void setContainerBackground() {
         try {
-            container.setBackground(new Background(new BackgroundImage(
-                    new Image(new FileInputStream(ImageResource.答题背景())), BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT, BackgroundPosition.DEFAULT,
-                    new BackgroundSize(Navigator.getWidth(), Navigator.getHeight(), false, false, false, false)
-            )));
-        } catch (FileNotFoundException e) {
-            container.setBackground(new Background(new BackgroundFill(Color.TRANSPARENT, new CornerRadii(ScreenAdapter.calculateMainX(10)), Insets.EMPTY)));
+            setBackgroundImageSafely(container, ImageResource.答题背景(),
+                    Navigator.getWidth(), Navigator.getHeight());
+        } catch (Exception e) {
+            container.setBackground(new Background(new BackgroundFill(Color.TRANSPARENT,
+                    new CornerRadii(ScreenAdapter.calculateMainX(10)), Insets.EMPTY)));
         }
+    }
 
-        tiganBox.getChildren().clear();
+    /**
+     * 清理并重置选项组件
+     */
+    private void clearAndResetChoices() {
+        // 从父容器中移除所有选项组件
+        tiganBox.getChildren().removeIf(node ->
+                node == choiceAText || node == choiceBText || node == choiceCText ||
+                        node == choiceDText || node == choiceEText || node == choiceFText);
 
-        Configs configs = configsMapper.selectById(1);
-        String cfgVal = configs.getConfig();
-        if (!StringUtils.isEmpty(cfgVal)) {
-            String[] split = cfgVal.split(ConfigSpliter.SPLITER);
+        // 重置选项组件状态
+        resetChoiceText(choiceAText);
+        resetChoiceText(choiceBText);
+        resetChoiceText(choiceCText);
+        resetChoiceText(choiceDText);
+        resetChoiceText(choiceEText);
+        resetChoiceText(choiceFText);
 
-            // 题干颜色
-            tiganLabel.setFill(Color.valueOf(split[0]));
-            // 题目行距
-            tiganLabel.setWrappingWidth(ScreenAdapter.calculateMainX(Integer.parseInt(split[7]) - 20) );
-            tiganLabel.setLineSpacing(ScreenAdapter.calculateMainY(Integer.parseInt(split[3])));
-            // 题目位置和大小
-            tiganLabel.prefWidth(ScreenAdapter.calculateMainX(Integer.parseInt(split[7]) - 20) );
+        // 确保题干标签在容器中
+        if (!tiganBox.getChildren().contains(tiganLabel)) {
+            tiganBox.getChildren().add(tiganLabel);
+        }
+    }
 
+    /**
+     * 重置选项Text组件
+     */
+    private void resetChoiceText(Text text) {
+        text.setVisible(false);
+        text.setText("");
+        text.getTransforms().clear();
+    }
 
+    /**
+     * 应用基本样式
+     */
+    private void applyBasicStyles(String[] split) {
+        if (split.length < 8) return;
 
-            tiganBox.setLayoutX(ScreenAdapter.calculateMainX(Integer.parseInt(split[5])));
-            tiganBox.setLayoutY(ScreenAdapter.calculateMainY(Integer.parseInt(split[6])));
-            tiganBox.setPrefWidth(ScreenAdapter.calculateMainX(Integer.parseInt(split[7])));
-            tiganBox.setPrefHeight(ScreenAdapter.calculateMainY(Integer.parseInt(split[8])));
-            tiganBox.setSpacing(ScreenAdapter.calculateMainY(Integer.parseInt(split[3])));
+        // 题干颜色
+        tiganLabel.setFill(Color.valueOf(split[0]));
+        // 题目行距和宽度
+        tiganLabel.setWrappingWidth(ScreenAdapter.calculateMainX(Integer.parseInt(split[7]) - 20));
+        tiganLabel.setLineSpacing(ScreenAdapter.calculateMainY(Integer.parseInt(split[3])));
+        tiganLabel.prefWidth(ScreenAdapter.calculateMainX(Integer.parseInt(split[7]) - 20));
 
-            
-            // 根据题型展示不同的内容
-            String questionType = inner.getQuestionType();
-            String resourceType = inner.getResourceType();
-            
-            if (resourceType.equals("音频")) {
+        // 题目位置和大小
+        tiganBox.setLayoutX(ScreenAdapter.calculateMainX(Integer.parseInt(split[5])));
+        tiganBox.setLayoutY(ScreenAdapter.calculateMainY(Integer.parseInt(split[6])));
+        tiganBox.setPrefWidth(ScreenAdapter.calculateMainX(Integer.parseInt(split[7])));
+        tiganBox.setPrefHeight(ScreenAdapter.calculateMainY(Integer.parseInt(split[8])));
+        tiganBox.setSpacing(ScreenAdapter.calculateMainY(Integer.parseInt(split[3])));
+    }
+
+    /**
+     * 处理资源类型
+     */
+    private void handleResourceType(String[] split) {
+        String resourceType = inner.getResourceType();
+
+        switch (resourceType) {
+            case "音频":
+            case "视频":
+            case "文字":
                 tiganLabel.setVisible(true);
                 tiganBox.setVisible(true);
                 imageQ.setVisible(false);
-            } else if (resourceType.equals("视频")) {
-                tiganLabel.setVisible(true);
-                tiganBox.setVisible(true);
-                imageQ.setVisible(false);
-            } else if (resourceType.equals("图片")) {
-                // 展示图片题目
+                break;
+            case "图片":
                 tiganLabel.setVisible(false);
                 tiganBox.setVisible(false);
                 imageQ.setVisible(true);
@@ -260,486 +446,514 @@ public class QuestionPreviewPreview extends PreviewPane {
                 imageQ.setLayoutY(0);
                 imageQ.setFitWidth(Navigator.getWidth());
                 imageQ.setFitHeight(Navigator.getHeight());
-                try {
-                    imageQ.setImage(new Image(new FileInputStream(new File( BaseDir.TIKU_RES_DIR +  inner.getQuestion())),
-                            Navigator.getWidth(), Navigator.getHeight(), false, true));
-                } catch (FileNotFoundException e) {
-                    e.printStackTrace();
-                }
-               
-            } else if (resourceType.equals("文字")) {
-                tiganLabel.setVisible(true);
-                tiganBox.setVisible(true);
-                imageQ.setVisible(false);
-            }
+                setImageSafely(imageQ, BaseDir.TIKU_RES_DIR + inner.getQuestion(),
+                        Navigator.getWidth(), Navigator.getHeight());
+                break;
+        }
+    }
 
-            // 题型
-            String tx = split[9];
-            // 题型标注
-            String txbz = split[10];
-            inner.setTxbz(txbz);
-            if (currentStage.getQuestionType() == 6) {
-                if (currentStage.getM6() == 0) {
-                    messageHandler.notifyPage("model60", inner);
-                }  else {
-                    messageHandler.notifyPage("model61", inner);
-                }
+    /**
+     * 处理题型和选项
+     */
+    private void handleQuestionTypeAndChoices(String[] split) {
+        // 处理题型标注
+        handleQuestionTypeLabel(split);
+
+        // 处理选项
+        String questionType = inner.getQuestionType();
+        if (questionType.equals("单选题") || questionType.equals("多选题") || questionType.equals("不定项选择题")) {
+            addChoicesWithLabels();
+        } else {
+            addChoicesWithoutLabels();
+        }
+    }
+
+    /**
+     * 处理题型标注
+     */
+    private void handleQuestionTypeLabel(String[] split) {
+        if (split.length < 11) return;
+
+        String tx = split[9];
+        String txbz = split[10];
+        inner.setTxbz(txbz);
+
+        Stages currentStage = controlPane.getCurrentStage();
+        if (currentStage != null && currentStage.getQuestionType() == 6) {
+            if (currentStage.getM6() == 0) {
+                messageHandler.notifyPage("model60", inner);
             } else {
-                messageHandler.notifyPage("question", inner);
+                messageHandler.notifyPage("model61", inner);
             }
-            // 无题型标注
-            if (txbz.equals("4")) {
-                tiganLabel.setText(inner.getOrder() + "、" + inner.getQuestion());
-            } else if (txbz.equals("3")) {
-                if (tx.equals("3")) {
-                    tiganLabel.setText(inner.getOrder() + "、" + inner.getQuestion() + " " + inner.getQuestionType());
-                } else if (tx.equals("2")) {
-                    tiganLabel.setText(inner.getOrder() + "、" + " " + inner.getQuestionType() + inner.getQuestion());
-                } else if (tx.equals("1")) {
-                    tiganLabel.setText(inner.getQuestionType() + "、" + " " + inner.getOrder() + inner.getQuestion());
-                }
+        } else {
+            messageHandler.notifyPage("question", inner);
+        }
 
-            } else if (txbz.equals("2")) {
-                if (tx.equals("3")) {
-                    tiganLabel.setText(inner.getOrder() + "、" + inner.getQuestion() + "(" + inner.getQuestionType() + ")");
-                } else if (tx.equals("2")) {
-                    tiganLabel.setText(inner.getOrder() + "、" + "(" + inner.getQuestionType() + ")" + inner.getQuestion());
-                } else if (tx.equals("1")) {
-                    tiganLabel.setText("(" + inner.getQuestionType() + ")" + inner.getOrder() + "、" + inner.getQuestion());
-                }
-            } else if (txbz.equals("1")) {
-                if (tx.equals("3")) {
-                    tiganLabel.setText(inner.getOrder() + "、" + inner.getQuestion() + "[" + inner.getQuestionType() + "]");
-                } else if (tx.equals("2")) {
-                    tiganLabel.setText(inner.getOrder() + "、" + "[" + inner.getQuestionType() + "]" + inner.getQuestion());
-                } else if (tx.equals("1")) {
-                    tiganLabel.setText("[" + inner.getQuestionType() + "]" + inner.getOrder() + "、" + inner.getQuestion());
-                }
+        // 构建题目文本
+        buildQuestionText(tx, txbz);
+    }
+
+    /**
+     * 构建题目文本
+     */
+    private void buildQuestionText(String tx, String txbz) {
+        String questionText = "";
+
+        switch (txbz) {
+            case "4": // 无题型标注
+                questionText = inner.getOrder() + "、" + inner.getQuestion();
+                break;
+            case "3": // 直接标注
+                questionText = buildDirectLabel(tx);
+                break;
+            case "2": // 括号标注
+                questionText = buildBracketLabel(tx);
+                break;
+            case "1": // 方括号标注
+                questionText = buildSquareBracketLabel(tx);
+                break;
+        }
+
+        // 处理题号显示
+        if (inner.getShowNumber() == 0) {
+            questionText = questionText.replace(inner.getOrder() + "、", "");
+        }
+
+        // 处理未注册状态
+        if (GlobalCache.MAX_TEAM_NUMBER <= 0) {
+            questionText += "(未注册)";
+        }
+
+        tiganLabel.setText(questionText.replace("\u00A0", " "));
+    }
+
+    private String buildDirectLabel(String tx) {
+        switch (tx) {
+            case "3":
+                return inner.getOrder() + "、" + inner.getQuestion() + " " + inner.getQuestionType();
+            case "2":
+                return inner.getOrder() + "、" + " " + inner.getQuestionType() + inner.getQuestion();
+            case "1":
+                return inner.getQuestionType() + "、" + " " + inner.getOrder() + inner.getQuestion();
+            default:
+                return inner.getOrder() + "、" + inner.getQuestion();
+        }
+    }
+
+    private String buildBracketLabel(String tx) {
+        switch (tx) {
+            case "3":
+                return inner.getOrder() + "、" + inner.getQuestion() + "(" + inner.getQuestionType() + ")";
+            case "2":
+                return inner.getOrder() + "、" + "(" + inner.getQuestionType() + ")" + inner.getQuestion();
+            case "1":
+                return "(" + inner.getQuestionType() + ")" + inner.getOrder() + "、" + inner.getQuestion();
+            default:
+                return inner.getOrder() + "、" + inner.getQuestion();
+        }
+    }
+
+    private String buildSquareBracketLabel(String tx) {
+        switch (tx) {
+            case "3":
+                return inner.getOrder() + "、" + inner.getQuestion() + "[" + inner.getQuestionType() + "]";
+            case "2":
+                return inner.getOrder() + "、" + "[" + inner.getQuestionType() + "]" + inner.getQuestion();
+            case "1":
+                return "[" + inner.getQuestionType() + "]" + inner.getOrder() + "、" + inner.getQuestion();
+            default:
+                return inner.getOrder() + "、" + inner.getQuestion();
+        }
+    }
+
+    /**
+     * 添加带标签的选项（A、B、C、D...）
+     */
+    private void addChoicesWithLabels() {
+        addChoiceIfNotEmpty(choiceAText, "A." + inner.getChoiceA(), inner.getChoiceA());
+        addChoiceIfNotEmpty(choiceBText, "B." + inner.getChoiceB(), inner.getChoiceB());
+        addChoiceIfNotEmpty(choiceCText, "C." + inner.getChoiceC(), inner.getChoiceC());
+        addChoiceIfNotEmpty(choiceDText, "D." + inner.getChoiceD(), inner.getChoiceD());
+        addChoiceIfNotEmpty(choiceEText, "E." + inner.getChoiceE(), inner.getChoiceE());
+        addChoiceIfNotEmpty(choiceFText, "F." + inner.getChoiceF(), inner.getChoiceF());
+    }
+
+    /**
+     * 添加不带标签的选项
+     */
+    private void addChoicesWithoutLabels() {
+        addChoiceIfNotEmpty(choiceAText, inner.getChoiceA(), inner.getChoiceA());
+        addChoiceIfNotEmpty(choiceBText, inner.getChoiceB(), inner.getChoiceB());
+        addChoiceIfNotEmpty(choiceCText, inner.getChoiceC(), inner.getChoiceC());
+        addChoiceIfNotEmpty(choiceDText, inner.getChoiceD(), inner.getChoiceD());
+        addChoiceIfNotEmpty(choiceEText, inner.getChoiceE(), inner.getChoiceE());
+        addChoiceIfNotEmpty(choiceFText, inner.getChoiceF(), inner.getChoiceF());
+    }
+
+    /**
+     * 如果选项内容不为空则添加选项
+     */
+    private void addChoiceIfNotEmpty(Text choiceText, String displayText, String choiceContent) {
+        if (!StringUtils.isEmpty(choiceContent)) {
+            choiceText.setText(displayText);
+            choiceText.setVisible(true);
+            if (!tiganBox.getChildren().contains(choiceText)) {
+                tiganBox.getChildren().add(choiceText);
             }
+        } else {
+            choiceText.setVisible(false);
+        }
+    }
 
-            if (inner.getShowNumber() == 0) {
-                tiganLabel.setText(tiganLabel.getText().replace(inner.getOrder() + "、", ""));
-            }
+    /**
+     * 处理样式
+     */
+    private void handleStyles() {
+        // 获取样式配置
+        String style1 = "200%%200%%1550%%200%%false%%0xffffcc00%%%%默认.ttf%%30%%false%%false%%false%%false%%左对齐%%10%%0";
+        String style2 = "200%%700%%1550%%60%%false%%0x990000ff%%%%默认.ttf%%36%%false%%false%%false%%false%%居中对齐%%0";
+        String style3 = "2%%2%%300%%100%%false%%0xb31a1aff%%%%默认.ttf%%24%%false%%false%%false%%false%%居中对齐%%";
 
-            if (GlobalCache.MAX_TEAM_NUMBER <= 0) {
-                tiganLabel.setText(tiganLabel.getText() + "(未注册)");
-               // StringProperty [bean: Text[id=tiganLabel, text="1、(单选题)男年满(         )周岁、女年满(         )周岁的孤老烈士遗属本人自愿的，可以在光荣院、敬老院集中供养。( )", x=0.0, y=0.0, alignment=LEFT, origin=BASELINE, boundsType=LOGICAL, lineSpacing=2.0, wrappingWidth=1530.0, font=Font[name=SimHei, family=SimHei, style=Regular, size=30.0], fontSmoothingType=GRAY, fill=0x000000ff], name: text, value: 1、(单选题)男年满(         )周岁、女年满(         )周岁的孤老烈士遗属本人自愿的，可以在光荣院、敬老院集中供养。( )]
-            }
-            tiganLabel.setText(tiganLabel.getText().replace("\u00A0", " "));
-            // 只有选择题展示选项
-            tiganBox.getChildren().add(tiganLabel);
-
-
-            if (questionType.equals("单选题") || questionType.equals("多选题") || questionType.equals("不定项选择题")) {
-                if (!StringUtils.isEmpty(inner.getChoiceA())) {
-                    Text chA = new Text("A." + inner.getChoiceA());
-                    chA.prefWidth(ScreenAdapter.calculateMainX(Integer.parseInt(split[7])));
-                    chA.setWrappingWidth(ScreenAdapter.calculateMainX(Integer.parseInt(split[7])));
-                    chA.setFill(Color.valueOf(split[0]));
-                    tiganBox.getChildren().add(chA);
+        List<QuestionStyle> parse = ExcelParser.parse(ExcelParser.S_PATH, QuestionStyle.class);
+        if (!parse.isEmpty() && inner.getSort() < parse.size()) {
+            QuestionStyle questionStyle = parse.get(inner.getSort());
+            if (questionStyle != null) {
+                if (!StringUtils.isEmpty(questionStyle.getStyle1())) {
+                    style1 = questionStyle.getStyle1();
                 }
-
-                if (!StringUtils.isEmpty(inner.getChoiceB())) {
-                    Text chB = new Text("B." + inner.getChoiceB());
-                    chB.prefWidth(ScreenAdapter.calculateMainX(Integer.parseInt(split[7])));
-                    chB.setWrappingWidth(ScreenAdapter.calculateMainX(Integer.parseInt(split[7])));
-                    chB.setFill(Color.valueOf(split[0]));
-                    tiganBox.getChildren().add(chB);
+                if (!StringUtils.isEmpty(questionStyle.getStyle2())) {
+                    style2 = questionStyle.getStyle2();
                 }
-
-                if (!StringUtils.isEmpty(inner.getChoiceC())) {
-                    Text chA = new Text("C." + inner.getChoiceC());
-                    chA.prefWidth(ScreenAdapter.calculateMainX(Integer.parseInt(split[7])));
-                    chA.setWrappingWidth(ScreenAdapter.calculateMainX(Integer.parseInt(split[7])));
-                    chA.setFill(Color.valueOf(split[0]));
-                    tiganBox.getChildren().add(chA);
-                }
-
-                if (!StringUtils.isEmpty(inner.getChoiceD())) {
-                    Text chA = new Text("D." + inner.getChoiceD());
-                    chA.prefWidth(ScreenAdapter.calculateMainX(Integer.parseInt(split[7])));
-                    chA.setWrappingWidth(ScreenAdapter.calculateMainX(Integer.parseInt(split[7])));
-                    chA.setFill(Color.valueOf(split[0]));
-                    tiganBox.getChildren().add(chA);
-                }
-
-                if (!StringUtils.isEmpty(inner.getChoiceE())) {
-                    Text chA = new Text("E." + inner.getChoiceE());
-                    chA.prefWidth(ScreenAdapter.calculateMainX(Integer.parseInt(split[7])));
-                    chA.setWrappingWidth(ScreenAdapter.calculateMainX(Integer.parseInt(split[7])));
-                    chA.setFill(Color.valueOf(split[0]));
-                    tiganBox.getChildren().add(chA);
-                }
-
-                if (!StringUtils.isEmpty(inner.getChoiceF())) {
-                    Text chA = new Text("F." + inner.getChoiceF());
-                    chA.prefWidth(ScreenAdapter.calculateMainX(Integer.parseInt(split[7])));
-                    chA.setWrappingWidth(ScreenAdapter.calculateMainX(Integer.parseInt(split[7])));
-                    chA.setFill(Color.valueOf(split[0]));
-                    tiganBox.getChildren().add(chA);
-                }
-
-            } 
-            else {
-                // 不显示题号
-                if (!StringUtils.isEmpty(inner.getChoiceA())) {
-                    Text chA = new Text(inner.getChoiceA());
-                    chA.prefWidth(ScreenAdapter.calculateMainX(Integer.parseInt(split[7])));
-                    chA.setWrappingWidth(ScreenAdapter.calculateMainX(Integer.parseInt(split[7])));
-                    chA.setFill(Color.valueOf(split[0]));
-                    tiganBox.getChildren().add(chA);
-                }
-
-                if (!StringUtils.isEmpty(inner.getChoiceB())) {
-                    Text chB = new Text(inner.getChoiceB());
-                    chB.prefWidth(ScreenAdapter.calculateMainX(Integer.parseInt(split[7])));
-                    chB.setWrappingWidth(ScreenAdapter.calculateMainX(Integer.parseInt(split[7])));
-                    chB.setFill(Color.valueOf(split[0]));
-                    tiganBox.getChildren().add(chB);
-                }
-
-                if (!StringUtils.isEmpty(inner.getChoiceC())) {
-                    Text chA = new Text(inner.getChoiceC());
-                    chA.prefWidth(ScreenAdapter.calculateMainX(Integer.parseInt(split[7])));
-                    chA.setWrappingWidth(ScreenAdapter.calculateMainX(Integer.parseInt(split[7])));
-                    chA.setFill(Color.valueOf(split[0]));
-                    tiganBox.getChildren().add(chA);
-                }
-
-                if (!StringUtils.isEmpty(inner.getChoiceD())) {
-                    Text chA = new Text(inner.getChoiceD());
-                    chA.prefWidth(ScreenAdapter.calculateMainX(Integer.parseInt(split[7])));
-                    chA.setWrappingWidth(ScreenAdapter.calculateMainX(Integer.parseInt(split[7])));
-                    chA.setFill(Color.valueOf(split[0]));
-                    tiganBox.getChildren().add(chA);
-                }
-
-                if (!StringUtils.isEmpty(inner.getChoiceE())) {
-                    Text chA = new Text(inner.getChoiceE());
-                    chA.prefWidth(ScreenAdapter.calculateMainX(Integer.parseInt(split[7])));
-                    chA.setWrappingWidth(ScreenAdapter.calculateMainX(Integer.parseInt(split[7])));
-                    chA.setFill(Color.valueOf(split[0]));
-                    tiganBox.getChildren().add(chA);
-                }
-
-                if (!StringUtils.isEmpty(inner.getChoiceF())) {
-                    Text chA = new Text(inner.getChoiceF());
-                    chA.prefWidth(ScreenAdapter.calculateMainX(Integer.parseInt(split[7])));
-                    chA.setWrappingWidth(ScreenAdapter.calculateMainX(Integer.parseInt(split[7])));
-                    chA.setFill(Color.valueOf(split[0]));
-                    tiganBox.getChildren().add(chA);
-                }
-            }
-
-            
-            // 答案
-            daanLabel.setText(split[4] + " " + inner.getAnswer());
-            backPane.setLayoutX((tiganBox.getLayoutX()));
-            backPane.setLayoutY(tiganBox.getLayoutY() + tiganBox.getPrefHeight() + ScreenAdapter.calculateMainY(10));
-            // 答案颜色
-            daanLabel.setFill(Color.valueOf(split[1]));
-
-            
-            String style1 = "200%%200%%1550%%200%%false%%0xffffcc00%%%%默认.ttf%%30%%false%%false%%false%%false%%左对齐%%10%%0";
-            String style2 = "200%%700%%1550%%60%%false%%0x990000ff%%%%默认.ttf%%36%%false%%false%%false%%false%%居中对齐%%0";
-            String style3 = "2%%2%%300%%100%%false%%0xb31a1aff%%%%默认.ttf%%24%%false%%false%%false%%false%%居中对齐%%";
-            List<QuestionStyle> parse = ExcelParser.parse(ExcelParser.S_PATH, QuestionStyle.class);
-            if (!parse.isEmpty()) {
-                QuestionStyle questionStyle = parse.get(inner.getSort());
-                if (questionStyle != null) {
-                    if (!StringUtils.isEmpty(questionStyle.getStyle1())) {
-                        style1 = questionStyle.getStyle1();
-                    }
-
-                    // 答案样式
-                    
-                    if (!StringUtils.isEmpty(questionStyle.getStyle2())) {
-                        style2 = questionStyle.getStyle2();
-                    }
-
-                    // 标题展示
-                    if (!StringUtils.isEmpty(questionStyle.getStyle3())) {
-                        style3 = questionStyle.getStyle3();
-                    }
+                if (!StringUtils.isEmpty(questionStyle.getStyle3())) {
+                    style3 = questionStyle.getStyle3();
                 }
             }
+        }
 
-            {
-                String[] split1 = style1.split(ConfigSpliter.SPLITER);
-                tiganBox.setLayoutX(ScreenAdapter.calculateMainX(Integer.parseInt(split1[0])));
-                tiganBox.setLayoutY(ScreenAdapter.calculateMainY(Integer.parseInt(split1[1])));
-                tiganBox.setPrefWidth(ScreenAdapter.calculateMainX(Integer.parseInt(split1[2])));
-                tiganBox.setPrefHeight(ScreenAdapter.calculateMainY(Integer.parseInt(split1[3])));
-                if (split1.length >= 16) {
-                    int wordSpace = Integer.parseInt(split1[15]);
-                    if (wordSpace > 0) {
-                        String sli = "";
-                        for (int m = 0; m < wordSpace; m++) {
-                            sli = sli + " ";
-                        }
-                        List<String> cs = new ArrayList<>();
-                        for (char aChar : tiganLabel.getText().toCharArray()) {
-                            cs.add(aChar + "");
-                        }
-                        tiganLabel.setText(String.join(sli, cs));
-                        for (Node child : tiganBox.getChildren()) {
-                            if (child instanceof AnchorPane) {
-                                continue;
-                            }
-                            Text text = (Text) child;
-                            List<String> cs1 = new ArrayList<>();
-                            for (char aChar : text.getText().toCharArray()) {
-                                cs1.add(aChar + "");
-                            }
-                            text.setText(String.join(sli, cs1));
-                        }
-                    }
-                }
+        // 应用样式
+        applyStyle1(style1);
+        applyStyle2(style2);
+        applyStyle3(style3);
+    }
 
-                if (Boolean.valueOf(split1[4])) {
-                    // 填充背景图片
-                    if (!StringUtils.isEmpty(split1[6])) {
-                        try {
-                            tiganBox.setBackground(new Background(new BackgroundImage(new Image(new FileInputStream(split1[6])),
-                                    BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT, BackgroundPosition.DEFAULT,
-                                    new BackgroundSize(
-                                            ScreenAdapter.calculateMainX(Integer.parseInt(split1[2])),
-                                            ScreenAdapter.calculateMainY(Integer.parseInt(split1[3])),
-                                            false, false, false, false))));
-                        } catch (FileNotFoundException e) {
-                            tiganBox.setBackground(new Background(new BackgroundFill(Color.TRANSPARENT, new CornerRadii(ScreenAdapter.calculateMainX(10)), Insets.EMPTY)));
+    /**
+     * 应用样式1（题干样式）
+     */
+    private void applyStyle1(String style1) {
+        String[] split1 = style1.split(ConfigSpliter.SPLITER);
+        if (split1.length < 15) return;
 
-                        }
-                    } else {
-                        tiganBox.setBackground(new Background(new BackgroundFill(Color.TRANSPARENT, new CornerRadii(ScreenAdapter.calculateMainX(10)), Insets.EMPTY)));
-                    }
-                } else {
-                    // 填充背景颜色
-                    tiganBox.setBackground(new Background(new BackgroundFill(Color.valueOf(split1[5]), new CornerRadii(ScreenAdapter.calculateMainX(10)), Insets.EMPTY)));
-                }
+        tiganBox.setLayoutX(ScreenAdapter.calculateMainX(Integer.parseInt(split1[0])));
+        tiganBox.setLayoutY(ScreenAdapter.calculateMainY(Integer.parseInt(split1[1])));
+        tiganBox.setPrefWidth(ScreenAdapter.calculateMainX(Integer.parseInt(split1[2])));
+        tiganBox.setPrefHeight(ScreenAdapter.calculateMainY(Integer.parseInt(split1[3])));
 
-                tiganBox.setSpacing(ScreenAdapter.calculateMainY(Integer.parseInt(split1[14])));
-                Font font = FontMap.load(split1[7] ,ScreenAdapter.calculateMainX(Integer.parseInt(split1[8])));
-                tiganLabel.setFont(font);
-                tiganLabel.setUnderline(Boolean.valueOf(split1[12]));
-                tiganLabel.setStrikethrough(Boolean.valueOf(split1[9]));
-                if (Boolean.valueOf(split1[10])) {
-                    tiganLabel.setStroke(Color.valueOf(split[0]));
-                    tiganLabel.setStrokeWidth(1);
-                } else {
-                    tiganLabel.setStroke(null);
+        // 处理字间距
+        if (split1.length >= 16) {
+            handleWordSpacing(Integer.parseInt(split1[15]));
+        }
 
-                }
-                tiganLabel.getTransforms().clear();
-                if (Boolean.valueOf(split1[11])) {
-                    tiganLabel.getTransforms().add(new Shear(-0.3, 0));
-                }
-                tiganLabel.setTextAlignment(AlignmentUtil.getTextAlign(split1[13]));
-                tiganLabel.setLineSpacing(ScreenAdapter.calculateMainY(Integer.parseInt(split1[14])));
+        // 设置背景
+        setRegionBackground(tiganBox, split1);
 
-                for (Node child : tiganBox.getChildren()) {
-                    child.prefWidth( ScreenAdapter.calculateMainX(Integer.parseInt(split1[2])));
-                    if (child instanceof Text) {
-                        Text ch = (Text) child;
-                        ch.setWrappingWidth( ScreenAdapter.calculateMainX(Integer.parseInt(split1[2])));
-                        ch.setFont(font);
-                        ch.setUnderline(Boolean.valueOf(split1[12]));
-                        ch.setStrikethrough(Boolean.valueOf(split1[9]));
-                        if (Boolean.valueOf(split1[10])) {
-                            ch.setStroke(ch.getFill());
-                            ch.setStrokeWidth(1);
-                        } else {
-                            ch.setStroke(null);
+        // 设置间距和字体
+        tiganBox.setSpacing(ScreenAdapter.calculateMainY(Integer.parseInt(split1[14])));
+        Font font = getCachedFont(split1[7], ScreenAdapter.calculateMainX(Integer.parseInt(split1[8])));
 
-                        }
-                        ch.getTransforms().clear();
-                        if (Boolean.valueOf(split1[11])) {
-                            ch.getTransforms().add(new Shear(-0.3, 0));
-                        }
-                        ch.setTextAlignment(AlignmentUtil.getTextAlign(split1[13]));
-                        ch.setLineSpacing(ScreenAdapter.calculateMainY(Integer.parseInt(split1[14])));
-                    }
-                }
-                // 如果有一行空行
-                if (split1.length > 16 && Boolean.parseBoolean(split1[16])) {
-                    Text blankLine = new Text("11");
-                    blankLine.setFont(font);
-                    blankLine.setVisible(false);
-                    tiganBox.getChildren().add(1, blankLine);
+        // 应用字体样式到所有文本组件
+        applyFontStyleToAllTexts(font, split1);
+
+        // 处理空行
+        if (split1.length > 16 && Boolean.parseBoolean(split1[16])) {
+            addBlankLine(font);
+        }
+    }
+
+    /**
+     * 处理字间距
+     */
+    private void handleWordSpacing(int wordSpace) {
+        if (wordSpace > 0) {
+            String spacer = " ";
+            applyWordSpacing(tiganLabel, spacer);
+
+            for (Node child : tiganBox.getChildren()) {
+                if (child instanceof Text && child != tiganLabel) {
+                    applyWordSpacing((Text) child, spacer);
                 }
             }
+        }
+    }
 
-            {
-                String[] split1 = style2.split(ConfigSpliter.SPLITER);
-
-                backPane.setLayoutX( ScreenAdapter.calculateMainX(Integer.parseInt(split1[0])));
-                backPane.setLayoutY( ScreenAdapter.calculateMainY(Integer.parseInt(split1[1])));
-                backPane.setPrefWidth( ScreenAdapter.calculateMainX(Integer.parseInt(split1[2])));
-                backPane.setPrefHeight( ScreenAdapter.calculateMainY(Integer.parseInt(split1[3])));
-
-                if (Boolean.valueOf(split1[4])) {
-                    // 填充背景图片
-                    if (!StringUtils.isEmpty(split1[6])) {
-                        try {
-                            backPane.setBackground(new Background(new BackgroundImage(new Image(new FileInputStream(split1[6])),
-                                    BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT, BackgroundPosition.DEFAULT,
-                                    new BackgroundSize(
-                                            ScreenAdapter.calculateMainX(Integer.parseInt(split1[2])),
-                                            ScreenAdapter.calculateMainY(Integer.parseInt(split1[3])),
-                                            false, false, false, false))));
-                        } catch (FileNotFoundException e) {
-                            backPane.setBackground(new Background(new BackgroundFill(Color.TRANSPARENT, new CornerRadii(ScreenAdapter.calculateMainX(10)), Insets.EMPTY)));
-                        }
-                    } else {
-                        backPane.setBackground(new Background(new BackgroundFill(Color.TRANSPARENT, new CornerRadii(ScreenAdapter.calculateMainX(10)), Insets.EMPTY)));
-                    }
-                } else {
-                    // 填充背景颜色
-                    backPane.setBackground(new Background(new BackgroundFill(Color.valueOf(split1[5]), new CornerRadii(ScreenAdapter.calculateMainX(10)), Insets.EMPTY)));
-                }
-
-
-                daanLabel.setWrappingWidth(ScreenAdapter.calculateMainX(Integer.parseInt(split1[2]) - 40));
-                //daanLabel.prefHeight(ScreenAdapter.calculateMainY(Integer.parseInt(split1[3])));
-                daanLabel.setLineSpacing(ScreenAdapter.calculateMainY(Integer.parseInt(split1[14])));
-                Font font = FontMap.load(split1[7], ScreenAdapter.calculateMainX(Integer.parseInt(split1[8])));
-                daanLabel.setFont(font);
-                daanLabel.setUnderline(Boolean.valueOf(split1[12]));
-                daanLabel.setStrikethrough(Boolean.valueOf(split1[9]));
-                if (Boolean.valueOf(split1[10])) {
-                    daanLabel.setStroke(Color.valueOf(split[1]));
-                    daanLabel.setStrokeWidth(1);
-                } else {
-                    daanLabel.setStroke(null);
-                }
-                daanLabel.getTransforms().clear();
-                if (Boolean.valueOf(split1[11])) {
-                    daanLabel.getTransforms().add(new Shear(-0.3, 0));
-                }
-                daanLabel.setTextAlignment(AlignmentUtil.getTextAlign(split1[13]));
-                daanLabel.setLineSpacing(ScreenAdapter.calculateMainY(Integer.parseInt(split1[14])));
+    /**
+     * 应用字间距到文本
+     */
+    private void applyWordSpacing(Text text, String spacer) {
+        String originalText = text.getText();
+        if (!StringUtils.isEmpty(originalText)) {
+            List<String> chars = new ArrayList<>();
+            for (char c : originalText.toCharArray()) {
+                chars.add(String.valueOf(c));
             }
+            text.setText(String.join(spacer, chars));
+        }
+    }
 
-            stagePane.setVisible(Boolean.valueOf(split[12]));
+    /**
+     * 设置区域背景
+     */
+    private void setRegionBackground(Region region, String[] split1) {
+        if (split1.length < 7) return;
+
+        if (Boolean.valueOf(split1[4])) {
+            // 背景图片
+            if (!StringUtils.isEmpty(split1[6])) {
+                setBackgroundImageSafely(region, split1[6],
+                        ScreenAdapter.calculateMainX(Integer.parseInt(split1[2])),
+                        ScreenAdapter.calculateMainY(Integer.parseInt(split1[3])));
+            } else {
+                region.setBackground(new Background(new BackgroundFill(Color.TRANSPARENT,
+                        new CornerRadii(ScreenAdapter.calculateMainX(10)), Insets.EMPTY)));
+            }
+        } else {
+            // 背景颜色
+            region.setBackground(new Background(new BackgroundFill(Color.valueOf(split1[5]),
+                    new CornerRadii(ScreenAdapter.calculateMainX(10)), Insets.EMPTY)));
+        }
+    }
+
+    /**
+     * 应用字体样式到所有文本组件
+     */
+    private void applyFontStyleToAllTexts(Font font, String[] split1) {
+        // 应用到题干标签
+        applyTextStyle(tiganLabel, font, split1);
+
+        // 应用到所有选项
+        applyTextStyle(choiceAText, font, split1);
+        applyTextStyle(choiceBText, font, split1);
+        applyTextStyle(choiceCText, font, split1);
+        applyTextStyle(choiceDText, font, split1);
+        applyTextStyle(choiceEText, font, split1);
+        applyTextStyle(choiceFText, font, split1);
+
+        // 设置包装宽度
+        double wrapWidth = ScreenAdapter.calculateMainX(Integer.parseInt(split1[2]));
+        setWrappingWidthForAllTexts(wrapWidth);
+    }
+
+    /**
+     * 应用文本样式
+     */
+    private void applyTextStyle(Text text, Font font, String[] split1) {
+        if (split1.length < 15) return;
+
+        text.setFont(font);
+        text.setUnderline(Boolean.valueOf(split1[12]));
+        text.setStrikethrough(Boolean.valueOf(split1[9]));
+
+        if (Boolean.valueOf(split1[10])) {
+            text.setStroke(text.getFill());
+            text.setStrokeWidth(1);
+        } else {
+            text.setStroke(null);
+        }
+
+        text.getTransforms().clear();
+        if (Boolean.valueOf(split1[11])) {
+            text.getTransforms().add(new Shear(-0.3, 0));
+        }
+
+        text.setTextAlignment(AlignmentUtil.getTextAlign(split1[13]));
+        text.setLineSpacing(ScreenAdapter.calculateMainY(Integer.parseInt(split1[14])));
+    }
+
+    /**
+     * 设置所有文本的包装宽度
+     */
+    private void setWrappingWidthForAllTexts(double width) {
+        tiganLabel.setWrappingWidth(width);
+        choiceAText.setWrappingWidth(width);
+        choiceBText.setWrappingWidth(width);
+        choiceCText.setWrappingWidth(width);
+        choiceDText.setWrappingWidth(width);
+        choiceEText.setWrappingWidth(width);
+        choiceFText.setWrappingWidth(width);
+    }
+
+    /**
+     * 添加空行
+     */
+    private void addBlankLine(Font font) {
+        Text blankLine = new Text("11");
+        blankLine.setFont(font);
+        blankLine.setVisible(false);
+        if (tiganBox.getChildren().size() > 1) {
+            tiganBox.getChildren().add(1, blankLine);
+        }
+    }
+
+    /**
+     * 应用样式2（答案样式）
+     */
+    private void applyStyle2(String style2) {
+        String[] split1 = style2.split(ConfigSpliter.SPLITER);
+        if (split1.length < 15) return;
+
+        backPane.setLayoutX(ScreenAdapter.calculateMainX(Integer.parseInt(split1[0])));
+        backPane.setLayoutY(ScreenAdapter.calculateMainY(Integer.parseInt(split1[1])));
+        backPane.setPrefWidth(ScreenAdapter.calculateMainX(Integer.parseInt(split1[2])));
+        backPane.setPrefHeight(ScreenAdapter.calculateMainY(Integer.parseInt(split1[3])));
+
+        // 设置答案背景
+        setRegionBackground(backPane, split1);
+
+        // 设置答案文本样式
+        daanLabel.setWrappingWidth(ScreenAdapter.calculateMainX(Integer.parseInt(split1[2]) - 40));
+        daanLabel.setLineSpacing(ScreenAdapter.calculateMainY(Integer.parseInt(split1[14])));
+
+        Font font = getCachedFont(split1[7], ScreenAdapter.calculateMainX(Integer.parseInt(split1[8])));
+        applyTextStyle(daanLabel, font, split1);
+    }
+
+    /**
+     * 应用样式3（阶段样式）
+     */
+    private void applyStyle3(String style3) {
+        if (StringUtils.isEmpty(style3)) return;
+
+        String[] split1 = style3.split(ConfigSpliter.SPLITER);
+        if (split1.length < 14) return;
+
+        stagePane.setLayoutX(ScreenAdapter.calculateMainX(Integer.parseInt(split1[0])));
+        stagePane.setLayoutY(ScreenAdapter.calculateMainY(Integer.parseInt(split1[1])));
+        stagePane.setPrefWidth(ScreenAdapter.calculateMainX(Integer.parseInt(split1[2])));
+        stagePane.setPrefHeight(ScreenAdapter.calculateMainY(Integer.parseInt(split1[3])));
+
+        // 设置阶段背景
+        setRegionBackground(stagePane, split1);
+
+        // 设置阶段文本样式
+        stageLabel.setWrappingWidth(ScreenAdapter.calculateMainX(Integer.parseInt(split1[2])));
+        if (split1.length >= 15) {
+            stageLabel.setLineSpacing(ScreenAdapter.calculateMainY(Integer.parseInt(split1[14])));
+        }
+
+        Font font = getCachedFont(split1[7], ScreenAdapter.calculateMainX(Integer.parseInt(split1[8])));
+        applyTextStyle(stageLabel, font, split1);
+    }
+
+    /**
+     * 处理阶段显示
+     */
+    private void handleStageDisplay(String[] split) {
+        if (split.length < 13) return;
+
+        stagePane.setVisible(Boolean.valueOf(split[12]));
+
+        if (stagePane.isVisible()) {
             String stageNumber = inner.getStageNumber();
-            Stages stages = stagesMapper.selectOne(new LambdaQueryWrapper<Stages>().eq(Stages::getSortVal, stageNumber).last(" limit 1"));
-            if (stagePane.isVisible()) {
-                Stages currentStage1 = controlPane.getCurrentStage();
+            Stages stages = stagesMapper.selectOne(new LambdaQueryWrapper<Stages>()
+                    .eq(Stages::getSortVal, stageNumber).last(" limit 1"));
+
+            if (stages != null) {
                 if (stages.getQuestionType() == 3) {
                     Stages pstage = stagesMapper.selectById(stages.getParentId());
-                    stageLabel.setText(pstage.getName() + " " + stages.getName());
+                    if (pstage != null) {
+                        stageLabel.setText(pstage.getName() + " " + stages.getName());
+                    } else {
+                        stageLabel.setText(stages.getName());
+                    }
                 } else {
                     stageLabel.setText(stages.getName());
                 }
 
-                stageLabel.setFill(Color.valueOf(split[11]));
-                if (!StringUtils.isEmpty(style3)) {
-                    String[] split1 = style3.split(ConfigSpliter.SPLITER);
-
-                    stagePane.setLayoutX( ScreenAdapter.calculateMainX(Integer.parseInt(split1[0])));
-                    stagePane.setLayoutY( ScreenAdapter.calculateMainY(Integer.parseInt(split1[1])));
-                    stagePane.setPrefWidth( ScreenAdapter.calculateMainX(Integer.parseInt(split1[2])));
-                    stagePane.setPrefHeight( ScreenAdapter.calculateMainY(Integer.parseInt(split1[3])));
-
-
-                    if (Boolean.valueOf(split1[4])) {
-                        // 填充背景图片
-                        if (!StringUtils.isEmpty(split1[6])) {
-                            try {
-                                stagePane.setBackground(new Background(new BackgroundImage(new Image(new FileInputStream(split1[6])),
-                                        BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT, BackgroundPosition.DEFAULT,
-                                        new BackgroundSize(
-                                                ScreenAdapter.calculateMainX(Integer.parseInt(split1[2])),
-                                                ScreenAdapter.calculateMainY(Integer.parseInt(split1[3])),
-                                                false, false, false, false))));
-                            } catch (FileNotFoundException e) {
-                                stagePane.setBackground(new Background(new BackgroundFill(Color.TRANSPARENT, new CornerRadii(ScreenAdapter.calculateMainX(10)), Insets.EMPTY)));
-                            }
-                        } else {
-                            stagePane.setBackground(new Background(new BackgroundFill(Color.TRANSPARENT, new CornerRadii(ScreenAdapter.calculateMainX(10)), Insets.EMPTY)));
-                        }
-                    } else {
-                        // 填充背景颜色
-                        stagePane.setBackground(new Background(new BackgroundFill(Color.valueOf(split1[5]), new CornerRadii(ScreenAdapter.calculateMainX(10)), Insets.EMPTY)));
-                    }
-
-
-                    stageLabel.setWrappingWidth(ScreenAdapter.calculateMainX(Integer.parseInt(split1[2])));
-                    if (split1.length >= 15) {
-                        stageLabel.setLineSpacing(ScreenAdapter.calculateMainY(Integer.parseInt(split1[14])));
-                    }
-                    //stageLabel.setLineSpacing(Integer.parseInt(split1[14]));
-                    Font font = FontMap.load(split1[7], ScreenAdapter.calculateMainX(Integer.parseInt(split1[8])));
-                    stageLabel.setFont(font);
-                    stageLabel.setUnderline(Boolean.valueOf(split1[12]));
-                    stageLabel.setStrikethrough(Boolean.valueOf(split1[9]));
-                    if (Boolean.valueOf(split1[10])) {
-                        stageLabel.setStroke(Color.valueOf(split[0]));
-                        stageLabel.setStrokeWidth(1);
-                    } else {
-                        stageLabel.setStroke(null);
-                    }
-                    stageLabel.getTransforms().clear();
-                    if (Boolean.valueOf(split1[11])) {
-                        stageLabel.getTransforms().add(new Shear(-0.3, 0));
-                    }
-                    stageLabel.setTextAlignment(AlignmentUtil.getTextAlign(split1[13]));
+                if (split.length > 11) {
+                    stageLabel.setFill(Color.valueOf(split[11]));
                 }
             }
-        
         }
 
-        scrollPane.setLayoutX(tiganBox.getLayoutX());
-        scrollPane.setLayoutY(tiganBox.getLayoutY());
-        //scrollPane.setPrefWidth(tiganBox.getPrefWidth());
-        scrollPane.setFitToWidth(true);
-        for (Node child : tiganBox.getChildren()) {
-            if (child instanceof AnchorPane) {
-                continue;
+        // 设置答案文本
+        if (split.length > 4) {
+            daanLabel.setText(split[4] + " " + inner.getAnswer());
+            backPane.setLayoutX(tiganBox.getLayoutX());
+            backPane.setLayoutY(tiganBox.getLayoutY() + tiganBox.getPrefHeight() + ScreenAdapter.calculateMainY(10));
+
+            if (split.length > 1) {
+                daanLabel.setFill(Color.valueOf(split[1]));
             }
-            Text t = (Text) child;
-            t.setWrappingWidth(tiganBox.getPrefWidth() - ScreenAdapter.calculateMainX(40));
         }
-        scrollPane.setFitToHeight(true);
     }
 
+    /**
+     * 配置滚动面板布局
+     */
+    private void configureScrollPaneLayout() {
+        scrollPane.setLayoutX(tiganBox.getLayoutX());
+        scrollPane.setLayoutY(tiganBox.getLayoutY());
+        scrollPane.setFitToWidth(true);
+        scrollPane.setFitToHeight(true);
 
+        // 为所有文本设置包装宽度
+        double wrapWidth = tiganBox.getPrefWidth() - ScreenAdapter.calculateMainX(40);
+        for (Node child : tiganBox.getChildren()) {
+            if (child instanceof Text) {
+                ((Text) child).setWrappingWidth(wrapWidth);
+            }
+        }
+    }
+
+    /**
+     * 建议进行垃圾回收（谨慎使用）
+     */
+    private void suggestGarbageCollection() {
+        // 只在内存使用率较高时建议GC
+        Runtime runtime = Runtime.getRuntime();
+        long usedMemory = runtime.totalMemory() - runtime.freeMemory();
+        long maxMemory = runtime.maxMemory();
+        double usage = (double) usedMemory / maxMemory;
+
+        if (usage > 0.7) { // 超过70%时建议GC
+            System.gc();
+        }
+    }
+
+    /**
+     * 显示答案
+     */
     public void showAnswer() {
+        if (inner == null) return;
+
         if (inner.getResourceType().equals("图片")) {
             imageQ.setVisible(true);
             imageQ.setLayoutX(0);
             imageQ.setLayoutY(0);
             imageQ.setFitHeight(Navigator.getHeight());
             imageQ.setFitWidth(Navigator.getWidth());
+
             try {
-                if (GlobalCache.showAnswer) {
-                    imageQ.setImage(new Image(new FileInputStream(new File( BaseDir.TIKU_RES_DIR +  inner.getAnswer())),
-                            Navigator.getWidth(), Navigator.getHeight(), false, true));
-                } else {
-                    imageQ.setImage(new Image(new FileInputStream(new File( BaseDir.TIKU_RES_DIR +  inner.getQuestion())),
-                            Navigator.getWidth(), Navigator.getHeight(), false, true));
-                }
+                String imagePath = GlobalCache.showAnswer ?
+                        BaseDir.TIKU_RES_DIR + inner.getAnswer() :
+                        BaseDir.TIKU_RES_DIR + inner.getQuestion();
+                setImageSafely(imageQ, imagePath, Navigator.getWidth(), Navigator.getHeight());
                 backPane.setVisible(false);
-            } catch (FileNotFoundException e) {
+            } catch (Exception e) {
                 backPane.setVisible(GlobalCache.showAnswer);
             }
         } else {
             backPane.setVisible(GlobalCache.showAnswer);
         }
+
         ReloadPane questionPreview = controlPane.getQuestionPreview();
-        if (ExtendedScreen.hasShow()) {
-            if (questionPreview != null) {
-                questionPreview.showAnswer();
-            }
+        if (ExtendedScreen.hasShow() && questionPreview != null) {
+            questionPreview.showAnswer();
         }
     }
-
-
 
     public Questions getInner() {
         return inner;
     }
-
 
     @Override
     public void reloadStyle() {
@@ -747,22 +961,23 @@ public class QuestionPreviewPreview extends PreviewPane {
         controlPane.timeReset();
     }
 
-
     @Override
     public void reload() {
         showData();
+
         if (GlobalCache.showAnswer) {
-            if (inner.getResourceType().equals("图片")) {
+            if (inner != null && inner.getResourceType().equals("图片")) {
                 imageQ.setVisible(true);
                 imageQ.setLayoutX(0);
                 imageQ.setLayoutY(0);
                 imageQ.setFitHeight(Navigator.getHeight());
                 imageQ.setFitWidth(Navigator.getWidth());
+
                 try {
-                    imageQ.setImage(new Image(new FileInputStream(new File( BaseDir.TIKU_RES_DIR +  inner.getAnswer())),
-                            Navigator.getWidth(), Navigator.getHeight(), false, true));
+                    setImageSafely(imageQ, BaseDir.TIKU_RES_DIR + inner.getAnswer(),
+                            Navigator.getWidth(), Navigator.getHeight());
                     backPane.setVisible(false);
-                } catch (FileNotFoundException e) {
+                } catch (Exception e) {
                     backPane.setVisible(true);
                     imageQ.setVisible(false);
                 }
@@ -770,14 +985,106 @@ public class QuestionPreviewPreview extends PreviewPane {
                 backPane.setVisible(true);
                 imageQ.setVisible(false);
             }
+
             ReloadPane questionPreview = controlPane.getQuestionPreview();
-            if (ExtendedScreen.hasShow()) {
-                if (questionPreview != null) {
-                    questionPreview.showAnswer();
-                }
+            if (ExtendedScreen.hasShow() && questionPreview != null) {
+                questionPreview.showAnswer();
             }
         } else {
             backPane.setVisible(false);
         }
+    }
+
+    /**
+     * 清理资源的方法 - 在组件销毁时调用
+     */
+    public void destroy() {
+        try {
+            // 清理事件监听器
+            if (container != null && mouseClickHandler != null) {
+                container.setOnMouseClicked(null);
+                mouseClickHandler = null;
+            }
+
+            // 清理图片资源
+            releaseImageResources();
+
+            // 清理UI组件引用
+            clearUIComponents();
+
+            // 清理对象引用
+            inner = null;
+
+            // 从PreviewStack中移除
+            PreviewStack.removePreview();
+
+            // 建议垃圾回收
+            System.gc();
+
+        } catch (Exception e) {
+            // 记录清理过程中的异常，但不抛出
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * 释放图片资源
+     */
+    private void releaseImageResources() {
+        if (currentQuestionImage != null) {
+            currentQuestionImage = null;
+        }
+        if (currentAnswerImage != null) {
+            currentAnswerImage = null;
+        }
+        if (currentBackgroundImage != null) {
+            currentBackgroundImage = null;
+        }
+        if (imageQ != null) {
+            imageQ.setImage(null);
+        }
+    }
+
+    /**
+     * 清理UI组件
+     */
+    private void clearUIComponents() {
+        if (tiganBox != null) {
+            tiganBox.getChildren().clear();
+        }
+
+        // 重置文本组件
+        if (choiceAText != null) choiceAText.setText("");
+        if (choiceBText != null) choiceBText.setText("");
+        if (choiceCText != null) choiceCText.setText("");
+        if (choiceDText != null) choiceDText.setText("");
+        if (choiceEText != null) choiceEText.setText("");
+        if (choiceFText != null) choiceFText.setText("");
+        if (tiganLabel != null) tiganLabel.setText("");
+        if (daanLabel != null) daanLabel.setText("");
+        if (stageLabel != null) stageLabel.setText("");
+    }
+
+    /**
+     * 静态方法：清理字体缓存（在应用退出时调用）
+     */
+    public static void clearFontCache() {
+        FONT_CACHE.clear();
+    }
+
+    /**
+     * 获取当前内存使用情况（用于监控）
+     */
+    public static void logMemoryUsage() {
+        Runtime runtime = Runtime.getRuntime();
+        long maxMemory = runtime.maxMemory();
+        long totalMemory = runtime.totalMemory();
+        long freeMemory = runtime.freeMemory();
+        long usedMemory = totalMemory - freeMemory;
+
+        System.out.println("当前内存使用情况：总内存 = " + totalMemory / 1024 / 1024 + " MB, " +
+                "空闲内存 = " + freeMemory / 1024 / 1024 + " MB, " +
+                "已用内存 = " + usedMemory / 1024 / 1024 + " MB, " +
+                "最大内存 = " + maxMemory / 1024 / 1024 + " MB");
     }
 }

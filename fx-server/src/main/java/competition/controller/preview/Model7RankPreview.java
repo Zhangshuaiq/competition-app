@@ -45,7 +45,6 @@ import java.util.stream.Collectors;
  * 排行（竞技模式、团队答题、个人答题排行）
  */
 @Component
-@Scope("prototype")
 public class Model7RankPreview extends PreviewPane {
 
     @FXML
@@ -75,7 +74,7 @@ public class Model7RankPreview extends PreviewPane {
     private int page = 0;
 
     @FXML
-    public void initialize() {
+    public void initPage() {
         BoardPane scoreBoardPreview = controlPane.getScoreBoardPreview();
         if (scoreBoardPreview != null) {
             scoreBoardPreview.getSelected().clear();
@@ -607,9 +606,8 @@ public class Model7RankPreview extends PreviewPane {
         
 
         if (ExtendedScreen.hasShow()) {
-            Model7Rank.setRankList(rankList.subList(start, end));
             // 进入比赛
-            Object res = ExtendedScreen.showWithControl("/view/match/Model7Rank.fxml");
+            Object res = ExtendedScreen.showWithControl("/view/match/Model7Rank.fxml", rankList.subList(start, end));
             if (res != null) {
                 controlPane.setQuestionPreview((Model7Rank) res);
             }

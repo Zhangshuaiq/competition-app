@@ -41,8 +41,7 @@ import java.io.FileNotFoundException;
 import java.util.*;
 
 @Component
-@Scope("prototype")
-public class StageQuestionPreviewPreview extends PreviewPane {
+public class StageQuestionPreviewPreview extends PreviewPane<Stages> {
 
 
     @FXML
@@ -61,14 +60,19 @@ public class StageQuestionPreviewPreview extends PreviewPane {
     private QuestionsMapper questionsMapper;
 
 
-    private static Stages currentStage;
 
     private Stages inner;
 
-    public static void setCurrentStage(Stages currentStage) {
-        StageQuestionPreviewPreview.currentStage = currentStage;
+
+    @Override
+    public void setData(Stages data) {
+        this.inner = data;
     }
 
+    @Override
+    public Stages getData() {
+        return inner;
+    }
 
     @Override
     public AnchorPane getPane() {
@@ -76,14 +80,12 @@ public class StageQuestionPreviewPreview extends PreviewPane {
     }
 
     @FXML
-    public void initialize() {
+    public void initPage() {
         BoardPane scoreBoardPreview = controlPane.getScoreBoardPreview();
         if (scoreBoardPreview != null) {
             scoreBoardPreview.getSelected().clear();
         }
-        inner = currentStage;
         PreviewStack.addPreview(this);
-        PreviewStack.addReturn(this);
         container.setOnMouseClicked(new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent event) {
@@ -104,9 +106,8 @@ public class StageQuestionPreviewPreview extends PreviewPane {
 
     private void showData() {
         if (ExtendedScreen.hasShow()) {
-            StageQuestionPreview.setCurrentStage(inner);
             // 进入比赛
-            Object res = ExtendedScreen.showWithControl("/view/match/StageQuestionPreview.fxml");
+            Object res = ExtendedScreen.showWithControl("/view/match/StageQuestionPreview.fxml", inner);
             if (res != null) {
                 controlPane.setQuestionPreview((StageQuestionPreview) res);
             }
@@ -375,7 +376,7 @@ public class StageQuestionPreviewPreview extends PreviewPane {
                         Model7RuntimeData.setTeams(TeamRuntime.getTeams());
                         // 发送试题列表给前端
                         controlPane.setPreviewPane(
-                                Navigator.preview("/view/preview/Model7Preview.fxml", "", "/view/style.css", true, true)
+                                Navigator.preview("/view/preview/Model7Preview.fxml", "", "/view/style.css", true, null)
                         );
                         controlPane.updateScoreBoard();
 
@@ -396,12 +397,11 @@ public class StageQuestionPreviewPreview extends PreviewPane {
                             questions.setHasAnswer(true);
                            // CurrentQuestions.recordAnswer(tihao);
                             // 设置当前需要显示的题目
-                            QuestionPreviewPreview.setCurrent(questions);
                             // 设置选手信息
                             Model60RuntimeData.setTeams(TeamRuntime.getTeams());
 
                             controlPane.setPreviewPane(
-                                    Navigator.preview("/view/preview/QuestionPreview.fxml", "", "/view/style.css", true, true)
+                                    Navigator.preview("/view/preview/QuestionPreview.fxml", "", "/view/style.css", true, questions)
                             );
                             //controlPane.setPreviewPane(Navigator.preview("/view/preview/Model60.fxml", "", "/view/style.css", true, true));
                             controlPane.updateScoreBoard();
@@ -413,11 +413,10 @@ public class StageQuestionPreviewPreview extends PreviewPane {
                             // 答题模式 -- 个人模式
                             questions.setHasAnswer(true);
                             // 设置当前需要显示的题目
-                            QuestionPreviewPreview.setCurrent(questions);
                             // 设置选手信息
                             Model61RuntimeData.setTeams(TeamRuntime.getTeams());
                             controlPane.setPreviewPane(
-                                    Navigator.preview("/view/preview/QuestionPreview.fxml", "", "/view/style.css", true, true)
+                                    Navigator.preview("/view/preview/QuestionPreview.fxml", "", "/view/style.css", true, questions)
                             );
                             // controlPane.setPreviewPane(Navigator.preview("/view/preview/Model61.fxml", "", "/view/style.css", true, true));
                             controlPane.updateScoreBoard();
@@ -437,17 +436,15 @@ public class StageQuestionPreviewPreview extends PreviewPane {
                         // 内屏更新
 
                         Integer questionType = inner.getQuestionType();
-                        if (questionType == 2 || questionType == 1) {
+                        if (questionType == 2 || questionType == 1 || questionType == 4) {
                             // 正常自选题
-                            QuestionPreviewPreview.setCurrent(questions);
                             controlPane.setPreviewPane(
-                                    Navigator.preview("/view/preview/QuestionPreview.fxml", "", "/view/style.css", true, true)
+                                    Navigator.preview("/view/preview/QuestionPreview.fxml", "", "/view/style.css", true, questions)
                             );
                         } else if (questionType == 5) {
                             // 线索题
-                            CluePreviewPreview.setCurrent(questions);
                             controlPane.setPreviewPane(
-                                    Navigator.preview("/view/preview/CluePreview.fxml", "", "/view/style.css", true, true)
+                                    Navigator.preview( "/view/preview/CluePreview.fxml", "", "/view/style.css", true, questions)
                             );
                         }
 
@@ -461,10 +458,6 @@ public class StageQuestionPreviewPreview extends PreviewPane {
             });
         }
         container.getChildren().add(layout);
-    }
-
-    public Stages getInner() {
-        return inner;
     }
 
     @Override

@@ -33,7 +33,6 @@ import java.io.FileNotFoundException;
 import java.util.List;
 
 @Component
-@Scope("prototype")
 public class ShowAnswerPreview extends PreviewPane {
 
     @FXML
@@ -64,7 +63,7 @@ public class ShowAnswerPreview extends PreviewPane {
     }
 
     @FXML
-    public void initialize() {
+    public void initPage() {
         BoardPane scoreBoardPreview = controlPane.getScoreBoardPreview();
         if (scoreBoardPreview != null) {
             scoreBoardPreview.getSelected().clear();
@@ -86,9 +85,8 @@ public class ShowAnswerPreview extends PreviewPane {
     private void showData() {
 
         if (ExtendedScreen.hasShow()) {
-            ShowAnswer.setTeamResult(teamResult);
             // 进入比赛
-            Object res = ExtendedScreen.showWithControl("/view/match/ShowAnswer.fxml");
+            Object res = ExtendedScreen.showWithControl("/view/match/ShowAnswer.fxml", teamResult);
             if (res != null) {
                 controlPane.setQuestionPreview((ShowAnswer) res);
             }

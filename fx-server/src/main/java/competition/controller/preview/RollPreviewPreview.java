@@ -39,8 +39,7 @@ import java.util.stream.Collectors;
 
 // 滚动选题
 @Component
-@Scope("prototype")
-public class RollPreviewPreview extends PreviewPane {
+public class RollPreviewPreview extends PreviewPane<Stages> {
 
     @FXML
     private AnchorPane container;
@@ -61,9 +60,6 @@ public class RollPreviewPreview extends PreviewPane {
     @Resource
     private WsMessageHandler messageHandler;
 
-
-    private static Stages currentStage;
-
     private AnimationTimer timer;
 
     private Stages inner;
@@ -71,10 +67,11 @@ public class RollPreviewPreview extends PreviewPane {
     @Resource
     private QuestionsMapper questionsMapper;
 
-    public static void setCurrentStage(Stages currentStage) {
-        RollPreviewPreview.currentStage = currentStage;
-    }
 
+    @Override
+    public void setData(Stages data) {
+        this.inner = data;
+    }
 
     @Override
     public AnchorPane getPane() {
@@ -82,15 +79,13 @@ public class RollPreviewPreview extends PreviewPane {
     }
 
     @FXML
-    public void initialize() {
+    public void initPage() {
         GlobalCache.isRolling = false;
         BoardPane scoreBoardPreview = controlPane.getScoreBoardPreview();
         if (scoreBoardPreview != null) {
             scoreBoardPreview.getSelected().clear();
         }
-        inner = currentStage;
         PreviewStack.addPreview(this);
-        PreviewStack.addReturn(this);
 
         backPane.setOnMouseClicked(event -> {
             event.consume();
@@ -106,7 +101,7 @@ public class RollPreviewPreview extends PreviewPane {
 
         container.setOnMouseClicked(event -> {
             if (event.getButton() == MouseButton.SECONDARY) {
-                StageQuestionPreviewAttr.setCurrentStage(currentStage);
+                StageQuestionPreviewAttr.setCurrentStage(inner);
                 Navigator.navigatorTo("/view/match/StageQuestionPreviewAttr.fxml", "", "/view/style.css", false, false);
             } else if (event.getButton() == MouseButton.PRIMARY) {
                 if (!GlobalCache.isRolling) {
@@ -125,9 +120,8 @@ public class RollPreviewPreview extends PreviewPane {
     private void showData() {
         messageHandler.notifyPage("roll", null);
         if (ExtendedScreen.hasShow()) {
-            RollPreview.setCurrentStage(inner);
             // 进入比赛
-            Object res = ExtendedScreen.showWithControl("/view/match/RollPreview.fxml");
+            Object res = ExtendedScreen.showWithControl("/view/match/RollPreview.fxml", inner);
             if (res != null) {
                 controlPane.setQuestionPreview((RollPreview) res);
             }
@@ -165,14 +159,14 @@ public class RollPreviewPreview extends PreviewPane {
 //            }
 //        });
         String questionStyle = "560%%240%%800%%100%%false%%0x990000ff%%%%默认.ttf%%40%%false%%false%%false%%false%%居中对齐%%0###920%%400%%80%%80%%false%%0x990000ff%%%%默认.ttf%%36%%false%%true%%false%%false%%居中对齐%%0%%1";
-        if (!StringUtils.isEmpty(currentStage.getQuestionStyle())) {
-            questionStyle = currentStage.getQuestionStyle();
+        if (!StringUtils.isEmpty(inner.getQuestionStyle())) {
+            questionStyle = inner.getQuestionStyle();
         }
 
         String[] styleArr = questionStyle.split(ConfigSpliter.DIFFER);
 
         // 标题名称
-        stageName.setText(currentStage.getName());
+        stageName.setText(inner.getName());
         // 环节标题的字体颜色和背景色
         stageName.setFill(Color.valueOf(stageConfigAttrSplit[2]));
         title.setBackground(new Background(new BackgroundFill(Color.valueOf(stageConfigAttrSplit[3]), new CornerRadii(10), Insets.EMPTY)));
@@ -376,7 +370,9 @@ public class RollPreviewPreview extends PreviewPane {
         timer.start();
     }
 
-    public Stages getInner() {
+
+    @Override
+    public Stages getData() {
         return inner;
     }
 

@@ -63,6 +63,7 @@ public class NavigatorEnhancer {
 
     // 缓存的界面，和对应的控制器
     private static final Map<String, PreviewPane> cachedPreviews = new HashMap<>();
+    private static final Map<String, Parent> cachedLoadRoot = new HashMap<>();
 
     private static volatile Scene previewScene;
 
@@ -114,9 +115,19 @@ public class NavigatorEnhancer {
     public static PreviewPane preview(String fxml, String title, String cssFile, boolean hiddenControl, boolean fullScreen){
         Parent load = null;
         try {
-            FXMLLoader loader = new FXMLLoader(Navigator.class.getResource(fxml));
-            loader.setControllerFactory(JavaFxApplication.getApplicationContext()::getBean);
-            load = loader.load();
+            PreviewPane previewPane;
+            if (cachedLoadRoot.containsKey(fxml)) {
+                load = cachedLoadRoot.get(fxml);
+                previewPane = cachedPreviews.get(fxml);
+            } else {
+                FXMLLoader loader = new FXMLLoader(Navigator.class.getResource(fxml));
+                loader.setControllerFactory(JavaFxApplication.getApplicationContext()::getBean);
+                load = loader.load();
+                cachedLoadRoot.put(fxml, load);
+                previewPane =  loader.getController();
+                cachedPreviews.put(fxml, previewPane);
+            }
+
             previewStage.setTitle(title);
             final Rectangle2D bounds = Screen.getPrimary().getBounds();
 
@@ -145,7 +156,6 @@ public class NavigatorEnhancer {
                     GlobalCache.showBuzzRank = false;
                 }
             });
-            PreviewPane previewPane =  loader.getController();
             return previewPane;
         } catch (IOException e) {
             e.printStackTrace();

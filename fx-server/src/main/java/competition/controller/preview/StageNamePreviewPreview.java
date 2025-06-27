@@ -37,8 +37,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Component
-@Scope("prototype")
-public class StageNamePreviewPreview extends PreviewPane {
+public class StageNamePreviewPreview extends PreviewPane<Integer> {
 
     @Resource
     private ControlPane controlPane;
@@ -58,32 +57,28 @@ public class StageNamePreviewPreview extends PreviewPane {
     @Resource
     private WsMessageHandler messageHandler;
 
-    private static Integer stageId;
-    
     private Integer innerStageId;
     
     private Stages stages;
 
-    public static void setStageId(Integer stageId) {
-        StageNamePreviewPreview.stageId = stageId;
-    }
 
+    @Override
+    public void setData(Integer data) {
+        this.innerStageId = data;
+    }
 
     @Override
     public AnchorPane getPane() {
         return container;
     }
     
-    @FXML
-    public void initialize() {
+    public void initPage() {
         BoardPane scoreBoardPreview = controlPane.getScoreBoardPreview();
         if (scoreBoardPreview != null) {
             scoreBoardPreview.getSelected().clear();
         }
-        innerStageId= stageId;
 
         PreviewStack.addPreview(this);
-        PreviewStack.addReturn(this);
 
         stages = stagesMapper.selectById(innerStageId);
         messageHandler.notifyPage("stageName", stages);
@@ -101,6 +96,11 @@ public class StageNamePreviewPreview extends PreviewPane {
     }
 
     @Override
+    public Integer getData() {
+        return innerStageId;
+    }
+
+    @Override
     public void reloadStyle() {
         this.reload();
     }
@@ -109,9 +109,8 @@ public class StageNamePreviewPreview extends PreviewPane {
         stages = stagesMapper.selectById(innerStageId);
         controlPane.updateScoreBoard();
         if (ExtendedScreen.hasShow()) {
-            StageNamePreview.setStageId(innerStageId);
             // 进入比赛
-            Object res = ExtendedScreen.showWithControl("/view/match/StageNamePreview.fxml");
+            Object res = ExtendedScreen.showWithControl("/view/match/StageNamePreview.fxml", innerStageId);
             if (res != null) {
                 controlPane.setQuestionPreview((StageNamePreview) res);
             }
@@ -232,9 +231,8 @@ public class StageNamePreviewPreview extends PreviewPane {
                 
                 if (stages.getQuestionType() == 3){
                     // 风险题 优先级高
-                    Model3Preview.setPassedId(stages.getId());
                     controlPane.setPreviewPane(
-                            Navigator.preview("/view/preview/Model3Preview.fxml", "", "/view/style.css", true, true)
+                            Navigator.preview("/view/preview/Model3Preview.fxml", "", "/view/style.css", true, stages.getId())
                     );
                     return;
                 }
@@ -289,12 +287,11 @@ public class StageNamePreviewPreview extends PreviewPane {
 
                             collect.sort(Comparator.comparingInt(Questions::getOrder));
 
-                            QuestionPreviewPreview.setCurrent(collect.get(0));
                             controlPane.selectQuestion(collect.get(0).getOrder().toString());
                             collect.get(0).setHasAnswer(true);
                             questionsMapper.updateById(collect.get(0));
                             controlPane.setPreviewPane(
-                                    Navigator.preview("/view/preview/QuestionPreview.fxml", "", "/view/style.css", true, true)
+                                    Navigator.preview("/view/preview/QuestionPreview.fxml", "", "/view/style.css", true, collect.get(0))
                             );
                         } else {
                             Information.info("此环节题目已完成作答");
@@ -303,27 +300,22 @@ public class StageNamePreviewPreview extends PreviewPane {
 
                     } else if (stages.getQuestionType() == 2) {
                         // 自选题目
-                        StageQuestionPreviewPreview.setCurrentStage(stages);
                         controlPane.setPreviewPane(
-                                Navigator.preview("/view/preview/StageQuestionPreview.fxml", "", "/view/style.css", true, true)
+                                Navigator.preview("/view/preview/StageQuestionPreview.fxml", "", "/view/style.css", true, stages)
                         );
                     } else if (stages.getQuestionType() == 4){
-                        // 滚动选题
-                        RollPreviewPreview.setCurrentStage(stages);
                         controlPane.setPreviewPane(
-                                Navigator.preview("/view/preview/RollPreview.fxml", "", "/view/style.css", true, true)
+                                Navigator.preview("/view/preview/RollPreview.fxml", "", "/view/style.css", true, stages)
                         );
                     } else if (stages.getQuestionType() == 5){
                         // 线索题
-                        StageQuestionPreviewPreview.setCurrentStage(stages);
                         controlPane.setPreviewPane(
-                                Navigator.preview("/view/preview/StageQuestionPreview.fxml", "", "/view/style.css", true, true)
+                                Navigator.preview("/view/preview/StageQuestionPreview.fxml", "", "/view/style.css", true, stages)
                         );
                     } else if (stages.getQuestionType() == 6){
                         // 答题模式
-                        StageQuestionPreviewPreview.setCurrentStage(stages);
                         controlPane.setPreviewPane(
-                                Navigator.preview("/view/preview/StageQuestionPreview.fxml", "", "/view/style.css", true, true)
+                                Navigator.preview("/view/preview/StageQuestionPreview.fxml", "", "/view/style.css", true, stages)
                         );
 //                        List<Questions> questionList = CurrentQuestions.getQuestionList();
 //                        QuestionPreviewPreview.setCurrent( questionList.get(0));
@@ -343,29 +335,22 @@ public class StageNamePreviewPreview extends PreviewPane {
                         }
                     } else if (stages.getQuestionType() == 7){
                         // 竞技模式
-                        StageQuestionPreviewPreview.setCurrentStage(stages);
                         controlPane.setPreviewPane(
-                                Navigator.preview("/view/preview/StageQuestionPreview.fxml", "", "/view/style.css", true, true)
+                                Navigator.preview("/view/preview/StageQuestionPreview.fxml", "", "/view/style.css", true, stages)
                         );
                         //messageHandler.notifyEnterWait("model7");
                     }
                 } else {
                     // 展示子环节
-                    StagePreview.setParentStageId(innerStageId);
-                    ExtendedScreen.show("/view/match/StagePreview.fxml");
+                    ExtendedScreen.showWithControl("/view/match/StagePreview.fxml", innerStageId);
 
-                    StagePreviewPreview.setParentStageId(innerStageId);
                     controlPane.setPreviewPane(
-                            Navigator.preview("/view/preview/StagePreview.fxml", "", "/view/style.css", true, true)
+                            Navigator.preview("/view/preview/StagePreview.fxml", "", "/view/style.css", true, innerStageId)
                     );
                 }
 
             }
         });
-    }
-
-    public Integer getInnerStageId() {
-        return innerStageId;
     }
 
     @Override

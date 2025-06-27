@@ -36,8 +36,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Component
-@Scope("prototype")
-public class StagePreview implements ReloadPane {
+public class StagePreview implements ReloadPane<Integer> {
 
 
     @FXML
@@ -52,15 +51,14 @@ public class StagePreview implements ReloadPane {
     @Resource
     private StagesStyleMapper stagesStyleMapper;
 
-    private static Integer parentStageId;
 
     private Integer innerStageID;
 
 
-    public static void setParentStageId(Integer parentStageId) {
-        StagePreview.parentStageId = parentStageId;
+    @Override
+    public void setData(Integer data) {
+        innerStageID = data;
     }
-
 
     @Override
     public AnchorPane getPane() {
@@ -68,8 +66,7 @@ public class StagePreview implements ReloadPane {
     }
 
     @FXML
-    public void initialize() {
-        innerStageID = parentStageId;
+    public void initPage() {
         showView();
     }
 

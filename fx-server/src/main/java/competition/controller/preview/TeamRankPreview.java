@@ -43,7 +43,6 @@ import java.util.List;
 import java.util.Map;
 
 @Component
-@Scope("prototype")
 public class TeamRankPreview extends PreviewPane{
 
     @FXML
@@ -74,7 +73,7 @@ public class TeamRankPreview extends PreviewPane{
     
 
     @FXML
-    public void initialize() {
+    public void initPage() {
         BoardPane scoreBoardPreview = controlPane.getScoreBoardPreview();
         if (scoreBoardPreview != null) {
             scoreBoardPreview.getSelected().clear();
@@ -418,8 +417,7 @@ public class TeamRankPreview extends PreviewPane{
         mapData.put("rank", rankList.subList(start, end));
         messageHandler.notifyPage("teamRank", mapData);
         if (ExtendedScreen.hasShow()) {
-            TeamRank.setRankList(rankList.subList(start, end));
-            Object res = ExtendedScreen.showWithControl("/view/match/TeamRank.fxml");
+            Object res = ExtendedScreen.showWithControl("/view/match/TeamRank.fxml", rankList.subList(start, end));
             if (res != null) {
                 controlPane.setQuestionPreview((TeamRank) res);
             }

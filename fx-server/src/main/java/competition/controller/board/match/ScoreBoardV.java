@@ -62,7 +62,7 @@ public class ScoreBoardV implements BoardPane {
     private VBox right;
 
     @FXML
-    public void initialize() {
+    public void initPage() {
         show();
     }
 

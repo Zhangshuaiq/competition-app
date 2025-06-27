@@ -36,11 +36,9 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 
 @Component
-@Scope("prototype")
-public class StageRulePreviewPreview extends PreviewPane{
+public class StageRulePreviewPreview extends PreviewPane<Stages>{
     
-    private static Stages currentStage;
-    
+
     private Stages innerStage;
     
     @FXML
@@ -58,8 +56,9 @@ public class StageRulePreviewPreview extends PreviewPane{
     @Resource
     private WsMessageHandler messageHandler;
 
-    public static void setCurrentStage(Stages currentStage) {
-        StageRulePreviewPreview.currentStage = currentStage;
+    @Override
+    public void setData(Stages data) {
+        this.innerStage = data;
     }
 
     public static final int TITLE_X = 300;
@@ -73,19 +72,16 @@ public class StageRulePreviewPreview extends PreviewPane{
 
     @Override
     public void reload() {
-        currentStage = stagesMapper.selectById(currentStage.getId());
         showRuleContent();
     }
 
     @FXML
-    public void initialize(){
+    public void initPage(){
         BoardPane scoreBoardPreview = controlPane.getScoreBoardPreview();
         if (scoreBoardPreview != null) {
             scoreBoardPreview.getSelected().clear();
         }
        // PreviewStack.addPreview(this);
-        currentStage = stagesMapper.selectById(currentStage.getId());
-        innerStage = currentStage;
         container.setOnMouseClicked(new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent event) {
@@ -106,9 +102,8 @@ public class StageRulePreviewPreview extends PreviewPane{
     
     private void showRuleContent(){
         if (ExtendedScreen.hasShow()) {
-            StageRulePreview.setCurrentStage(innerStage);
             // 进入比赛
-            Object res = ExtendedScreen.showWithControl("/view/match/StageRulePreview.fxml");
+            Object res = ExtendedScreen.showWithControl("/view/match/StageRulePreview.fxml",innerStage);
             if (res != null) {
                 controlPane.setQuestionPreview((StageRulePreview) res);
             }
@@ -126,18 +121,18 @@ public class StageRulePreviewPreview extends PreviewPane{
         container.getChildren().clear();
         final Configs ruleConfig = configsMapper.selectById(13);
 
-        if (currentStage == null) {
+        if (innerStage == null) {
             return;
         }
         
-        messageHandler.notifyPage("stagerule", currentStage.getRuleContent());
-        String titleRuleStyle = currentStage.getTitleRuleStyle();
+        messageHandler.notifyPage("stagerule", innerStage.getRuleContent());
+        String titleRuleStyle = innerStage.getTitleRuleStyle();
         String[] trsArr = {};
         if (!StringUtils.isEmpty(titleRuleStyle)) {
             trsArr = titleRuleStyle.split(ConfigSpliter.SPLITER);
         }
         
-        Text title = new Text(currentStage.getName());
+        Text title = new Text(innerStage.getName());
         StackPane titlePane = new StackPane();
         titlePane.getChildren().add(title);
         if (trsArr.length <= 0) {
@@ -210,8 +205,8 @@ public class StageRulePreviewPreview extends PreviewPane{
 
         final String config = ruleConfig.getConfig();
         String details = ruleConfig.getDetails();
-        String ruleType = currentStage.getRuleType();
-        final String ruleContent = currentStage.getRuleContent();
+        String ruleType = innerStage.getRuleType();
+        final String ruleContent = innerStage.getRuleContent();
         Text text = new Text(ruleContent);
         StackPane textPane = new StackPane();
         textPane.getChildren().add(text);

@@ -5,7 +5,7 @@ import competition.entity.Teams;
 import javafx.scene.Node;
 import javafx.scene.Scene;
 
-public abstract class PreviewPane implements ReloadPane {
+public abstract class PreviewPane<T> implements ReloadPane<T> {
 
     @Override
     public Node getPane() {

@@ -28,8 +28,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 
 @Component
-@Scope("prototype")
-public class BuzzRank implements ReloadPane {
+public class BuzzRank implements ReloadPane< List<TeamMemberRankData> > {
 
     @FXML
     private AnchorPane container;
@@ -52,15 +51,16 @@ public class BuzzRank implements ReloadPane {
     @Resource
     private RankStyleMapper rankStyleMapper;
 
-    private static List<TeamMemberRankData> rankList;
+    private List<TeamMemberRankData> rankList;
 
-    public static void setRankList(List<TeamMemberRankData> rankList) {
-        BuzzRank.rankList = rankList;
+    @Override
+    public void setData(List<TeamMemberRankData> data) {
+        rankList = data;
     }
 
 
     @FXML
-    public void initialize() {
+    public void initPage() {
         this.showData();
     }
 

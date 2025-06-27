@@ -24,30 +24,27 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
+import java.util.Map;
+
 @Component
-@Scope("prototype")
-public class BuzzResult implements ReloadPane {
+public class BuzzResult implements ReloadPane<Map<String, Object>> {
 
     @FXML
     private VBox container;
 
-
-    private static Teams teams;
-
     private Teams inner;
 
-    private static boolean success;
     private boolean innerStatus;
 
-    public static void setTeams(Teams teams, boolean success) {
-        BuzzResult.teams = teams;
-        BuzzResult.success = success;
+
+    @Override
+    public void setData(Map<String, Object> data) {
+        inner = (Teams) data.get("teams");
+        innerStatus = (boolean) data.get("success");
     }
 
     @FXML
-    public void initialize() {
-        inner = teams;
-        innerStatus = success;
+    public void initPage() {
         this.shows();
     }
 
@@ -86,7 +83,7 @@ public class BuzzResult implements ReloadPane {
 
             Label result = new Label();
             result.setAlignment(Pos.CENTER.CENTER);
-            if (success) {
+            if (innerStatus) {
                 result.setText("抢答成功");
                 String successFont = jsonObject.getOrDefault("successFont", "默认.ttf").toString();
                 double successSize =  ScreenAdapter.calculateExX(Double.parseDouble(jsonObject.getOrDefault("successSize", "12").toString()));

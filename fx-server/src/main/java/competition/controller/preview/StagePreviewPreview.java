@@ -40,8 +40,7 @@ import java.util.Arrays;
 import java.util.List;
 
 @Component
-@Scope("prototype")
-public class StagePreviewPreview extends PreviewPane {
+public class StagePreviewPreview extends PreviewPane<Integer> {
 
 
     @Resource
@@ -60,17 +59,16 @@ public class StagePreviewPreview extends PreviewPane {
     @Resource
     private StagesStyleMapper stagesStyleMapper;
 
-    private static Integer parentStageId;
 
     private Integer innerStageID;
     
     @Resource
     private WsMessageHandler messageHandler;
 
-    public static void setParentStageId(Integer parentStageId) {
-        StagePreviewPreview.parentStageId = parentStageId;
+    @Override
+    public void setData(Integer data) {
+        this.innerStageID = data;
     }
-
 
     @Override
     public AnchorPane getPane() {
@@ -78,15 +76,13 @@ public class StagePreviewPreview extends PreviewPane {
     }
 
     @FXML
-    public void initialize() {
+    public void initPage() {
         BoardPane scoreBoardPreview = controlPane.getScoreBoardPreview();
         if (scoreBoardPreview != null) {
             scoreBoardPreview.getSelected().clear();
         }
-        innerStageID = parentStageId;
         PreviewStack.addPreview(this);
-        PreviewStack.addReturn(this);
-        
+
         container.setOnMouseClicked(new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent event) {
@@ -108,8 +104,7 @@ public class StagePreviewPreview extends PreviewPane {
     private void showView() {
         if (ExtendedScreen.hasShow()) {
             // 进入比赛
-            StagePreview.setParentStageId(innerStageID);
-            Object res = ExtendedScreen.showWithControl("/view/match/StagePreview.fxml");
+            Object res = ExtendedScreen.showWithControl("/view/match/StagePreview.fxml", innerStageID);
             if (res != null) {
                 controlPane.setQuestionPreview((StagePreview) res);
             }
@@ -284,10 +279,9 @@ public class StagePreviewPreview extends PreviewPane {
                             }
 
                             // 内屏
-                            StageNamePreviewPreview.setStageId(stage.getId());
                             controlPane.setCurrentStage(stage);
                             controlPane.setPreviewPane(
-                                    Navigator.preview("/view/preview/StageNamePreview.fxml", "", "/view/style.css", true, true)
+                                    Navigator.preview("/view/preview/StageNamePreview.fxml", "", "/view/style.css", true, stage.getId())
                             );
                             GlobalCache.recordStage(stage.getId());
                             // 更新控制面板的分数和时间
@@ -317,7 +311,8 @@ public class StagePreviewPreview extends PreviewPane {
         showView();
     }
 
-    public Integer getInnerStageID() {
+    @Override
+    public Integer getData() {
         return innerStageID;
     }
 }

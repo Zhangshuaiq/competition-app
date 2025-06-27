@@ -41,7 +41,6 @@ import java.nio.charset.StandardCharsets;
 import java.util.*;
 
 @Component
-@Scope("prototype")
 public class MemberRankPreview extends PreviewPane {
 
     @FXML
@@ -71,7 +70,7 @@ public class MemberRankPreview extends PreviewPane {
     private int page = 0;
 
     @FXML
-    public void initialize() {
+    public void initPage() {
         BoardPane scoreBoardPreview = controlPane.getScoreBoardPreview();
         if (scoreBoardPreview != null) {
             scoreBoardPreview.getSelected().clear();
@@ -460,8 +459,7 @@ public class MemberRankPreview extends PreviewPane {
         messageHandler.notifyPage("memberRank", mapData);
         // 外屏展示
         if (ExtendedScreen.hasShow()) {
-            MemberRank.setRankDataList(rankList.subList(start, end));
-            Object res = ExtendedScreen.showWithControl("/view/match/MemberRank.fxml");
+            Object res = ExtendedScreen.showWithControl("/view/match/MemberRank.fxml", rankList.subList(start, end));
             if (res != null) {
                 controlPane.setQuestionPreview((MemberRank) res);
             }

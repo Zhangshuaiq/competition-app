@@ -34,10 +34,8 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 
 @Component
-@Scope("prototype")
-public class StageRulePreview implements ReloadPane{
+public class StageRulePreview implements ReloadPane<Stages>{
 
-    private static Stages currentStage;
 
     private Stages innerStage;
 
@@ -51,9 +49,7 @@ public class StageRulePreview implements ReloadPane{
     private StagesMapper stagesMapper;
 
 
-    public static void setCurrentStage(Stages currentStage) {
-        StageRulePreview.currentStage = currentStage;
-    }
+
 
     public static final int TITLE_X = 300;
 
@@ -63,17 +59,19 @@ public class StageRulePreview implements ReloadPane{
 
     public static final int TITLE_H = 100;
 
+    @Override
+    public void setData(Stages data) {
+        innerStage = data;
+    }
 
     @Override
     public void reload() {
-        currentStage = stagesMapper.selectById(currentStage.getId());
         showRuleContent();
     }
 
     @FXML
-    public void initialize(){
+    public void initPage(){
         // PreviewStack.addPreview(this);
-        innerStage = currentStage;
         showRuleContent();
     }
 
@@ -96,17 +94,17 @@ public class StageRulePreview implements ReloadPane{
         container.getChildren().clear();
         final Configs ruleConfig = configsMapper.selectById(13);
 
-        if (currentStage == null) {
+        if (innerStage == null) {
             return;
         }
 
-        String titleRuleStyle = currentStage.getTitleRuleStyle();
+        String titleRuleStyle = innerStage.getTitleRuleStyle();
         String[] trsArr = {};
         if (!StringUtils.isEmpty(titleRuleStyle)) {
             trsArr = titleRuleStyle.split(ConfigSpliter.SPLITER);
         }
 
-        Text title = new Text(currentStage.getName());
+        Text title = new Text(innerStage.getName());
         StackPane titlePane = new StackPane();
         titlePane.getChildren().add(title);
         if (trsArr.length <= 0) {
@@ -180,8 +178,8 @@ public class StageRulePreview implements ReloadPane{
 
         final String config = ruleConfig.getConfig();
         String details = ruleConfig.getDetails();
-        String ruleType = currentStage.getRuleType();
-        final String ruleContent = currentStage.getRuleContent();
+        String ruleType = innerStage.getRuleType();
+        final String ruleContent = innerStage.getRuleContent();
         Text text = new Text(ruleContent);
         StackPane textPane = new StackPane();
         textPane.getChildren().add(text);

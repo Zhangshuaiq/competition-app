@@ -39,7 +39,7 @@ public class BuzzTimeBoard implements ReloadPane {
     private ConfigsMapper configsMapper;
 
     @FXML
-    public void initialize() {
+    public void initPage() {
         configsMapper = JavaFxApplication.getApplicationContext().getBean(ConfigsMapper.class);
         stackPane.getChildren().add(teamScore);
         container.getChildren().add(stackPane);

@@ -7,6 +7,7 @@ import competition.controller.board.preview.TeamConnectionBarPreview;
 import competition.controller.preview.PreviewPane;
 import competition.entity.Buzz;
 import competition.entity.Configs;
+import competition.entity.Questions;
 import competition.mapper.BuzzMapper;
 import competition.mapper.ConfigsMapper;
 import javafx.beans.value.ChangeListener;
@@ -28,19 +29,22 @@ import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.util.StringUtils;
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.atomic.AtomicReference;
 
 @Slf4j
 public class Navigator {
-    
-    
+
+
     public static final Stage previewStage = new Stage();
-    
+
     public static final Stage backendStage = new Stage();
-    
+
     public static final Stage activeStage = new Stage();
-    
-    
+
+
     public static final Stage timeBoardStage = new Stage();
 
     // 抢答计时器面板
@@ -54,10 +58,16 @@ public class Navigator {
 
     // 抢答结束面板
     public static final Stage buzzBoardStage = new Stage();
-    
+
+
+    // 缓存的界面，和对应的控制器
+    private static final Map<String, PreviewPane> cachedPreviews = new HashMap<>();
+    private static final Map<String, Parent> cachedLoadRoot = new HashMap<>();
+    private static final Map<String, Scene> cachedScenes = new HashMap<>();
+
+    private static volatile Scene previewScene;
 
     static {
-       // previewStage.initStyle(StageStyle.TRANSPARENT);
         previewStage.initStyle(StageStyle.TRANSPARENT);
 
         timeBoardStage.setAlwaysOnTop(true);
@@ -102,16 +112,38 @@ public class Navigator {
         return bounds.getHeight();
     }
 
-    public static PreviewPane preview(String fxml, String title, String cssFile, boolean hiddenControl, boolean fullScreen){
+
+    public static PreviewPane preview(String fxml, String title, String cssFile, boolean hiddenControl, Object data){
         Parent load = null;
         try {
-            FXMLLoader loader = new FXMLLoader(Navigator.class.getResource(fxml));
-            loader.setControllerFactory(JavaFxApplication.getApplicationContext()::getBean);
-            load = loader.load();
+            PreviewPane previewPane;
+            if (cachedLoadRoot.containsKey(fxml)) {
+                load = cachedLoadRoot.get(fxml);
+                previewPane = cachedPreviews.get(fxml);
+                // 关键：清理之前的状态
+                previewPane.destroy();
+                log.info("从缓存加载预览界面: {}", fxml);
+            } else {
+                FXMLLoader loader = new FXMLLoader(Navigator.class.getResource(fxml));
+                loader.setControllerFactory(JavaFxApplication.getApplicationContext()::getBean);
+                load = loader.load();
+                previewPane =  loader.getController();
+                cachedLoadRoot.put(fxml, load);
+                cachedPreviews.put(fxml, previewPane);
+            }
+
+            previewPane.setData(data);
+            previewPane.initPage();
             previewStage.setTitle(title);
-            Scene previewScene;
             final Rectangle2D bounds = Screen.getPrimary().getBounds();
-            previewScene = new Scene(load, bounds.getWidth(), bounds.getHeight());
+
+            // 避免再次使用 scene
+            if (previewScene == null) {
+                previewScene = new Scene(load, bounds.getWidth(), bounds.getHeight());
+            } else {
+                previewScene.setRoot(load);
+            }
+
             if (hiddenControl) {
                 //previewStage.initStyle(StageStyle.TRANSPARENT);
             }
@@ -130,7 +162,6 @@ public class Navigator {
                     GlobalCache.showBuzzRank = false;
                 }
             });
-            PreviewPane previewPane =  loader.getController();
             return previewPane;
         } catch (IOException e) {
             e.printStackTrace();
@@ -142,9 +173,15 @@ public class Navigator {
     public static void openBackend(String fxml, String title, String cssFile, boolean hiddenControl, boolean fullScreen){
         Parent load = null;
         try {
-            FXMLLoader loader = new FXMLLoader(Navigator.class.getResource(fxml));
-            loader.setControllerFactory(JavaFxApplication.getApplicationContext()::getBean);
-            load = loader.load();
+            if (cachedLoadRoot.containsKey(fxml)) {
+                load = cachedLoadRoot.get(fxml);
+                log.info("从缓存加载预览界面: {}", fxml);
+            } else {
+                FXMLLoader loader = new FXMLLoader(Navigator.class.getResource(fxml));
+                loader.setControllerFactory(JavaFxApplication.getApplicationContext()::getBean);
+                load = loader.load();
+                cachedLoadRoot.put(fxml, load);
+            }
             Stage stage = backendStage;
             stage.setTitle(title);
             Scene scene;
@@ -152,7 +189,13 @@ public class Navigator {
                 final Rectangle2D bounds = Screen.getPrimary().getBounds();
                 scene = new Scene(load, bounds.getWidth(), bounds.getHeight());
             } else {
-                scene = new Scene(load);
+                if (cachedScenes.containsKey(fxml)) {
+                    scene = cachedScenes.get(fxml);
+                    scene.setRoot(load);
+                } else {
+                    scene = new Scene(load);
+                    cachedScenes.put(fxml, scene);
+                }
             }
 
             if (hiddenControl) {
@@ -166,7 +209,7 @@ public class Navigator {
             e.printStackTrace();
         }
     }
-    
+
     public static void navigatorTo(String fxml, String title, String cssFile, boolean hiddenControl, boolean fullScreen){
         Parent load = null;
         try {
@@ -182,12 +225,12 @@ public class Navigator {
             } else {
                 scene = new Scene(load);
             }
-            
+
             if (hiddenControl) {
                 stage.initStyle(StageStyle.TRANSPARENT);
             }
             scene.getStylesheets().add(cssFile); // 应用 CSS
-           
+
             stage.setScene(scene);
             stage.show();
         } catch (IOException e) {
@@ -207,6 +250,8 @@ public class Navigator {
             ConfigsMapper configsMapper = applicationContext.getBean(ConfigsMapper.class);
             Configs configs = configsMapper.selectById(10);
             load = loader.load();
+            PreviewPane controller = loader.getController();
+            controller.initPage();
             Stage stage = buzzBoardStage;
             String config = configs.getConfig();
             if (!StringUtils.isEmpty(config)) {
@@ -254,7 +299,7 @@ public class Navigator {
 
             stage.setScene(scene);
             stage.show();
-            return loader.getController();
+            return controller;
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -274,6 +319,9 @@ public class Navigator {
             BuzzMapper configsMapper = applicationContext.getBean(BuzzMapper.class);
             Buzz configs = configsMapper.selectById(1);
             load = loader.load();
+
+            PreviewPane controller = loader.getController();
+            controller.initPage();
             Stage stage = buzzTimeBoardStage;
 
             if (configs != null) {
@@ -319,7 +367,7 @@ public class Navigator {
 
             stage.setScene(scene);
             stage.show();
-            return loader.getController();
+            return controller;
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -339,6 +387,9 @@ public class Navigator {
             AtomicReference<Configs> configs = new AtomicReference<>(configsMapper.selectById(1));
             AtomicReference<String> config = new AtomicReference<>(configs.get().getConfig());
             load = loader.load();
+
+            PreviewPane controller = loader.getController();
+            controller.initPage();
             Stage stage = timeBoardStage;
             if (!StringUtils.isEmpty(config)) {
                 String[] split = config.get().split(ConfigSpliter.SPLITER);
@@ -354,6 +405,7 @@ public class Navigator {
                 xOffset.set(event.getSceneX());
                 yOffset.set(event.getSceneY());
             });
+
 
             // 拖动时更新窗口位置
             load.setOnMouseDragged(event -> {
@@ -384,7 +436,7 @@ public class Navigator {
 
             stage.setScene(scene);
             stage.show();
-            return loader.getController();
+            return controller;
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -425,13 +477,6 @@ public class Navigator {
                 stage.setX(ScreenAdapter.calculateMainX(event.getScreenX() - xOffset.get()));
                 stage.setY(ScreenAdapter.calculateMainY(event.getScreenY() - yOffset.get()));
                 ObservableList<Screen> screens = Screen.getScreens();
-//                if (screens.size() < 2) {
-//                    return;
-//                }
-//                Screen extendedScreen = screens.get(1); // 获取第二个屏幕
-//                Rectangle2D bounds = extendedScreen.getBounds();
-//                ExtendedScreen.scoreBoardStage.setX(bounds.getMinX() + ScreenAdapter.calculateExX(event.getScreenX() - xOffset.get()));
-//                ExtendedScreen.scoreBoardStage.setY(bounds.getMinY() + ScreenAdapter.calculateExY(event.getScreenY() - yOffset.get()));
             });
 
 
@@ -448,12 +493,12 @@ public class Navigator {
 
     // 时间 - 得分表
     public static Object scoreWithPos(String fxml, String title, String cssFile, boolean hiddenControl){
-        
+
         try {
-           
+
             AtomicReference<Double> xOffset = new AtomicReference<>((double) 0);
             AtomicReference<Double> yOffset = new AtomicReference<>((double) 0);
-            
+
             FXMLLoader loader = new FXMLLoader(Navigator.class.getResource(fxml));
             ConfigurableApplicationContext applicationContext = JavaFxApplication.getApplicationContext();
             ConfigsMapper configsMapper = applicationContext.getBean(ConfigsMapper.class);
@@ -462,12 +507,9 @@ public class Navigator {
             AtomicReference<String> config = new AtomicReference<>(configs.get().getConfig());
             loader.setControllerFactory(applicationContext::getBean);
             Parent load = loader.load();
-
-
+            PreviewPane controller = loader.getController();
+            controller.initPage();
             Stage stage = scoreBoardStage;
-
-
-
             if (!StringUtils.isEmpty(config)) {
                 String[] split = config.get().split(ConfigSpliter.SPLITER);
                 stage.setX(ScreenAdapter.calculateMainX(Double.parseDouble(split[17])));
@@ -507,12 +549,12 @@ public class Navigator {
                 configs.get().setConfig(String.join(ConfigSpliter.SPLITER, split));
                 configsMapper.updateById(configs.get());
             });
-            
+
             scene.getStylesheets().add(cssFile); // 应用 CSS
-            
+
             stage.setScene(scene);
             stage.show();
-            return loader.getController();
+            return controller;
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -521,11 +563,18 @@ public class Navigator {
 
 
     public static Node load(String fxml){
-        Node load = null;
+        Parent load = null;
         try {
-            FXMLLoader loader = new FXMLLoader(Navigator.class.getResource(fxml));
-            loader.setControllerFactory(JavaFxApplication.getApplicationContext()::getBean);
-            load = loader.load();
+
+            if (cachedLoadRoot.containsKey(fxml)) {
+                load = cachedLoadRoot.get(fxml);
+                log.info("从缓存加载预览界面: {}", fxml);
+            } else {
+                FXMLLoader loader = new FXMLLoader(Navigator.class.getResource(fxml));
+                loader.setControllerFactory(JavaFxApplication.getApplicationContext()::getBean);
+                load = loader.load();
+                cachedLoadRoot.put(fxml, load);
+            }
             return load;
         } catch (IOException e) {
             e.printStackTrace();

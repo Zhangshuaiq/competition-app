@@ -17,6 +17,7 @@ import javafx.scene.text.Text;
 import javafx.scene.text.TextAlignment;
 import org.springframework.stereotype.Component;
 
+import javax.annotation.Resource;
 import java.io.File;
 import java.io.FileInputStream;
 
@@ -34,10 +35,11 @@ public class TimeBoard implements ReloadPane {
     StackPane stackPane = new StackPane();
     private Text teamScore = new Text();
 
+    @Resource
     private ConfigsMapper configsMapper;
 
     @FXML
-    public void initialize() {
+    public void initPage() {
         configsMapper = JavaFxApplication.getApplicationContext().getBean(ConfigsMapper.class);
         stackPane.getChildren().clear();
         container.getChildren().clear();
