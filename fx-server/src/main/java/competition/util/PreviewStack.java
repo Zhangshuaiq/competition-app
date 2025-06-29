@@ -44,6 +44,7 @@ public class PreviewStack {
             return null;
         }
         PreviewPane pop = previewStack.pop();
+        pop.destroy();
         return pop;
     }
 

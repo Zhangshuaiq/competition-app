@@ -194,18 +194,6 @@ public class QuestionPreview implements ReloadPane<Questions>{
                 imageQ.setVisible(false);
             }
 
-//            if (questionType.equals("单选题")) {
-//                
-//            } else if (questionType.equals("多选题")) {
-//                
-//            }  else if (questionType.equals("填空题")) {
-//
-//            }  else if (questionType.equals("简答题")) {
-//
-//            }  else if (questionType.equals("判断题")) {
-//
-//            }
-
 
             // 题型
             String tx = split[9];

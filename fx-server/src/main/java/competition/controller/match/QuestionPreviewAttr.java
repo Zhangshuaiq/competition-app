@@ -1,5 +1,6 @@
 package competition.controller.match;
 
+import competition.controller.ControlPane;
 import competition.controller.preview.CluePreviewPreview;
 import competition.controller.preview.PreviewPane;
 import competition.controller.preview.QuestionPreviewPreview;
@@ -18,6 +19,7 @@ import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
@@ -164,6 +166,8 @@ public class QuestionPreviewAttr {
 
 
     private static Questions questions;
+    @Autowired
+    private ControlPane controlPane;
 
 
     public static void setQuestions(Questions questions) {
@@ -730,7 +734,7 @@ public class QuestionPreviewAttr {
             answerFontSize.setText(12 + "");
             // x y w h
             // 
-            PreviewPane previewPane = PreviewStack.getLast();
+            PreviewPane previewPane = controlPane.getPreviewPane();
             VBox tiganBox = null;
             if (previewPane instanceof  QuestionPreviewPreview) {
                 QuestionPreviewPreview preview =(QuestionPreviewPreview)previewPane;

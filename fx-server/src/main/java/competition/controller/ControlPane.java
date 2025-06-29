@@ -1436,12 +1436,11 @@ public class ControlPane {
             return;
         }
 
-        PreviewPane last = PreviewStack.getLast();
-
         // 环节规则页无法返回，只能通过点击环节规则返回到前一个页面
         if (previewPane instanceof StageRulePreviewPreview) {
             return;
         }
+
 
         if (previewPane instanceof ShowAnswerPreview) {
             GlobalCache.showAnswer = false;
@@ -1449,10 +1448,13 @@ public class ControlPane {
             return;
         }
 
+        PreviewPane last = PreviewStack.getLast();
+
         if (last instanceof QuestionPreviewPreview) {
             // 答题 返回 选题界面
+            GlobalCache.showAnswer = false;
             QuestionPreviewPreview x = (QuestionPreviewPreview) previewPane;
-            Questions q = x.getInner();
+            Questions q = x.getData();
             Stages stages = stagesMapper.selectById(currentStage.getId());
             // 返回关闭计时
             if (timeBoardPreview != null) {
@@ -1483,20 +1485,23 @@ public class ControlPane {
             }
 
         } else if (last instanceof Model7Preview) {
+            GlobalCache.showAnswer = false;
             Model7Preview model7Preview = (Model7Preview) last;
             // 结束当前答题状态,如果在答题中的话
             if (!startAnswerBtn.getText().equals("开始答题")) {
                 startAnswerQuestion();
             }
-            Stages stages = stagesMapper.selectById(model7Preview.getInnerId());
+            Stages stages = stagesMapper.selectById(model7Preview.getData().getId());
             previewPane = Navigator.preview("/view/preview/StageQuestionPreview.fxml", "", "/view/style.css", true, stages);
         } else if (last instanceof Model3Preview) {
+            GlobalCache.showAnswer = false;
             // 风险题返回名称
             previewPane = Navigator.preview("/view/preview/StageNamePreview.fxml", "", "/view/style.css", true, previewPane.getData());
         } else if (last instanceof CluePreviewPreview) {
+            GlobalCache.showAnswer = false;
             // 答题 返回 选题界面
             CluePreviewPreview x = (CluePreviewPreview) previewPane;
-            Questions q = x.getInner();
+            Questions q = x.getData();
             Stages stages = stagesMapper.selectOne(new LambdaQueryWrapper<Stages>()
                     .eq(Stages::getSortVal, q.getStageNumber())
             );
@@ -1504,15 +1509,18 @@ public class ControlPane {
             previewPane = Navigator.preview("/view/preview/StageQuestionPreview.fxml", "", "/view/style.css", true, stages);
 
         } else if (last instanceof StageQuestionPreviewPreview) {
+            GlobalCache.showAnswer = false;
             // 选题界面 返回 环节名称
             StageQuestionPreviewPreview x = (StageQuestionPreviewPreview) previewPane;
             previewPane = Navigator.preview("/view/preview/StageNamePreview.fxml", "", "/view/style.css", true, x.getData().getId());
         } else if (last instanceof RollPreviewPreview) {
+            GlobalCache.showAnswer = false;
             // 选题界面 返回 环节名称
             RollPreviewPreview x = (RollPreviewPreview) previewPane;
             x.stopSelector();
             previewPane = Navigator.preview("/view/preview/StageNamePreview.fxml", "", "/view/style.css", true, x.getData().getId());
         } else if (last instanceof StageNamePreviewPreview) {
+            GlobalCache.showAnswer = false;
             if (previewPane instanceof StagePreviewPreview) {
                 return;
             }
@@ -1527,6 +1535,7 @@ public class ControlPane {
             }
             previewPane = Navigator.preview("/view/preview/StagePreview.fxml", "", "/view/style.css", true, null);
         } else if (last instanceof StagePreviewPreview) {
+            GlobalCache.showAnswer = false;
             // 环节列表 返回 环节名称
             StagePreviewPreview x = (StagePreviewPreview) previewPane;
             if (x.getData() == null) {
@@ -1925,7 +1934,7 @@ public class ControlPane {
         if (last != null) {
             if (last instanceof QuestionPreviewPreview) {
                 QuestionPreviewPreview x = (QuestionPreviewPreview) last;
-                Questions q = x.getInner();
+                Questions q = x.getData();
                 previewPane = Navigator.preview("/view/preview/QuestionPreview.fxml", "", "/view/style.css", true, q);
             } else if (last instanceof StageQuestionPreviewPreview) {
                 previewPane = Navigator.preview("/view/preview/StageQuestionPreview.fxml", "", "/view/style.css", true, last.getData());
@@ -2119,14 +2128,12 @@ public class ControlPane {
                     previewPane = Navigator.preview("/view/preview/StageQuestionPreview.fxml", "", "/view/style.css", true, controlStage);
                 } else if (controlStage.getQuestionType() == 6) {
                     // 答题模式
-                    setPreviewPane(
-                            Navigator.preview("/view/preview/StageQuestionPreview.fxml", "", "/view/style.css", true, controlStage)
-                    );
+
+                    previewPane =  Navigator.preview("/view/preview/StageQuestionPreview.fxml", "", "/view/style.css", true, controlStage);
                 } else if (controlStage.getQuestionType() == 7) {
                     // 竞技模式
-                    setPreviewPane(
-                            Navigator.preview("/view/preview/StageQuestionPreview.fxml", "", "/view/style.css", true, controlStage)
-                    );
+                    previewPane = Navigator.preview("/view/preview/StageQuestionPreview.fxml", "", "/view/style.css", true, controlStage);
+
                 }
                 // previewPane.reload();
             } else {
@@ -2243,6 +2250,7 @@ public class ControlPane {
                 questionsMapper.updateById(questions);
                 GlobalCache.showAnswer = false;
                 if (previewPane instanceof QuestionPreviewPreview) {
+                    previewPane.setData(questions);
                     previewPane.reload();
                 } else {
                     previewPane = Navigator.preview("/view/preview/QuestionPreview.fxml", "", "/view/style.css", true, questions);
@@ -2533,7 +2541,7 @@ public class ControlPane {
             if (last != null) {
                 if (last instanceof QuestionPreviewPreview) {
                     QuestionPreviewPreview x = (QuestionPreviewPreview) last;
-                    Questions q = x.getInner();
+                    Questions q = x.getData();
                     previewPane = Navigator.preview("/view/preview/QuestionPreview.fxml", "", "/view/style.css", true, q);
                 } else if (last instanceof StageQuestionPreviewPreview) {
                     previewPane = Navigator.preview("/view/preview/StageQuestionPreview.fxml", "", "/view/style.css", true, last.getData());

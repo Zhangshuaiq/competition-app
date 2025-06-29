@@ -71,7 +71,13 @@ public class Register {
                 if (activeCode.equals(RuntimeUtil.SUPER_ACTIVE_CODE)) {
                     String cpuSerial = "";
                     try {
-                        cpuSerial = CPUSerialUtils.getCPUSerial();
+                        String osName = System.getProperty("os.name").toLowerCase();
+                        if (osName.contains("mac")) {
+                            // 开发环境
+                            cpuSerial = "12345678";
+                        } else {
+                            cpuSerial = CPUSerialUtils.getCPUSerial();
+                        }
                     } catch (Exception e) {
                         e.printStackTrace();
                     }

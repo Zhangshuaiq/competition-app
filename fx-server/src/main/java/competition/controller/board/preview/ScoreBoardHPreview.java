@@ -4,6 +4,7 @@ import competition.controller.ControlPane;
 import competition.controller.board.BoardPane;
 import competition.controller.board.match.ScoreBoardH;
 import competition.controller.preview.PreviewPane;
+import competition.controller.preview.QuestionPreviewPreview;
 import competition.controller.preview.ShowAnswerPreview;
 import competition.entity.Configs;
 import competition.entity.ScoreStyle;
@@ -217,8 +218,9 @@ public class ScoreBoardHPreview extends PreviewPane implements BoardPane {
             if (currentStage != null) {
                 Integer m6 = currentStage.getM6();
                 Integer questionType = currentStage.getQuestionType();
-                if (questionType == 6 && m6 == 0) {
-                    // 答案单独展示情况下不显示回答
+                if (questionType == 6 && controlPane.getPreviewPane() instanceof QuestionPreviewPreview) {
+                    if (m6 == 0) {
+                        // 答案单独展示情况下不显示回答
                         List<Model60RuntimeData.ModelData> runtimeData = Model60RuntimeData.getRuntimeData();
                         Map<String, Model60RuntimeData.ModelData> answerMap = runtimeData.stream().collect(Collectors.toMap(x -> x.getTeamName(), x -> x));
                         count ++;
@@ -254,67 +256,68 @@ public class ScoreBoardHPreview extends PreviewPane implements BoardPane {
                             }
                         }
 
-                    if (Objects.equals(1, currentStage.getAnswerSingle()) && controlPane.getPreviewPane() instanceof ShowAnswerPreview) {
+                        if (Objects.equals(1, currentStage.getAnswerSingle()) && controlPane.getPreviewPane() instanceof ShowAnswerPreview) {
 
-                    } else {
-                        if (Objects.equals(1, currentStage.getAnswerSingle())) {
-                            userSelect.setText("");
+                        } else {
+                            if (Objects.equals(1, currentStage.getAnswerSingle())) {
+                                userSelect.setText("");
+                            }
+                            stackPane2.getChildren().add(userSelect);
+                            box.getChildren().add(stackPane2);
                         }
-                        stackPane2.getChildren().add(userSelect);
-                        box.getChildren().add(stackPane2);
+
                     }
 
-                }
-
-                else if (questionType == 6 && m6 == 1) {
-                    List<Model61RuntimeData.ModelData> runtimeData = Model61RuntimeData.getRuntimeData();
-                    Map<String, Model61RuntimeData.ModelData> dataMap = runtimeData.stream().collect(Collectors.toMap(x -> x.getTeamName() + "-" + x.getUserName(), x -> x));
-                    count ++;
-                    HBox memberStatus = new HBox();
-                    memberStatus.setMaxHeight(Double.MAX_VALUE);
-                    memberStatus.setSpacing(1);
-                    memberStatus.setPadding(new Insets(1, 1, 1,1));
-                    memberStatus.setPrefWidth(ScreenAdapter.calculateMainX(Integer.parseInt(cfgArr[19])));
-                    String members = team.getMembers();
-                    if (!StringUtils.isEmpty(members)) {
-                        String[] ms = members.split(",");
-                        double w = Integer.parseInt(cfgArr[19]) * 1.0 / ms.length;
-                        for (int i = 0; i < ms.length; i++) {
-                            Model61RuntimeData.ModelData modelData = dataMap.get(team.getFullName() + "-" + ms[i]);
-                            StackPane stackPane2 = new StackPane();
-                            stackPane2.setMaxHeight(Double.MAX_VALUE);
-                            VBox.setVgrow(stackPane2, Priority.NEVER);
-                            stackPane2.setPrefSize(ScreenAdapter.calculateMainX(w), ScreenAdapter.calculateMainY(Integer.parseInt(cfgArr[20])));
-                            Text l = new Text((i + 1) + "");
-                            l.setTextAlignment(TextAlignment.CENTER);
-                            stackPane2.getChildren().add(l);
-                            l.setFont(statusFont);
-                            l.setFill(statusColor);
-                            if (team.getStatusList().get(i) == 1) {
-                                stackPane2.setBackground(new Background(new BackgroundFill(Color.valueOf(cfgArr[26]), new CornerRadii(10), Insets.EMPTY)));
-                            } else {
-                                if (StringUtils.isEmpty(modelData.getUserSelect())) {
-                                    if (team.getStatusList().get(i) == 3) {
-                                        // 答题已结束，展示错误的状态
-                                        stackPane2.setBackground(new Background(new BackgroundFill(Color.valueOf(cfgArr[28]), new CornerRadii(10), Insets.EMPTY)));
-                                    } else {
-                                        // 答题未结束，展示未选择状态
-                                        stackPane2.setBackground(new Background(new BackgroundFill(Color.valueOf(cfgArr[25]), new CornerRadii(10), Insets.EMPTY)));
-                                    }
-                                    //stackPane2.setBackground(new Background(new BackgroundFill(Color.valueOf(cfgArr[25]), new CornerRadii(10), Insets.EMPTY)));
+                    else if (m6 == 1) {
+                        List<Model61RuntimeData.ModelData> runtimeData = Model61RuntimeData.getRuntimeData();
+                        Map<String, Model61RuntimeData.ModelData> dataMap = runtimeData.stream().collect(Collectors.toMap(x -> x.getTeamName() + "-" + x.getUserName(), x -> x));
+                        count ++;
+                        HBox memberStatus = new HBox();
+                        memberStatus.setMaxHeight(Double.MAX_VALUE);
+                        memberStatus.setSpacing(1);
+                        memberStatus.setPadding(new Insets(1, 1, 1,1));
+                        memberStatus.setPrefWidth(ScreenAdapter.calculateMainX(Integer.parseInt(cfgArr[19])));
+                        String members = team.getMembers();
+                        if (!StringUtils.isEmpty(members)) {
+                            String[] ms = members.split(",");
+                            double w = Integer.parseInt(cfgArr[19]) * 1.0 / ms.length;
+                            for (int i = 0; i < ms.length; i++) {
+                                Model61RuntimeData.ModelData modelData = dataMap.get(team.getFullName() + "-" + ms[i]);
+                                StackPane stackPane2 = new StackPane();
+                                stackPane2.setMaxHeight(Double.MAX_VALUE);
+                                VBox.setVgrow(stackPane2, Priority.NEVER);
+                                stackPane2.setPrefSize(ScreenAdapter.calculateMainX(w), ScreenAdapter.calculateMainY(Integer.parseInt(cfgArr[20])));
+                                Text l = new Text((i + 1) + "");
+                                l.setTextAlignment(TextAlignment.CENTER);
+                                stackPane2.getChildren().add(l);
+                                l.setFont(statusFont);
+                                l.setFill(statusColor);
+                                if (team.getStatusList().get(i) == 1) {
+                                    stackPane2.setBackground(new Background(new BackgroundFill(Color.valueOf(cfgArr[26]), new CornerRadii(10), Insets.EMPTY)));
                                 } else {
-                                    if (modelData.getUserSelect().equals(modelData.getAnswer())) {
-                                        stackPane2.setBackground(new Background(new BackgroundFill(Color.valueOf(cfgArr[27]), new CornerRadii(10), Insets.EMPTY)));
+                                    if (StringUtils.isEmpty(modelData.getUserSelect())) {
+                                        if (team.getStatusList().get(i) == 3) {
+                                            // 答题已结束，展示错误的状态
+                                            stackPane2.setBackground(new Background(new BackgroundFill(Color.valueOf(cfgArr[28]), new CornerRadii(10), Insets.EMPTY)));
+                                        } else {
+                                            // 答题未结束，展示未选择状态
+                                            stackPane2.setBackground(new Background(new BackgroundFill(Color.valueOf(cfgArr[25]), new CornerRadii(10), Insets.EMPTY)));
+                                        }
+                                        //stackPane2.setBackground(new Background(new BackgroundFill(Color.valueOf(cfgArr[25]), new CornerRadii(10), Insets.EMPTY)));
                                     } else {
-                                        stackPane2.setBackground(new Background(new BackgroundFill(Color.valueOf(cfgArr[28]), new CornerRadii(10), Insets.EMPTY)));
+                                        if (modelData.getUserSelect().equals(modelData.getAnswer())) {
+                                            stackPane2.setBackground(new Background(new BackgroundFill(Color.valueOf(cfgArr[27]), new CornerRadii(10), Insets.EMPTY)));
+                                        } else {
+                                            stackPane2.setBackground(new Background(new BackgroundFill(Color.valueOf(cfgArr[28]), new CornerRadii(10), Insets.EMPTY)));
+                                        }
                                     }
                                 }
-                            }
 
-                            // 居中
-                            memberStatus.getChildren().add(stackPane2);
+                                // 居中
+                                memberStatus.getChildren().add(stackPane2);
+                            }
+                            box.getChildren().add(memberStatus);
                         }
-                        box.getChildren().add(memberStatus);
                     }
                 }
                 else if (questionType == 7) {

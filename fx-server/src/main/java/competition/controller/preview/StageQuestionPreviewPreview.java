@@ -372,11 +372,10 @@ public class StageQuestionPreviewPreview extends PreviewPane<Stages> {
 //                    }
                     questions.setShowNumber(inner.getShowNumber());
                     if (inner.getQuestionType() == 7) {
-                        Model7Preview.setCurrentStage(inner);
                         Model7RuntimeData.setTeams(TeamRuntime.getTeams());
                         // 发送试题列表给前端
                         controlPane.setPreviewPane(
-                                Navigator.preview("/view/preview/Model7Preview.fxml", "", "/view/style.css", true, null)
+                                Navigator.preview("/view/preview/Model7Preview.fxml", "", "/view/style.css", true, inner)
                         );
                         controlPane.updateScoreBoard();
 

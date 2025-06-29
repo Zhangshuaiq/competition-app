@@ -607,12 +607,6 @@ public class CluePreviewPreview extends PreviewPane<Questions>{
         }
     }
 
-    
-
-    public Questions getInner() {
-        return inner;
-    }
-
     @Override
     public void reload() {
         backPane.setVisible(GlobalCache.showAnswer);
@@ -669,5 +663,10 @@ public class CluePreviewPreview extends PreviewPane<Questions>{
             CluePreview cluePreview = (CluePreview) questionPreview;
             cluePreview.showClue();
         }
+    }
+
+    @Override
+    public Questions getData() {
+        return inner;
     }
 }

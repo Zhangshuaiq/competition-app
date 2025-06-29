@@ -25,6 +25,7 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.input.ScrollEvent;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
+import javafx.scene.paint.Paint;
 import javafx.scene.text.*;
 import javafx.scene.text.Font;
 import javafx.scene.transform.Shear;
@@ -664,8 +665,13 @@ public class QuestionPreviewPreview extends PreviewPane<Questions> {
         applyFontStyleToAllTexts(font, split1);
 
         // 处理空行
-        if (split1.length > 16 && Boolean.parseBoolean(split1[16])) {
-            addBlankLine(font);
+        if (split1.length > 16) {
+            if (Boolean.parseBoolean(split1[16])) {
+                addBlankLine(font);
+            } else {
+                // 如果不需要空行，确保没有多余的空行
+                tiganBox.getChildren().removeIf(node -> node instanceof Text && ((Text) node).getText().equals("11"));
+            }
         }
     }
 
@@ -727,15 +733,15 @@ public class QuestionPreviewPreview extends PreviewPane<Questions> {
      */
     private void applyFontStyleToAllTexts(Font font, String[] split1) {
         // 应用到题干标签
-        applyTextStyle(tiganLabel, font, split1);
+        applyTextStyle(tiganLabel, font, split1, tiganLabel.getFill());
 
         // 应用到所有选项
-        applyTextStyle(choiceAText, font, split1);
-        applyTextStyle(choiceBText, font, split1);
-        applyTextStyle(choiceCText, font, split1);
-        applyTextStyle(choiceDText, font, split1);
-        applyTextStyle(choiceEText, font, split1);
-        applyTextStyle(choiceFText, font, split1);
+        applyTextStyle(choiceAText, font, split1, tiganLabel.getFill());
+        applyTextStyle(choiceBText, font, split1, tiganLabel.getFill());
+        applyTextStyle(choiceCText, font, split1, tiganLabel.getFill());
+        applyTextStyle(choiceDText, font, split1, tiganLabel.getFill());
+        applyTextStyle(choiceEText, font, split1, tiganLabel.getFill());
+        applyTextStyle(choiceFText, font, split1, tiganLabel.getFill());
 
         // 设置包装宽度
         double wrapWidth = ScreenAdapter.calculateMainX(Integer.parseInt(split1[2]));
@@ -745,13 +751,13 @@ public class QuestionPreviewPreview extends PreviewPane<Questions> {
     /**
      * 应用文本样式
      */
-    private void applyTextStyle(Text text, Font font, String[] split1) {
+    private void applyTextStyle(Text text, Font font, String[] split1, Paint color) {
         if (split1.length < 15) return;
 
         text.setFont(font);
         text.setUnderline(Boolean.valueOf(split1[12]));
         text.setStrikethrough(Boolean.valueOf(split1[9]));
-
+        text.setFill(color);
         if (Boolean.valueOf(split1[10])) {
             text.setStroke(text.getFill());
             text.setStrokeWidth(1);
@@ -813,7 +819,8 @@ public class QuestionPreviewPreview extends PreviewPane<Questions> {
         daanLabel.setLineSpacing(ScreenAdapter.calculateMainY(Integer.parseInt(split1[14])));
 
         Font font = getCachedFont(split1[7], ScreenAdapter.calculateMainX(Integer.parseInt(split1[8])));
-        applyTextStyle(daanLabel, font, split1);
+        applyTextStyle(daanLabel, font, split1, Color.BLACK);
+        backPane.setVisible(GlobalCache.showAnswer);
     }
 
     /**
@@ -840,7 +847,7 @@ public class QuestionPreviewPreview extends PreviewPane<Questions> {
         }
 
         Font font = getCachedFont(split1[7], ScreenAdapter.calculateMainX(Integer.parseInt(split1[8])));
-        applyTextStyle(stageLabel, font, split1);
+        applyTextStyle(stageLabel, font, split1, Color.BLACK);
     }
 
     /**
@@ -951,7 +958,8 @@ public class QuestionPreviewPreview extends PreviewPane<Questions> {
         }
     }
 
-    public Questions getInner() {
+    @Override
+    public Questions getData() {
         return inner;
     }
 
