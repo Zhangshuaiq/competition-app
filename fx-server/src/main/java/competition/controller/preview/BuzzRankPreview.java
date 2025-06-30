@@ -37,7 +37,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.*;
 
 @Component
-public class BuzzRankPreview extends PreviewPane{
+public class BuzzRankPreview extends RankPane{
 
     @FXML
     private AnchorPane container;

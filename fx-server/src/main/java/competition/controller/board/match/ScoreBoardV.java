@@ -4,6 +4,7 @@ import competition.controller.ControlPane;
 import competition.controller.board.BoardPane;
 import competition.controller.board.preview.ScoreBoardVPreview;
 import competition.controller.preview.QuestionPreviewPreview;
+import competition.controller.preview.RankPane;
 import competition.controller.preview.ShowAnswerPreview;
 import competition.entity.Configs;
 import competition.entity.ScoreStyle;
@@ -68,7 +69,6 @@ public class ScoreBoardV implements BoardPane {
     }
 
     private void show() {
-
         ScoreStyle scoreStyle = scoreStyleMapper.selectById(1);
         String[] split = scoreStyle.getStyles().split(ConfigSpliter.SPLITER);
         double rowSpan = 10;

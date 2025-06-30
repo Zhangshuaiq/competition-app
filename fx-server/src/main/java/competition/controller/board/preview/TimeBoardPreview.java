@@ -230,9 +230,6 @@ public class TimeBoardPreview extends PreviewPane {
         Stage stage = (Stage) (teamScore.getScene().getWindow());
         stage.hide();
         ReloadPane timeBoard = controlPane.getTimeBoard();
-        if (timeBoard == null) {
-            timeBoard = (ReloadPane) ExtendedScreen.timeWithPos("/view/board/match/TimeBoard.fxml", "", "/view/style.css", true);
-        }
         if (timeBoard != null) {
             controlPane.setTimeBoard(timeBoard);
             timeBoard.close();

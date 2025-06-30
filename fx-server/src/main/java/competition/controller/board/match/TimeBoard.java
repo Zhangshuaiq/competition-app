@@ -15,6 +15,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextAlignment;
+import javafx.stage.Stage;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
@@ -145,12 +146,14 @@ public class TimeBoard implements ReloadPane {
 
     @Override
     public void shows() {
-        teamScore.setVisible(true);
+        Stage stage = (Stage) (teamScore.getScene().getWindow());
+        stage.show();
     }
 
     @Override
     public void close() {
-        teamScore.setVisible(false);
+        Stage stage = (Stage) (teamScore.getScene().getWindow());
+        stage.hide();
     }
 
     @Override

@@ -38,7 +38,7 @@ import java.util.concurrent.CompletableFuture;
 
 // 竞技模式显示控制 - 优化版本，避免重复创建UI组件
 @Component
-public class Model7Preview extends PreviewPane<Stages> {
+public class Model7Preview extends RankPane<Stages> {
 
     @FXML
     private GridPane container;
@@ -824,6 +824,10 @@ public class Model7Preview extends PreviewPane<Stages> {
         teamPanels.clear();
         container.getChildren().clear();
         uiInitialized = false;
+        ReloadPane questionPreview = controlPane.getQuestionPreview();
+        if (questionPreview != null) {
+            questionPreview.destroy();
+        }
     }
 
     @Override

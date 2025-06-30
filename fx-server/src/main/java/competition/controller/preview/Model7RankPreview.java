@@ -45,7 +45,7 @@ import java.util.stream.Collectors;
  * 排行（竞技模式、团队答题、个人答题排行）
  */
 @Component
-public class Model7RankPreview extends PreviewPane {
+public class Model7RankPreview extends RankPane {
 
     @FXML
     private AnchorPane container;

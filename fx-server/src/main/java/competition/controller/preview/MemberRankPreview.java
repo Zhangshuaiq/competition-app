@@ -41,7 +41,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.*;
 
 @Component
-public class MemberRankPreview extends PreviewPane {
+public class MemberRankPreview extends RankPane {
 
     @FXML
     private AnchorPane container;

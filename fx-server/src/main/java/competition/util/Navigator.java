@@ -3,11 +3,11 @@ package competition.util;
 import com.alibaba.fastjson2.JSON;
 import com.alibaba.fastjson2.JSONObject;
 import competition.JavaFxApplication;
+import competition.controller.ControlPane;
 import competition.controller.board.preview.TeamConnectionBarPreview;
 import competition.controller.preview.PreviewPane;
 import competition.entity.Buzz;
 import competition.entity.Configs;
-import competition.entity.Questions;
 import competition.mapper.BuzzMapper;
 import competition.mapper.ConfigsMapper;
 import javafx.beans.value.ChangeListener;
@@ -114,6 +114,9 @@ public class Navigator {
 
 
     public static PreviewPane preview(String fxml, String title, String cssFile, boolean hiddenControl, Object data){
+        ConfigurableApplicationContext applicationContext = JavaFxApplication.getApplicationContext();
+        ControlPane controlPane = applicationContext.getBean(ControlPane.class);
+        controlPane.reloadScoreBoard();
         Parent load = null;
         try {
             PreviewPane previewPane;

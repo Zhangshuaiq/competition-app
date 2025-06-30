@@ -336,7 +336,7 @@ public class StageNamePreviewPreview extends PreviewPane<Integer> {
                     } else if (stages.getQuestionType() == 7){
                         // 竞技模式
                         controlPane.setPreviewPane(
-                                Navigator.preview("/view/preview/StageQuestionPreview.fxml", "", "/view/style.css", true, stages)
+                                Navigator.preview("/view/preview/Model7Preview.fxml", "", "/view/style.css", true, stages)
                         );
                         //messageHandler.notifyEnterWait("model7");
                     }

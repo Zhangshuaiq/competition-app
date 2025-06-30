@@ -48,7 +48,6 @@ public class StageQuestionPreview implements ReloadPane<Stages> {
     private WsMessageHandler messageHandler;
 
 
-    private static Stages currentStage;
 
     private Stages inner;
 
@@ -65,7 +64,6 @@ public class StageQuestionPreview implements ReloadPane<Stages> {
 
     @FXML
     public void initPage() {
-        inner = currentStage;
         showData();
     }
 

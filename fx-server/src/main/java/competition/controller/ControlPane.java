@@ -384,6 +384,14 @@ public class ControlPane {
         // 检测硬件状态
         Timeline timeline = new Timeline(new KeyFrame(javafx.util.Duration.millis(100), event -> {
 
+            if (scoreBoard != null) {
+                if (previewPane instanceof RankPane) {
+                    scoreBoard.close();
+                }   else {
+                    scoreBoard.shows();
+                }
+            }
+
             // 检测开始答题状态
             if (enterModelQuestionPage()) {
                 startAnswerBtn.setDisable(false);
@@ -770,6 +778,8 @@ public class ControlPane {
 
         showScoreBoard();
         loadConnectionStatsBar();
+
+
     }
 
     private void showStage() {
@@ -1461,7 +1471,7 @@ public class ControlPane {
                 timeReset();
             }
             // 判断当前环节的出题类型
-            if (stages.getQuestionType() == 2 || stages.getQuestionType() == 1) {
+            if (stages.getQuestionType() == 2) {
                 // 自选题目
                 previewPane = Navigator.preview("/view/preview/StageQuestionPreview.fxml", "", "/view/style.css", true, stages);
             } else if (stages.getQuestionType() == 4) {
@@ -1480,8 +1490,8 @@ public class ControlPane {
             } else if (stages.getQuestionType() == 6) {
                 // 答题模式
                 previewPane = Navigator.preview("/view/preview/StageQuestionPreview.fxml", "", "/view/style.css", true, stages);
-            } else if (stages.getQuestionType() == 7) {
-                previewPane = Navigator.preview("/view/preview/StageQuestionPreview.fxml", "", "/view/style.css", true, stages);
+            } else if (stages.getQuestionType() == 1) {
+                previewPane = Navigator.preview("/view/preview/StageNamePreview.fxml", "", "/view/style.css", true, stages.getId());
             }
 
         } else if (last instanceof Model7Preview) {
@@ -1492,7 +1502,7 @@ public class ControlPane {
                 startAnswerQuestion();
             }
             Stages stages = stagesMapper.selectById(model7Preview.getData().getId());
-            previewPane = Navigator.preview("/view/preview/StageQuestionPreview.fxml", "", "/view/style.css", true, stages);
+            previewPane = Navigator.preview("/view/preview/StageNamePreview.fxml", "", "/view/style.css", true, stages.getId());
         } else if (last instanceof Model3Preview) {
             GlobalCache.showAnswer = false;
             // 风险题返回名称
@@ -1924,12 +1934,6 @@ public class ControlPane {
             previewPane = Navigator.preview("/view/preview/StagePreview.fxml", "", "/view/style.css", true, null);
             return;
         }
-
-//        if (controlStage.getQuestionType() == 6) {
-//            messageHandler.notifyRule("");
-//        } else if (controlStage.getQuestionType() == 7) {
-//            messageHandler.notifyRule("");
-//        }
         PreviewPane last = PreviewStack.getLast();
         if (last != null) {
             if (last instanceof QuestionPreviewPreview) {
@@ -1945,7 +1949,7 @@ public class ControlPane {
             } else if (last instanceof StagePreviewPreview) {
                 previewPane = Navigator.preview("/view/preview/StagePreview.fxml", "", "/view/style.css", true, last.getData());
             } else if (last instanceof Model7Preview) {
-                previewPane = Navigator.preview("/view/preview/Model7Preview.fxml", "", "/view/style.css", true, null);
+                previewPane = Navigator.preview("/view/preview/Model7Preview.fxml", "", "/view/style.css", true,  last.getData());
             } else if (last instanceof Model3Preview) {
                 List<Stages> childrenStages = stagesMapper.selectList(new LambdaQueryWrapper<Stages>()
                         .eq(Stages::getParentId, controlStage.getId())
@@ -1958,11 +1962,8 @@ public class ControlPane {
                 }
                 previewPane = Navigator.preview("/view/preview/Model3Preview.fxml", "", "/view/style.css", true, data);
             } else if (last instanceof Model7RankPreview) {
-                PreviewStack.removePreview();
                 returnLast();
             }
-            //清除资源占用
-            last.destroy();
             GlobalCache.showRule = false;
         }
     }
@@ -2169,12 +2170,13 @@ public class ControlPane {
         MusicPlayer.play(MusicResource.SHOW_QUESTION);
         if (currentStage.getQuestionType() == (7)) {
             Model7RuntimeData.setTeams(TeamRuntime.getTeams());
-            previewPane = Navigator.preview("/view/preview/Model7Preview.fxml", "", "/view/style.css", true, true);
+            previewPane = Navigator.preview("/view/preview/Model7Preview.fxml", "", "/view/style.css", true, currentStage);
             updateScoreBoard();
         } else if (currentStage.getQuestionType() == (6)) {
             Integer m6 = currentStage.getM6();
             String tihao = questionCombox.getValue();
             Questions questions;
+            boolean showAnswer = GlobalCache.showAnswer;
             if (controlStage.getRandomSort() == 1) {
                 questions = questionsMapper.selectOne(new LambdaQueryWrapper<Questions>()
                         .eq(Questions::getStageNumber, currentStage.getSortVal())

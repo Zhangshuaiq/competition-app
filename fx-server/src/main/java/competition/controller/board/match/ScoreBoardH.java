@@ -3,6 +3,7 @@ package competition.controller.board.match;
 import competition.controller.ControlPane;
 import competition.controller.board.BoardPane;
 import competition.controller.preview.QuestionPreviewPreview;
+import competition.controller.preview.RankPane;
 import competition.controller.preview.ShowAnswerPreview;
 import competition.entity.Configs;
 import competition.entity.ScoreStyle;
@@ -59,7 +60,6 @@ public class ScoreBoardH implements BoardPane {
     }
 
     private void show() {
-
         ScoreStyle scoreStyle = scoreStyleMapper.selectById(1);
         String[] split = scoreStyle.getStyles().split(ConfigSpliter.SPLITER);
 

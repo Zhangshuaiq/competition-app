@@ -50,7 +50,6 @@ public class CluePreview implements ReloadPane<Questions> {
     @FXML
     private VBox buzzBox;
 
-
     @FXML
     private StackPane backPane, stagePane;
 
@@ -117,7 +116,7 @@ public class CluePreview implements ReloadPane<Questions> {
                 event.consume();
             }
         });
-
+        backPane.setVisible(GlobalCache.showAnswer);
         scrollPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
         scrollPane.setStyle("-fx-background: rgba(0, 0, 0, 0); -fx-background-color: transparent; -fx-border-color: transparent; -fx-border-radius: 10px;-fx-background-radius: 10px; -fx-padding: 0;");
         scrollPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);

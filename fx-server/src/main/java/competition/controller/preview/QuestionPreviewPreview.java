@@ -48,6 +48,7 @@ public class QuestionPreviewPreview extends PreviewPane<Questions> {
 
     // 字体缓存，避免重复加载
     private static final Map<String, Font> FONT_CACHE = new ConcurrentHashMap<>();
+    private final  String BLACK_LINE = "=======================================================";
 
     // UI组件复用
     private Text choiceAText, choiceBText, choiceCText, choiceDText, choiceEText, choiceFText;
@@ -182,7 +183,7 @@ public class QuestionPreviewPreview extends PreviewPane<Questions> {
     @FXML
     public void initPage() {
         container.toBack();
-
+        backPane.setVisible(GlobalCache.showAnswer);
         // 初始化可复用组件
         initializeReusableComponents();
 
@@ -204,7 +205,6 @@ public class QuestionPreviewPreview extends PreviewPane<Questions> {
                 inner.setShowNumber(belongStage.getShowNumber());
             }
         }
-
 
         // 设置鼠标事件处理器
         setupMouseHandler();
@@ -325,11 +325,14 @@ public class QuestionPreviewPreview extends PreviewPane<Questions> {
         // 处理题型和选项
         handleQuestionTypeAndChoices(split);
 
-        // 处理样式
-        handleStyles();
+        // 设置基础答案信息（位置会被style2覆盖）
+        setBasicAnswerInfo(split);
 
         // 处理阶段显示
         handleStageDisplay(split);
+
+        // 处理样式（优先级最高，会覆盖前面的设置）
+        handleStyles();
 
         // 配置滚动面板
         configureScrollPaneLayout();
@@ -343,9 +346,10 @@ public class QuestionPreviewPreview extends PreviewPane<Questions> {
      */
     private void handleExtendedScreen() {
         if (ExtendedScreen.hasShow()) {
-            Object res = ExtendedScreen.showWithControl("/view/match/QuestionPreview.fxml",inner);
+            Object res = ExtendedScreen.showWithControl("/view/match/QuestionPreview.fxml", inner);
             if (res != null) {
-                controlPane.setQuestionPreview((QuestionPreview) res);
+                QuestionPreview questionPreview = (QuestionPreview) res;
+                controlPane.setQuestionPreview(questionPreview);
             }
         }
     }
@@ -607,7 +611,58 @@ public class QuestionPreviewPreview extends PreviewPane<Questions> {
     }
 
     /**
-     * 处理样式
+     * 设置基础答案信息（会被style2覆盖）
+     */
+    private void setBasicAnswerInfo(String[] split) {
+        // 设置基础答案文本
+        if (split.length > 4) {
+            daanLabel.setText(split[4] + " " + inner.getAnswer());
+
+            // 设置基础位置（会被style2覆盖）
+            backPane.setLayoutX(tiganBox.getLayoutX());
+            backPane.setLayoutY(tiganBox.getLayoutY() + tiganBox.getPrefHeight() + ScreenAdapter.calculateMainY(10));
+
+            if (split.length > 1) {
+                daanLabel.setFill(Color.valueOf(split[1]));
+            }
+        }
+    }
+
+    /**
+     * 处理阶段显示
+     */
+    private void handleStageDisplay(String[] split) {
+        if (split.length < 13) return;
+
+        stagePane.setVisible(Boolean.valueOf(split[12]));
+
+        if (stagePane.isVisible()) {
+            String stageNumber = inner.getStageNumber();
+            Stages stages = stagesMapper.selectOne(new LambdaQueryWrapper<Stages>()
+                    .eq(Stages::getSortVal, stageNumber).last(" limit 1"));
+
+            if (stages != null) {
+                Stages currentStage = controlPane.getCurrentStage();
+                if (currentStage != null && currentStage.getQuestionType() == 3) {
+                    Stages pstage = stagesMapper.selectById(stages.getParentId());
+                    if (pstage != null) {
+                        stageLabel.setText(pstage.getName() + " " + stages.getName());
+                    } else {
+                        stageLabel.setText(stages.getName());
+                    }
+                } else {
+                    stageLabel.setText(stages.getName());
+                }
+
+                if (split.length > 11) {
+                    stageLabel.setFill(Color.valueOf(split[11]));
+                }
+            }
+        }
+    }
+
+    /**
+     * 处理样式（优先级最高）
      */
     private void handleStyles() {
         // 获取样式配置
@@ -631,19 +686,20 @@ public class QuestionPreviewPreview extends PreviewPane<Questions> {
             }
         }
 
-        // 应用样式
+        // 应用样式（覆盖基础设置）
         applyStyle1(style1);
         applyStyle2(style2);
         applyStyle3(style3);
     }
 
     /**
-     * 应用样式1（题干样式）
+     * 应用样式1（题干样式）- 优先级最高，覆盖基础设置
      */
     private void applyStyle1(String style1) {
         String[] split1 = style1.split(ConfigSpliter.SPLITER);
         if (split1.length < 15) return;
 
+        // style1的位置和尺寸设置（覆盖基础设置）
         tiganBox.setLayoutX(ScreenAdapter.calculateMainX(Integer.parseInt(split1[0])));
         tiganBox.setLayoutY(ScreenAdapter.calculateMainY(Integer.parseInt(split1[1])));
         tiganBox.setPrefWidth(ScreenAdapter.calculateMainX(Integer.parseInt(split1[2])));
@@ -654,14 +710,14 @@ public class QuestionPreviewPreview extends PreviewPane<Questions> {
             handleWordSpacing(Integer.parseInt(split1[15]));
         }
 
-        // 设置背景
+        // 设置背景（覆盖基础背景）
         setRegionBackground(tiganBox, split1);
 
-        // 设置间距和字体
+        // 设置间距和字体（覆盖基础设置）
         tiganBox.setSpacing(ScreenAdapter.calculateMainY(Integer.parseInt(split1[14])));
         Font font = getCachedFont(split1[7], ScreenAdapter.calculateMainX(Integer.parseInt(split1[8])));
 
-        // 应用字体样式到所有文本组件
+        // 应用字体样式到所有文本组件（覆盖基础样式）
         applyFontStyleToAllTexts(font, split1);
 
         // 处理空行
@@ -670,7 +726,7 @@ public class QuestionPreviewPreview extends PreviewPane<Questions> {
                 addBlankLine(font);
             } else {
                 // 如果不需要空行，确保没有多余的空行
-                tiganBox.getChildren().removeIf(node -> node instanceof Text && ((Text) node).getText().equals("11"));
+                tiganBox.getChildren().removeIf(node -> node instanceof Text && ((Text) node).getText().equals(BLACK_LINE));
             }
         }
     }
@@ -680,7 +736,10 @@ public class QuestionPreviewPreview extends PreviewPane<Questions> {
      */
     private void handleWordSpacing(int wordSpace) {
         if (wordSpace > 0) {
-            String spacer = " ";
+            String spacer = "";
+            for (int m = 0; m < wordSpace; m++) {
+                spacer = spacer + " ";
+            }
             applyWordSpacing(tiganLabel, spacer);
 
             for (Node child : tiganBox.getChildren()) {
@@ -791,40 +850,43 @@ public class QuestionPreviewPreview extends PreviewPane<Questions> {
      * 添加空行
      */
     private void addBlankLine(Font font) {
-        Text blankLine = new Text("11");
+        Text blankLine = new Text(BLACK_LINE);
         blankLine.setFont(font);
         blankLine.setVisible(false);
-        if (tiganBox.getChildren().size() > 1) {
-            tiganBox.getChildren().add(1, blankLine);
+        if (tiganBox.getChildren().size() > 1 && tiganBox.getChildren().get(1) instanceof Text) {
+            Text firstChild = (Text) tiganBox.getChildren().get(1);
+            if (!firstChild.getText().equals(BLACK_LINE)) {
+                tiganBox.getChildren().add(1, blankLine);
+            }
         }
     }
 
     /**
-     * 应用样式2（答案样式）
+     * 应用样式2（答案样式）- 优先级最高，覆盖基础答案设置
      */
     private void applyStyle2(String style2) {
         String[] split1 = style2.split(ConfigSpliter.SPLITER);
         if (split1.length < 15) return;
 
+        // style2的位置和尺寸设置（覆盖基础答案位置）
         backPane.setLayoutX(ScreenAdapter.calculateMainX(Integer.parseInt(split1[0])));
         backPane.setLayoutY(ScreenAdapter.calculateMainY(Integer.parseInt(split1[1])));
         backPane.setPrefWidth(ScreenAdapter.calculateMainX(Integer.parseInt(split1[2])));
         backPane.setPrefHeight(ScreenAdapter.calculateMainY(Integer.parseInt(split1[3])));
 
-        // 设置答案背景
+        // 设置答案背景（覆盖基础背景）
         setRegionBackground(backPane, split1);
 
-        // 设置答案文本样式
+        // 设置答案文本样式（覆盖基础样式）
         daanLabel.setWrappingWidth(ScreenAdapter.calculateMainX(Integer.parseInt(split1[2]) - 40));
         daanLabel.setLineSpacing(ScreenAdapter.calculateMainY(Integer.parseInt(split1[14])));
 
         Font font = getCachedFont(split1[7], ScreenAdapter.calculateMainX(Integer.parseInt(split1[8])));
-        applyTextStyle(daanLabel, font, split1, Color.BLACK);
-        backPane.setVisible(GlobalCache.showAnswer);
+        applyTextStyle(daanLabel, font, split1, daanLabel.getFill());
     }
 
     /**
-     * 应用样式3（阶段样式）
+     * 应用样式3（阶段样式）- 优先级最高，覆盖基础阶段设置
      */
     private void applyStyle3(String style3) {
         if (StringUtils.isEmpty(style3)) return;
@@ -832,65 +894,23 @@ public class QuestionPreviewPreview extends PreviewPane<Questions> {
         String[] split1 = style3.split(ConfigSpliter.SPLITER);
         if (split1.length < 14) return;
 
+        // style3的位置和尺寸设置（覆盖基础设置）
         stagePane.setLayoutX(ScreenAdapter.calculateMainX(Integer.parseInt(split1[0])));
         stagePane.setLayoutY(ScreenAdapter.calculateMainY(Integer.parseInt(split1[1])));
         stagePane.setPrefWidth(ScreenAdapter.calculateMainX(Integer.parseInt(split1[2])));
         stagePane.setPrefHeight(ScreenAdapter.calculateMainY(Integer.parseInt(split1[3])));
 
-        // 设置阶段背景
+        // 设置阶段背景（覆盖基础背景）
         setRegionBackground(stagePane, split1);
 
-        // 设置阶段文本样式
+        // 设置阶段文本样式（覆盖基础样式）
         stageLabel.setWrappingWidth(ScreenAdapter.calculateMainX(Integer.parseInt(split1[2])));
         if (split1.length >= 15) {
             stageLabel.setLineSpacing(ScreenAdapter.calculateMainY(Integer.parseInt(split1[14])));
         }
 
         Font font = getCachedFont(split1[7], ScreenAdapter.calculateMainX(Integer.parseInt(split1[8])));
-        applyTextStyle(stageLabel, font, split1, Color.BLACK);
-    }
-
-    /**
-     * 处理阶段显示
-     */
-    private void handleStageDisplay(String[] split) {
-        if (split.length < 13) return;
-
-        stagePane.setVisible(Boolean.valueOf(split[12]));
-
-        if (stagePane.isVisible()) {
-            String stageNumber = inner.getStageNumber();
-            Stages stages = stagesMapper.selectOne(new LambdaQueryWrapper<Stages>()
-                    .eq(Stages::getSortVal, stageNumber).last(" limit 1"));
-
-            if (stages != null) {
-                if (stages.getQuestionType() == 3) {
-                    Stages pstage = stagesMapper.selectById(stages.getParentId());
-                    if (pstage != null) {
-                        stageLabel.setText(pstage.getName() + " " + stages.getName());
-                    } else {
-                        stageLabel.setText(stages.getName());
-                    }
-                } else {
-                    stageLabel.setText(stages.getName());
-                }
-
-                if (split.length > 11) {
-                    stageLabel.setFill(Color.valueOf(split[11]));
-                }
-            }
-        }
-
-        // 设置答案文本
-        if (split.length > 4) {
-            daanLabel.setText(split[4] + " " + inner.getAnswer());
-            backPane.setLayoutX(tiganBox.getLayoutX());
-            backPane.setLayoutY(tiganBox.getLayoutY() + tiganBox.getPrefHeight() + ScreenAdapter.calculateMainY(10));
-
-            if (split.length > 1) {
-                daanLabel.setFill(Color.valueOf(split[1]));
-            }
-        }
+        applyTextStyle(stageLabel, font, split1, stageLabel.getFill());
     }
 
     /**

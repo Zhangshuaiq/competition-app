@@ -43,7 +43,7 @@ import java.util.List;
 import java.util.Map;
 
 @Component
-public class TeamRankPreview extends PreviewPane{
+public class TeamRankPreview extends RankPane{
 
     @FXML
     private AnchorPane container;

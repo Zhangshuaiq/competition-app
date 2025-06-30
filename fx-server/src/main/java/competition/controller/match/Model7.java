@@ -706,6 +706,13 @@ public class Model7 implements ReloadPane<Stages> {
         uiInitialized = false;
     }
 
+    @Override
+    public void destroy() {
+        teamPanels.clear();
+        container.getChildren().clear();
+        uiInitialized = false;
+    }
+
     /**
      * 重新加载样式时同时重新加载题型标注配置
      */

@@ -144,7 +144,7 @@ public class CluePreviewPreview extends PreviewPane<Questions>{
             }
         });
 
-
+        backPane.setVisible(GlobalCache.showAnswer);
         scrollPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
         scrollPane.setStyle("-fx-background: rgba(0, 0, 0, 0); -fx-background-color: transparent; -fx-border-color: transparent; -fx-border-radius: 10px;-fx-background-radius: 10px; -fx-padding: 0;");
 
