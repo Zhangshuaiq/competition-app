@@ -87,6 +87,12 @@ public class ScorePreviewAttr {
                 if (split.length >= 8) {
                     rowSpan.setText(split[7]);
                 }
+                if (split.length >= 9) {
+                    scoreShowBox.setSelected(Boolean.parseBoolean(split[8]));
+                } else {
+                    scoreShowBox.setSelected(false);
+                }
+                RuntimeUtil.showScoreBar = scoreShowBox.isSelected();
             }
         }
 
@@ -120,7 +126,8 @@ public class ScorePreviewAttr {
                 + iticChoice.isSelected() + ConfigSpliter.SPLITER
                 + underlineChoice.isSelected()  + ConfigSpliter.SPLITER
                 + colSpan.getText() + ConfigSpliter.SPLITER
-                + rowSpan.getText();
+                + rowSpan.getText() + ConfigSpliter.SPLITER
+                + scoreShowBox.isSelected();
         ScoreStyle scoreStyle = scoreStyleMapper.selectById(1);
         scoreStyle.setStyles(value);
         scoreStyleMapper.updateById(scoreStyle);

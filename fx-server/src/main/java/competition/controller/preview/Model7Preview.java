@@ -27,6 +27,7 @@ import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.text.TextAlignment;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
@@ -38,6 +39,7 @@ import java.util.concurrent.CompletableFuture;
 
 // 竞技模式显示控制 - 优化版本，避免重复创建UI组件
 @Component
+@Slf4j
 public class Model7Preview extends RankPane<Stages> {
 
     @FXML
@@ -124,7 +126,6 @@ public class Model7Preview extends RankPane<Stages> {
             mainPane.setPrefWidth(width);
             mainPane.setMinWidth(0);
             mainPane.setMaxWidth(Double.MAX_VALUE);
-
             // 创建上方区域
             upArea = new VBox();
             upArea.setMinWidth(0);
@@ -226,20 +227,19 @@ public class Model7Preview extends RankPane<Stages> {
 
             answerArea.getChildren().addAll(answerLabel, statusLabel);
 
-            // 等待标签 - 修复样式问题
+            // 等待标签
             waitLabel = new Label("等待答题");
             waitLabel.setPrefWidth(width);
-            waitLabel.setPrefHeight(height); // 占满整个下方区域高度
+            waitLabel.setPrefHeight(height); // 初始化时设置为整个面板高度，后续会在updateLayout中调整
+            waitLabel.setLayoutY(0);
             waitLabel.setFont(FontMap.load(FontMap.defaultFontName(), ScreenAdapter.calculateMainX(32)));
             waitLabel.setTextAlignment(TextAlignment.CENTER);
             waitLabel.setAlignment(Pos.CENTER);
             waitLabel.setVisible(false);
 
-            // 结束标签 - 修复位置
+            // 结束标签
             endLabel = new Label("答题结束");
             endLabel.setPrefWidth(width);
-            endLabel.setPrefHeight(height / 5);
-            endLabel.setLayoutY(height / 5);
             endLabel.setFont(FontMap.load(FontMap.defaultFontName(), ScreenAdapter.calculateMainX(32)));
             endLabel.setAlignment(Pos.CENTER);
             endLabel.setTextAlignment(TextAlignment.CENTER);
@@ -247,8 +247,6 @@ public class Model7Preview extends RankPane<Stages> {
 
             finalScoreLabel = new Label();
             finalScoreLabel.setPrefWidth(width);
-            finalScoreLabel.setPrefHeight(height / 5);
-            finalScoreLabel.setLayoutY(height * 0.4);
             finalScoreLabel.setFont(FontMap.load(FontMap.defaultFontName(), ScreenAdapter.calculateMainX(32)));
             finalScoreLabel.setTextAlignment(TextAlignment.CENTER);
             finalScoreLabel.setAlignment(Pos.CENTER);
@@ -256,8 +254,6 @@ public class Model7Preview extends RankPane<Stages> {
 
             finalTimeLabel = new Label();
             finalTimeLabel.setPrefWidth(width);
-            finalTimeLabel.setPrefHeight(height / 5);
-            finalTimeLabel.setLayoutY(height * 0.6);
             finalTimeLabel.setFont(FontMap.load(FontMap.defaultFontName(), ScreenAdapter.calculateMainX(32)));
             finalTimeLabel.setTextAlignment(TextAlignment.CENTER);
             finalTimeLabel.setAlignment(Pos.CENTER);
@@ -272,7 +268,6 @@ public class Model7Preview extends RankPane<Stages> {
             upArea.setPrefWidth(width);
             row1.setPrefWidth(width);
             row2.setPrefWidth(width);
-
             teamNameLabel.setPrefWidth(width * 0.2);
             scoreLabel.setPrefWidth(width * 0.2);
             timeLabel.setPrefWidth(width * 0.6);
@@ -281,36 +276,59 @@ public class Model7Preview extends RankPane<Stages> {
             row2.setVisible(!hideCircles);
             row2.setManaged(!hideCircles);
 
-            int circleRowHeight = hideCircles ? 0 : (circles.size() / ((int) ((width - 4) / (2 * ScreenAdapter.calculateMainX(5) + 1))) + 1) * 15;
-            upArea.setPrefHeight(ScreenAdapter.calculateMainY(22 + circleRowHeight));
+            // 精确计算圆圈区域高度
+            int circleRowHeight = 0;
+            if (!hideCircles && circles.size() > 0) {
+                // 计算每行能放多少个圆圈
+                double circleWidth = 2 * ScreenAdapter.calculateMainX(5) + 2; // 圆圈直径 + 间距
+                int colsPerRow = Math.max(1, (int) ((width - 4) / circleWidth));
+                // 计算需要多少行
+                int rows = circles.size() / colsPerRow; // 向上取整
+                // 每行的实际高度（包括圆圈直径和间距）
+                double rowHeight = 2 * ScreenAdapter.calculateMainX(5) + 2;
+                circleRowHeight = (int) (rows * rowHeight);
+                log.info("rowHeight: {}, rows: {}, circleRowHeight: {}", rowHeight, rows, circleRowHeight);
+            }
+            // 上方蓝色区域高度 = 第一行高度(22) + 圆圈区域高度 + 内边距
+            double upAreaHeight = ScreenAdapter.calculateMainY(22 + circleRowHeight + (hideCircles ? 0 : 5));
+            upArea.setPrefHeight(upAreaHeight);
 
-            // 更新下方区域
+            // 下方区域的位置和高度
             downArea.setPrefWidth(width);
-            downArea.setLayoutY(ScreenAdapter.calculateMainY(upArea.getLayoutY() + upArea.getPrefHeight() + 5));
-            double downAreaHeight = height - ScreenAdapter.calculateMainY(22 + circleRowHeight);
+            double downAreaY = ScreenAdapter.calculateMainY(10) + upAreaHeight;
+            downArea.setLayoutY(downAreaY);
+            double downAreaHeight = height - (downAreaY - ScreenAdapter.calculateMainY(10));
             downArea.setPrefHeight(downAreaHeight);
             downArea.setVisible(!hideDownArea);
             downArea.setManaged(!hideDownArea);
 
+            // 题目区域保持不变
             questionArea.setPrefWidth(width);
-            answerArea.setPrefWidth(width);
-            answerArea.setLayoutY(ScreenAdapter.calculateMainY(190));
 
-            // 修复各个标签的尺寸和位置，确保与原版本一致
+            // 答案区域 - 根据下方区域高度动态调整位置
+            answerArea.setPrefWidth(width);
+            double answerAreaY = Math.min(ScreenAdapter.calculateMainY(190), downAreaHeight * 0.75);
+            answerArea.setLayoutY(answerAreaY);
+
+            // 等待标签 - 填满整个下方区域，保持原字体大小
             waitLabel.setPrefWidth(width);
-            waitLabel.setPrefHeight(downAreaHeight); // 等待标签应该占满整个下方区域
+            waitLabel.setPrefHeight(downAreaHeight);
+            waitLabel.setLayoutY(0);
+
+            // 结束相关标签 - 根据下方区域高度重新分布位置
+            double labelHeight = downAreaHeight / 3;
 
             endLabel.setPrefWidth(width);
-            endLabel.setPrefHeight(downAreaHeight / 5);
-            endLabel.setLayoutY(downAreaHeight / 5);
+            endLabel.setPrefHeight(labelHeight);
+            endLabel.setLayoutY(0);
 
             finalScoreLabel.setPrefWidth(width);
-            finalScoreLabel.setPrefHeight(downAreaHeight / 5);
-            finalScoreLabel.setLayoutY(downAreaHeight * 0.4);
+            finalScoreLabel.setPrefHeight(labelHeight);
+            finalScoreLabel.setLayoutY(labelHeight);
 
             finalTimeLabel.setPrefWidth(width);
-            finalTimeLabel.setPrefHeight(downAreaHeight / 5);
-            finalTimeLabel.setLayoutY(downAreaHeight * 0.6);
+            finalTimeLabel.setPrefHeight(labelHeight);
+            finalTimeLabel.setLayoutY(labelHeight * 2);
         }
     }
 
@@ -374,8 +392,8 @@ public class Model7Preview extends RankPane<Stages> {
         // 设置背景
         try {
             container.setBackground(new Background(new BackgroundImage(
-                new Image(new FileInputStream(ImageResource.竞技模式背景())), BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT, BackgroundPosition.DEFAULT,
-                new BackgroundSize(Navigator.getWidth(), Navigator.getHeight(), false, false, false, false)
+                    new Image(new FileInputStream(ImageResource.竞技模式背景())), BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT, BackgroundPosition.DEFAULT,
+                    new BackgroundSize(Navigator.getWidth(), Navigator.getHeight(), false, false, false, false)
             )));
         } catch (FileNotFoundException e) {
             container.setBackground(new Background(new BackgroundFill(Color.TRANSPARENT, new CornerRadii(10), Insets.EMPTY)));
@@ -544,14 +562,18 @@ public class Model7Preview extends RankPane<Stages> {
         return questionText;
     }
 
+    public void clearCache(){
+        cachedQuestions = new ArrayList<>();
+    }
+
     /**
      * 获取题目数据（带缓存）
      */
     private List<Questions> getQuestionsWithCache() {
-        if (cachedQuestions == null || !Objects.equals(cachedStageNumber, inner.getSortVal())) {
+        if (cachedQuestions == null || cachedQuestions.isEmpty() || !Objects.equals(cachedStageNumber, inner.getSortVal())) {
             cachedQuestions = questionsMapper.selectList(
-                new LambdaQueryWrapper<Questions>()
-                    .eq(Questions::getStageNumber, inner.getSortVal())
+                    new LambdaQueryWrapper<Questions>()
+                            .eq(Questions::getStageNumber, inner.getSortVal())
             );
             cachedStageNumber = inner.getSortVal();
         }
@@ -785,7 +807,7 @@ public class Model7Preview extends RankPane<Stages> {
 
                 // 更新选择题选项
                 String[] choices = {last.getChoiceA(), last.getChoiceB(), last.getChoiceC(),
-                    last.getChoiceD(), last.getChoiceE(), last.getChoiceF()};
+                        last.getChoiceD(), last.getChoiceE(), last.getChoiceF()};
                 String[] choiceLabels = {"A", "B", "C", "D", "E", "F"};
 
                 for (int j = 0; j < panel.choiceLabels.size(); j++) {

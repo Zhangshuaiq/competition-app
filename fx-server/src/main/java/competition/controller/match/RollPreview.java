@@ -70,6 +70,7 @@ public class RollPreview implements ReloadPane<Stages> {
 
     @FXML
     public void initPage() {
+        questionText.setText("");
         showData();
     }
 

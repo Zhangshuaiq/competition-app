@@ -3,6 +3,7 @@ package competition.controller.board.preview;
 import competition.JavaFxApplication;
 import competition.controller.ControlPane;
 import competition.controller.match.ReloadPane;
+import competition.controller.preview.Model7Preview;
 import competition.controller.preview.PreviewPane;
 import competition.entity.Configs;
 import competition.mapper.ConfigsMapper;
@@ -14,17 +15,21 @@ import competition.ws.WsMessageHandler;
 import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.geometry.Insets;
+import javafx.geometry.Pos;
+import javafx.scene.control.Label;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
-import javafx.scene.text.Text;
 import javafx.scene.text.TextAlignment;
 import javafx.stage.Stage;
 import javafx.util.Duration;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
 @Component
+@Slf4j
 public class TimeBoardPreview extends PreviewPane {
 
     @FXML
@@ -36,23 +41,20 @@ public class TimeBoardPreview extends PreviewPane {
 
     private int timeVal;
 
-    StackPane stackPane = new StackPane();
-
-    private Text teamScore = new Text();
+    private Label timeLabel = new Label();
 
     private ControlPane controlPane;
-    
+
     private ConfigsMapper configsMapper;
-    
+
     private int endTime;
-    
+
     private WsMessageHandler messageHandler;
 
 
 
     @Override
     public void hideTime() {
-        teamScore.setVisible(false);
         ReloadPane timeBoard = controlPane.getTimeBoard();
         if (timeBoard != null) {
             timeBoard.hideTime();
@@ -61,8 +63,22 @@ public class TimeBoardPreview extends PreviewPane {
 
     @FXML
     public void initPage() {
-        stackPane.getChildren().add(teamScore);
-        container.getChildren().add(stackPane);
+        container.getChildren().clear();
+        container.getChildren().add(timeLabel);
+        container.setVisible(RuntimeUtil.showTimeBoard);
+
+        // 设置 Label 在容器中居中
+        AnchorPane.setTopAnchor(timeLabel, 0.0);
+        AnchorPane.setBottomAnchor(timeLabel, 0.0);
+        AnchorPane.setLeftAnchor(timeLabel, 0.0);
+        AnchorPane.setRightAnchor(timeLabel, 0.0);
+
+        // 允许Label根据内容自动调整大小
+        timeLabel.setMaxWidth(Double.MAX_VALUE);
+        timeLabel.setMaxHeight(Double.MAX_VALUE);
+        timeLabel.setMinWidth(Region.USE_PREF_SIZE);
+        timeLabel.setMinHeight(Region.USE_PREF_SIZE);
+
         showData();
     }
 
@@ -80,25 +96,69 @@ public class TimeBoardPreview extends PreviewPane {
         String[] split = config.split(ConfigSpliter.SPLITER);
         Navigator.timeBoardStage.setX(ScreenAdapter.calculateMainX(Double.parseDouble(split[29])));
         Navigator.timeBoardStage.setY(ScreenAdapter.calculateMainY(Double.parseDouble(split[30])));
-        teamScore.setTextAlignment(TextAlignment.CENTER);
-        teamScore.setFont(FontMap.load(split[33], ScreenAdapter.calculateMainX(Integer.parseInt(split[24]))));
-        
-        teamScore.setFill(Color.valueOf(split[23]));
-        teamScore.setText(timeValue);
+
+        // 先设置文本内容
+        timeLabel.setText(timeValue);
+
+        // 设置字体和样式
+        timeLabel.setAlignment(Pos.CENTER);
+        timeLabel.setTextAlignment(TextAlignment.CENTER);
+        timeLabel.setFont(FontMap.load(split[33], ScreenAdapter.calculateMainX(Integer.parseInt(split[24]))));
+        timeLabel.setTextFill(Color.valueOf(split[23]));
+
+        // 设置自动换行为false，确保文本在一行显示
+        timeLabel.setWrapText(false);
+
+        log.info("TimeBoardPreview reload: {}", timeValue);
+
         if (split.length >= 35) {
-            stackPane.setBackground(new Background(new BackgroundFill(Color.valueOf(split[34]), CornerRadii.EMPTY, Insets.EMPTY)));
+            // 设置背景色
+            timeLabel.setBackground(new Background(new BackgroundFill(Color.valueOf(split[34]), CornerRadii.EMPTY, Insets.EMPTY)));
         }
 
         if (split.length >= 36) {
             if (Boolean.parseBoolean(split[35])) {
-                teamScore.setStroke(teamScore.getFill());
-                teamScore.setStrokeWidth(1);
+                String strokeStyle = "-fx-text-stroke: 1px " + split[23] + ";";
+                timeLabel.setStyle(timeLabel.getStyle() + strokeStyle);
             } else {
-                teamScore.setStroke(null);
+                // 移除描边样式
+                String currentStyle = timeLabel.getStyle();
+                if (currentStyle != null) {
+                    String newStyle = currentStyle.replaceAll("-fx-text-stroke:[^;]*;", "");
+                    timeLabel.setStyle(newStyle);
+                }
             }
         }
 
+        // 延迟调整大小，确保字体设置生效后再计算
+        Platform.runLater(() -> {
+            // 计算文本实际需要的大小
+            timeLabel.autosize();
+            double textWidth = timeLabel.prefWidth(-1);
+            double textHeight = timeLabel.prefHeight(-1);
 
+            // 确保容器足够大来显示文本
+            if (textWidth > 0 && textHeight > 0) {
+                timeLabel.setPrefWidth(textWidth);
+                timeLabel.setPrefHeight(textHeight);
+
+                // 同时确保窗口大小足够
+                Stage stage = (Stage) container.getScene().getWindow();
+                if (stage != null) {
+                    // 给窗口设置最小大小，确保能显示完整文本
+                    stage.setMinWidth(textWidth + 40);
+                    stage.setMinHeight(textHeight + 40);
+
+                    // 如果当前窗口太小，则调整大小
+                    if (stage.getWidth() < textWidth + 40) {
+                        stage.setWidth(textWidth + 40);
+                    }
+                    if (stage.getHeight() < textHeight + 40) {
+                        stage.setHeight(textHeight + 40);
+                    }
+                }
+            }
+        });
 
         ReloadPane timeBoard = controlPane.getTimeBoard();
         if (timeBoard == null) {
@@ -106,6 +166,7 @@ public class TimeBoardPreview extends PreviewPane {
             controlPane.setTimeBoard(timeBoard);
         }
         if (timeBoard != null) {
+            timeBoard.initPage();
             timeBoard.reload(timeVal, timeValue);
         }
     }
@@ -152,8 +213,7 @@ public class TimeBoardPreview extends PreviewPane {
             this.timeValue = format(timeVal);
             messageHandler.sendQuestionTime(this.timeVal + "", "false");
         }
-        teamScore.setVisible(true);
-        teamScore.setText(timeValue);
+        timeLabel.setText(timeValue);
         timeline = new Timeline(new KeyFrame(Duration.seconds(1), e -> {
             if (order) {
                 timeVal++;
@@ -189,7 +249,7 @@ public class TimeBoardPreview extends PreviewPane {
             // 团队模式更新时间数值
             Model60RuntimeData.freshTime(timeVal);
             Model61RuntimeData.freshTime(timeVal);
-            
+
             // 已结束
             if(timeline == null) {
                 controlPane.stopOnTime();
@@ -202,6 +262,7 @@ public class TimeBoardPreview extends PreviewPane {
             timeBoard = (ReloadPane) ExtendedScreen.timeWithPos("/view/board/match/TimeBoard.fxml", "", "/view/style.css", true);
         }
         if (timeBoard != null) {
+            timeBoard.initPage();
             controlPane.setTimeBoard(timeBoard);
             timeBoard.shows();
             timeBoard.reload(timeVal, timeValue);
@@ -226,8 +287,8 @@ public class TimeBoardPreview extends PreviewPane {
             timeline.stop();
             timeline = null;
         }
-      
-        Stage stage = (Stage) (teamScore.getScene().getWindow());
+
+        Stage stage = (Stage) (timeLabel.getScene().getWindow());
         stage.hide();
         ReloadPane timeBoard = controlPane.getTimeBoard();
         if (timeBoard != null) {
@@ -247,6 +308,7 @@ public class TimeBoardPreview extends PreviewPane {
                 timeBoard = (ReloadPane) ExtendedScreen.timeWithPos("/view/board/match/TimeBoard.fxml", "", "/view/style.css", true);
             }
             if (timeBoard != null) {
+                timeBoard.initPage();
                 controlPane.setTimeBoard(timeBoard);
                 timeBoard.shows();
 

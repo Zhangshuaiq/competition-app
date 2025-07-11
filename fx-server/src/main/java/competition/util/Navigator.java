@@ -125,7 +125,6 @@ public class Navigator {
                 previewPane = cachedPreviews.get(fxml);
                 // 关键：清理之前的状态
                 previewPane.destroy();
-                log.info("从缓存加载预览界面: {}", fxml);
             } else {
                 FXMLLoader loader = new FXMLLoader(Navigator.class.getResource(fxml));
                 loader.setControllerFactory(JavaFxApplication.getApplicationContext()::getBean);

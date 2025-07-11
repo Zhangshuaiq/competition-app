@@ -491,7 +491,24 @@ public class QuestionPreviewPreview extends PreviewPane<Questions> {
                 messageHandler.notifyPage("model61", inner);
             }
         } else {
-            messageHandler.notifyPage("question", inner);
+            String stageNumber = inner.getStageNumber();
+            Stages stages = stagesMapper.selectOne(new LambdaQueryWrapper<Stages>()
+                    .eq(Stages::getSortVal, stageNumber).last(" limit 1"));
+
+            if (stages != null) {
+                if (currentStage != null && currentStage.getQuestionType() == 3) {
+                    Stages pstage = stagesMapper.selectById(stages.getParentId());
+                    if (pstage != null) {
+                        stages.setName(pstage.getName() + " " + stages.getName());
+                        messageHandler.notifyPageWithStage("question", inner, stages);
+                    } else {
+                        messageHandler.notifyPage("question", inner);
+                    }
+                } else {
+                    messageHandler.notifyPage("question", inner);
+                }
+            }
+
         }
 
         // 构建题目文本

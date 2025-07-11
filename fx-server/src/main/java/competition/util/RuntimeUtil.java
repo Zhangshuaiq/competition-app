@@ -6,6 +6,8 @@ import java.util.Map;
 
 public class RuntimeUtil {
 
+    public static boolean showTimeBoard = true;
+
     public static final String SUPER_ACTIVE_CODE = "99999999991234567890";
 
     public static final long UN_BUZZ_TIME = Integer.MAX_VALUE - 100;

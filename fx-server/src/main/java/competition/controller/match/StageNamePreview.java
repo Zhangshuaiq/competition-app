@@ -37,9 +37,6 @@ import java.util.stream.Collectors;
 @Component
 public class StageNamePreview implements ReloadPane<Integer>{
 
-    @Resource
-    private ControlPane controlPane;
-
     @FXML
     private AnchorPane container;
 
@@ -94,34 +91,12 @@ public class StageNamePreview implements ReloadPane<Integer>{
         container.getChildren().clear();
         StackPane box = new StackPane();
         container.getChildren().add(box);
-        //   hjbh.setValue(Color.valueOf(huanjieArr[0]));
-        //            bhbj.setValue(Color.valueOf(huanjieArr[1]));
-        //            hjmc.setValue(Color.valueOf(huanjieArr[2]));
-        //            mcbj.setValue(Color.valueOf(huanjieArr[3]));
-        //            hjx.setText(huanjieArr[4]);
-        //            hjy.setText(huanjieArr[5]);
-        //            hjk.setText(huanjieArr[6]);
-        //            hjg.setText(huanjieArr[7]);
-        //            xscjan.setSelected(Boolean.valueOf(huanjieArr[8]));
-        //            xshjlb.setSelected(Boolean.valueOf(huanjieArr[9]));
         final Configs stageConfig = configsMapper.selectById(2);
         final String style = stages.getStyle();
         final String config = stageConfig.getConfig();
         final String[] huanjieArr = config.split(ConfigSpliter.SPLITER);
         String[] detailArr = "750%%400%%400%%150%%false%%0x990000ff%%%%默认.ttf%%40%%false%%false%%false%%false%%居中对齐%%0".split(ConfigSpliter.SPLITER);
         if (StringUtils.isEmpty(style)) {
-//            box.setLayoutX(ScreenAdapter.calculateExX(ConfigSpliter.DEFAULT_X));
-//            box.setLayoutY(ScreenAdapter.calculateExY(ConfigSpliter.DEFAULT_Y));
-//            box.setPrefWidth(ScreenAdapter.calculateExX(ConfigSpliter.DEFAULT_W));
-//            box.setPrefHeight(ScreenAdapter.calculateExY(ConfigSpliter.DEFAULT_H));
-//            box.setBackground(new Background(new BackgroundFill(Color.valueOf(huanjieArr[3]), new CornerRadii(10), Insets.EMPTY)));
-//
-//            Text title = new Text(stages.getName());
-//            title.prefWidth(ScreenAdapter.calculateExX(ConfigSpliter.DEFAULT_W));
-//            title.prefHeight(ScreenAdapter.calculateExY(ConfigSpliter.DEFAULT_H));
-//            title.setTextAlignment(TextAlignment.CENTER);
-//            title.setFill(Color.valueOf(huanjieArr[2]));
-//            box.getChildren().add(title);
         } else {
             detailArr = style.split(ConfigSpliter.SPLITER);
         }

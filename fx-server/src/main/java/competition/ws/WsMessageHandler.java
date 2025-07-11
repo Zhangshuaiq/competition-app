@@ -6,6 +6,7 @@ import competition.controller.ControlPane;
 import competition.controller.board.BoardPane;
 import competition.controller.preview.*;
 import competition.entity.Questions;
+import competition.entity.Stages;
 import competition.entity.Teams;
 import competition.mapper.TeamsMapper;
 import competition.util.GlobalCache;
@@ -319,6 +320,17 @@ public class WsMessageHandler {
         });
     }
 
+    public void notifyPageWithStage(String route, Object data, Stages stages){
+        ControlPane controlPane = getCachedControlPane();
+        Map<String, Object> dataMap = new HashMap<>();
+        dataMap.put("route", route);
+        dataMap.put("data", data);
+        dataMap.put("buzzStatus", RuntimeUtil.showBuzzBar);
+        dataMap.put("teams", TeamRuntime.getTeams());
+        dataMap.put("stage", stages);
+        messagingTemplate.convertAndSend(PAGE_TOPIC, JSON.toJSONString(dataMap));
+    }
+
     public void notifyPage(String route, Object data){
         ControlPane controlPane = getCachedControlPane();
         Map<String, Object> dataMap = new HashMap<>();
@@ -327,6 +339,7 @@ public class WsMessageHandler {
         dataMap.put("buzzStatus", RuntimeUtil.showBuzzBar);
         dataMap.put("teams", TeamRuntime.getTeams());
         dataMap.put("stage", controlPane != null ? controlPane.getCurrentStage() : null);
+        log.info(controlPane != null && controlPane.getCurrentStage() != null ? controlPane.getCurrentStage().getName() : null);
         messagingTemplate.convertAndSend(PAGE_TOPIC, JSON.toJSONString(dataMap));
     }
 

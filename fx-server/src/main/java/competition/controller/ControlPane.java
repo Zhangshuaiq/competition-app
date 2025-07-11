@@ -162,6 +162,9 @@ public class ControlPane {
     @Resource
     private TeamsMapper teamsMapper;
 
+    @Resource
+    private ScoreStyleMapper scoreStyleMapper;
+
     private Stages currentStage, controlStage;
 
 
@@ -381,6 +384,22 @@ public class ControlPane {
 
     @FXML
     public void initialize() {
+
+        ScoreStyle scoreStyle = scoreStyleMapper.selectById(1);
+        String styles = "";
+        if (scoreStyle != null && !StringUtils.isEmpty(scoreStyle.getStyles())) {
+            styles = scoreStyle.getStyles();
+        }
+        if (!StringUtils.isEmpty(styles)) {
+            String[] split = styles.split(ConfigSpliter.SPLITER);
+            if (split.length >= 9) {
+                RuntimeUtil.showScoreBar = Boolean.parseBoolean(split[8]);
+            } else {
+                RuntimeUtil.showScoreBar = false;
+            }
+
+        }
+
         // 检测硬件状态
         Timeline timeline = new Timeline(new KeyFrame(javafx.util.Duration.millis(100), event -> {
 
@@ -390,6 +409,14 @@ public class ControlPane {
                 }   else {
                     scoreBoard.shows();
                 }
+            }
+
+            if (currentStage != null && (currentStage.getQuestionType() == 3 || currentStage.getQuestionType() == 4) && previewPane instanceof  QuestionPreviewPreview) {
+                lastQBtn.setDisable(true);
+                nextQBtn.setDisable(true);
+            } else {
+                lastQBtn.setDisable(false);
+                nextQBtn.setDisable(false);
             }
 
             // 检测开始答题状态
@@ -414,16 +441,6 @@ public class ControlPane {
             } else {
                 hardwareStatus.setFill(Color.RED);
             }
-
-//            double random = Math.random();
-//            if (random < 0.33) {
-//                hardwareStatus.setFill(Color.RED);
-//            } else if (random < 0.66) {
-//                hardwareStatus.setFill(Color.YELLOW);
-//            } else {
-//                hardwareStatus.setFill(Color.GREEN);
-//            }
-
         }));
         timeline.setCycleCount(-1);
         timeline.play();
@@ -1230,7 +1247,7 @@ public class ControlPane {
 
                     for (Questions question : questions) {
                         question.setScore(currentStage.getScorePerQ());
-                        question.setDesValue(controlStage.getDesValue());
+                        question.setDesValue(currentStage.getDesValue());
                         question.setTxbz(txbz);
                         question.setShowNumber(currentStage.getShowNumber());
                     }
@@ -1343,6 +1360,7 @@ public class ControlPane {
         if (!StringUtils.isEmpty(text)) {
             time = Integer.parseInt(text);
         }
+        RuntimeUtil.showTimeBoard = !(currentStage != null && currentStage.getQuestionType() == 7);
         if (timeBoardPreview != null) {
             timeReset();
             timeBoardPreview = null;
@@ -1352,7 +1370,7 @@ public class ControlPane {
         }
 
         if (timeBoardPreview != null) {
-            if (controlStage == null) {
+            if (currentStage == null) {
                 // 未进入环节的情况下默认倒计时
                 timeBoardPreview.startTiming(false, time);
             } else {
@@ -1370,6 +1388,10 @@ public class ControlPane {
             timingBtn.setDisable(true);
             startAnswerBtn.setDisable(true);
         }
+        Platform.runLater(() -> {
+            parentPane.requestFocus();
+            Navigator.timeBoardStage.requestFocus();
+        });
     }
 
     public void startBuzz(int passTime, boolean buzzBefore, int buzzTime){
@@ -1480,12 +1502,12 @@ public class ControlPane {
             } else if (stages.getQuestionType() == 3) {
                 // 风险题
                 List<Stages> queryList = stagesMapper.selectList(new LambdaQueryWrapper<Stages>()
-                        .eq(Stages::getParentId, controlStage.getId())
+                        .eq(Stages::getParentId, currentStage.getId())
                 );
                 if (queryList.isEmpty()) {
-                    previewPane = Navigator.preview("/view/preview/Model3Preview.fxml", "", "/view/style.css", true, controlStage.getParentId());
+                    previewPane = Navigator.preview("/view/preview/Model3Preview.fxml", "", "/view/style.css", true, currentStage.getParentId());
                 } else {
-                    previewPane = Navigator.preview("/view/preview/Model3Preview.fxml", "", "/view/style.css", true, controlStage.getId());
+                    previewPane = Navigator.preview("/view/preview/Model3Preview.fxml", "", "/view/style.css", true, currentStage.getId());
                 }
             } else if (stages.getQuestionType() == 6) {
                 // 答题模式
@@ -1540,10 +1562,10 @@ public class ControlPane {
             Stages stages = stagesMapper.selectById(stageId);
             if (stages.getParentId() == null) {
                 currentStage = null;
+                previewPane = Navigator.preview("/view/preview/StagePreview.fxml", "", "/view/style.css", true, null);
             } else {
-                // do nothing
+                previewPane = Navigator.preview("/view/preview/StagePreview.fxml", "", "/view/style.css", true, currentStage.getParentId());
             }
-            previewPane = Navigator.preview("/view/preview/StagePreview.fxml", "", "/view/style.css", true, null);
         } else if (last instanceof StagePreviewPreview) {
             GlobalCache.showAnswer = false;
             // 环节列表 返回 环节名称
@@ -1715,26 +1737,25 @@ public class ControlPane {
 
     private void showChildList() {
         scrollPane.setVvalue(0);
-        stageList.setVisible(false);
-        stageName.setVisible(false);
-
-        stageChildList.setVisible(true);
         final List<Stages> stages = stagesMapper.selectList(new LambdaQueryWrapper<Stages>()
                 .eq(Stages::getParentId, controlStage.getId())
                 .orderByAsc(Stages::getSortVal)
         );
-        showStageData(stages, stageChildList);
+        if (!CollectionUtils.isEmpty(stages)) {
+            stageList.setVisible(false);
+            stageName.setVisible(false);
+            stageChildList.setVisible(true);
+            showStageData(stages, stageChildList);
+        }
     }
 
 
     public void reloadStage() {
         currentStage = stagesMapper.selectById(currentStage.getId());
-        controlStage = currentStage;
     }
 
     public void setCurrentStage(Stages stage) {
         currentStage = stage;
-        controlStage = currentStage;
         timeSecondText.setText(currentStage.getDescTime().toString());
         scoreInput.setText(currentStage.getScorePerQ() + "");
         int desValue = 0;
@@ -1781,9 +1802,9 @@ public class ControlPane {
     public void showQuestions() {
         // 显示题目
         List<Questions> questionList = questionsMapper.selectList(new LambdaQueryWrapper<Questions>().
-                eq(Questions::getStageNumber, controlStage.getSortVal())
+                eq(Questions::getStageNumber, currentStage.getSortVal())
         );
-        if (controlStage.getRandomSort() == 1) {
+        if (currentStage.getRandomSort() == 1) {
             questionList.sort(Comparator.comparing(Questions::getViewSort));
             final List<String> questionKeys = questionList.stream().map(x -> x.getViewSort().toString()).collect(Collectors.toList());
             questionCombox.setItems(FXCollections.observableList(questionKeys));
@@ -1820,6 +1841,7 @@ public class ControlPane {
                     boolean last = stagesMapper.selectList(new LambdaQueryWrapper<Stages>()
                             .eq(Stages::getParentId, stage.getId())
                     ).isEmpty();
+                    showStageName();
                     if (last) {
 //                        // 显示题目
 //                        List<Questions> parse = ExcelParser.parse(ExcelParser.Q_PATH, Questions.class);
@@ -1853,7 +1875,7 @@ public class ControlPane {
 //                        }
                         // ExtendedScreen.show("/view/match/StagePreview.fxml");
                     } else {
-                        showStageName();
+
                     }
                 }
             });
@@ -2053,91 +2075,8 @@ public class ControlPane {
                 timeSecondText.setText(controlStage.getDescTime() + "");
                 updateScoreBoard();
                 return;
-
             }
-            // 底层环节，展示题目
-            if (last) {
-                List<Questions> parse;
-
-                if (controlStage.getRandomSort() == 1) {
-                    parse = questionsMapper.selectList(new LambdaQueryWrapper<Questions>()
-                            .eq(Questions::getStageNumber, controlStage.getSortVal())
-                            .orderByAsc(Questions::getViewSort)
-                    );
-                    for (Questions q : parse) {
-                        q.setOrder(q.getViewSort());
-                    }
-                } else {
-                    parse = questionsMapper.selectList(new LambdaQueryWrapper<Questions>()
-                            .eq(Questions::getStageNumber, controlStage.getSortVal())
-                            .orderByAsc(Questions::getQuestionNumber)
-                    );
-                    for (Questions q : parse) {
-                        q.setOrder(q.getQuestionNumber());
-                    }
-                }
-                if (!CollectionUtils.isEmpty(parse)) {
-                    for (int i = 0; i < parse.size(); i++) {
-                        parse.get(i).setDesValue(controlStage.getDesValue());
-                    }
-                }
-                currentStage = controlStage;
-                controlStage = stagesMapper.selectById(controlStage.getId());
-                showQuestions();
-                if (controlStage.getQuestionType() == 1) {
-                    // 连续答题
-                    List<Questions> collect;
-                    if (controlStage.getRandomSort() == 1) {
-                         collect = questionsMapper.selectList(new LambdaQueryWrapper<Questions>()
-                                .eq(Questions::getStageNumber, controlStage.getSortVal())
-                                .eq(Questions::isHasAnswer, false)
-                                 .orderByAsc(Questions::getViewSort)
-                        );
-
-                        for (Questions questions : collect) {
-                            questions.setOrder(questions.getViewSort());
-                        }
-                    } else {
-                        collect = questionsMapper.selectList(new LambdaQueryWrapper<Questions>()
-                                .eq(Questions::getStageNumber, controlStage.getSortVal())
-                                .eq(Questions::isHasAnswer, false)
-                                .orderByAsc(Questions::getQuestionNumber)
-                        );
-                        for (Questions questions : collect) {
-                            questions.setOrder(questions.getQuestionNumber());
-                        }
-                    }
-
-
-                    if (!collect.isEmpty()) {
-                        questionCombox.setValue(collect.get(0).getOrder().toString());
-                        // CurrentQuestions.recordAnswer(collect.get(0).getQuestionNumber().toString());
-                        collect.get(0).setHasAnswer(true);
-                        questionsMapper.updateById(collect.get(0));
-                    }
-                    previewPane = Navigator.preview("/view/preview/QuestionPreview.fxml", "", "/view/style.css", true, collect.get(0));
-                } else if (controlStage.getQuestionType() == 2) {
-                    // 自选题目
-                    previewPane = Navigator.preview("/view/preview/StageQuestionPreview.fxml", "", "/view/style.css", true, controlStage);
-                } else if (controlStage.getQuestionType() == 3) {
-                    // 风险题
-                } else if (controlStage.getQuestionType() == 4) {
-                    // 滚动选题
-                    previewPane = Navigator.preview("/view/preview/RollPreview.fxml", "", "/view/style.css", true, controlStage);
-                } else if (controlStage.getQuestionType() == 5) {
-                    // 线索题
-                    previewPane = Navigator.preview("/view/preview/StageQuestionPreview.fxml", "", "/view/style.css", true, controlStage);
-                } else if (controlStage.getQuestionType() == 6) {
-                    // 答题模式
-
-                    previewPane =  Navigator.preview("/view/preview/StageQuestionPreview.fxml", "", "/view/style.css", true, controlStage);
-                } else if (controlStage.getQuestionType() == 7) {
-                    // 竞技模式
-                    previewPane = Navigator.preview("/view/preview/StageQuestionPreview.fxml", "", "/view/style.css", true, controlStage);
-
-                }
-                // previewPane.reload();
-            } else {
+            else {
                 currentStage = controlStage;
                 // 展示环节名称
                 previewPane = Navigator.preview("/view/preview/StageNamePreview.fxml", "", "/view/style.css", true, controlStage.getId());
@@ -2177,7 +2116,7 @@ public class ControlPane {
             String tihao = questionCombox.getValue();
             Questions questions;
             boolean showAnswer = GlobalCache.showAnswer;
-            if (controlStage.getRandomSort() == 1) {
+            if (currentStage.getRandomSort() == 1) {
                 questions = questionsMapper.selectOne(new LambdaQueryWrapper<Questions>()
                         .eq(Questions::getStageNumber, currentStage.getSortVal())
                         .eq(Questions::getViewSort, Integer.parseInt(tihao))
@@ -2228,15 +2167,15 @@ public class ControlPane {
             if (currentStage.getQuestionType() == 3) {
 
                 Questions questions;
-                if (controlStage.getRandomSort() == 1) {
+                if (currentStage.getRandomSort() == 1) {
                     questions = questionsMapper.selectOne(new LambdaQueryWrapper<Questions>()
-                            .eq(Questions::getStageNumber, controlStage.getSortVal())
+                            .eq(Questions::getStageNumber, currentStage.getSortVal())
                             .eq(Questions::getViewSort, Integer.parseInt(questionCombox.getValue()))
                     );
                     questions.setOrder(questions.getViewSort());
                 } else {
                     questions = questionsMapper.selectOne(new LambdaQueryWrapper<Questions>()
-                            .eq(Questions::getStageNumber, controlStage.getSortVal())
+                            .eq(Questions::getStageNumber, currentStage.getSortVal())
                             .eq(Questions::getQuestionNumber, Integer.parseInt(questionCombox.getValue()))
                     );
                     questions.setOrder(questions.getQuestionNumber());
@@ -2263,7 +2202,7 @@ public class ControlPane {
             } else {
                 String tihao = questionCombox.getValue();
                 Questions questions;
-                if (controlStage.getRandomSort() == 1) {
+                if (currentStage.getRandomSort() == 1) {
                     questions = questionsMapper.selectOne(new LambdaQueryWrapper<Questions>()
                             .eq(Questions::getStageNumber, currentStage.getSortVal())
                             .eq(Questions::getViewSort, Integer.parseInt(tihao)));
@@ -2321,7 +2260,7 @@ public class ControlPane {
             scoreBoardPreview.getSelected().clear();
         }
         parentPane.requestFocus();
-        if (controlStage == null) {
+        if (currentStage == null) {
             return;
         }
 
@@ -2334,8 +2273,8 @@ public class ControlPane {
             startAnswerQuestion();
         }
         // 更新分数
-        Integer questionType = controlStage.getQuestionType();
-        if (questionType == 6 && controlStage.getM6() == 1) {
+        Integer questionType = currentStage.getQuestionType();
+        if (questionType == 6 && currentStage.getM6() == 1) {
             TeamRuntime.updateScore();
 
             if (!GlobalCache.showAnswer) {
@@ -2695,6 +2634,9 @@ public class ControlPane {
     }
 
     public ReloadPane getQuestionPreview() {
+        if (!ExtendedScreen.hasShow()) {
+            questionPreview = null;
+        }
         return questionPreview;
     }
 
@@ -2747,7 +2689,7 @@ public class ControlPane {
                 .eq(Questions::getStageNumber, belongStage.getSortVal())
         );
 
-        if (controlStage.getRandomSort() == 1) {
+        if (currentStage.getRandomSort() == 1) {
             questionList.sort(Comparator.comparing(Questions::getViewSort));
             final List<String> questionKeys = questionList.stream().map(x -> x.getViewSort().toString()).collect(Collectors.toList());
             questionCombox.setItems(FXCollections.observableList(questionKeys));
@@ -2764,7 +2706,6 @@ public class ControlPane {
             desValue = belongStage.getDesValue();
         }
         scoreDescInput.setText(desValue + "");
-        controlStage = belongStage;
     }
 
 

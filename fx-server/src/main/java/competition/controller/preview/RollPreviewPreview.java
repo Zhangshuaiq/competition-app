@@ -114,6 +114,7 @@ public class RollPreviewPreview extends PreviewPane<Stages> {
                 }
             }
         });
+        questionText.setText("");
         showData();
     }
 

@@ -2,7 +2,9 @@ package competition.controller.backend;
 
 import cn.hutool.core.io.FileUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import competition.JavaFxApplication;
 import competition.controller.ControlPane;
+import competition.controller.preview.Model7Preview;
 import competition.entity.QuestionStyle;
 import competition.entity.Questions;
 import competition.entity.Stages;
@@ -14,6 +16,7 @@ import competition.util.ExcelParser;
 import competition.util.GlobalCache;
 import competition.util.Information;
 import competition.util.RuntimeQuestionStock;
+import competition.ws.Model7RuntimeData;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
@@ -55,6 +58,9 @@ public class QuestionStock {
 
     @Resource
     private ControlPane controlPane;
+
+    @Resource
+    private Model7Preview model7Preview;
 
     @FXML
     private TableColumn<Questions, String> stageNumberCol, stageNameCol, questionTypeCol, resourceTypeCol, resourceCol,
@@ -133,6 +139,11 @@ public class QuestionStock {
         if (changeStock) {
             boolean ret = Information.infoWithConfirm("切换题库需要重新进入比赛，是否要切换?");
             if (ret) {
+                // 竞技模式需要清空已有的数据
+                Model7RuntimeData.reset();
+                if (model7Preview != null) {
+                    model7Preview.clearCache();
+                }
                 showData();
                 List<Questions> questions = RuntimeQuestionStock.loadQuestion(BaseDir.TIKU_DIR + stockList.getValue());
                 questionsMapper.delete(new LambdaQueryWrapper<>());
