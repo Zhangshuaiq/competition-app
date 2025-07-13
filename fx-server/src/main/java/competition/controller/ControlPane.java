@@ -2020,68 +2020,10 @@ public class ControlPane {
             boolean last = stagesMapper.selectList(new LambdaQueryWrapper<Stages>()
                     .eq(Stages::getParentId, controlStage.getId())
             ).isEmpty();
-
-            if (controlStage.getQuestionType() == 3) {
-                // 风险题 优先级高
-                if (last) {
-                    List<Questions> parse;
-                    if (controlStage.getRandomSort() == 1) {
-                        parse = questionsMapper.selectList(new LambdaQueryWrapper<Questions>()
-                                .eq(Questions::getStageNumber, controlStage.getSortVal())
-                                .orderByAsc(Questions::getViewSort)
-                        );
-                        for (Questions q : parse) {
-                            q.setOrder(q.getViewSort());
-                        }
-
-
-                    } else {
-                        parse = questionsMapper.selectList(new LambdaQueryWrapper<Questions>()
-                                .eq(Questions::getStageNumber, controlStage.getSortVal())
-                                .orderByAsc(Questions::getQuestionNumber)
-                        );
-
-                        for (Questions q : parse) {
-                            q.setOrder(q.getQuestionNumber());
-                        }
-                    }
-                    if (!CollectionUtils.isEmpty(parse)) {
-                        for (int i = 0; i < parse.size(); i++) {
-                            parse.get(i).setDesValue(controlStage.getDesValue());
-                        }
-                    }
-                    controlStage = stagesMapper.selectById(controlStage.getId());
-
-                    showQuestions();
-                    // 风险题目是最后一级，则只是展示对应的题号，不做任何界面跳转
-                    Stages stages = stagesMapper.selectById(controlStage.getParentId());
-                    currentStage = stages;
-                    setPreviewPane(
-                            Navigator.preview("/view/preview/Model3Preview.fxml", "", "/view/style.css", true, stages.getId())
-                    );
-                } else {
-                    currentStage = controlStage;
-                    setPreviewPane(
-                            Navigator.preview("/view/preview/Model3Preview.fxml", "", "/view/style.css", true, controlStage.getId())
-                    );
-
-                }
-                scoreInput.setText(controlStage.getScorePerQ() + "");
-                int desValue = 0;
-                if (controlStage.getDesValue() != null) {
-                    desValue = controlStage.getDesValue();
-                }
-                scoreDescInput.setText(desValue + "");
-                timeSecondText.setText(controlStage.getDescTime() + "");
-                updateScoreBoard();
-                return;
-            }
-            else {
-                currentStage = controlStage;
-                // 展示环节名称
-                previewPane = Navigator.preview("/view/preview/StageNamePreview.fxml", "", "/view/style.css", true, controlStage.getId());
-                previewPane.reload();
-            }
+            currentStage = controlStage;
+            // 展示环节名称
+            previewPane = Navigator.preview("/view/preview/StageNamePreview.fxml", "", "/view/style.css", true, controlStage.getId());
+            previewPane.reload();
             scoreInput.setText(controlStage.getScorePerQ() + "");
             int desValue = 0;
             if (controlStage.getDesValue() != null) {

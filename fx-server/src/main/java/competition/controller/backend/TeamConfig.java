@@ -29,6 +29,7 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
 import javafx.stage.FileChooser;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.logging.log4j.util.Strings;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
@@ -38,6 +39,7 @@ import java.io.File;
 import java.util.*;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Component
 public class TeamConfig {
 
@@ -331,6 +333,15 @@ public class TeamConfig {
         List<Teams> teams = teamsMapper.selectList(new LambdaQueryWrapper<>());
         for (Teams team : teams) {
             team.setTeamScore(Integer.parseInt(text));
+            Map memberMap = JSON.parseObject(team.getMemberScore(), Map.class);
+            String members = team.getMembers();
+            String[] memArr = members.split(",");
+            // 其余选手归零， 第一个设置分数
+            for (int i = 1; i < memArr.length; i++) {
+                memberMap.put(memArr[i], 0);
+            }
+            memberMap.put(memArr[0], team.getTeamScore());
+            team.setMemberScore(JSON.toJSONString(memberMap));
             teamsMapper.updateById(team);
         }
        // ScoreSaver.clear();
@@ -376,6 +387,8 @@ public class TeamConfig {
                 memberMap.put(m, Integer.parseInt(text));
             }
             team.setMemberScore(JSON.toJSONString(memberMap));
+            log.info("团队 {} 分数 {}", team.getCode(), memberMap.values().stream().mapToInt(Integer::intValue).sum());
+            team.setTeamScore(memberMap.values().stream().mapToInt(Integer::intValue).sum());
             teamsMapper.updateById(team);
         }
 

@@ -88,7 +88,7 @@ public class Model7Preview extends RankPane<Stages> {
 
     // 内部类：封装每个队伍的显示面板
     private static class TeamDisplayPanel {
-        AnchorPane mainPane;
+        VBox mainPane;
         VBox upArea;
         HBox row1;
         GridPane row2;
@@ -121,25 +121,28 @@ public class Model7Preview extends RankPane<Stages> {
 
         void initializeComponents(double width, double height, int totalQuestions, int cols) {
             // 创建主面板
-            mainPane = new AnchorPane();
-            mainPane.setPadding(new Insets(0, 10, 0, 10));
+            mainPane = new VBox();
+            mainPane.setPadding(new Insets(0, 0, 0, 0));
             mainPane.setPrefWidth(width);
             mainPane.setMinWidth(0);
             mainPane.setMaxWidth(Double.MAX_VALUE);
+
             // 创建上方区域
             upArea = new VBox();
+            upArea.setPrefWidth(width - 20);
+            upArea.setMinWidth(width - 20);
+            upArea.setMaxWidth(width - 20);
             upArea.setMinWidth(0);
             upArea.setMaxWidth(Double.MAX_VALUE);
-            upArea.setLayoutY(ScreenAdapter.calculateMainY(10));
-            upArea.setPrefWidth(width);
             upArea.setBackground(new Background(new BackgroundFill(Color.BLUE, new CornerRadii(10), Insets.EMPTY)));
             upArea.setSpacing(5);
 
             // 创建第一行（队伍信息）
             row1 = new HBox();
             row1.setPadding(new Insets(0, 3, 0, 3));
-            row1.setPrefWidth(width);
-
+            row1.setPrefWidth(width); // 与upArea保持一致
+            row1.setMinWidth(width);
+            row1.setMaxWidth(width);
             teamNameLabel = new Label();
             teamNameLabel.setPrefWidth(width * 0.2);
             teamNameLabel.setTextFill(Color.WHITE);
