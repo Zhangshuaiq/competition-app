@@ -50,10 +50,6 @@ import java.util.Objects;
 @Component
 public class CluePreviewPreview extends PreviewPane<Questions>{
 
-
-    @FXML
-    private VBox buzzBox;
-    
     @FXML
     private StackPane backPane, stagePane, buttonPane;
 
@@ -353,7 +349,6 @@ public class CluePreviewPreview extends PreviewPane<Questions>{
                     }
 
                     // 答案样式
-
                     if (!StringUtils.isEmpty(questionStyle.getStyle2())) {
                         style2 = questionStyle.getStyle2();
                     }
@@ -368,35 +363,10 @@ public class CluePreviewPreview extends PreviewPane<Questions>{
             {
 
                 String[] split1 = style1.split(ConfigSpliter.SPLITER);
-
                 tiganBox.setLayoutX(ScreenAdapter.calculateMainX(Integer.parseInt(split1[0])));
                 tiganBox.setLayoutY(ScreenAdapter.calculateMainY(Integer.parseInt(split1[1])));
                 tiganBox.setPrefWidth(ScreenAdapter.calculateMainX(Integer.parseInt(split1[2])));
                 tiganBox.setPrefHeight(ScreenAdapter.calculateMainY(Integer.parseInt(split1[3])));
-                if (split1.length >= 16) {
-                    int wordSpace = Integer.parseInt(split1[15]);
-                    if (wordSpace > 0) {
-                        String sli = "";
-                        for (int m = 0; m < wordSpace; m++) {
-                            sli = sli + " ";
-                        }
-                        List<String> cs = new ArrayList<>();
-                        for (char aChar : tiganLabel.getText().toCharArray()) {
-                            cs.add(aChar + "");
-                        }
-                        tiganLabel.setText(String.join(sli, cs));
-                        for (Node child : tiganBox.getChildren()) {
-                            Text text = (Text) child;
-                            List<String> cs1 = new ArrayList<>();
-                            for (char aChar : text.getText().toCharArray()) {
-                                cs1.add(aChar + "");
-                            }
-                            text.setText(String.join(sli, cs1));
-                        }
-
-                    }
-                }
-
                 if (Boolean.valueOf(split1[4])) {
                     // 填充背景图片
                     if (!StringUtils.isEmpty(split1[6])) {

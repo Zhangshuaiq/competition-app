@@ -7,6 +7,10 @@ public interface ReloadPane <T> {
     default void initPage() {
     }
 
+    default void clearCache(){
+
+    }
+
     default void reload(){};
     
     default void reload(int time, String timeTxt){};

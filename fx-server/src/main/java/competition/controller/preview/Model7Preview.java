@@ -1,6 +1,7 @@
 package competition.controller.preview;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import competition.JavaFxApplication;
 import competition.controller.ControlPane;
 import competition.controller.board.BoardPane;
 import competition.controller.match.Model7;
@@ -14,6 +15,7 @@ import competition.util.*;
 import competition.ws.Model7RuntimeData;
 import competition.ws.WsMessageHandler;
 import javafx.application.Platform;
+import javafx.collections.ObservableList;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.geometry.Insets;
@@ -26,6 +28,7 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
+import javafx.scene.text.Font;
 import javafx.scene.text.TextAlignment;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -84,6 +87,8 @@ public class Model7Preview extends RankPane<Stages> {
 
     // 布局参数缓存
     private double cachedVgap, cachedHgap, cachedX, cachedY, cachedWidth, cachedHeight;
+    private double cachedWF, cachedTH, cachedQF;
+    private Color cachedWFColor, cachedQFColor, cachedBkColor;
     private int cachedCol;
 
     // 内部类：封装每个队伍的显示面板
@@ -119,7 +124,11 @@ public class Model7Preview extends RankPane<Stages> {
             circles = new ArrayList<>();
         }
 
-        void initializeComponents(double width, double height, int totalQuestions, int cols) {
+        void initializeComponents(double width, double height, int totalQuestions, int cols,
+                                  double radius,
+                                  double wfSize, Color wfColor,
+                                  double qfSize, Color qfColor,
+                                  Color bkColor) {
             // 创建主面板
             mainPane = new VBox();
             mainPane.setPadding(new Insets(0, 0, 0, 0));
@@ -134,7 +143,7 @@ public class Model7Preview extends RankPane<Stages> {
             upArea.setMaxWidth(width - 20);
             upArea.setMinWidth(0);
             upArea.setMaxWidth(Double.MAX_VALUE);
-            upArea.setBackground(new Background(new BackgroundFill(Color.BLUE, new CornerRadii(10), Insets.EMPTY)));
+            upArea.setBackground(new Background(new BackgroundFill(bkColor, new CornerRadii(10), Insets.EMPTY)));
             upArea.setSpacing(5);
 
             // 创建第一行（队伍信息）
@@ -155,7 +164,17 @@ public class Model7Preview extends RankPane<Stages> {
             timeLabel.setPrefWidth(width * 0.6);
             timeLabel.setTextFill(Color.WHITE);
 
-            row1.getChildren().addAll(teamNameLabel, scoreLabel, timeLabel);
+            ObservableList<Node> children = row1.getChildren();
+            children.addAll(teamNameLabel, scoreLabel, timeLabel);
+            for (Node child : children) {
+                if (child instanceof Label) {
+                    Label label = (Label) child;
+                    label.setFont(Font.font(ScreenAdapter.calculateMainX(wfSize)));
+                    label.setTextFill(wfColor);
+                    label.setAlignment(Pos.CENTER);
+                    label.setTextAlignment(TextAlignment.CENTER);
+                }
+            }
 
             // 创建第二行（圆圈显示）
             row2 = new GridPane();
@@ -164,7 +183,6 @@ public class Model7Preview extends RankPane<Stages> {
 
             // 创建圆圈
             circles.clear();
-            double radius = 5.0;
             for (int i = 0; i < totalQuestions; i++) {
                 Circle c = new Circle();
                 c.setStrokeWidth(1);
@@ -193,6 +211,8 @@ public class Model7Preview extends RankPane<Stages> {
 
             questionLabel = new Label();
             questionLabel.setWrapText(true);
+            questionLabel.setFont(Font.font(ScreenAdapter.calculateMainX(qfSize)));
+            questionLabel.setTextFill(qfColor);
             questionArea.getChildren().add(questionLabel);
 
             // 选择题选项
@@ -201,6 +221,8 @@ public class Model7Preview extends RankPane<Stages> {
                 Label choiceLabel = new Label();
                 choiceLabel.setWrapText(true);
                 choiceLabel.setVisible(false);
+                choiceLabel.setFont(Font.font(ScreenAdapter.calculateMainX(qfSize)));
+                choiceLabel.setTextFill(qfColor);
                 choiceLabels.add(choiceLabel);
                 questionArea.getChildren().add(choiceLabel);
             }
@@ -235,7 +257,8 @@ public class Model7Preview extends RankPane<Stages> {
             waitLabel.setPrefWidth(width);
             waitLabel.setPrefHeight(height); // 初始化时设置为整个面板高度，后续会在updateLayout中调整
             waitLabel.setLayoutY(0);
-            waitLabel.setFont(FontMap.load(FontMap.defaultFontName(), ScreenAdapter.calculateMainX(32)));
+            waitLabel.setFont(FontMap.load(FontMap.defaultFontName(), ScreenAdapter.calculateMainX(35)));
+            waitLabel.setTextFill(Color.BLACK);
             waitLabel.setTextAlignment(TextAlignment.CENTER);
             waitLabel.setAlignment(Pos.CENTER);
             waitLabel.setVisible(false);
@@ -290,7 +313,6 @@ public class Model7Preview extends RankPane<Stages> {
                 // 每行的实际高度（包括圆圈直径和间距）
                 double rowHeight = 2 * ScreenAdapter.calculateMainX(5) + 2;
                 circleRowHeight = (int) (rows * rowHeight);
-                log.info("rowHeight: {}, rows: {}, circleRowHeight: {}", rowHeight, rows, circleRowHeight);
             }
             // 上方蓝色区域高度 = 第一行高度(22) + 圆圈区域高度 + 内边距
             double upAreaHeight = ScreenAdapter.calculateMainY(22 + circleRowHeight + (hideCircles ? 0 : 5));
@@ -431,7 +453,12 @@ public class Model7Preview extends RankPane<Stages> {
         cachedWidth = ScreenAdapter.calculateMainX((int) ((Navigator.getWidth() - 40) / 4));
         cachedHeight = ScreenAdapter.calculateMainY(287);
         cachedCol = 4;
-
+        cachedWF = ScreenAdapter.calculateMainX(12);
+        cachedTH = ScreenAdapter.calculateMainX(5);
+        cachedQF = ScreenAdapter.calculateMainX(12);
+        cachedWFColor = Color.BLACK;
+        cachedQFColor = Color.BLACK;
+        cachedBkColor = Color.BLACK;
         if (!StringUtils.isEmpty(titleStyle)) {
             String[] split = titleStyle.split(ConfigSpliter.SPLITER);
             cachedCol = Integer.parseInt(split[0]);
@@ -441,6 +468,24 @@ public class Model7Preview extends RankPane<Stages> {
             cachedHeight = ScreenAdapter.calculateMainY(Integer.parseInt(split[4]));
             cachedVgap = ScreenAdapter.calculateMainY(Integer.parseInt(split[1]));
             cachedHgap = ScreenAdapter.calculateMainX(Integer.parseInt(split[2]));
+            if (split.length > 7) {
+                cachedWF = ScreenAdapter.calculateMainX(Integer.parseInt(split[7]));
+            }
+            if (split.length > 8) {
+                cachedTH = ScreenAdapter.calculateMainX(Integer.parseInt(split[8]));
+            }
+            if (split.length > 9) {
+                cachedQF = ScreenAdapter.calculateMainX(Integer.parseInt(split[9]));
+            }
+            if (split.length > 10) {
+                cachedWFColor = Color.web(split[10]);
+            }
+            if (split.length > 11) {
+                cachedQFColor = Color.web(split[11]);
+            }
+            if (split.length > 12) {
+                cachedBkColor = Color.web(split[12]);
+            }
         }
     }
 
@@ -450,14 +495,15 @@ public class Model7Preview extends RankPane<Stages> {
     private void createTeamPanels() {
         List<List<Model7RuntimeData.ModelData>> runtimeData = Model7RuntimeData.getRuntimeData();
         List<Questions> questions = getQuestionsWithCache();
-        int cols = (int) ((cachedWidth - 4) / (2 * ScreenAdapter.calculateMainX(5) + 1));
+        int cols = (int) ((cachedWidth - 4) / (2 * ScreenAdapter.calculateMainX(cachedTH) + 1));
 
         teamPanels.clear();
         container.getChildren().clear();
 
         for (int i = 0; i < runtimeData.size(); i++) {
             TeamDisplayPanel panel = new TeamDisplayPanel();
-            panel.initializeComponents(cachedWidth, cachedHeight, questions.size(), cols);
+            panel.initializeComponents(cachedWidth, cachedHeight, questions.size(), cols, cachedTH,
+                    cachedWF, cachedWFColor, cachedQF, cachedQFColor, cachedBkColor);
 
             container.add(panel.mainPane, i % cachedCol, i / cachedCol);
             teamPanels.add(panel);
@@ -479,7 +525,7 @@ public class Model7Preview extends RankPane<Stages> {
                 }
             }
         } catch (Exception e) {
-            System.err.println("加载题型标注配置失败: " + e.getMessage());
+            log.error("加载题型标注配置失败: {}", e.getMessage());
             // 使用默认值
             cachedTx = "3";
             cachedTxbz = "4";
@@ -567,6 +613,10 @@ public class Model7Preview extends RankPane<Stages> {
 
     public void clearCache(){
         cachedQuestions = new ArrayList<>();
+        Model7 bean = JavaFxApplication.getApplicationContext().getBean(Model7.class);
+        if (bean != null) {
+            bean.clearCache();
+        }
     }
 
     /**

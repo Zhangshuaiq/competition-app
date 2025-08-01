@@ -27,6 +27,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.text.*;
 import javafx.scene.transform.Shear;
 import javafx.stage.Stage;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
@@ -34,6 +35,7 @@ import javax.annotation.Resource;
 import java.util.*;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Component
 public class ScoreBoardHPreview extends PreviewPane implements BoardPane {
 
@@ -63,8 +65,15 @@ public class ScoreBoardHPreview extends PreviewPane implements BoardPane {
 
     private void show() {
         BoardPane scoreBoard = controlPane.getScoreBoard();
-        if (scoreBoard == null || !(scoreBoard instanceof ScoreBoardH)) {
-            scoreBoard = (ScoreBoardH) ExtendedScreen.scoreWithPos("/view/board/match/ScoreBoardH.fxml","", "/view/style.css", false);
+        if (RuntimeUtil.showSecondScorePane) {
+            scoreBoard = (ScoreBoardH) ExtendedScreen.scoreWithPos("/view/board/match/ScoreBoardH.fxml", "", "/view/style.css", false);
+            controlPane.setScoreBoard(scoreBoard);
+            scoreBoard.reload();
+        } else {
+            if (scoreBoard != null) {
+                scoreBoard.close();
+                scoreBoard = null;
+            }
         }
         if (scoreBoard != null) {
             controlPane.setScoreBoard(scoreBoard);
@@ -85,7 +94,7 @@ public class ScoreBoardHPreview extends PreviewPane implements BoardPane {
         container.getChildren().clear();
         container.setMaxHeight(Double.MAX_VALUE);
         container.setSpacing(ScreenAdapter.calculateMainX(20));
-        
+
         Color statusColor = Color.WHITE;
         double statusSize = new Text().getFont().getSize();
 
@@ -154,14 +163,14 @@ public class ScoreBoardHPreview extends PreviewPane implements BoardPane {
                 teamScore.getTransforms().add(new Shear(-0.3, 0));
             }
             if (RuntimeUtil.showScoreBar) {
-                count ++;
+                count++;
                 box.getChildren().add(stackPane1);
             }
 
 
             // 抢答分时面板
             if (RuntimeUtil.showBuzzBar) {
-                count ++;
+                count++;
                 Long timeVal = RuntimeUtil.buzzTimeMap.get(team.getShortName());
                 Text buzzTime = new Text("0");
                 if (timeVal != null) {
@@ -179,7 +188,7 @@ public class ScoreBoardHPreview extends PreviewPane implements BoardPane {
                 Color color = null;
                 if (b == null) {
                     // 未抢答
-                    color =  Color.valueOf(cfgArr[25]);
+                    color = Color.valueOf(cfgArr[25]);
                 } else if (b) {
                     // 已抢答成功
                     color = Color.valueOf(cfgArr[27]);
@@ -193,7 +202,7 @@ public class ScoreBoardHPreview extends PreviewPane implements BoardPane {
                 buzzTime.setStrikethrough(Boolean.valueOf(split[2]));
 
                 if (cfgArr.length >= 37) {
-                    buzzTime.setFont( Font.font(ScreenAdapter.calculateMainX(Double.parseDouble(cfgArr[36]))));
+                    buzzTime.setFont(Font.font(ScreenAdapter.calculateMainX(Double.parseDouble(cfgArr[36]))));
                 } else {
                     buzzTime.setFont(Font.font(ScreenAdapter.calculateMainX(12)));
                 }
@@ -223,7 +232,7 @@ public class ScoreBoardHPreview extends PreviewPane implements BoardPane {
                         // 答案单独展示情况下不显示回答
                         List<Model60RuntimeData.ModelData> runtimeData = Model60RuntimeData.getRuntimeData();
                         Map<String, Model60RuntimeData.ModelData> answerMap = runtimeData.stream().collect(Collectors.toMap(x -> x.getTeamName(), x -> x));
-                        count ++;
+                        count++;
                         StackPane stackPane2 = new StackPane();
                         stackPane2.setMaxHeight(Double.MAX_VALUE);
                         VBox.setVgrow(stackPane2, Priority.NEVER);
@@ -266,16 +275,14 @@ public class ScoreBoardHPreview extends PreviewPane implements BoardPane {
                             box.getChildren().add(stackPane2);
                         }
 
-                    }
-
-                    else if (m6 == 1) {
+                    } else if (m6 == 1) {
                         List<Model61RuntimeData.ModelData> runtimeData = Model61RuntimeData.getRuntimeData();
                         Map<String, Model61RuntimeData.ModelData> dataMap = runtimeData.stream().collect(Collectors.toMap(x -> x.getTeamName() + "-" + x.getUserName(), x -> x));
-                        count ++;
+                        count++;
                         HBox memberStatus = new HBox();
                         memberStatus.setMaxHeight(Double.MAX_VALUE);
                         memberStatus.setSpacing(1);
-                        memberStatus.setPadding(new Insets(1, 1, 1,1));
+                        memberStatus.setPadding(new Insets(1, 1, 1, 1));
                         memberStatus.setPrefWidth(ScreenAdapter.calculateMainX(Integer.parseInt(cfgArr[19])));
                         String members = team.getMembers();
                         if (!StringUtils.isEmpty(members)) {
@@ -319,20 +326,19 @@ public class ScoreBoardHPreview extends PreviewPane implements BoardPane {
                             box.getChildren().add(memberStatus);
                         }
                     }
-                }
-                else if (questionType == 7) {
-                    count ++;
+                } else if (questionType == 7) {
+                    count++;
                 }
 
             }
-            
+
             box.setOnMouseClicked(new EventHandler<MouseEvent>() {
                 @Override
                 public void handle(MouseEvent event) {
                     if (event.getButton() == MouseButton.PRIMARY) {
                         Border border = box.getBorder();
                         if (border == null) {
-                            box.setBorder(new Border(new BorderStroke(Color.GREEN, BorderStrokeStyle.SOLID,  new CornerRadii(10), new BorderWidths(5))));
+                            box.setBorder(new Border(new BorderStroke(Color.GREEN, BorderStrokeStyle.SOLID, new CornerRadii(10), new BorderWidths(5))));
                             selected.add(teamName.getText());
                             controlPane.emptyTeam();
                         } else {
@@ -342,7 +348,7 @@ public class ScoreBoardHPreview extends PreviewPane implements BoardPane {
                     } else {
                         Navigator.navigatorTo("/view/board/preview/ScorePreviewAttr.fxml", "分数面板设置", "/view/style.css", false, false);
                     }
-                    
+
                 }
             });
             box.setPrefHeight(ScreenAdapter.calculateMainY(Integer.parseInt(cfgArr[20]) * count + count - 1));
@@ -355,13 +361,13 @@ public class ScoreBoardHPreview extends PreviewPane implements BoardPane {
 //        selectAll.setOnMouseClicked(new EventHandler<MouseEvent>() {
 //            @Override
 //            public void handle(MouseEvent event) {
-                
+
 //            }
 //        });
 
         double prefWidth = ScreenAdapter.calculateMainX(Double.parseDouble(cfgArr[19])) * teams.size() + container.getSpacing() * teams.size();
         container.setPrefWidth(prefWidth);
-        int size = ((VBox)container.getChildren().get(0)).getChildren().size();
+        int size = ((VBox) container.getChildren().get(0)).getChildren().size();
         container.setPrefHeight(ScreenAdapter.calculateMainY(Integer.parseInt(cfgArr[20]) * size + size - 1));
         Navigator.scoreBoardStage.setWidth(container.getPrefWidth());
         Navigator.scoreBoardStage.setHeight(container.getPrefHeight());
@@ -377,6 +383,12 @@ public class ScoreBoardHPreview extends PreviewPane implements BoardPane {
     public void close() {
         Stage stage = (Stage) (container.getScene().getWindow());
         stage.hide();
+        BoardPane scoreBoard = controlPane.getScoreBoard();
+        if (scoreBoard != null) {
+            scoreBoard.close();
+            scoreBoard = null;
+            controlPane.setScoreBoard(null);
+        }
     }
 
     @Override
@@ -384,14 +396,23 @@ public class ScoreBoardHPreview extends PreviewPane implements BoardPane {
         Stage stage = (Stage) container.getScene().getWindow();
         stage.show();
         BoardPane scoreBoard = controlPane.getScoreBoard();
-        if (scoreBoard == null) {
-            scoreBoard = (ScoreBoardH) ExtendedScreen.scoreWithPos("/view/board/match/ScoreBoardH.fxml", "", "/view/style.css", false);
-            if (scoreBoard != null) {
-                controlPane.setScoreBoard(scoreBoard);
-                scoreBoard.reload();
+        if (RuntimeUtil.showSecondScorePane) {
+            if (scoreBoard == null) {
+                scoreBoard = (ScoreBoardH) ExtendedScreen.scoreWithPos("/view/board/match/ScoreBoardH.fxml", "", "/view/style.css", false);
+                if (scoreBoard != null) {
+                    controlPane.setScoreBoard(scoreBoard);
+                    scoreBoard.reload();
 
+                }
+            }
+        } else {
+            if (scoreBoard != null) {
+                scoreBoard.close();
+                scoreBoard = null;
+                controlPane.setScoreBoard(null);
             }
         }
+
 
     }
 
@@ -417,7 +438,7 @@ public class ScoreBoardHPreview extends PreviewPane implements BoardPane {
             Text teamName = (Text) pane.getChildren().get(0);
             if (select) {
                 controlPane.emptyTeam();
-                box.setBorder(new Border(new BorderStroke(Color.GREEN, BorderStrokeStyle.SOLID,  new CornerRadii(10), new BorderWidths(5))));
+                box.setBorder(new Border(new BorderStroke(Color.GREEN, BorderStrokeStyle.SOLID, new CornerRadii(10), new BorderWidths(5))));
                 selected.add(teamName.getText());
             } else {
                 box.setBorder(null);

@@ -17,6 +17,9 @@ public class RuntimeUtil {
     // 分数条显示
     public static volatile boolean showScoreBar = true;
 
+    // 扩展屏显示分数面板
+    public static volatile boolean showSecondScorePane = false;
+
     public static volatile long buzzStart = 0;
 
     public static volatile long buzzCalculate = 0;

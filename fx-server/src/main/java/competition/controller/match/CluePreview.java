@@ -309,30 +309,6 @@ public class CluePreview implements ReloadPane<Questions> {
                 tiganBox.setLayoutY(ScreenAdapter.calculateExY(Integer.parseInt(split1[1])));
                 tiganBox.setPrefWidth(ScreenAdapter.calculateExX(Integer.parseInt(split1[2])));
                 tiganBox.setPrefHeight(ScreenAdapter.calculateExY(Integer.parseInt(split1[3])));
-                if (split1.length >= 16) {
-                    int wordSpace = Integer.parseInt(split1[15]);
-                    if (wordSpace > 0) {
-                        String sli = "";
-                        for (int m = 0; m < wordSpace; m++) {
-                            sli = sli + " ";
-                        }
-                        List<String> cs = new ArrayList<>();
-                        for (char aChar : tiganLabel.getText().toCharArray()) {
-                            cs.add(aChar + "");
-                        }
-                        tiganLabel.setText(String.join(sli, cs));
-                        for (Node child : tiganBox.getChildren()) {
-                            Text text = (Text) child;
-                            List<String> cs1 = new ArrayList<>();
-                            for (char aChar : text.getText().toCharArray()) {
-                                cs1.add(aChar + "");
-                            }
-                            text.setText(String.join(sli, cs1));
-                        }
-
-                    }
-                }
-
                 if (Boolean.valueOf(split1[4])) {
                     // 填充背景图片
                     if (!StringUtils.isEmpty(split1[6])) {

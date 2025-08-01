@@ -56,8 +56,7 @@ public class ScorePreviewAttr {
     // 列间距控制 & 行间距控制 == > 行间距只对 对联模式生效
     @FXML
     private TextField colSpan, rowSpan;
-    
-    
+
     @FXML
     public void initialize(){
 
@@ -68,13 +67,13 @@ public class ScorePreviewAttr {
         fontSelector.setValue(FontMap.defaultFontName());
         fontSize.setText(12 + "");
         colSpan.setText("0");
+        secondOpenBox.setSelected(RuntimeUtil.showSecondScorePane);
         // 默认 10
         rowSpan.setText("10");
         if (scoreStyle != null) {
             String styles = scoreStyle.getStyles();
             if (!StringUtils.isEmpty(styles)) {
                 String[] split = styles.split(ConfigSpliter.SPLITER);
-                secondOpenBox.setSelected( ExtendedScreen.scoreBoardStage.isShowing());
                 fontSelector.setValue((split[0]));
                 fontSize.setText((split[1]));
                 deleteChoice.setSelected(Boolean.valueOf(split[2]));
@@ -146,9 +145,9 @@ public class ScorePreviewAttr {
 
         if (Screen.getScreens().size() > 1) {
             if (secondOpenBox.isSelected()) {
-                ExtendedScreen.scoreBoardStage.show();
+                RuntimeUtil.showSecondScorePane = true;
             } else {
-                ExtendedScreen.scoreBoardStage.hide();
+                RuntimeUtil.showSecondScorePane = false;
             }
         }
 

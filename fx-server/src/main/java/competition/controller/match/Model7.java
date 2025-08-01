@@ -12,6 +12,7 @@ import competition.mapper.Model3Mapper;
 import competition.mapper.QuestionsMapper;
 import competition.util.*;
 import competition.ws.Model7RuntimeData;
+import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -74,13 +75,15 @@ public class Model7 implements ReloadPane<Stages> {
     private boolean uiInitialized = false;
     private Model3Style currentModel3Style;
 
-    // 布局参数缓存
+    // 布局参数缓存 - 与Preview保持一致
     private double cachedVgap, cachedHgap, cachedX, cachedY, cachedWidth, cachedHeight;
+    private double cachedWF, cachedTH, cachedQF;
+    private Color cachedWFColor, cachedQFColor, cachedBkColor;
     private int cachedCol;
 
-    // 内部类：封装每个队伍的显示面板
+    // 内部类：封装每个队伍的显示面板 - 与Preview保持一致的结构
     private static class TeamDisplayPanel {
-        AnchorPane mainPane;
+        VBox mainPane;
         VBox upArea;
         HBox row1;
         GridPane row2;
@@ -111,54 +114,69 @@ public class Model7 implements ReloadPane<Stages> {
             circles = new ArrayList<>();
         }
 
-        void initializeComponents(double width, double height, int totalQuestions, int cols) {
-            // 创建主面板
-            mainPane = new AnchorPane();
-            mainPane.setPadding(new Insets(0, 10, 0, 10));
+        void initializeComponents(double width, double height, int totalQuestions, int cols,
+                                  double radius,
+                                  double wfSize, Color wfColor,
+                                  double qfSize, Color qfColor,
+                                  Color bkColor) {
+            // 创建主面板 - 与Preview一致使用VBox
+            mainPane = new VBox();
+            mainPane.setPadding(new Insets(0, 0, 0, 0));
             mainPane.setPrefWidth(width);
             mainPane.setMinWidth(0);
             mainPane.setMaxWidth(Double.MAX_VALUE);
 
-            // 创建上方区域
+            // 创建上方区域 - 与Preview保持一致
             upArea = new VBox();
+            upArea.setPrefWidth(width - 20);
+            upArea.setMinWidth(width - 20);
+            upArea.setMaxWidth(width - 20);
             upArea.setMinWidth(0);
             upArea.setMaxWidth(Double.MAX_VALUE);
-            upArea.setLayoutY(ScreenAdapter.calculateExY(10));
-            upArea.setPrefWidth(width);
-            upArea.setBackground(new Background(new BackgroundFill(Color.BLUE, new CornerRadii(10), Insets.EMPTY)));
-            upArea.setSpacing(ScreenAdapter.calculateExY(5));
+            upArea.setBackground(new Background(new BackgroundFill(bkColor, new CornerRadii(10), Insets.EMPTY)));
+            upArea.setSpacing(5);
 
-            // 创建第一行（队伍信息）
+            // 创建第一行（队伍信息） - 与Preview保持一致
             row1 = new HBox();
             row1.setPadding(new Insets(0, 3, 0, 3));
-            row1.setPrefWidth(width);
-
+            row1.setPrefWidth(width); // 与upArea保持一致
+            row1.setMinWidth(width);
+            row1.setMaxWidth(width);
             teamNameLabel = new Label();
-            teamNameLabel.setPrefWidth(width / 4);
+            teamNameLabel.setPrefWidth(width * 0.2);
             teamNameLabel.setTextFill(Color.WHITE);
 
             scoreLabel = new Label();
-            scoreLabel.setPrefWidth(width / 4);
+            scoreLabel.setPrefWidth(width * 0.2);
             scoreLabel.setTextFill(Color.WHITE);
 
             timeLabel = new Label();
-            timeLabel.setPrefWidth(width / 2);
+            timeLabel.setPrefWidth(width * 0.6);
             timeLabel.setTextFill(Color.WHITE);
 
-            row1.getChildren().addAll(teamNameLabel, scoreLabel, timeLabel);
+            ObservableList<Node> children = row1.getChildren();
+            children.addAll(teamNameLabel, scoreLabel, timeLabel);
+            for (Node child : children) {
+                if (child instanceof Label) {
+                    Label label = (Label) child;
+                    label.setFont(Font.font(ScreenAdapter.calculateMainX(wfSize)));
+                    label.setTextFill(wfColor);
+                    label.setAlignment(Pos.CENTER);
+                    label.setTextAlignment(TextAlignment.CENTER);
+                }
+            }
 
-            // 创建第二行（圆圈显示）
+            // 创建第二行（圆圈显示） - 与Preview保持一致
             row2 = new GridPane();
             row2.setPadding(new Insets(2));
             row2.setPrefWidth(width);
 
-            // 创建圆圈
+            // 创建圆圈 - 使用ExtendedScreen的适配方法
             circles.clear();
-            double radius = ScreenAdapter.calculateExX(5.0);
             for (int i = 0; i < totalQuestions; i++) {
                 Circle c = new Circle();
                 c.setStrokeWidth(1);
-                c.setRadius(ScreenAdapter.calculateMainX(radius));
+                c.setRadius(ScreenAdapter.calculateExX(radius));
                 c.setStroke(Color.BLACK);
                 c.setFill(Color.WHITE);
                 int colIndex = i % cols;
@@ -170,12 +188,12 @@ public class Model7 implements ReloadPane<Stages> {
             upArea.getChildren().addAll(row1, row2);
             mainPane.getChildren().add(upArea);
 
-            // 创建下方区域
+            // 创建下方区域 - 与Preview保持一致
             downArea = new AnchorPane();
             downArea.setPrefWidth(width);
             downArea.setStyle("-fx-border-color: black; -fx-border-width: 1; -fx-background-color: white");
 
-            // 题目区域
+            // 题目区域 - 与Preview保持一致
             questionArea = new VBox();
             questionArea.setPadding(new Insets(1, 5, 1, 5));
             questionArea.setSpacing(ScreenAdapter.calculateExY(2));
@@ -183,19 +201,23 @@ public class Model7 implements ReloadPane<Stages> {
 
             questionLabel = new Label();
             questionLabel.setWrapText(true);
+            questionLabel.setFont(Font.font(ScreenAdapter.calculateExX(qfSize)));
+            questionLabel.setTextFill(qfColor);
             questionArea.getChildren().add(questionLabel);
 
-            // 选择题选项
+            // 选择题选项 - 与Preview保持一致
             String[] choices = {"A", "B", "C", "D", "E", "F"};
             for (String choice : choices) {
                 Label choiceLabel = new Label();
                 choiceLabel.setWrapText(true);
                 choiceLabel.setVisible(false);
+                choiceLabel.setFont(Font.font(ScreenAdapter.calculateExX(qfSize)));
+                choiceLabel.setTextFill(qfColor);
                 choiceLabels.add(choiceLabel);
                 questionArea.getChildren().add(choiceLabel);
             }
 
-            // 答案区域
+            // 答案区域 - 与Preview保持一致
             answerArea = new VBox();
             answerArea.setAlignment(Pos.CENTER);
             answerArea.setLayoutY(ScreenAdapter.calculateExY(190));
@@ -220,20 +242,20 @@ public class Model7 implements ReloadPane<Stages> {
 
             answerArea.getChildren().addAll(answerLabel, statusLabel);
 
-            // 等待标签
+            // 等待标签 - 与Preview保持一致
             waitLabel = new Label("等待答题");
             waitLabel.setPrefWidth(width);
-            waitLabel.setPrefHeight(height); // 占满整个下方区域高度
-            waitLabel.setFont(FontMap.load(FontMap.defaultFontName(), ScreenAdapter.calculateExX(32)));
+            waitLabel.setPrefHeight(height); // 初始化时设置为整个面板高度，后续会在updateLayout中调整
+            waitLabel.setLayoutY(0);
+            waitLabel.setFont(FontMap.load(FontMap.defaultFontName(), ScreenAdapter.calculateExX(35)));
+            waitLabel.setTextFill(Color.BLACK);
             waitLabel.setTextAlignment(TextAlignment.CENTER);
             waitLabel.setAlignment(Pos.CENTER);
             waitLabel.setVisible(false);
 
-            // 结束标签
+            // 结束标签 - 与Preview保持一致
             endLabel = new Label("答题结束");
             endLabel.setPrefWidth(width);
-            endLabel.setPrefHeight(height / 5);
-            endLabel.setLayoutY(height / 5);
             endLabel.setFont(FontMap.load(FontMap.defaultFontName(), ScreenAdapter.calculateExX(32)));
             endLabel.setAlignment(Pos.CENTER);
             endLabel.setTextAlignment(TextAlignment.CENTER);
@@ -241,8 +263,6 @@ public class Model7 implements ReloadPane<Stages> {
 
             finalScoreLabel = new Label();
             finalScoreLabel.setPrefWidth(width);
-            finalScoreLabel.setPrefHeight(height / 5);
-            finalScoreLabel.setLayoutY(height * 0.4);
             finalScoreLabel.setFont(FontMap.load(FontMap.defaultFontName(), ScreenAdapter.calculateExX(32)));
             finalScoreLabel.setTextAlignment(TextAlignment.CENTER);
             finalScoreLabel.setAlignment(Pos.CENTER);
@@ -250,8 +270,6 @@ public class Model7 implements ReloadPane<Stages> {
 
             finalTimeLabel = new Label();
             finalTimeLabel.setPrefWidth(width);
-            finalTimeLabel.setPrefHeight(height / 5);
-            finalTimeLabel.setLayoutY(height * 0.6);
             finalTimeLabel.setFont(FontMap.load(FontMap.defaultFontName(), ScreenAdapter.calculateExX(32)));
             finalTimeLabel.setTextAlignment(TextAlignment.CENTER);
             finalTimeLabel.setAlignment(Pos.CENTER);
@@ -266,45 +284,66 @@ public class Model7 implements ReloadPane<Stages> {
             upArea.setPrefWidth(width);
             row1.setPrefWidth(width);
             row2.setPrefWidth(width);
+            teamNameLabel.setPrefWidth(width * 0.2);
+            scoreLabel.setPrefWidth(width * 0.2);
+            timeLabel.setPrefWidth(width * 0.6);
 
-            teamNameLabel.setPrefWidth(width / 4);
-            scoreLabel.setPrefWidth(width / 4);
-            timeLabel.setPrefWidth(width / 2);
-
-            // 更新圆圈行的显示状态
+            // 更新圆圈行的显示状态 - 与Preview保持一致
             row2.setVisible(!hideCircles);
             row2.setManaged(!hideCircles);
 
-            int circleRowHeight = hideCircles ? 0 : (circles.size() / ((int) ((width - 4) / (2 * ScreenAdapter.calculateExX(5) + 1))) + 1) * 15;
-            upArea.setPrefHeight(ScreenAdapter.calculateExY(22 + circleRowHeight));
+            // 精确计算圆圈区域高度 - 与Preview保持一致
+            int circleRowHeight = 0;
+            if (!hideCircles && circles.size() > 0) {
+                // 计算每行能放多少个圆圈
+                double circleWidth = 2 * ScreenAdapter.calculateExX(5) + 2; // 圆圈直径 + 间距
+                int colsPerRow = Math.max(1, (int) ((width - 4) / circleWidth));
+                // 计算需要多少行
+                int rows = circles.size() / colsPerRow; // 向上取整
+                // 每行的实际高度（包括圆圈直径和间距）
+                double rowHeight = 2 * ScreenAdapter.calculateExX(5) + 2;
+                circleRowHeight = (int) (rows * rowHeight);
+            }
+            // 上方蓝色区域高度 = 第一行高度(22) + 圆圈区域高度 + 内边距
+            double upAreaHeight = ScreenAdapter.calculateExY(22 + circleRowHeight + (hideCircles ? 0 : 5));
+            upArea.setPrefHeight(upAreaHeight);
 
-            // 更新下方区域
+            // 下方区域的位置和高度 - 与Preview保持一致
             downArea.setPrefWidth(width);
-            downArea.setLayoutY(ScreenAdapter.calculateExY(upArea.getLayoutY() + upArea.getPrefHeight() + 5));
-            double downAreaHeight = height - ScreenAdapter.calculateExY(22 + circleRowHeight);
+            double downAreaY = ScreenAdapter.calculateExY(10) + upAreaHeight;
+            downArea.setLayoutY(downAreaY);
+            double downAreaHeight = height - (downAreaY - ScreenAdapter.calculateExY(10));
             downArea.setPrefHeight(downAreaHeight);
             downArea.setVisible(!hideDownArea);
             downArea.setManaged(!hideDownArea);
 
+            // 题目区域保持不变
             questionArea.setPrefWidth(width);
-            answerArea.setPrefWidth(width);
-            answerArea.setLayoutY(ScreenAdapter.calculateExY(190));
 
-            // 修复各个标签的尺寸和位置
+            // 答案区域 - 根据下方区域高度动态调整位置，与Preview保持一致
+            answerArea.setPrefWidth(width);
+            double answerAreaY = Math.min(ScreenAdapter.calculateExY(190), downAreaHeight * 0.75);
+            answerArea.setLayoutY(answerAreaY);
+
+            // 等待标签 - 填满整个下方区域，保持原字体大小，与Preview保持一致
             waitLabel.setPrefWidth(width);
             waitLabel.setPrefHeight(downAreaHeight);
+            waitLabel.setLayoutY(0);
+
+            // 结束相关标签 - 根据下方区域高度重新分布位置，与Preview保持一致
+            double labelHeight = downAreaHeight / 3;
 
             endLabel.setPrefWidth(width);
-            endLabel.setPrefHeight(downAreaHeight / 5);
-            endLabel.setLayoutY(downAreaHeight / 5);
+            endLabel.setPrefHeight(labelHeight);
+            endLabel.setLayoutY(0);
 
             finalScoreLabel.setPrefWidth(width);
-            finalScoreLabel.setPrefHeight(downAreaHeight / 5);
-            finalScoreLabel.setLayoutY(downAreaHeight * 0.4);
+            finalScoreLabel.setPrefHeight(labelHeight);
+            finalScoreLabel.setLayoutY(labelHeight);
 
             finalTimeLabel.setPrefWidth(width);
-            finalTimeLabel.setPrefHeight(downAreaHeight / 5);
-            finalTimeLabel.setLayoutY(downAreaHeight * 0.6);
+            finalTimeLabel.setPrefHeight(labelHeight);
+            finalTimeLabel.setLayoutY(labelHeight * 2);
         }
     }
 
@@ -342,8 +381,8 @@ public class Model7 implements ReloadPane<Stages> {
         // 设置背景
         try {
             container.setBackground(new Background(new BackgroundImage(
-                new Image(new FileInputStream(ImageResource.竞技模式背景())), BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT, BackgroundPosition.DEFAULT,
-                new BackgroundSize(ExtendedScreen.getWidth(), ExtendedScreen.getHeight(), false, false, false, false)
+                    new Image(new FileInputStream(ImageResource.竞技模式背景())), BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT, BackgroundPosition.DEFAULT,
+                    new BackgroundSize(ExtendedScreen.getWidth(), ExtendedScreen.getHeight(), false, false, false, false)
             )));
         } catch (FileNotFoundException e) {
             container.setBackground(new Background(new BackgroundFill(Color.TRANSPARENT, new CornerRadii(10), Insets.EMPTY)));
@@ -353,6 +392,7 @@ public class Model7 implements ReloadPane<Stages> {
         currentModel3Style = model3Mapper.selectById(2);
         cacheLayoutParameters();
 
+        container.setPrefWidth(ExtendedScreen.getWidth());
         container.setVgap(cachedVgap);
         container.setHgap(cachedHgap);
         container.setPadding(new Insets(cachedY, 0, 0, cachedX));
@@ -364,19 +404,25 @@ public class Model7 implements ReloadPane<Stages> {
     }
 
     /**
-     * 缓存布局参数
+     * 缓存布局参数 - 与Preview保持一致
      */
     private void cacheLayoutParameters() {
         String titleStyle = currentModel3Style.getTitleStyle();
 
-        // 默认值
+        // 默认值 - 与Preview保持一致
         cachedVgap = ScreenAdapter.calculateExY(20);
         cachedHgap = ScreenAdapter.calculateExX(20);
         cachedX = ScreenAdapter.calculateExX(10);
         cachedY = 0;
-        cachedWidth = (ExtendedScreen.getWidth() - ScreenAdapter.calculateExX(40)) / 4;
+        cachedWidth = ScreenAdapter.calculateExX((int) ((ExtendedScreen.getWidth() - 40) / 4));
         cachedHeight = ScreenAdapter.calculateExY(287);
         cachedCol = 4;
+        cachedWF = ScreenAdapter.calculateExX(12);
+        cachedTH = ScreenAdapter.calculateExX(5);
+        cachedQF = ScreenAdapter.calculateExX(12);
+        cachedWFColor = Color.BLACK;
+        cachedQFColor = Color.BLACK;
+        cachedBkColor = Color.BLACK;
 
         if (!StringUtils.isEmpty(titleStyle)) {
             String[] split = titleStyle.split(ConfigSpliter.SPLITER);
@@ -387,23 +433,42 @@ public class Model7 implements ReloadPane<Stages> {
             cachedHeight = ScreenAdapter.calculateExY(Integer.parseInt(split[4]));
             cachedVgap = ScreenAdapter.calculateExY(Integer.parseInt(split[1]));
             cachedHgap = ScreenAdapter.calculateExX(Integer.parseInt(split[2]));
+            if (split.length > 7) {
+                cachedWF = ScreenAdapter.calculateExX(Integer.parseInt(split[7]));
+            }
+            if (split.length > 8) {
+                cachedTH = ScreenAdapter.calculateExX(Integer.parseInt(split[8]));
+            }
+            if (split.length > 9) {
+                cachedQF = ScreenAdapter.calculateExX(Integer.parseInt(split[9]));
+            }
+            if (split.length > 10) {
+                cachedWFColor = Color.web(split[10]);
+            }
+            if (split.length > 11) {
+                cachedQFColor = Color.web(split[11]);
+            }
+            if (split.length > 12) {
+                cachedBkColor = Color.web(split[12]);
+            }
         }
     }
 
     /**
-     * 创建队伍面板（只执行一次）
+     * 创建队伍面板（只执行一次） - 与Preview保持一致
      */
     private void createTeamPanels() {
         List<List<Model7RuntimeData.ModelData>> runtimeData = Model7RuntimeData.getRuntimeData();
         List<Questions> questions = getQuestionsWithCache();
-        int cols = (int) ((cachedWidth - 4) / (2 * ScreenAdapter.calculateExX(5) + 1));
+        int cols = (int) ((cachedWidth - 4) / (2 * ScreenAdapter.calculateExX(cachedTH) + 1));
 
         teamPanels.clear();
         container.getChildren().clear();
 
         for (int i = 0; i < runtimeData.size(); i++) {
             TeamDisplayPanel panel = new TeamDisplayPanel();
-            panel.initializeComponents(cachedWidth, cachedHeight, questions.size(), cols);
+            panel.initializeComponents(cachedWidth, cachedHeight, questions.size(), cols, cachedTH,
+                    cachedWF, cachedWFColor, cachedQF, cachedQFColor, cachedBkColor);
 
             container.add(panel.mainPane, i % cachedCol, i / cachedCol);
             teamPanels.add(panel);
@@ -517,8 +582,8 @@ public class Model7 implements ReloadPane<Stages> {
     private List<Questions> getQuestionsWithCache() {
         if (cachedQuestions == null || !Objects.equals(cachedStageNumber, currentStage.getSortVal())) {
             cachedQuestions = questionsMapper.selectList(
-                new LambdaQueryWrapper<Questions>()
-                    .eq(Questions::getStageNumber, currentStage.getSortVal())
+                    new LambdaQueryWrapper<Questions>()
+                            .eq(Questions::getStageNumber, currentStage.getSortVal())
             );
             cachedStageNumber = currentStage.getSortVal();
         }
@@ -544,7 +609,7 @@ public class Model7 implements ReloadPane<Stages> {
     private void updateData() {
         // 获取样式配置
         String[] headStyleSplit = currentModel3Style.getHeadStyle().split(",");
-        boolean hideCircles = headStyleSplit.length > 1 ? Boolean.parseBoolean(headStyleSplit[1]) : true;
+        boolean hideCircles = headStyleSplit.length > 1 ? Boolean.parseBoolean(headStyleSplit[1]) : false;
         boolean hideDownArea = headStyleSplit.length > 0 ? Boolean.parseBoolean(headStyleSplit[0]) : false;
 
         // 更新每个队伍面板的数据
@@ -635,7 +700,7 @@ public class Model7 implements ReloadPane<Stages> {
 
                 // 更新选择题选项
                 String[] choices = {last.getChoiceA(), last.getChoiceB(), last.getChoiceC(),
-                    last.getChoiceD(), last.getChoiceE(), last.getChoiceF()};
+                        last.getChoiceD(), last.getChoiceE(), last.getChoiceF()};
                 String[] choiceLabels = {"A", "B", "C", "D", "E", "F"};
 
                 for (int j = 0; j < panel.choiceLabels.size(); j++) {
@@ -697,13 +762,15 @@ public class Model7 implements ReloadPane<Stages> {
      * 清理缓存的方法
      */
     public void clearCache() {
-        cachedQuestions = null;
         cachedStageNumber = null;
-
+        cachedQuestions = new ArrayList<>();
         // 清理UI组件缓存
         teamPanels.clear();
-        container.getChildren().clear();
-        uiInitialized = false;
+        if (container != null) {
+            container.getChildren().clear();
+            uiInitialized = false;
+
+        }
     }
 
     @Override

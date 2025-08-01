@@ -434,7 +434,9 @@ public class QuestionPreviewPreview extends PreviewPane<Questions> {
      */
     private void handleResourceType(String[] split) {
         String resourceType = inner.getResourceType();
-
+        if (resourceType == null) {
+            resourceType = "文字";
+        }
         switch (resourceType) {
             case "音频":
             case "视频":
@@ -722,11 +724,6 @@ public class QuestionPreviewPreview extends PreviewPane<Questions> {
         tiganBox.setPrefWidth(ScreenAdapter.calculateMainX(Integer.parseInt(split1[2])));
         tiganBox.setPrefHeight(ScreenAdapter.calculateMainY(Integer.parseInt(split1[3])));
 
-        // 处理字间距
-        if (split1.length >= 16) {
-            handleWordSpacing(Integer.parseInt(split1[15]));
-        }
-
         // 设置背景（覆盖基础背景）
         setRegionBackground(tiganBox, split1);
 
@@ -744,25 +741,6 @@ public class QuestionPreviewPreview extends PreviewPane<Questions> {
             } else {
                 // 如果不需要空行，确保没有多余的空行
                 tiganBox.getChildren().removeIf(node -> node instanceof Text && ((Text) node).getText().equals(BLACK_LINE));
-            }
-        }
-    }
-
-    /**
-     * 处理字间距
-     */
-    private void handleWordSpacing(int wordSpace) {
-        if (wordSpace > 0) {
-            String spacer = "";
-            for (int m = 0; m < wordSpace; m++) {
-                spacer = spacer + " ";
-            }
-            applyWordSpacing(tiganLabel, spacer);
-
-            for (Node child : tiganBox.getChildren()) {
-                if (child instanceof Text && child != tiganLabel) {
-                    applyWordSpacing((Text) child, spacer);
-                }
             }
         }
     }

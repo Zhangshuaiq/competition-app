@@ -45,9 +45,10 @@ public class ExtendedScreen {
     private static final Map<String, Parent> cachedLoadRoot = new HashMap<>();
     private static final Map<String, ReloadPane> cachedControllers = new HashMap<>();
     private static final Map<String, Scene> cachedScenes = new HashMap<>();
-    private static Scene extendScene;
+    private static volatile Scene extendScene;
+    private static volatile Scene scorePaneScene;
 
-    private static boolean extendShow = false;
+    private static volatile boolean extendShow = false;
 
     static {
         extendScreen.initStyle(StageStyle.TRANSPARENT);
@@ -396,10 +397,6 @@ public class ExtendedScreen {
         ReloadPane controller = null;
 
         try {
-            if (!ExtendedScreen.hasShow()) {
-                return null;
-            }
-
             // 检查缓存
             if (cachedLoadRoot.containsKey(fxml)) {
                 load = cachedLoadRoot.get(fxml);
@@ -435,13 +432,17 @@ public class ExtendedScreen {
                 stage.setY(bounds.getMinY() + Double.parseDouble(split[18]));
             }
             stage.setTitle(title);
-            Scene scene = new Scene(load, Color.TRANSPARENT);
+            if (scorePaneScene == null) {
+                scorePaneScene = new Scene(load, Color.TRANSPARENT);
+            } else {
+                scorePaneScene.setRoot(load);
+            }
             if (hiddenControl) {
                 //stage.initStyle(StageStyle.TRANSPARENT);
             }
 
-            scene.getStylesheets().add(cssFile); // 应用 CSS
-            stage.setScene(scene);
+            scorePaneScene.getStylesheets().add(cssFile); // 应用 CSS
+            stage.setScene(scorePaneScene);
             stage.show();
             return controller;
         } catch (IOException e) {

@@ -403,11 +403,11 @@ public class ControlPane {
         // 检测硬件状态
         Timeline timeline = new Timeline(new KeyFrame(javafx.util.Duration.millis(100), event -> {
 
-            if (scoreBoard != null) {
+            if (scoreBoardPreview != null) {
                 if (previewPane instanceof RankPane) {
-                    scoreBoard.close();
+                    scoreBoardPreview.close();
                 }   else {
-                    scoreBoard.shows();
+                    scoreBoardPreview.shows();
                 }
             }
 
@@ -901,7 +901,7 @@ public class ControlPane {
                     teamsMapper.updateById(teamList);
                     if (currentStage != null && !StringUtils.isEmpty(questionCombox.getValue())) {
                         Questions questions;
-                        if (controlStage.getRandomSort() == 1) {
+                        if (currentStage.getRandomSort() == 1) {
                             questions = questionsMapper.selectOne(new LambdaQueryWrapper<Questions>()
                                     .eq(Questions::getViewSort, Integer.parseInt(questionCombox.getValue()))
                                     .eq(Questions::getStageNumber, currentStage.getSortVal())
@@ -914,15 +914,11 @@ public class ControlPane {
                             );
 
                         }
-
-
-                        // currentStage
-                        // Questions questions = CurrentQuestions.getQuestionList().get(Integer.parseInt(questionCombox.getValue()) - 1);
                         if (questions == null) {
                             scoreService.addScore(null, teamList, currentStage.getName(), null, null, Integer.parseInt(text),
                                     teamList.getTeamScore().toString(), "");
                         } else {
-                            if (controlStage.getRandomSort() == 1) {
+                            if (currentStage.getRandomSort() == 1) {
                                 questions.setOrder(questions.getViewSort());
                             } else {
                                 questions.setOrder(questions.getQuestionNumber());
@@ -947,8 +943,8 @@ public class ControlPane {
 
 
             // 添加个人分数
-            int selectedIndex1 = memberComBox.getSelectionModel().getSelectedIndex();
-            if (selectedIndex1 > -1) {
+            String selectedIndex1 = memberComBox.getValue();
+            if (!StringUtils.isEmpty(selectedIndex1)) {
                 String member = memberComBox.getSelectionModel().getSelectedItem();
                 String memberScore = teams.getMemberScore();
                 JSONObject jsonObject = JSON.parseObject(memberScore);
@@ -960,7 +956,7 @@ public class ControlPane {
                 if (currentStage != null) {
 
                     Questions questions;
-                    if (controlStage.getRandomSort() == 1) {
+                    if (currentStage.getRandomSort() == 1) {
                         questions = questionsMapper.selectOne(new LambdaQueryWrapper<Questions>()
                                 .eq(Questions::getViewSort, Integer.parseInt(questionCombox.getValue()))
                                 .eq(Questions::getStageNumber, currentStage.getSortVal())
@@ -977,7 +973,7 @@ public class ControlPane {
                         scoreService.addScore(memberComBox.getValue(), teams, currentStage.getName(), null, null, Integer.parseInt(text),
                                 jsonObject.getIntValue(member) + "", "");
                     } else {
-                        if (controlStage.getRandomSort() == 1) {
+                        if (currentStage.getRandomSort() == 1) {
                             questions.setOrder(questions.getViewSort());
                         } else {
                             questions.setOrder(questions.getQuestionNumber());
@@ -999,23 +995,26 @@ public class ControlPane {
                 teamsMapper.updateById(teams);
                 if (currentStage != null) {
 
-                    Questions questions;
-                    if (controlStage.getRandomSort() == 1) {
-                        questions = questionsMapper.selectOne(new LambdaQueryWrapper<Questions>()
-                                .eq(Questions::getViewSort, Integer.parseInt(questionCombox.getValue()))
-                                .eq(Questions::getStageNumber, currentStage.getSortVal())
-                        );
-                    } else {
-                        questions = questionsMapper.selectOne(new LambdaQueryWrapper<Questions>()
-                                .eq(Questions::getQuestionNumber, Integer.parseInt(questionCombox.getValue()))
-                                .eq(Questions::getStageNumber, currentStage.getSortVal())
-                        );
+                    Questions questions = null;
+                    if (!StringUtils.isEmpty(selectedIndex1)) {
+                        if (currentStage.getRandomSort() == 1) {
+                            questions = questionsMapper.selectOne(new LambdaQueryWrapper<Questions>()
+                                    .eq(Questions::getViewSort, Integer.parseInt(questionCombox.getValue()))
+                                    .eq(Questions::getStageNumber, currentStage.getSortVal())
+                            );
+                        } else {
+                            questions = questionsMapper.selectOne(new LambdaQueryWrapper<Questions>()
+                                    .eq(Questions::getQuestionNumber, Integer.parseInt(questionCombox.getValue()))
+                                    .eq(Questions::getStageNumber, currentStage.getSortVal())
+                            );
+                        }
                     }
+
                     if (questions == null) {
                         scoreService.addScore(null, teams, currentStage.getName(), null,
                                 null, Integer.parseInt(text), teams.getTeamScore().toString(), "");
                     } else {
-                        if (controlStage.getRandomSort() == 1) {
+                        if (currentStage.getRandomSort() == 1) {
                             questions.setOrder(questions.getViewSort());
                         } else {
                             questions.setOrder(questions.getQuestionNumber());
@@ -1072,10 +1071,8 @@ public class ControlPane {
                     teamList.setTeamScore(currScore);
                     teamsMapper.updateById(teamList);
                     if (currentStage != null && !StringUtils.isEmpty(questionCombox.getValue())) {
-
-
                         Questions questions;
-                        if (controlStage.getRandomSort() == 1) {
+                        if (currentStage.getRandomSort() == 1) {
                             questions = questionsMapper.selectOne(new LambdaQueryWrapper<Questions>()
                                     .eq(Questions::getViewSort, Integer.parseInt(questionCombox.getValue()))
                                     .eq(Questions::getStageNumber, currentStage.getSortVal())
@@ -1090,7 +1087,7 @@ public class ControlPane {
                             scoreService.addScore(null, teamList, currentStage.getName(), null,
                                     null, -Integer.parseInt(text), teamList.getTeamScore().toString(), "");
                         } else {
-                            if (controlStage.getRandomSort() == 1) {
+                            if (currentStage.getRandomSort() == 1) {
                                 questions.setOrder(questions.getViewSort());
                             } else {
                                 questions.setOrder(questions.getQuestionNumber());
@@ -1114,8 +1111,8 @@ public class ControlPane {
 
 
             // 减少个人分数
-            int selectedIndex1 = memberComBox.getSelectionModel().getSelectedIndex();
-            if (selectedIndex1 > -1) {
+            String selectedIndex1 = memberComBox.getValue();
+            if (!StringUtils.isEmpty(selectedIndex1)) {
                 String member = memberComBox.getSelectionModel().getSelectedItem();
                 String memberScore = teams.getMemberScore();
                 JSONObject jsonObject = JSON.parseObject(memberScore);
@@ -1123,10 +1120,10 @@ public class ControlPane {
                 jsonObject.put(member, memItemScore);
                 teams.setMemberScore(JSON.toJSONString(jsonObject));
                 teamsMapper.updateById(teams);
-                if (currentStage != null) {
+                if (currentStage != null && !StringUtils.isEmpty(questionCombox.getValue())) {
 
                     Questions questions;
-                    if (controlStage.getRandomSort() == 1) {
+                    if (currentStage.getRandomSort() == 1) {
                         questions = questionsMapper.selectOne(new LambdaQueryWrapper<Questions>()
                                 .eq(Questions::getViewSort, Integer.parseInt(questionCombox.getValue()) )
                                 .eq(Questions::getStageNumber, currentStage.getSortVal())
@@ -1159,10 +1156,10 @@ public class ControlPane {
                 int currScore = teams.getTeamScore() - Integer.parseInt(text);
                 teams.setTeamScore(currScore);
                 teamsMapper.updateById(teams);
-                if (currentStage != null) {
+                if (currentStage != null && !StringUtils.isEmpty(questionCombox.getValue())) {
 
                     Questions questions;
-                    if (controlStage.getRandomSort() == 1) {
+                    if (currentStage.getRandomSort() == 1) {
                         questions = questionsMapper.selectOne(new LambdaQueryWrapper<Questions>()
                                 .eq(Questions::getViewSort, Integer.parseInt(questionCombox.getValue()))
                                 .eq(Questions::getStageNumber, currentStage.getSortVal())
@@ -1416,7 +1413,7 @@ public class ControlPane {
         String tihao = questionCombox.getValue();
 
         Questions questions;
-        if (controlStage.getRandomSort() == 1) {
+        if (currentStage.getRandomSort() == 1) {
             questions = questionsMapper.selectOne(new LambdaQueryWrapper<Questions>()
                     .eq(Questions::getViewSort, Integer.parseInt(tihao))
                     .eq(Questions::getStageNumber, currentStage.getSortVal())
@@ -1605,10 +1602,6 @@ public class ControlPane {
     // 竞技排行
     @FXML
     public void model7Rank() {
-        if (controlStage == null) {
-            return;
-        }
-
         if (currentStage == null) {
             return;
         }
@@ -1912,19 +1905,19 @@ public class ControlPane {
     // 显示环节规则
     @FXML
     public void showStageRule() {
-        if (controlStage != null) {
+        if (currentStage != null) {
 
             if (!GlobalCache.showRule) {
 
                 // 风险题目
                 Stages data;
-                if (controlStage.getQuestionType() == 3) {
+                if (currentStage.getQuestionType() == 3) {
                     List<Stages> childrenStage = stagesMapper.selectList(new LambdaQueryWrapper<Stages>()
-                            .eq(Stages::getParentId, controlStage.getId())
+                            .eq(Stages::getParentId, currentStage.getId())
                     );
 
                     if (childrenStage.isEmpty()) {
-                        Stages stages = stagesMapper.selectById(controlStage.getParentId());
+                        Stages stages = stagesMapper.selectById(currentStage.getParentId());
                         data = stages;
                     } else {
                         data = controlStage;
@@ -1936,14 +1929,6 @@ public class ControlPane {
                 }
                 previewPane = Navigator.preview("/view/preview/StageRulePreview.fxml", "", "/view/style.css", true, data);
                 GlobalCache.showRule = true;
-                // 判断环节类型， 给前端同步规则
-
-//                    if (controlStage.getQuestionType() == 6) {
-//                        messageHandler.notifyRule(controlStage.getRuleContent());
-//                    } else if (controlStage.getQuestionType() == 7) {
-//                        messageHandler.notifyRule(controlStage.getRuleContent());
-//                    } 
-
             } else {
                 returnLast();
             }
@@ -1952,7 +1937,7 @@ public class ControlPane {
     }
 
     private void returnLast() {
-        if (controlStage == null) {
+        if (currentStage == null) {
             previewPane = Navigator.preview("/view/preview/StagePreview.fxml", "", "/view/style.css", true, null);
             return;
         }
@@ -1974,13 +1959,13 @@ public class ControlPane {
                 previewPane = Navigator.preview("/view/preview/Model7Preview.fxml", "", "/view/style.css", true,  last.getData());
             } else if (last instanceof Model3Preview) {
                 List<Stages> childrenStages = stagesMapper.selectList(new LambdaQueryWrapper<Stages>()
-                        .eq(Stages::getParentId, controlStage.getId())
+                        .eq(Stages::getParentId, currentStage.getId())
                 );
                 Integer data;
                 if (childrenStages.isEmpty()) {
-                    data = (controlStage.getParentId());
+                    data = (currentStage.getParentId());
                 } else {
-                    data = (controlStage.getId());
+                    data = (currentStage.getId());
                 }
                 previewPane = Navigator.preview("/view/preview/Model3Preview.fxml", "", "/view/style.css", true, data);
             } else if (last instanceof Model7RankPreview) {
@@ -2017,9 +2002,6 @@ public class ControlPane {
         timeReset();
         if (controlStage != null) {
             controlStage = stagesMapper.selectById(controlStage.getId());
-            boolean last = stagesMapper.selectList(new LambdaQueryWrapper<Stages>()
-                    .eq(Stages::getParentId, controlStage.getId())
-            ).isEmpty();
             currentStage = controlStage;
             // 展示环节名称
             previewPane = Navigator.preview("/view/preview/StageNamePreview.fxml", "", "/view/style.css", true, controlStage.getId());
@@ -2128,7 +2110,7 @@ public class ControlPane {
                     return;
                 }
                 controlResourceBtn(questions);
-                questions.setScore(controlStage.getScorePerQ());
+                questions.setScore(currentStage.getScorePerQ());
                 questions.setHasAnswer(true);
                 questionsMapper.updateById(questions);
                 GlobalCache.showAnswer = false;
@@ -2252,7 +2234,7 @@ public class ControlPane {
                 returnLast();
             }
         } else {
-            if (questionType == 6 && controlStage.getM6() == 0) {
+            if (questionType == 6 && currentStage.getM6() == 0) {
                 TeamRuntime.updateScore();
                 TeamRuntime.updateS();
 

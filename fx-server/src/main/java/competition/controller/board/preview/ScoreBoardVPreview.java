@@ -2,6 +2,7 @@ package competition.controller.board.preview;
 
 import competition.controller.ControlPane;
 import competition.controller.board.BoardPane;
+import competition.controller.board.match.ScoreBoardH;
 import competition.controller.board.match.ScoreBoardV;
 import competition.controller.preview.PreviewPane;
 import competition.controller.preview.QuestionPreviewPreview;
@@ -71,9 +72,15 @@ public class ScoreBoardVPreview extends PreviewPane implements BoardPane {
 
     private void show() {
         BoardPane scoreBoard = controlPane.getScoreBoard();
-        if (scoreBoard == null || !(scoreBoard instanceof ScoreBoardV)) {
+        if (RuntimeUtil.showSecondScorePane) {
             scoreBoard = (ScoreBoardV) ExtendedScreen.scoreWithPos("/view/board/match/ScoreBoardV.fxml", "", "/view/style.css", false);
-
+            controlPane.setScoreBoard(scoreBoard);
+            scoreBoard.reload();
+        } else {
+            if (scoreBoard != null) {
+                scoreBoard.close();
+                scoreBoard = null;
+            }
         }
         if (scoreBoard != null) {
             controlPane.setScoreBoard(scoreBoard);
@@ -454,6 +461,12 @@ public class ScoreBoardVPreview extends PreviewPane implements BoardPane {
     public void close() {
         Stage stage = (Stage) (container.getScene().getWindow());
         stage.hide();
+        BoardPane scoreBoard = controlPane.getScoreBoard();
+        if (scoreBoard != null) {
+            scoreBoard.close();
+            scoreBoard = null;
+            controlPane.setScoreBoard(null);
+        }
     }
 
     @Override
@@ -461,15 +474,22 @@ public class ScoreBoardVPreview extends PreviewPane implements BoardPane {
         Stage stage = (Stage) (container.getScene().getWindow());
         stage.show();
         BoardPane scoreBoard = controlPane.getScoreBoard();
-        if (scoreBoard == null) {
-            scoreBoard = (ScoreBoardV) ExtendedScreen.scoreWithPos("/view/board/match/ScoreBoardV.fxml", "", "/view/style.css", false);
-        }
-        if (scoreBoard != null) {
-            controlPane.setScoreBoard(scoreBoard);
-            scoreBoard.reload();
-        }
-       
 
+        if (RuntimeUtil.showSecondScorePane) {
+            if (scoreBoard == null) {
+                scoreBoard = (ScoreBoardV) ExtendedScreen.scoreWithPos("/view/board/match/ScoreBoardV.fxml", "", "/view/style.css", false);
+                if (scoreBoard != null) {
+                    controlPane.setScoreBoard(scoreBoard);
+                    scoreBoard.reload();
+                }
+            }
+        } else {
+            if (scoreBoard != null) {
+                scoreBoard.close();
+                scoreBoard = null;
+                controlPane.setScoreBoard(null);
+            }
+        }
     }
 
     public Set<String> getSelected() {
