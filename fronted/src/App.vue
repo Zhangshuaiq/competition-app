@@ -1,16 +1,30 @@
 <template>
   <div id="app">
-    <router-view></router-view>
+    <FullscreenButton />
+    <router-view :key="routerKey"></router-view>
   </div>
 </template>
 
 <script>
+import FullscreenButton from "@/components/FullscreenButton.vue";
+
 export default {
   name: 'App',
-
+  components: {
+    FullscreenButton,
+  },
+  data() {
+    return {
+      routerKey: 0
+    }
+  },
+  methods: {
+    forceRefreshComponent() {
+      // 通过改变 key 强制重新渲染组件
+      this.routerKey += 1;
+    }
+  },
   mounted() {
-    
-    
     this.$websocket.subscribe('/topic/page', (message) => {
       console.log(message.route);
       //const currentRouteName = this.$router.currentRoute.name;
@@ -41,8 +55,6 @@ export default {
             this.$store.commit('setStage', message.stage);
             this.$store.commit('setCurrentRoute', targetRouteName);
             this.$store.commit('setAdditionalData', message.data); // 假设 message.data 包含需要的额外数据
-            // 检查当前路由名称与目标路由名称是否相同
-            //if (targetRouteName !== currentRouteName) {
             this.$router.push(
                 {
                   name: targetRouteName,

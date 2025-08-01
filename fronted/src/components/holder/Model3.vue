@@ -120,7 +120,7 @@ export default {
   background-color: #C40000;
   line-height: 120px;
   color: white;
-  font-size: xx-large;
+  font-size: large;
   text-align: center;
   margin: 10px;
   border-radius: 10px;

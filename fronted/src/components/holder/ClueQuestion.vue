@@ -3,7 +3,8 @@
     <div>
       <ScoreBoard></ScoreBoard>
     </div>
-    <div style="margin-top: 10px; padding-left: 20px; font-weight: bold;" >
+    <div style="margin-top: 10px; padding-left: 100px; font-size: 28px; color: #4d8af5; font-weight: bold;
+text-shadow: -1px -1px 0 white, 1px -1px 0 white, -1px 1px 0 white, 1px 1px 0 white, -2px -2px 0 white, 2px -2px 0 white, -2px 2px 0 white, 2px 2px 0 white;" >
       <el-row>
 <!--        <el-col span="4"> 组号: {{ teamInfo.shortName }}</el-col>-->
 <!--        <el-col span="4"> 组名: {{ teamInfo.fullName }}</el-col>-->
@@ -205,34 +206,17 @@ export default {
 
 #question-name {
   font-family: "Microsoft YaHei UI";
-  font-size: x-large;
+  font-size: 26px;
 }
 
 #answer-selection {
   margin-top: 20px;
   font-family: "Microsoft YaHei UI";
-  font-size: x-large;
+  font-size:26px;
 }
 
 .selection-item {
   padding: 5px ;
 }
 
-.answer-item {
-  height: 60px;
-  width: 60px;
-  line-height: 60px;
-  text-align: center;
-  font-size: xxx-large;
-  background-color: white;
-}
-
-.blue-background {
-  background-color: skyblue;
-}
-
-.result-info {
-  margin: 50px;
-  font-size: xx-large;
-}
 </style>

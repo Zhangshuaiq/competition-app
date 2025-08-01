@@ -32,22 +32,6 @@
           </div>
 
           <div v-if="questionItem" style="padding: 10px; color: white">
-            <!--            <el-row>-->
-            <!--              <el-col v-for="i in questionList.length" :key="i" span="1">-->
-            <!--                <div v-if="i <= questionList.length" style="padding: 10px 0">-->
-            <!--                  <div v-if="i > userSelects.length" style="height: 20px; width: 20px; border-radius: 10px; background-color: white">-->
-
-            <!--                  </div>-->
-            <!--                  <div v-else-if="userSelects[i-1] === questionList[i-1].answer" style="height: 20px; width: 20px; border-radius: 10px; background-color: green">-->
-
-            <!--                  </div>-->
-            <!--                  <div v-else style="height: 20px; width: 20px; border-radius: 10px; background-color: red">-->
-
-            <!--                  </div>-->
-            <!--                </div>-->
-
-            <!--              </el-col>-->
-            <!--            </el-row>-->
           </div>
         </div>
         <div id="question-info"  v-if="questionItem && !showResult">

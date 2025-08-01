@@ -48,7 +48,20 @@ export default {
     },
     
   },
-  
+
+  watch: {
+    additionalData: {
+      handler(newData, oldData) {
+        console.log('Stage data changed:', newData);
+        if (newData) {
+          this.stage = newData;
+          this.onStageChange(newData, oldData);
+        }
+      },
+      deep: true, // 深度监听对象属性变化
+      immediate: true // 立即执行一次（组件创建时就执行）
+    },
+  },
   methods:{
     checkImageUrl(url, callback) {
       const img = new Image();
@@ -83,11 +96,11 @@ export default {
     sessionStorage.setItem("member", member)
     sessionStorage.setItem("user", item)
 
-
     const data = this.$store.state.data
     console.log(data)
     this.stage = data
   },
+
 }
 </script>
 

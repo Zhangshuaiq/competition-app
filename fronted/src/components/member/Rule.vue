@@ -3,7 +3,7 @@
     <div>
       <ScoreBoard></ScoreBoard>
     </div>
-    <div style="margin-top: 10px; padding-left: 20px; font-weight: bold; font-size: x-large; " >
+    <div style="margin-top: 10px; padding-left: 100px; font-weight: bold; font-size: x-large; " >
       <el-row>
 <!--        <el-col span="4"> 组号: {{ teamInfo.shortName }}</el-col>-->
 <!--        <el-col span="4"> 组名: {{ teamInfo.fullName }}</el-col>-->

@@ -30,6 +30,20 @@ export default {
     }
   },
 
+  watch: {
+    additionalData: {
+      handler(newData, oldData) {
+        console.log('Stage data changed:', newData);
+        if (newData) {
+          this.stage = newData;
+          this.onStageChange(newData, oldData);
+        }
+      },
+      deep: true, // 深度监听对象属性变化
+      immediate: true // 立即执行一次（组件创建时就执行）
+    },
+  },
+
   computed: {
     containerBoxStyle() {
       return {

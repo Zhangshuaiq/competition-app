@@ -3,7 +3,7 @@
     <div>
       <ScoreBoard></ScoreBoard>
     </div>
-    <div style="margin-top: 10px; padding-left: 20px; font-weight: bold; font-size: x-large; " >
+    <div style="margin-top: 10px; padding-left: 100px; font-weight: bold; font-size: x-large; " >
       <el-row>
 <!--        <el-col span="4" v-if="stage"> 环节: {{ stage.name}}</el-col>-->
       </el-row>

@@ -3,17 +3,18 @@
     <div>
       <ScoreBoard></ScoreBoard>
     </div>
-    <div style="margin-top: 10px; padding-left: 20px; font-weight: bold; " >
+    <div style="margin-top: 10px; padding-left: 100px; font-size: 28px; font-weight: bold; color: #4d8af5;
+text-shadow: -1px -1px 0 white, 1px -1px 0 white, -1px 1px 0 white, 1px 1px 0 white, -2px -2px 0 white, 2px -2px 0 white, -2px 2px 0 white, 2px 2px 0 white;" >
       <el-row>
-        <el-col span="4"> 组号: {{ teamInfo.shortName }}</el-col>
-        <el-col span="4"> 组名: {{ teamInfo.fullName }}</el-col>
-        <el-col span="4"> 选手: {{ member }}</el-col>
         <el-col span="4"> 环节: {{ stage.name}}</el-col>
-        <el-col span="4">
-          <div v-if="second >= 0" style="color: red">
-            时间: {{second}} 秒
+        <el-col :span="4">
+          <div style="color: red; ">
+            <span v-if="second >= 0">时间: {{second}} 秒</span>
+            <span v-else style="opacity: 0;">占位文本</span>
           </div>
         </el-col>
+        <el-col span="6"> 团队: {{ teamInfo.shortName }}</el-col>
+        <el-col span="6"> 队员: {{ member }}</el-col>
       </el-row>
     </div>
     <div id="container">
@@ -575,13 +576,13 @@ export default {
 
 .question-name {
   font-family: "Microsoft YaHei UI";
-  font-size: x-large;
+  font-size: 26px;
 }
 
 #answer-selection {
   margin-top: 20px;
   font-family: "Microsoft YaHei UI";
-  font-size: x-large;
+  font-size: 26px;
 }
 
 .selection-item {
@@ -616,11 +617,6 @@ export default {
 
 .blue-background {
   background-color: #4472C4;
-}
-
-.result-info {
-  margin: 50px;
-  font-size: xx-large;
 }
 
 .overlay-img {
