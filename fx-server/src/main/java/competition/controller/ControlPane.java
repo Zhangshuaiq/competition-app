@@ -804,6 +804,7 @@ public class ControlPane {
                 .isNull(Stages::getParentId)
                 .orderByAsc(Stages::getSortVal)
         );
+        stages.sort((o1, o2) -> (int) (Double.parseDouble(o1.getSortVal()) - Double.parseDouble(o2.getSortVal())));
         showStageData(stages, stageList);
         showTopStage();
     }

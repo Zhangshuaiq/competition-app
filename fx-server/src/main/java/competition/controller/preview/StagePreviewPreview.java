@@ -37,6 +37,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.List;
 
 @Component
@@ -146,6 +147,7 @@ public class StagePreviewPreview extends PreviewPane<Integer> {
                             .eq(StagesStyle::getParentId, innerStageID)
                     );
                 }
+                stages.sort(Comparator.comparingDouble(o -> Double.parseDouble(o.getSortVal())));
                 messageHandler.notifyPage("stages", stages);
               
                 

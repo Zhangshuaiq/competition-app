@@ -33,6 +33,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 @Component
@@ -109,7 +110,7 @@ public class StagePreview implements ReloadPane<Integer> {
                             .eq(StagesStyle::getParentId, innerStageID)
                     );
                 }
-
+                stages.sort(Comparator.comparingDouble(o -> Double.parseDouble(o.getSortVal())));
                 String defaultStyle = "550%%300%%350%%80%%false%%0xb31a1aff%%%%默认.ttf%%28%%false%%false%%false%%false%%居中对齐%%60%%0%%2";
                 String[] detailArr = defaultStyle.split(ConfigSpliter.SPLITER);
                 if (stagesStyle != null) {

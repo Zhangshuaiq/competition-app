@@ -267,7 +267,8 @@ public class StageConfig {
 
     private void showStageData(){
         List<Stages> stages = stagesMapper.selectList(new LambdaQueryWrapper<>());
-        final List<Stages> firstStages = stages.stream().filter(x -> x.getParentId() == null).sorted(Comparator.comparing(Stages::getSortVal)).collect(Collectors.toList());
+        final List<Stages> firstStages = stages.stream().filter(x -> x.getParentId() == null)
+                .sorted(Comparator.comparingDouble(o -> Double.parseDouble(o.getSortVal()))).collect(Collectors.toList());
         try {
             nextStageData(firstStages, firstBox, 1);
         } catch (FileNotFoundException e) {
@@ -363,7 +364,7 @@ public class StageConfig {
                     // 显示下一阶段的数据
                     List<Stages> stages = stagesMapper.selectList(new LambdaQueryWrapper<>());
                     final List<Stages> firstStages = stages.stream().filter(x -> Objects.equals(current.getId(), x.getParentId()))
-                        .sorted(Comparator.comparing(Stages::getSortVal)).collect(Collectors.toList());
+                        .sorted(Comparator.comparingDouble(o -> Double.parseDouble(o.getSortVal()))).collect(Collectors.toList());
                     Integer level = current.getLevel();
                     // 清除子环节
                     for (int i1 = 0; i1 < levelList.size(); i1++) {
@@ -478,14 +479,14 @@ public class StageConfig {
             // 顶级环节：parentId为null的所有环节
             return allStages.stream()
                 .filter(x -> x.getLevel() == 1 && x.getParentId() == null)
-                .sorted(Comparator.comparing(Stages::getSortVal))
+                .sorted(Comparator.comparingDouble(o -> Double.parseDouble(o.getSortVal())))
                 .collect(Collectors.toList());
         } else {
             // 子环节：相同parentId的所有环节
             return allStages.stream()
                 .filter(x -> x.getLevel().equals(stage.getLevel()) &&
                     Objects.equals(x.getParentId(), stage.getParentId()))
-                .sorted(Comparator.comparing(Stages::getSortVal))
+                .sorted(Comparator.comparingDouble(o -> Double.parseDouble(o.getSortVal())))
                 .collect(Collectors.toList());
         }
     }
@@ -598,14 +599,14 @@ public class StageConfig {
             // 顶级环节：parentId为null的所有环节
             siblings = allStages.stream()
                 .filter(x -> x.getLevel() == 1 && x.getParentId() == null)
-                .sorted(Comparator.comparing(Stages::getSortVal))
+                .sorted(Comparator.comparingDouble(o -> Double.parseDouble(o.getSortVal())))
                 .collect(Collectors.toList());
         } else {
             // 子环节：相同parentId的所有环节
             siblings = allStages.stream()
                 .filter(x -> x.getLevel().equals(deletedLevel) &&
                     Objects.equals(x.getParentId(), deletedParentId))
-                .sorted(Comparator.comparing(Stages::getSortVal))
+                .sorted(Comparator.comparingDouble(o -> Double.parseDouble(o.getSortVal())))
                 .collect(Collectors.toList());
         }
 
