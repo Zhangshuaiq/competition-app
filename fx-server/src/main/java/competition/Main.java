@@ -1,16 +1,10 @@
 package competition;
 
-import competition.config.MvcConfig;
-import competition.util.GlobalCache;
-import competition.util.Navigator;
 import javafx.application.Application;
 import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.annotation.EnableScheduling;
-
-import javax.swing.*;
 
 @SpringBootApplication
 @MapperScan("competition.mapper")
@@ -24,4 +18,3 @@ public class Main {
         //
     }
 }
-

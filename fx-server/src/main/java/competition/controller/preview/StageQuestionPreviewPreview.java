@@ -1,10 +1,8 @@
 package competition.controller.preview;
 
-
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import competition.controller.ControlPane;
 import competition.controller.board.BoardPane;
-import competition.controller.match.Model7;
 import competition.controller.match.StageQuestionPreview;
 import competition.controller.match.StageQuestionPreviewAttr;
 import competition.entity.Configs;
@@ -26,23 +24,18 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
-import javafx.scene.text.FontPosture;
-import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 import javafx.scene.transform.Shear;
-import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
 import javax.annotation.Resource;
-import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.util.*;
 
 @Component
 public class StageQuestionPreviewPreview extends PreviewPane<Stages> {
-
 
     @FXML
     private AnchorPane container;
@@ -55,14 +48,11 @@ public class StageQuestionPreviewPreview extends PreviewPane<Stages> {
 
     @Resource
     private WsMessageHandler messageHandler;
-    
+
     @Resource
     private QuestionsMapper questionsMapper;
 
-
-
     private Stages inner;
-
 
     @Override
     public void setData(Stages data) {
@@ -91,13 +81,13 @@ public class StageQuestionPreviewPreview extends PreviewPane<Stages> {
             public void handle(MouseEvent event) {
                 if (event.getButton() == MouseButton.SECONDARY) {
                     StageQuestionPreviewAttr.setCurrentStage(inner);
-                    Navigator.navigatorTo("/view/match/StageQuestionPreviewAttr.fxml", "", "/view/style.css", false, false);
+                    Navigator.navigatorTo("/view/match/StageQuestionPreviewAttr.fxml", "", "/view/style.css", false,
+                            false);
                 }
             }
         });
         showData();
     }
-
 
     @Override
     public void reloadStyle() {
@@ -114,13 +104,13 @@ public class StageQuestionPreviewPreview extends PreviewPane<Stages> {
         }
         try {
             container.setBackground(new Background(new BackgroundImage(
-                    new Image(new FileInputStream(ImageResource.选题背景())), BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT, BackgroundPosition.DEFAULT,
-                    new BackgroundSize(Navigator.getWidth(), Navigator.getHeight(), false, false, false, false)
-            )));
+                    new Image(new FileInputStream(ImageResource.选题背景())), BackgroundRepeat.NO_REPEAT,
+                    BackgroundRepeat.NO_REPEAT, BackgroundPosition.DEFAULT,
+                    new BackgroundSize(Navigator.getWidth(), Navigator.getHeight(), false, false, false, false))));
         } catch (FileNotFoundException e) {
-            container.setBackground(new Background(new BackgroundFill(Color.TRANSPARENT, new CornerRadii(10), Insets.EMPTY)));
+            container.setBackground(
+                    new Background(new BackgroundFill(Color.TRANSPARENT, new CornerRadii(10), Insets.EMPTY)));
         }
-
 
         container.getChildren().clear();
         // 未选择阶段，不展示
@@ -136,14 +126,13 @@ public class StageQuestionPreviewPreview extends PreviewPane<Stages> {
         String config = configs.getConfig();
         String stageConfigAttr = stageConfig.getConfig();
         String[] stageConfigAttrSplit = stageConfigAttr.split(ConfigSpliter.SPLITER);
-        
+
         List<Questions> questionList;
 
         if (inner.getRandomSort() == 1) {
             questionList = questionsMapper.selectList(new LambdaQueryWrapper<Questions>()
                     .eq(Questions::getStageNumber, inner.getSortVal())
-                    .orderByAsc(Questions::getViewSort)
-            );
+                    .orderByAsc(Questions::getViewSort));
 
             for (Questions q : questionList) {
                 q.setOrder(q.getViewSort());
@@ -152,8 +141,7 @@ public class StageQuestionPreviewPreview extends PreviewPane<Stages> {
         } else {
             questionList = questionsMapper.selectList(new LambdaQueryWrapper<Questions>()
                     .eq(Questions::getStageNumber, inner.getSortVal())
-                    .orderByAsc(Questions::getQuestionNumber)
-            );
+                    .orderByAsc(Questions::getQuestionNumber));
 
             for (Questions q : questionList) {
                 q.setOrder(q.getQuestionNumber());
@@ -163,16 +151,8 @@ public class StageQuestionPreviewPreview extends PreviewPane<Stages> {
         for (Questions q : questionList) {
             q.setScore(inner.getScorePerQ());
         }
-                // CurrentQuestions.getQuestionList();
-//        questionList.sort(new Comparator<Questions>() {
-//            @Override
-//            public int compare(Questions o1, Questions o2) {
-//                return o1.getQuestionNumber().compareTo(o2.getQuestionNumber());
-//            }
-//        });
 
-        String questionStyle = 
-                "760%%240%%400%%80%%false%%0x990000ff%%%%默认.ttf%%40%%false%%false%%false%%false%%居中对齐%%10###415%%370%%100%%100%%false%%0x990000ff%%%%默认.ttf%%30%%false%%false%%false%%false%%居中对齐%%10%%10";
+        String questionStyle = "760%%240%%400%%80%%false%%0x990000ff%%%%默认.ttf%%40%%false%%false%%false%%false%%居中对齐%%10###415%%370%%100%%100%%false%%0x990000ff%%%%默认.ttf%%30%%false%%false%%false%%false%%居中对齐%%10%%10";
         String[] cfgArr = {};
         if (!StringUtils.isEmpty(config)) {
             cfgArr = config.split(ConfigSpliter.SPLITER);
@@ -188,8 +168,6 @@ public class StageQuestionPreviewPreview extends PreviewPane<Stages> {
                 styleArr[1] = arrs[1];
             }
         }
-        
-
 
         // 标题名称
         StackPane title = new StackPane();
@@ -197,7 +175,8 @@ public class StageQuestionPreviewPreview extends PreviewPane<Stages> {
         title.getChildren().add(stageName);
         // 环节标题的字体颜色和背景色
         stageName.setFill(Color.valueOf(stageConfigAttrSplit[2]));
-        title.setBackground(new Background(new BackgroundFill(Color.valueOf(stageConfigAttrSplit[3]), new CornerRadii(10), Insets.EMPTY)));
+        title.setBackground(new Background(
+                new BackgroundFill(Color.valueOf(stageConfigAttrSplit[3]), new CornerRadii(10), Insets.EMPTY)));
         title.setLayoutX(ScreenAdapter.calculateMainX(ConfigSpliter.DEFAULT_X));
         title.setLayoutY(ScreenAdapter.calculateMainY(ConfigSpliter.DEFAULT_Y));
         title.setPrefWidth(ScreenAdapter.calculateMainX(ConfigSpliter.DEFAULT_W));
@@ -206,7 +185,6 @@ public class StageQuestionPreviewPreview extends PreviewPane<Stages> {
         stageName.setLayoutY(ScreenAdapter.calculateMainY(ConfigSpliter.DEFAULT_Y));
         stageName.prefWidth(ScreenAdapter.calculateMainX(ConfigSpliter.DEFAULT_W));
         stageName.prefHeight(ScreenAdapter.calculateMainY(ConfigSpliter.DEFAULT_H));
-
 
         if (styleArr.length > 1 && !ConfigSpliter.EMPTY.equals(styleArr[0])) {
             String[] detailArr = styleArr[0].split(ConfigSpliter.SPLITER);
@@ -219,21 +197,25 @@ public class StageQuestionPreviewPreview extends PreviewPane<Stages> {
                 // 填充背景图片
                 if (!StringUtils.isEmpty(detailArr[6])) {
                     try {
-                        title.setBackground(new Background(new BackgroundImage(new Image(new FileInputStream(detailArr[6])),
+                        title.setBackground(new Background(new BackgroundImage(
+                                new Image(new FileInputStream(detailArr[6])),
                                 BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT, BackgroundPosition.DEFAULT,
                                 new BackgroundSize(
                                         ScreenAdapter.calculateMainX(Integer.parseInt(detailArr[2])),
                                         ScreenAdapter.calculateMainY(Integer.parseInt(detailArr[3])),
                                         false, false, false, false))));
                     } catch (FileNotFoundException e) {
-                        title.setBackground(new Background(new BackgroundFill(Color.TRANSPARENT, new CornerRadii(10), Insets.EMPTY)));
+                        title.setBackground(new Background(
+                                new BackgroundFill(Color.TRANSPARENT, new CornerRadii(10), Insets.EMPTY)));
                     }
                 } else {
-                    title.setBackground(new Background(new BackgroundFill(Color.TRANSPARENT, new CornerRadii(10), Insets.EMPTY)));
+                    title.setBackground(
+                            new Background(new BackgroundFill(Color.TRANSPARENT, new CornerRadii(10), Insets.EMPTY)));
                 }
             } else {
                 // 填充背景颜色
-                title.setBackground(new Background(new BackgroundFill(Color.valueOf(detailArr[5]), new CornerRadii(10), Insets.EMPTY)));
+                title.setBackground(new Background(
+                        new BackgroundFill(Color.valueOf(detailArr[5]), new CornerRadii(10), Insets.EMPTY)));
             }
 
             stageName.setLayoutX(ScreenAdapter.calculateMainX(Integer.parseInt(detailArr[0])));
@@ -265,8 +247,6 @@ public class StageQuestionPreviewPreview extends PreviewPane<Stages> {
 
         // 以后台配置为准
 
-       
-
         int col = 1;
         if (styleArr.length > 1 && !ConfigSpliter.EMPTY.equals(styleArr[1])) {
             String[] detailArr = styleArr[1].split(ConfigSpliter.SPLITER);
@@ -275,16 +255,12 @@ public class StageQuestionPreviewPreview extends PreviewPane<Stages> {
             }
         }
 
-
         layout.setHgap(ScreenAdapter.calculateMainX(20));
         layout.setVgap(ScreenAdapter.calculateMainY(20));
         if (cfgArr.length > 4) {
             layout.setLayoutX(ScreenAdapter.calculateMainX(Integer.parseInt(cfgArr[3])));
-            layout.setLayoutY(ScreenAdapter.calculateMainY(Integer.parseInt(cfgArr[4]))); 
+            layout.setLayoutY(ScreenAdapter.calculateMainY(Integer.parseInt(cfgArr[4])));
         }
-
-       
-
 
         Map<String, Object> dataMap = new HashMap<>();
         dataMap.put("stage", inner);
@@ -321,26 +297,29 @@ public class StageQuestionPreviewPreview extends PreviewPane<Stages> {
                 // 填充背景图片
                 if (!StringUtils.isEmpty(detailArr[6])) {
                     try {
-                        item.setBackground(new Background(new BackgroundImage(new Image(new FileInputStream(detailArr[6])),
+                        item.setBackground(new Background(new BackgroundImage(
+                                new Image(new FileInputStream(detailArr[6])),
                                 BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT, BackgroundPosition.DEFAULT,
                                 new BackgroundSize(
                                         ScreenAdapter.calculateMainX(Integer.parseInt(detailArr[2])),
                                         ScreenAdapter.calculateMainY(Integer.parseInt(detailArr[3])),
                                         false, false, false, false))));
                     } catch (FileNotFoundException e) {
-                        item.setBackground(new Background(new BackgroundFill(Color.TRANSPARENT, new CornerRadii(10), Insets.EMPTY)));
+                        item.setBackground(new Background(
+                                new BackgroundFill(Color.TRANSPARENT, new CornerRadii(10), Insets.EMPTY)));
                     }
                 } else {
-                    item.setBackground(new Background(new BackgroundFill(Color.TRANSPARENT, new CornerRadii(10), Insets.EMPTY)));
+                    item.setBackground(
+                            new Background(new BackgroundFill(Color.TRANSPARENT, new CornerRadii(10), Insets.EMPTY)));
                 }
             } else {
                 // 填充背景颜色
-                item.setBackground(new Background(new BackgroundFill(Color.valueOf(detailArr[5]), new CornerRadii(10), Insets.EMPTY)));
+                item.setBackground(new Background(
+                        new BackgroundFill(Color.valueOf(detailArr[5]), new CornerRadii(10), Insets.EMPTY)));
             }
 
-
             Font font = FontMap.load(detailArr[7], ScreenAdapter.calculateMainX(Integer.parseInt(detailArr[8])));
-            
+
             text.setFont(font);
             if (cfgArr.length > 0) {
                 text.setFill(Color.valueOf(cfgArr[0]));
@@ -367,42 +346,43 @@ public class StageQuestionPreviewPreview extends PreviewPane<Stages> {
                     }
                     // 给题目设置分值
                     // 扩展屏幕展示并排答题界面（竞技模式）
-//                    for (Questions q : CurrentQuestions.getQuestionList()) {
-//                        q.setScore(inner.getScorePerQ());
-//                    }
+                    // for (Questions q : CurrentQuestions.getQuestionList()) {
+                    // q.setScore(inner.getScorePerQ());
+                    // }
                     questions.setShowNumber(inner.getShowNumber());
                     if (inner.getQuestionType() == 7) {
                         Model7RuntimeData.setTeams(TeamRuntime.getTeams());
                         // 发送试题列表给前端
                         controlPane.setPreviewPane(
-                                Navigator.preview("/view/preview/Model7Preview.fxml", "", "/view/style.css", true, inner)
-                        );
+                                Navigator.preview("/view/preview/Model7Preview.fxml", "", "/view/style.css", true,
+                                        inner));
                         controlPane.updateScoreBoard();
 
-                        //messageHandler.sendQuestionGroup();
+                        // messageHandler.sendQuestionGroup();
                         // 扩展屏显示题目信息
                     } else if (inner.getQuestionType() == 6) {
                         // 重置当前的答题状态
                         TeamRuntime.resetStatus();
                         Integer m6 = inner.getM6();
                         String tihao = questions.getOrder().toString();
-//                        Questions questions = CurrentQuestions.getQ(tihao);
-//                        if (questions == null) {
-//                            Information.error("请选择题号");
-//                            return;
-//                        }
+                        // Questions questions = CurrentQuestions.getQ(tihao);
+                        // if (questions == null) {
+                        // Information.error("请选择题号");
+                        // return;
+                        // }
                         if (m6 == 0) {
                             // 答题模式 -- 团队模式
                             questions.setHasAnswer(true);
-                           // CurrentQuestions.recordAnswer(tihao);
+                            // CurrentQuestions.recordAnswer(tihao);
                             // 设置当前需要显示的题目
                             // 设置选手信息
                             Model60RuntimeData.setTeams(TeamRuntime.getTeams());
 
                             controlPane.setPreviewPane(
-                                    Navigator.preview("/view/preview/QuestionPreview.fxml", "", "/view/style.css", true, questions)
-                            );
-                            //controlPane.setPreviewPane(Navigator.preview("/view/preview/Model60.fxml", "", "/view/style.css", true, true));
+                                    Navigator.preview("/view/preview/QuestionPreview.fxml", "", "/view/style.css", true,
+                                            questions));
+                            // controlPane.setPreviewPane(Navigator.preview("/view/preview/Model60.fxml",
+                            // "", "/view/style.css", true, true));
                             controlPane.updateScoreBoard();
                             questionsMapper.updateById(questions);
                             Model60RuntimeData.setRuntimeData(questions);
@@ -415,9 +395,10 @@ public class StageQuestionPreviewPreview extends PreviewPane<Stages> {
                             // 设置选手信息
                             Model61RuntimeData.setTeams(TeamRuntime.getTeams());
                             controlPane.setPreviewPane(
-                                    Navigator.preview("/view/preview/QuestionPreview.fxml", "", "/view/style.css", true, questions)
-                            );
-                            // controlPane.setPreviewPane(Navigator.preview("/view/preview/Model61.fxml", "", "/view/style.css", true, true));
+                                    Navigator.preview("/view/preview/QuestionPreview.fxml", "", "/view/style.css", true,
+                                            questions));
+                            // controlPane.setPreviewPane(Navigator.preview("/view/preview/Model61.fxml",
+                            // "", "/view/style.css", true, true));
                             controlPane.updateScoreBoard();
                             questionsMapper.updateById(questions);
                             Model61RuntimeData.setRuntimeData(questions);
@@ -427,8 +408,8 @@ public class StageQuestionPreviewPreview extends PreviewPane<Stages> {
                         controlPane.selectQuestion(tihao);
                     } else {
                         String tihao = questions.getOrder().toString();
-//                        Questions questions = CurrentQuestions.getQ(tihao);
-//                        CurrentQuestions.recordAnswer(tihao);
+                        // Questions questions = CurrentQuestions.getQ(tihao);
+                        // CurrentQuestions.recordAnswer(tihao);
                         questions.setHasAnswer(true);
                         questionsMapper.updateById(questions);
                         // 设置当前需要显示的题目
@@ -438,13 +419,13 @@ public class StageQuestionPreviewPreview extends PreviewPane<Stages> {
                         if (questionType == 2 || questionType == 1 || questionType == 4) {
                             // 正常自选题
                             controlPane.setPreviewPane(
-                                    Navigator.preview("/view/preview/QuestionPreview.fxml", "", "/view/style.css", true, questions)
-                            );
+                                    Navigator.preview("/view/preview/QuestionPreview.fxml", "", "/view/style.css", true,
+                                            questions));
                         } else if (questionType == 5) {
                             // 线索题
                             controlPane.setPreviewPane(
-                                    Navigator.preview( "/view/preview/CluePreview.fxml", "", "/view/style.css", true, questions)
-                            );
+                                    Navigator.preview("/view/preview/CluePreview.fxml", "", "/view/style.css", true,
+                                            questions));
                         }
 
                         GlobalCache.showAnswer = false;

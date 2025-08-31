@@ -56,7 +56,7 @@ public class WsMessageHandler {
     // 题组主题
     public static final String QUESTION_GROUP_TOPIC = "/topic/question/group";
 
-    // model 7 开始答题  竞技模式
+    // model 7 开始答题 竞技模式
     public static final String MODEL_7_START_TOPIC = "/topic/model7/start";
 
     // model 61 开始答题 答题模式-个人
@@ -86,12 +86,11 @@ public class WsMessageHandler {
     private final AtomicBoolean dataChanged = new AtomicBoolean(false); // 数据变化标记
     private final AtomicBoolean uiUpdateActive = new AtomicBoolean(false); // UI更新是否激活
     private final ScheduledExecutorService uiUpdateScheduler = Executors.newSingleThreadScheduledExecutor(
-        r -> {
-            Thread t = new Thread(r, "ui-update-scheduler");
-            t.setDaemon(true);
-            return t;
-        }
-    ); // UI更新定时器
+            r -> {
+                Thread t = new Thread(r, "ui-update-scheduler");
+                t.setDaemon(true);
+                return t;
+            }); // UI更新定时器
     private volatile ScheduledFuture<?> uiUpdateTask; // UI更新任务引用
 
     @PostConstruct
@@ -107,7 +106,7 @@ public class WsMessageHandler {
     }
 
     @MessageMapping("/enter")
-    public void enter(byte[] msg, @Header("simpSessionId") String sessionId){
+    public void enter(byte[] msg, @Header("simpSessionId") String sessionId) {
         String jsonText = new String(msg, StandardCharsets.UTF_8);
         Map parse = JSON.parseObject(jsonText, Map.class);
         String team = parse.get("team").toString();
@@ -135,7 +134,7 @@ public class WsMessageHandler {
      */
     public void stopPeriodicUIUpdate() {
         if (uiUpdateActive.compareAndSet(true, false)) {
-           log.info("停止UI定时更新");
+            log.info("停止UI定时更新");
             if (uiUpdateTask != null && !uiUpdateTask.isCancelled()) {
                 uiUpdateTask.cancel(false);
                 uiUpdateTask = null;
@@ -167,12 +166,13 @@ public class WsMessageHandler {
      * 优化后的竞技模式提交处理
      */
     @MessageMapping("/model7/submit")
-    public void submitModel7(byte[] msg){
+    public void submitModel7(byte[] msg) {
         try {
             // 1. 快速解析数据
             String jsonText = new String(msg, StandardCharsets.UTF_8);
             Map parse = JSON.parseObject(jsonText, Map.class);
-            Model7RuntimeData.ModelData data = JSON.parseObject(parse.get("data").toString(), Model7RuntimeData.ModelData.class);
+            Model7RuntimeData.ModelData data = JSON.parseObject(parse.get("data").toString(),
+                    Model7RuntimeData.ModelData.class);
             String time = parse.get("time").toString();
             String teamName = data.getTeamName();
             String second = parse.get("second").toString();
@@ -182,7 +182,7 @@ public class WsMessageHandler {
 
             // 3. 检查是否所有团队都完成了答题
             if (isAllTeamsFinished()) {
-               log.info("所有团队答题完成，停止UI定时更新");
+                log.info("所有团队答题完成，停止UI定时更新");
                 stopPeriodicUIUpdate();
             }
 
@@ -195,7 +195,8 @@ public class WsMessageHandler {
     /**
      * 线程安全的团队数据更新
      */
-    private boolean updateTeamDataSafely(String teamName, Model7RuntimeData.ModelData data, String time, String second) {
+    private boolean updateTeamDataSafely(String teamName, Model7RuntimeData.ModelData data, String time,
+            String second) {
         synchronized (dataLock) {
             try {
                 Integer teamIndex = getTeamIndexFromCache(teamName);
@@ -283,10 +284,11 @@ public class WsMessageHandler {
 
     // 个人答题模式提交触发
     @MessageMapping("/model61/submit")
-    public void submitModel61(byte[] msg){
+    public void submitModel61(byte[] msg) {
         String jsonText = new String(msg, StandardCharsets.UTF_8);
         Map parse = JSON.parseObject(jsonText, Map.class);
-        Model61RuntimeData.ModelData data = JSON.parseObject(parse.get("data").toString(), Model61RuntimeData.ModelData.class);
+        Model61RuntimeData.ModelData data = JSON.parseObject(parse.get("data").toString(),
+                Model61RuntimeData.ModelData.class);
         Model61RuntimeData.setRuntimeData(data);
 
         notifyPage("", null);
@@ -303,10 +305,11 @@ public class WsMessageHandler {
     }
 
     @MessageMapping("/model60/submit")
-    public void submitModel60(byte[] msg){
+    public void submitModel60(byte[] msg) {
         String jsonText = new String(msg, StandardCharsets.UTF_8);
         Map parse = JSON.parseObject(jsonText, Map.class);
-        Model60RuntimeData.ModelData data = JSON.parseObject(parse.get("data").toString(), Model60RuntimeData.ModelData.class);
+        Model60RuntimeData.ModelData data = JSON.parseObject(parse.get("data").toString(),
+                Model60RuntimeData.ModelData.class);
         Model60RuntimeData.setRuntimeData(data);
         notifyPage("", null);
         Platform.runLater(() -> {
@@ -320,7 +323,7 @@ public class WsMessageHandler {
         });
     }
 
-    public void notifyPageWithStage(String route, Object data, Stages stages){
+    public void notifyPageWithStage(String route, Object data, Stages stages) {
         ControlPane controlPane = getCachedControlPane();
         Map<String, Object> dataMap = new HashMap<>();
         dataMap.put("route", route);
@@ -331,7 +334,7 @@ public class WsMessageHandler {
         messagingTemplate.convertAndSend(PAGE_TOPIC, JSON.toJSONString(dataMap));
     }
 
-    public void notifyPage(String route, Object data){
+    public void notifyPage(String route, Object data) {
         ControlPane controlPane = getCachedControlPane();
         Map<String, Object> dataMap = new HashMap<>();
         dataMap.put("route", route);
@@ -339,12 +342,13 @@ public class WsMessageHandler {
         dataMap.put("buzzStatus", RuntimeUtil.showBuzzBar);
         dataMap.put("teams", TeamRuntime.getTeams());
         dataMap.put("stage", controlPane != null ? controlPane.getCurrentStage() : null);
-        log.info(controlPane != null && controlPane.getCurrentStage() != null ? controlPane.getCurrentStage().getName() : null);
+        log.info(controlPane != null && controlPane.getCurrentStage() != null ? controlPane.getCurrentStage().getName()
+                : null);
         messagingTemplate.convertAndSend(PAGE_TOPIC, JSON.toJSONString(dataMap));
     }
 
     // 强制结束
-    public void model7Finish(){
+    public void model7Finish() {
         log.info("强制结束答题，停止UI定时更新");
         stopPeriodicUIUpdate(); // 强制结束时也要停止定时器
 
@@ -354,7 +358,7 @@ public class WsMessageHandler {
     }
 
     // 竞技模式时间同步
-    public void sendModel7Time(String time){
+    public void sendModel7Time(String time) {
         Map<String, String> dataMap = new HashMap<>();
         dataMap.put("type", "time");
         dataMap.put("data", time);
@@ -393,19 +397,19 @@ public class WsMessageHandler {
     public void sendQuestionGroup(List<Questions> questionsList, boolean random) {
         Map<String, Object> dataMap = new HashMap<>();
         dataMap.put("type", "G");
-//        dataMap.put("data", questionsList);
-//        dataMap.put("random", random);
+        // dataMap.put("data", questionsList);
+        // dataMap.put("random", random);
         messagingTemplate.convertAndSend(QUESTION_GROUP_TOPIC, JSON.toJSONString(dataMap));
     }
 
-    public void notifyEnterWait(String type){
+    public void notifyEnterWait(String type) {
         Map<String, String> data = new HashMap<>();
         data.put("event", "enter");
         data.put("type", type);
         messagingTemplate.convertAndSend(ENTER_TOPIC, JSON.toJSONString(data));
     }
 
-    public void notifyExit(){
+    public void notifyExit() {
         Map<String, String> data = new HashMap<>();
         data.put("event", "wait");
         messagingTemplate.convertAndSend(ENTER_WAIT_TOPIC, JSON.toJSONString(data));

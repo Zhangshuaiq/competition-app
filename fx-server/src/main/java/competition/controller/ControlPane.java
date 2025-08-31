@@ -50,6 +50,7 @@ import javafx.scene.shape.Circle;
 import javafx.stage.Stage;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
+
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
@@ -69,7 +70,6 @@ public class ControlPane {
     private VideoPlayer videoPlayer;
 
     // 倒计时提示音控制, 默认 5 秒
-
 
     @FXML
     private Circle hardwareStatus;
@@ -113,10 +113,8 @@ public class ControlPane {
     @FXML
     private Button startAnswerBtn;
 
-
     @FXML
     private AnchorPane stageName;
-
 
     @FXML
     private Label stageText;
@@ -136,7 +134,6 @@ public class ControlPane {
     @FXML
     private Button timingBtn, controlBtn;
 
-
     // 时间输入
     @FXML
     public TextField timeSecondText;
@@ -148,7 +145,6 @@ public class ControlPane {
     // 资源显示按钮
     @FXML
     private Button showResourceBtn;
-
 
     @Resource
     private StagesMapper stagesMapper;
@@ -167,7 +163,6 @@ public class ControlPane {
 
     private Stages currentStage, controlStage;
 
-
     // 外接显示屏展示题目
     private ReloadPane questionPreview;
 
@@ -183,7 +178,6 @@ public class ControlPane {
     // 外屏幕端抢答计时器
     private ReloadPane buzzTimeBoard;
 
-
     // 抢答结果面板
     private ReloadPane buzzResultPreview;
 
@@ -196,7 +190,7 @@ public class ControlPane {
     // 外屏幕端计时器
     private ReloadPane timeBoard;
 
-    //private ReloadPane modelBoard;
+    // private ReloadPane modelBoard;
 
     // 计分控制
     @FXML
@@ -226,8 +220,7 @@ public class ControlPane {
     @Resource
     private Model7StatusMapper model7StatusMapper;
 
-
-    private void loadConnectionStatsBar(){
+    private void loadConnectionStatsBar() {
         Configs configs = configsMapper.selectById(12);
         String config = configs.getConfig();
         RuntimeUtil.showConnectionStatus = (Objects.equals("1", config));
@@ -235,7 +228,6 @@ public class ControlPane {
             Navigator.connectionBar("/view/board/preview/TeamConnectionBar.fxml", "", "/view/style.css", true);
         }
     }
-
 
     @FXML
     public void lastTeam() {
@@ -293,7 +285,6 @@ public class ControlPane {
 
     }
 
-
     @FXML
     public void lastMember() {
         int selectedIndex = teamComBox.getSelectionModel().getSelectedIndex();
@@ -317,7 +308,6 @@ public class ControlPane {
         }
     }
 
-
     @FXML
     public void nextMember() {
         int selectedIndex = teamComBox.getSelectionModel().getSelectedIndex();
@@ -340,7 +330,6 @@ public class ControlPane {
             memberScore.setText("0");
         }
     }
-
 
     @FXML
     public void clickVis() {
@@ -366,20 +355,19 @@ public class ControlPane {
         }
     }
 
-    private boolean enterModelQuestionPage(){
+    private boolean enterModelQuestionPage() {
         return previewPane != null &&
-                ((previewPane instanceof QuestionPreviewPreview && (currentStage.getQuestionType() == 7 || currentStage.getQuestionType() == 6))
+                ((previewPane instanceof QuestionPreviewPreview
+                        && (currentStage.getQuestionType() == 7 || currentStage.getQuestionType() == 6))
                         || (previewPane instanceof CluePreviewPreview)
-                        || (previewPane instanceof Model7Preview)
-                );
+                        || (previewPane instanceof Model7Preview));
     }
 
-    private boolean enterQuestionPage(){
+    private boolean enterQuestionPage() {
         return previewPane != null &&
                 ((previewPane instanceof QuestionPreviewPreview)
                         || (previewPane instanceof CluePreviewPreview)
-                        || (previewPane instanceof Model7Preview)
-                );
+                        || (previewPane instanceof Model7Preview));
     }
 
     @FXML
@@ -406,12 +394,13 @@ public class ControlPane {
             if (scoreBoardPreview != null) {
                 if (previewPane instanceof RankPane) {
                     scoreBoardPreview.close();
-                }   else {
+                } else {
                     scoreBoardPreview.shows();
                 }
             }
 
-            if (currentStage != null && (currentStage.getQuestionType() == 3 || currentStage.getQuestionType() == 4) && previewPane instanceof  QuestionPreviewPreview) {
+            if (currentStage != null && (currentStage.getQuestionType() == 3 || currentStage.getQuestionType() == 4)
+                    && previewPane instanceof QuestionPreviewPreview) {
                 lastQBtn.setDisable(true);
                 nextQBtn.setDisable(true);
             } else {
@@ -690,7 +679,6 @@ public class ControlPane {
             }
         });
 
-
         if (timeVisibleBtn.getText().equals("不消失")) {
             timeVisibleBtn.setTextFill(Color.WHITE);
             timeVisibleBtn.setStyle("-fx-background-color: #01a25a");
@@ -796,23 +784,20 @@ public class ControlPane {
         showScoreBoard();
         loadConnectionStatsBar();
 
-
     }
 
     private void showStage() {
         final List<Stages> stages = stagesMapper.selectList(new LambdaQueryWrapper<Stages>()
                 .isNull(Stages::getParentId)
-                .orderByAsc(Stages::getSortVal)
-        );
+                .orderByAsc(Stages::getSortVal));
         stages.sort((o1, o2) -> (int) (Double.parseDouble(o1.getSortVal()) - Double.parseDouble(o2.getSortVal())));
         showStageData(stages, stageList);
         showTopStage();
     }
 
-
     // 抢答复位
     @FXML
-    public void buzzReset(){
+    public void buzzReset() {
         RuntimeUtil.showBuzzBar = false;
         if (buzzTimeBoardPreview != null) {
             buzzTimeBoardPreview.close();
@@ -863,7 +848,7 @@ public class ControlPane {
                 buzzBtn.setStyle("-fx-background-color: #01a25a");
                 if (!mode.equals("直接抢答")) {
                     // 倒计时
-                    startBuzz(timeLimit, true,3);
+                    startBuzz(timeLimit, true, 3);
                 } else {
                     RuntimeUtil.buzzCalculate = System.nanoTime();
                     startBuzz(timeLimit, true, 0);
@@ -905,18 +890,17 @@ public class ControlPane {
                         if (currentStage.getRandomSort() == 1) {
                             questions = questionsMapper.selectOne(new LambdaQueryWrapper<Questions>()
                                     .eq(Questions::getViewSort, Integer.parseInt(questionCombox.getValue()))
-                                    .eq(Questions::getStageNumber, currentStage.getSortVal())
-                            );
+                                    .eq(Questions::getStageNumber, currentStage.getSortVal()));
 
                         } else {
                             questions = questionsMapper.selectOne(new LambdaQueryWrapper<Questions>()
                                     .eq(Questions::getQuestionNumber, Integer.parseInt(questionCombox.getValue()))
-                                    .eq(Questions::getStageNumber, currentStage.getSortVal())
-                            );
+                                    .eq(Questions::getStageNumber, currentStage.getSortVal()));
 
                         }
                         if (questions == null) {
-                            scoreService.addScore(null, teamList, currentStage.getName(), null, null, Integer.parseInt(text),
+                            scoreService.addScore(null, teamList, currentStage.getName(), null, null,
+                                    Integer.parseInt(text),
                                     teamList.getTeamScore().toString(), "");
                         } else {
                             if (currentStage.getRandomSort() == 1) {
@@ -924,7 +908,8 @@ public class ControlPane {
                             } else {
                                 questions.setOrder(questions.getQuestionNumber());
                             }
-                            scoreService.addScore(null, teamList, currentStage.getName(), questions.getQuestionNumber().toString(),
+                            scoreService.addScore(null, teamList, currentStage.getName(),
+                                    questions.getQuestionNumber().toString(),
                                     null, Integer.parseInt(text), teamList.getTeamScore().toString(), "");
                         }
                     } else {
@@ -941,7 +926,6 @@ public class ControlPane {
         int selectedIndex = teamComBox.getSelectionModel().getSelectedIndex();
         if (selectedIndex >= 0) {
             Teams teams = TeamRuntime.getTeams().get(selectedIndex);
-
 
             // 添加个人分数
             String selectedIndex1 = memberComBox.getValue();
@@ -960,18 +944,16 @@ public class ControlPane {
                     if (currentStage.getRandomSort() == 1) {
                         questions = questionsMapper.selectOne(new LambdaQueryWrapper<Questions>()
                                 .eq(Questions::getViewSort, Integer.parseInt(questionCombox.getValue()))
-                                .eq(Questions::getStageNumber, currentStage.getSortVal())
-                        );
+                                .eq(Questions::getStageNumber, currentStage.getSortVal()));
                     } else {
                         questions = questionsMapper.selectOne(new LambdaQueryWrapper<Questions>()
                                 .eq(Questions::getQuestionNumber, Integer.parseInt(questionCombox.getValue()))
-                                .eq(Questions::getStageNumber, currentStage.getSortVal())
-                        );
+                                .eq(Questions::getStageNumber, currentStage.getSortVal()));
                     }
 
-
                     if (questions == null) {
-                        scoreService.addScore(memberComBox.getValue(), teams, currentStage.getName(), null, null, Integer.parseInt(text),
+                        scoreService.addScore(memberComBox.getValue(), teams, currentStage.getName(), null, null,
+                                Integer.parseInt(text),
                                 jsonObject.getIntValue(member) + "", "");
                     } else {
                         if (currentStage.getRandomSort() == 1) {
@@ -979,7 +961,8 @@ public class ControlPane {
                         } else {
                             questions.setOrder(questions.getQuestionNumber());
                         }
-                        scoreService.addScore(memberComBox.getValue(), teams, currentStage.getName(), questions.getQuestionNumber().toString(),
+                        scoreService.addScore(memberComBox.getValue(), teams, currentStage.getName(),
+                                questions.getQuestionNumber().toString(),
                                 null, Integer.parseInt(text), jsonObject.getIntValue(member) + "", "");
                     }
                 } else {
@@ -1001,13 +984,11 @@ public class ControlPane {
                         if (currentStage.getRandomSort() == 1) {
                             questions = questionsMapper.selectOne(new LambdaQueryWrapper<Questions>()
                                     .eq(Questions::getViewSort, Integer.parseInt(questionCombox.getValue()))
-                                    .eq(Questions::getStageNumber, currentStage.getSortVal())
-                            );
+                                    .eq(Questions::getStageNumber, currentStage.getSortVal()));
                         } else {
                             questions = questionsMapper.selectOne(new LambdaQueryWrapper<Questions>()
                                     .eq(Questions::getQuestionNumber, Integer.parseInt(questionCombox.getValue()))
-                                    .eq(Questions::getStageNumber, currentStage.getSortVal())
-                            );
+                                    .eq(Questions::getStageNumber, currentStage.getSortVal()));
                         }
                     }
 
@@ -1020,7 +1001,8 @@ public class ControlPane {
                         } else {
                             questions.setOrder(questions.getQuestionNumber());
                         }
-                        scoreService.addScore(null, teams, currentStage.getName(), questions.getQuestionNumber().toString(),
+                        scoreService.addScore(null, teams, currentStage.getName(),
+                                questions.getQuestionNumber().toString(),
                                 null, Integer.parseInt(text), teams.getTeamScore().toString(), "");
                     }
                 } else {
@@ -1035,7 +1017,8 @@ public class ControlPane {
             scoreBoardPreview.reload();
         }
         if (previewPane != null
-                && (previewPane instanceof MemberRankPreview || previewPane instanceof TeamRankPreview || previewPane instanceof BuzzRankPreview)) {
+                && (previewPane instanceof MemberRankPreview || previewPane instanceof TeamRankPreview
+                        || previewPane instanceof BuzzRankPreview)) {
             previewPane.reload();
         }
 
@@ -1076,13 +1059,11 @@ public class ControlPane {
                         if (currentStage.getRandomSort() == 1) {
                             questions = questionsMapper.selectOne(new LambdaQueryWrapper<Questions>()
                                     .eq(Questions::getViewSort, Integer.parseInt(questionCombox.getValue()))
-                                    .eq(Questions::getStageNumber, currentStage.getSortVal())
-                            );
+                                    .eq(Questions::getStageNumber, currentStage.getSortVal()));
                         } else {
                             questions = questionsMapper.selectOne(new LambdaQueryWrapper<Questions>()
                                     .eq(Questions::getQuestionNumber, Integer.parseInt(questionCombox.getValue()))
-                                    .eq(Questions::getStageNumber, currentStage.getSortVal())
-                            );
+                                    .eq(Questions::getStageNumber, currentStage.getSortVal()));
                         }
                         if (questions == null) {
                             scoreService.addScore(null, teamList, currentStage.getName(), null,
@@ -1093,7 +1074,8 @@ public class ControlPane {
                             } else {
                                 questions.setOrder(questions.getQuestionNumber());
                             }
-                            scoreService.addScore(null, teamList, currentStage.getName(), questions.getQuestionNumber().toString(),
+                            scoreService.addScore(null, teamList, currentStage.getName(),
+                                    questions.getQuestionNumber().toString(),
                                     null, -Integer.parseInt(text), teamList.getTeamScore().toString(), "");
                         }
                     } else {
@@ -1104,12 +1086,10 @@ public class ControlPane {
             }
         }
 
-
         // 减少团队分数
         int selectedIndex = teamComBox.getSelectionModel().getSelectedIndex();
         if (selectedIndex >= 0) {
             Teams teams = TeamRuntime.getTeams().get(selectedIndex);
-
 
             // 减少个人分数
             String selectedIndex1 = memberComBox.getValue();
@@ -1126,23 +1106,22 @@ public class ControlPane {
                     Questions questions;
                     if (currentStage.getRandomSort() == 1) {
                         questions = questionsMapper.selectOne(new LambdaQueryWrapper<Questions>()
-                                .eq(Questions::getViewSort, Integer.parseInt(questionCombox.getValue()) )
-                                .eq(Questions::getStageNumber, currentStage.getSortVal())
-                        );
+                                .eq(Questions::getViewSort, Integer.parseInt(questionCombox.getValue()))
+                                .eq(Questions::getStageNumber, currentStage.getSortVal()));
                     } else {
                         questions = questionsMapper.selectOne(new LambdaQueryWrapper<Questions>()
                                 .eq(Questions::getQuestionNumber, Integer.parseInt(questionCombox.getValue()))
-                                .eq(Questions::getStageNumber, currentStage.getSortVal())
-                        );
+                                .eq(Questions::getStageNumber, currentStage.getSortVal()));
                     }
 
                     if (questions == null) {
                         scoreService.addScore(memberComBox.getValue(), teams, currentStage.getName(), null,
                                 null, -Integer.parseInt(text), memItemScore + "", "");
                     } else {
-                        questions.setOrder(Integer.parseInt(questionCombox.getValue()) );
+                        questions.setOrder(Integer.parseInt(questionCombox.getValue()));
                         scoreService.addScore(memberComBox.getValue(), teams, currentStage.getName(),
-                                questions.getQuestionNumber().toString(), null, -Integer.parseInt(text), memItemScore + "", "");
+                                questions.getQuestionNumber().toString(), null, -Integer.parseInt(text),
+                                memItemScore + "", "");
                     }
                 } else {
                     scoreService.addScore(memberComBox.getValue(), teams, null, null, null,
@@ -1163,20 +1142,19 @@ public class ControlPane {
                     if (currentStage.getRandomSort() == 1) {
                         questions = questionsMapper.selectOne(new LambdaQueryWrapper<Questions>()
                                 .eq(Questions::getViewSort, Integer.parseInt(questionCombox.getValue()))
-                                .eq(Questions::getStageNumber, currentStage.getSortVal())
-                        );
+                                .eq(Questions::getStageNumber, currentStage.getSortVal()));
                     } else {
                         questions = questionsMapper.selectOne(new LambdaQueryWrapper<Questions>()
                                 .eq(Questions::getQuestionNumber, Integer.parseInt(questionCombox.getValue()))
-                                .eq(Questions::getStageNumber, currentStage.getSortVal())
-                        );
+                                .eq(Questions::getStageNumber, currentStage.getSortVal()));
                     }
                     if (questions == null) {
                         scoreService.addScore(null, teams, currentStage.getName(), null,
                                 null, -Integer.parseInt(text), teams.getTeamScore().toString(), "");
                     } else {
-                        questions.setOrder(Integer.parseInt(questionCombox.getValue()) );
-                        scoreService.addScore(null, teams, currentStage.getName(), questions.getQuestionNumber().toString(),
+                        questions.setOrder(Integer.parseInt(questionCombox.getValue()));
+                        scoreService.addScore(null, teams, currentStage.getName(),
+                                questions.getQuestionNumber().toString(),
                                 null, -Integer.parseInt(text), teams.getTeamScore().toString(), "");
                     }
                 } else {
@@ -1187,7 +1165,6 @@ public class ControlPane {
 
             teamScore.setText(teams.getTeamScore().toString());
 
-
         }
         if (scoreBoardPreview != null) {
             scoreBoardPreview.getSelected().clear();
@@ -1195,7 +1172,8 @@ public class ControlPane {
         }
 
         if (previewPane != null
-                && (previewPane instanceof MemberRankPreview || previewPane instanceof TeamRankPreview || previewPane instanceof BuzzRankPreview)) {
+                && (previewPane instanceof MemberRankPreview || previewPane instanceof TeamRankPreview
+                        || previewPane instanceof BuzzRankPreview)) {
             previewPane.reload();
         }
 
@@ -1212,12 +1190,10 @@ public class ControlPane {
         stageChildList.setVisible(false);
     }
 
-
     @FXML
     public void clickName() {
         showChildList();
     }
-
 
     @FXML
     public void startAnswerQuestion() {
@@ -1232,8 +1208,8 @@ public class ControlPane {
                     // 发送试题列表给前端
                     boolean random = currentStage.getrRandomSort() == 1;
                     List<Questions> questions = questionsMapper.selectList(
-                            new LambdaQueryWrapper<Questions>().eq(Questions::getStageNumber, currentStage.getSortVal())
-                    );
+                            new LambdaQueryWrapper<Questions>().eq(Questions::getStageNumber,
+                                    currentStage.getSortVal()));
 
                     Configs configs = configsMapper.selectById(1);
                     String cfgVal = configs.getConfig();
@@ -1251,8 +1227,7 @@ public class ControlPane {
                     }
                     messageHandler.sendQuestionGroup(
                             questions,
-                            random
-                    );
+                            random);
 
                     // sleep 1 second
                     try {
@@ -1291,7 +1266,7 @@ public class ControlPane {
                 } else if (currentStage.getQuestionType() == 6) {
                     if (currentStage.getM6() == 1) {
                         Model61RuntimeData.forceFinish();
-                        //  showAnswer();
+                        // showAnswer();
                     } else {
                         Model60RuntimeData.forceFinish();
                     }
@@ -1321,7 +1296,7 @@ public class ControlPane {
         } else if (currentStage.getQuestionType() == 6) {
             if (currentStage.getM6() == 1) {
                 Model61RuntimeData.forceFinish();
-                //showAnswer();
+                // showAnswer();
             } else {
                 Model60RuntimeData.forceFinish();
             }
@@ -1332,7 +1307,6 @@ public class ControlPane {
         lastQBtn.setDisable(false);
         nextQBtn.setDisable(false);
     }
-
 
     @FXML
     public void timingControl() {
@@ -1351,7 +1325,7 @@ public class ControlPane {
     }
 
     @FXML
-    public void startTiming(){
+    public void startTiming() {
         buzzReset();
         parentPane.requestFocus();
         String text = timeSecondText.getText();
@@ -1364,7 +1338,8 @@ public class ControlPane {
             timeBoardPreview = null;
         }
         if (timeBoardPreview == null) {
-            timeBoardPreview = (ReloadPane) Navigator.timeWithPos("/view/board/preview/TimeBoard.fxml", "", "/view/style.css", true);
+            timeBoardPreview = (ReloadPane) Navigator.timeWithPos("/view/board/preview/TimeBoard.fxml", "",
+                    "/view/style.css", true);
         }
 
         if (timeBoardPreview != null) {
@@ -1392,9 +1367,10 @@ public class ControlPane {
         });
     }
 
-    public void startBuzz(int passTime, boolean buzzBefore, int buzzTime){
+    public void startBuzz(int passTime, boolean buzzBefore, int buzzTime) {
         parentPane.requestFocus();
-        buzzTimeBoardPreview = (ReloadPane) Navigator.buzzTimeWithPos("/view/board/preview/BuzzTimeBoard.fxml", "", "/view/style.css", true);
+        buzzTimeBoardPreview = (ReloadPane) Navigator.buzzTimeWithPos("/view/board/preview/BuzzTimeBoard.fxml", "",
+                "/view/style.css", true);
         if (buzzBefore) {
             if (buzzTime > 0) {
                 buzzTimeBoardPreview.startBuzz(buzzTime, passTime);
@@ -1405,10 +1381,6 @@ public class ControlPane {
         }
     }
 
-
-
-
-
     @FXML
     public void showResource() {
         String tihao = questionCombox.getValue();
@@ -1417,15 +1389,13 @@ public class ControlPane {
         if (currentStage.getRandomSort() == 1) {
             questions = questionsMapper.selectOne(new LambdaQueryWrapper<Questions>()
                     .eq(Questions::getViewSort, Integer.parseInt(tihao))
-                    .eq(Questions::getStageNumber, currentStage.getSortVal())
-            );
+                    .eq(Questions::getStageNumber, currentStage.getSortVal()));
         } else {
             questions = questionsMapper.selectOne(new LambdaQueryWrapper<Questions>()
                     .eq(Questions::getQuestionNumber, Integer.parseInt(tihao))
-                    .eq(Questions::getStageNumber, currentStage.getSortVal())
-            );
+                    .eq(Questions::getStageNumber, currentStage.getSortVal()));
         }
-        questions.setOrder(Integer.parseInt(tihao) );
+        questions.setOrder(Integer.parseInt(tihao));
         if (questions.getResourceType().equals("视频")) {
             String path = BaseDir.TIKU_RES_DIR + questions.getResource();
             if (!GlobalCache.videoPlay) {
@@ -1471,7 +1441,6 @@ public class ControlPane {
             return;
         }
 
-
         if (previewPane instanceof ShowAnswerPreview) {
             GlobalCache.showAnswer = false;
             returnLast();
@@ -1493,25 +1462,29 @@ public class ControlPane {
             // 判断当前环节的出题类型
             if (stages.getQuestionType() == 2) {
                 // 自选题目
-                previewPane = Navigator.preview("/view/preview/StageQuestionPreview.fxml", "", "/view/style.css", true, stages);
+                previewPane = Navigator.preview("/view/preview/StageQuestionPreview.fxml", "", "/view/style.css", true,
+                        stages);
             } else if (stages.getQuestionType() == 4) {
                 // 滚动选题
                 previewPane = Navigator.preview("/view/preview/RollPreview.fxml", "", "/view/style.css", true, stages);
             } else if (stages.getQuestionType() == 3) {
                 // 风险题
                 List<Stages> queryList = stagesMapper.selectList(new LambdaQueryWrapper<Stages>()
-                        .eq(Stages::getParentId, currentStage.getId())
-                );
+                        .eq(Stages::getParentId, currentStage.getId()));
                 if (queryList.isEmpty()) {
-                    previewPane = Navigator.preview("/view/preview/Model3Preview.fxml", "", "/view/style.css", true, currentStage.getParentId());
+                    previewPane = Navigator.preview("/view/preview/Model3Preview.fxml", "", "/view/style.css", true,
+                            currentStage.getParentId());
                 } else {
-                    previewPane = Navigator.preview("/view/preview/Model3Preview.fxml", "", "/view/style.css", true, currentStage.getId());
+                    previewPane = Navigator.preview("/view/preview/Model3Preview.fxml", "", "/view/style.css", true,
+                            currentStage.getId());
                 }
             } else if (stages.getQuestionType() == 6) {
                 // 答题模式
-                previewPane = Navigator.preview("/view/preview/StageQuestionPreview.fxml", "", "/view/style.css", true, stages);
+                previewPane = Navigator.preview("/view/preview/StageQuestionPreview.fxml", "", "/view/style.css", true,
+                        stages);
             } else if (stages.getQuestionType() == 1) {
-                previewPane = Navigator.preview("/view/preview/StageNamePreview.fxml", "", "/view/style.css", true, stages.getId());
+                previewPane = Navigator.preview("/view/preview/StageNamePreview.fxml", "", "/view/style.css", true,
+                        stages.getId());
             }
 
         } else if (last instanceof Model7Preview) {
@@ -1522,33 +1495,37 @@ public class ControlPane {
                 startAnswerQuestion();
             }
             Stages stages = stagesMapper.selectById(model7Preview.getData().getId());
-            previewPane = Navigator.preview("/view/preview/StageNamePreview.fxml", "", "/view/style.css", true, stages.getId());
+            previewPane = Navigator.preview("/view/preview/StageNamePreview.fxml", "", "/view/style.css", true,
+                    stages.getId());
         } else if (last instanceof Model3Preview) {
             GlobalCache.showAnswer = false;
             // 风险题返回名称
-            previewPane = Navigator.preview("/view/preview/StageNamePreview.fxml", "", "/view/style.css", true, previewPane.getData());
+            previewPane = Navigator.preview("/view/preview/StageNamePreview.fxml", "", "/view/style.css", true,
+                    previewPane.getData());
         } else if (last instanceof CluePreviewPreview) {
             GlobalCache.showAnswer = false;
             // 答题 返回 选题界面
             CluePreviewPreview x = (CluePreviewPreview) previewPane;
             Questions q = x.getData();
             Stages stages = stagesMapper.selectOne(new LambdaQueryWrapper<Stages>()
-                    .eq(Stages::getSortVal, q.getStageNumber())
-            );
-            // 默认为 5 
-            previewPane = Navigator.preview("/view/preview/StageQuestionPreview.fxml", "", "/view/style.css", true, stages);
+                    .eq(Stages::getSortVal, q.getStageNumber()));
+            // 默认为 5
+            previewPane = Navigator.preview("/view/preview/StageQuestionPreview.fxml", "", "/view/style.css", true,
+                    stages);
 
         } else if (last instanceof StageQuestionPreviewPreview) {
             GlobalCache.showAnswer = false;
             // 选题界面 返回 环节名称
             StageQuestionPreviewPreview x = (StageQuestionPreviewPreview) previewPane;
-            previewPane = Navigator.preview("/view/preview/StageNamePreview.fxml", "", "/view/style.css", true, x.getData().getId());
+            previewPane = Navigator.preview("/view/preview/StageNamePreview.fxml", "", "/view/style.css", true,
+                    x.getData().getId());
         } else if (last instanceof RollPreviewPreview) {
             GlobalCache.showAnswer = false;
             // 选题界面 返回 环节名称
             RollPreviewPreview x = (RollPreviewPreview) previewPane;
             x.stopSelector();
-            previewPane = Navigator.preview("/view/preview/StageNamePreview.fxml", "", "/view/style.css", true, x.getData().getId());
+            previewPane = Navigator.preview("/view/preview/StageNamePreview.fxml", "", "/view/style.css", true,
+                    x.getData().getId());
         } else if (last instanceof StageNamePreviewPreview) {
             GlobalCache.showAnswer = false;
             if (previewPane instanceof StagePreviewPreview) {
@@ -1562,7 +1539,8 @@ public class ControlPane {
                 currentStage = null;
                 previewPane = Navigator.preview("/view/preview/StagePreview.fxml", "", "/view/style.css", true, null);
             } else {
-                previewPane = Navigator.preview("/view/preview/StagePreview.fxml", "", "/view/style.css", true, currentStage.getParentId());
+                previewPane = Navigator.preview("/view/preview/StagePreview.fxml", "", "/view/style.css", true,
+                        currentStage.getParentId());
             }
         } else if (last instanceof StagePreviewPreview) {
             GlobalCache.showAnswer = false;
@@ -1572,24 +1550,24 @@ public class ControlPane {
                 // 已经到了最上一层
                 currentStage = null;
             } else {
-                previewPane = Navigator.preview("/view/preview/StageNamePreview.fxml", "", "/view/style.css", true, x.getData());
+                previewPane = Navigator.preview("/view/preview/StageNamePreview.fxml", "", "/view/style.css", true,
+                        x.getData());
             }
         }
-//        PreviewPane p = PreviewStack.removePreview();
-//        if (p != null) {
-//            if (previewPane == p) {
-//                p = PreviewStack.removePreview();
-//            }
-//            if (p != null) {
-//                previewPane = p;
-//                PreviewStack.addPreview(p);
-//                Navigator.previewStage.setScene(previewPane.getScene());
-//            }
-//        }
+        // PreviewPane p = PreviewStack.removePreview();
+        // if (p != null) {
+        // if (previewPane == p) {
+        // p = PreviewStack.removePreview();
+        // }
+        // if (p != null) {
+        // previewPane = p;
+        // PreviewStack.addPreview(p);
+        // Navigator.previewStage.setScene(previewPane.getScene());
+        // }
+        // }
         GlobalCache.showAnswer = false;
         updateScoreBoard();
     }
-
 
     // 选择面板所有队伍
     @FXML
@@ -1598,7 +1576,6 @@ public class ControlPane {
             scoreBoardPreview.selectAll(teamSelector.isSelected());
         }
     }
-
 
     // 竞技排行
     @FXML
@@ -1610,7 +1587,8 @@ public class ControlPane {
         if (currentStage.getQuestionType() == 7 || currentStage.getQuestionType() == 6) {
             // 竞技答题排名(整体排名)
             if (!GlobalCache.showModel7Rank) {
-                previewPane = Navigator.preview("/view/preview/Model7RankPreview.fxml", "", "/view/style.css", true, true);
+                previewPane = Navigator.preview("/view/preview/Model7RankPreview.fxml", "", "/view/style.css", true,
+                        true);
                 GlobalCache.showModel7Rank = true;
             } else {
                 returnLast();
@@ -1631,7 +1609,6 @@ public class ControlPane {
         }
     }
 
-
     /**
      * 团队排名
      */
@@ -1647,7 +1624,7 @@ public class ControlPane {
     }
 
     @FXML
-    public void buzzRank(){
+    public void buzzRank() {
         if (!GlobalCache.showBuzzRank) {
             previewPane = Navigator.preview("/view/preview/BuzzRank.fxml", "", "/view/style.css", true, true);
             GlobalCache.showBuzzRank = true;
@@ -1657,9 +1634,8 @@ public class ControlPane {
         }
     }
 
-
     // 由于时间到了导致没有抢答完成的分情况
-    public void resetBuzzTime(){
+    public void resetBuzzTime() {
         Buzz buzz = buzzMapper.selectById(1);
 
         String mode = buzz.getMode();
@@ -1683,7 +1659,8 @@ public class ControlPane {
             // 无人抢答
             if (teams.isEmpty()) {
                 stopBuzz(null, new ArrayList<>(), false, false, false);
-                MusicPlayer.playWithCallback(MusicResource.BUZZ_STOP, () -> {});
+                MusicPlayer.playWithCallback(MusicResource.BUZZ_STOP, () -> {
+                });
                 return;
             }
 
@@ -1697,7 +1674,8 @@ public class ControlPane {
             }
         } else {
             stopBuzz(null, new ArrayList<>(), false, false, false);
-            MusicPlayer.playWithCallback(MusicResource.BUZZ_STOP, () -> {});
+            MusicPlayer.playWithCallback(MusicResource.BUZZ_STOP, () -> {
+            });
         }
 
     }
@@ -1705,7 +1683,6 @@ public class ControlPane {
     public void resetTimeBtn() {
         timingBtn.setDisable(false);
     }
-
 
     // 计时复位
     @FXML
@@ -1721,20 +1698,17 @@ public class ControlPane {
         startAnswerBtn.setDisable(false);
     }
 
-
     private void showStageName() {
         stageList.setVisible(false);
         stageName.setVisible(true);
         stageChildList.setVisible(false);
     }
 
-
     private void showChildList() {
         scrollPane.setVvalue(0);
         final List<Stages> stages = stagesMapper.selectList(new LambdaQueryWrapper<Stages>()
                 .eq(Stages::getParentId, controlStage.getId())
-                .orderByAsc(Stages::getSortVal)
-        );
+                .orderByAsc(Stages::getSortVal));
         if (!CollectionUtils.isEmpty(stages)) {
             stageList.setVisible(false);
             stageName.setVisible(false);
@@ -1742,7 +1716,6 @@ public class ControlPane {
             showStageData(stages, stageChildList);
         }
     }
-
 
     public void reloadStage() {
         currentStage = stagesMapper.selectById(currentStage.getId());
@@ -1765,17 +1738,15 @@ public class ControlPane {
     }
 
     private void controlResourceBtn(String value) {
-        Questions questions ;
+        Questions questions;
         if (currentStage.getRandomSort() == 1) {
             questions = questionsMapper.selectOne(new LambdaQueryWrapper<Questions>()
                     .eq(Questions::getStageNumber, currentStage.getSortVal())
-                    .eq(Questions::getViewSort, Integer.parseInt(value))
-            );
+                    .eq(Questions::getViewSort, Integer.parseInt(value)));
         } else {
             questions = questionsMapper.selectOne(new LambdaQueryWrapper<Questions>()
                     .eq(Questions::getStageNumber, currentStage.getSortVal())
-                    .eq(Questions::getQuestionNumber, Integer.parseInt(value))
-            );
+                    .eq(Questions::getQuestionNumber, Integer.parseInt(value)));
         }
 
         if (!StringUtils.isEmpty(questions.getResource())) {
@@ -1795,16 +1766,17 @@ public class ControlPane {
 
     public void showQuestions() {
         // 显示题目
-        List<Questions> questionList = questionsMapper.selectList(new LambdaQueryWrapper<Questions>().
-                eq(Questions::getStageNumber, currentStage.getSortVal())
-        );
+        List<Questions> questionList = questionsMapper.selectList(
+                new LambdaQueryWrapper<Questions>().eq(Questions::getStageNumber, currentStage.getSortVal()));
         if (currentStage.getRandomSort() == 1) {
             questionList.sort(Comparator.comparing(Questions::getViewSort));
-            final List<String> questionKeys = questionList.stream().map(x -> x.getViewSort().toString()).collect(Collectors.toList());
+            final List<String> questionKeys = questionList.stream().map(x -> x.getViewSort().toString())
+                    .collect(Collectors.toList());
             questionCombox.setItems(FXCollections.observableList(questionKeys));
         } else {
             questionList.sort(Comparator.comparing(Questions::getQuestionNumber));
-            final List<String> questionKeys = questionList.stream().map(x -> x.getQuestionNumber().toString()).collect(Collectors.toList());
+            final List<String> questionKeys = questionList.stream().map(x -> x.getQuestionNumber().toString())
+                    .collect(Collectors.toList());
             questionCombox.setItems(FXCollections.observableList(questionKeys));
         }
 
@@ -1833,40 +1805,42 @@ public class ControlPane {
                     stageText.setText(stage.getName());
                     controlStage = stage;
                     boolean last = stagesMapper.selectList(new LambdaQueryWrapper<Stages>()
-                            .eq(Stages::getParentId, stage.getId())
-                    ).isEmpty();
+                            .eq(Stages::getParentId, stage.getId())).isEmpty();
                     showStageName();
                     if (last) {
-//                        // 显示题目
-//                        List<Questions> parse = ExcelParser.parse(ExcelParser.Q_PATH, Questions.class);
-//                        if (!CollectionUtils.isEmpty(parse)) {
-//                            for (int i = 0; i < parse.size(); i++) {
-//                                parse.get(i).setSort(i);
-//                            }
-//                            // 环节名字索引
-//                            parse = parse.stream().filter(x -> !StringUtils.isEmpty(x.getStageName()) && x.getStageName().equals(stage.getName())).collect(Collectors.toList());
-//                            if (!CollectionUtils.isEmpty(parse)) {
-//                                for (int i = 0; i < parse.size(); i++) {
-//                                    parse.get(i).setQuestionNumber(i + 1);
-//                                }
-//                                CurrentQuestions.setQuestions(parse, stage.getId());
-//                                final List<String> questionKeys = parse.stream().map(x -> x.getQuestionNumber().toString()).collect(Collectors.toList());
-//
-//                                questionCombox.setItems(FXCollections.observableList(questionKeys));
-////                                // 扩展屏显示对应的题目列表
-////                                StageQuestionPreview.setCurrentStage(currentStage);
-////                                ExtendedScreen.show("/view/match/StageQuestionPreview.fxml");
-////                                
-////                                // 内屏展示对应的题目列表
-////                                StageQuestionPreviewPreview.setCurrentStage(currentStage);
-////                                previewPane.getChildren().clear();
-////                                previewPane.getChildren().add(Navigator.load("/view/preview/StageQuestionPreview.fxml"));
-//                            } else {
-//                                questionCombox.setItems(FXCollections.emptyObservableList());
-//                                questionCombox.setValue(null);
-//                            }
-//
-//                        }
+                        // // 显示题目
+                        // List<Questions> parse = ExcelParser.parse(ExcelParser.Q_PATH,
+                        // Questions.class);
+                        // if (!CollectionUtils.isEmpty(parse)) {
+                        // for (int i = 0; i < parse.size(); i++) {
+                        // parse.get(i).setSort(i);
+                        // }
+                        // // 环节名字索引
+                        // parse = parse.stream().filter(x -> !StringUtils.isEmpty(x.getStageName()) &&
+                        // x.getStageName().equals(stage.getName())).collect(Collectors.toList());
+                        // if (!CollectionUtils.isEmpty(parse)) {
+                        // for (int i = 0; i < parse.size(); i++) {
+                        // parse.get(i).setQuestionNumber(i + 1);
+                        // }
+                        // CurrentQuestions.setQuestions(parse, stage.getId());
+                        // final List<String> questionKeys = parse.stream().map(x ->
+                        // x.getQuestionNumber().toString()).collect(Collectors.toList());
+                        //
+                        // questionCombox.setItems(FXCollections.observableList(questionKeys));
+                        //// // 扩展屏显示对应的题目列表
+                        //// StageQuestionPreview.setCurrentStage(currentStage);
+                        //// ExtendedScreen.show("/view/match/StageQuestionPreview.fxml");
+                        ////
+                        //// // 内屏展示对应的题目列表
+                        //// StageQuestionPreviewPreview.setCurrentStage(currentStage);
+                        //// previewPane.getChildren().clear();
+                        //// previewPane.getChildren().add(Navigator.load("/view/preview/StageQuestionPreview.fxml"));
+                        // } else {
+                        // questionCombox.setItems(FXCollections.emptyObservableList());
+                        // questionCombox.setValue(null);
+                        // }
+                        //
+                        // }
                         // ExtendedScreen.show("/view/match/StagePreview.fxml");
                     } else {
 
@@ -1875,7 +1849,6 @@ public class ControlPane {
             });
         }
     }
-
 
     @FXML
     public void secondOpen() {
@@ -1902,7 +1875,6 @@ public class ControlPane {
 
     }
 
-
     // 显示环节规则
     @FXML
     public void showStageRule() {
@@ -1914,8 +1886,7 @@ public class ControlPane {
                 Stages data;
                 if (currentStage.getQuestionType() == 3) {
                     List<Stages> childrenStage = stagesMapper.selectList(new LambdaQueryWrapper<Stages>()
-                            .eq(Stages::getParentId, currentStage.getId())
-                    );
+                            .eq(Stages::getParentId, currentStage.getId()));
 
                     if (childrenStage.isEmpty()) {
                         Stages stages = stagesMapper.selectById(currentStage.getParentId());
@@ -1928,7 +1899,8 @@ public class ControlPane {
                     data = controlStage;
                     currentStage = controlStage;
                 }
-                previewPane = Navigator.preview("/view/preview/StageRulePreview.fxml", "", "/view/style.css", true, data);
+                previewPane = Navigator.preview("/view/preview/StageRulePreview.fxml", "", "/view/style.css", true,
+                        data);
                 GlobalCache.showRule = true;
             } else {
                 returnLast();
@@ -1949,19 +1921,23 @@ public class ControlPane {
                 Questions q = x.getData();
                 previewPane = Navigator.preview("/view/preview/QuestionPreview.fxml", "", "/view/style.css", true, q);
             } else if (last instanceof StageQuestionPreviewPreview) {
-                previewPane = Navigator.preview("/view/preview/StageQuestionPreview.fxml", "", "/view/style.css", true, last.getData());
+                previewPane = Navigator.preview("/view/preview/StageQuestionPreview.fxml", "", "/view/style.css", true,
+                        last.getData());
             } else if (last instanceof RollPreviewPreview) {
-                previewPane = Navigator.preview("/view/preview/RollPreview.fxml", "", "/view/style.css", true, last.getData());
+                previewPane = Navigator.preview("/view/preview/RollPreview.fxml", "", "/view/style.css", true,
+                        last.getData());
             } else if (last instanceof StageNamePreviewPreview) {
-                previewPane = Navigator.preview("/view/preview/StageNamePreview.fxml", "", "/view/style.css", true, last.getData());
+                previewPane = Navigator.preview("/view/preview/StageNamePreview.fxml", "", "/view/style.css", true,
+                        last.getData());
             } else if (last instanceof StagePreviewPreview) {
-                previewPane = Navigator.preview("/view/preview/StagePreview.fxml", "", "/view/style.css", true, last.getData());
+                previewPane = Navigator.preview("/view/preview/StagePreview.fxml", "", "/view/style.css", true,
+                        last.getData());
             } else if (last instanceof Model7Preview) {
-                previewPane = Navigator.preview("/view/preview/Model7Preview.fxml", "", "/view/style.css", true,  last.getData());
+                previewPane = Navigator.preview("/view/preview/Model7Preview.fxml", "", "/view/style.css", true,
+                        last.getData());
             } else if (last instanceof Model3Preview) {
                 List<Stages> childrenStages = stagesMapper.selectList(new LambdaQueryWrapper<Stages>()
-                        .eq(Stages::getParentId, currentStage.getId())
-                );
+                        .eq(Stages::getParentId, currentStage.getId()));
                 Integer data;
                 if (childrenStages.isEmpty()) {
                     data = (currentStage.getParentId());
@@ -1975,7 +1951,6 @@ public class ControlPane {
             GlobalCache.showRule = false;
         }
     }
-
 
     public void emptyTeam() {
         teamComBox.getSelectionModel().select(-1);
@@ -2005,7 +1980,8 @@ public class ControlPane {
             controlStage = stagesMapper.selectById(controlStage.getId());
             currentStage = controlStage;
             // 展示环节名称
-            previewPane = Navigator.preview("/view/preview/StageNamePreview.fxml", "", "/view/style.css", true, controlStage.getId());
+            previewPane = Navigator.preview("/view/preview/StageNamePreview.fxml", "", "/view/style.css", true,
+                    controlStage.getId());
             previewPane.reload();
             scoreInput.setText(controlStage.getScorePerQ() + "");
             int desValue = 0;
@@ -2018,11 +1994,10 @@ public class ControlPane {
         }
     }
 
-
     // 显示题目
     @FXML
     public void showQuestion() {
-        if (StringUtils.isEmpty(questionCombox.getValue())){
+        if (StringUtils.isEmpty(questionCombox.getValue())) {
             Information.error("请选择题号");
             return;
         }
@@ -2034,7 +2009,8 @@ public class ControlPane {
         MusicPlayer.play(MusicResource.SHOW_QUESTION);
         if (currentStage.getQuestionType() == (7)) {
             Model7RuntimeData.setTeams(TeamRuntime.getTeams());
-            previewPane = Navigator.preview("/view/preview/Model7Preview.fxml", "", "/view/style.css", true, currentStage);
+            previewPane = Navigator.preview("/view/preview/Model7Preview.fxml", "", "/view/style.css", true,
+                    currentStage);
             updateScoreBoard();
         } else if (currentStage.getQuestionType() == (6)) {
             Integer m6 = currentStage.getM6();
@@ -2044,20 +2020,17 @@ public class ControlPane {
             if (currentStage.getRandomSort() == 1) {
                 questions = questionsMapper.selectOne(new LambdaQueryWrapper<Questions>()
                         .eq(Questions::getStageNumber, currentStage.getSortVal())
-                        .eq(Questions::getViewSort, Integer.parseInt(tihao))
-                );
+                        .eq(Questions::getViewSort, Integer.parseInt(tihao)));
 
                 questions.setOrder(questions.getViewSort());
             } else {
                 questions = questionsMapper.selectOne(new LambdaQueryWrapper<Questions>()
                         .eq(Questions::getStageNumber, currentStage.getSortVal())
-                        .eq(Questions::getQuestionNumber, Integer.parseInt(tihao))
-                );
+                        .eq(Questions::getQuestionNumber, Integer.parseInt(tihao)));
                 questions.setOrder(questions.getQuestionNumber());
             }
 
             questions.setScore(currentStage.getScorePerQ());
-//                    CurrentQuestions.getQ(tihao);
             if (questions == null) {
                 Information.error("请选择题号");
                 return;
@@ -2067,11 +2040,12 @@ public class ControlPane {
                 questions.setHasAnswer(true);
 
                 questionsMapper.updateById(questions);
-                //CurrentQuestions.recordAnswer(tihao);
+                // CurrentQuestions.recordAnswer(tihao);
                 // 设置当前需要显示的题目
                 // 设置选手信息
                 Model60RuntimeData.setTeams(TeamRuntime.getTeams());
-                previewPane = Navigator.preview("/view/preview/QuestionPreview.fxml", "", "/view/style.css", true, questions);
+                previewPane = Navigator.preview("/view/preview/QuestionPreview.fxml", "", "/view/style.css", true,
+                        questions);
                 // messageHandler.sendQuestion(questions);
                 Model60RuntimeData.setRuntimeData(questions);
                 updateScoreBoard();
@@ -2083,8 +2057,9 @@ public class ControlPane {
                 // 设置当前需要显示的题目
                 // 设置选手信息
                 Model61RuntimeData.setTeams(TeamRuntime.getTeams());
-                previewPane = Navigator.preview("/view/preview/QuestionPreview.fxml", "", "/view/style.css", true, questions);
-                //messageHandler.sendQuestion(questions);
+                previewPane = Navigator.preview("/view/preview/QuestionPreview.fxml", "", "/view/style.css", true,
+                        questions);
+                // messageHandler.sendQuestion(questions);
                 Model61RuntimeData.setRuntimeData(questions);
                 updateScoreBoard();
             }
@@ -2095,14 +2070,12 @@ public class ControlPane {
                 if (currentStage.getRandomSort() == 1) {
                     questions = questionsMapper.selectOne(new LambdaQueryWrapper<Questions>()
                             .eq(Questions::getStageNumber, currentStage.getSortVal())
-                            .eq(Questions::getViewSort, Integer.parseInt(questionCombox.getValue()))
-                    );
+                            .eq(Questions::getViewSort, Integer.parseInt(questionCombox.getValue())));
                     questions.setOrder(questions.getViewSort());
                 } else {
                     questions = questionsMapper.selectOne(new LambdaQueryWrapper<Questions>()
                             .eq(Questions::getStageNumber, currentStage.getSortVal())
-                            .eq(Questions::getQuestionNumber, Integer.parseInt(questionCombox.getValue()))
-                    );
+                            .eq(Questions::getQuestionNumber, Integer.parseInt(questionCombox.getValue())));
                     questions.setOrder(questions.getQuestionNumber());
                 }
 
@@ -2119,7 +2092,8 @@ public class ControlPane {
                     previewPane.setData(questions);
                     previewPane.reload();
                 } else {
-                    previewPane = Navigator.preview("/view/preview/QuestionPreview.fxml", "", "/view/style.css", true, questions);
+                    previewPane = Navigator.preview("/view/preview/QuestionPreview.fxml", "", "/view/style.css", true,
+                            questions);
                     GlobalCache.showAnswer = false;
                     previewPane.reload();
                 }
@@ -2135,28 +2109,29 @@ public class ControlPane {
                 } else {
                     questions = questionsMapper.selectOne(new LambdaQueryWrapper<Questions>()
                             .eq(Questions::getStageNumber, currentStage.getSortVal())
-                            .eq(Questions::getQuestionNumber, Integer.parseInt(tihao))
-                            );
+                            .eq(Questions::getQuestionNumber, Integer.parseInt(tihao)));
                     questions.setOrder(questions.getQuestionNumber());
                 }
                 if (questions == null) {
                     Information.error("请选择题号!!");
                     return;
                 }
-                controlResourceBtn(tihao);
-                //CurrentQuestions.recordAnswer(tihao);
                 questions.setHasAnswer(true);
                 questions.setScore(currentStage.getScorePerQ());
                 questions.setShowNumber(currentStage.getShowNumber());
                 questionsMapper.updateById(questions);
+                log.info("设置题目为已答题, {}", questions.getQuestionNumber());
+                controlResourceBtn(tihao);
                 // 内屏更新题目
-                if (currentStage.getQuestionType() == 2 || currentStage.getQuestionType() == 1 || currentStage.getQuestionType() == 4) {
+                if (currentStage.getQuestionType() == 2 || currentStage.getQuestionType() == 1
+                        || currentStage.getQuestionType() == 4) {
                     if (previewPane instanceof QuestionPreviewPreview) {
                         previewPane.setData(questions);
                         GlobalCache.showAnswer = false;
                         previewPane.reload();
                     } else {
-                        previewPane = Navigator.preview("/view/preview/QuestionPreview.fxml", "", "/view/style.css", true, questions);
+                        previewPane = Navigator.preview("/view/preview/QuestionPreview.fxml", "", "/view/style.css",
+                                true, questions);
                         GlobalCache.showAnswer = false;
                         previewPane.reload();
                     }
@@ -2166,7 +2141,8 @@ public class ControlPane {
                         GlobalCache.showAnswer = false;
                         previewPane.reload();
                     } else {
-                        previewPane = Navigator.preview("/view/preview/CluePreview.fxml", "", "/view/style.css", true, questions);
+                        previewPane = Navigator.preview("/view/preview/CluePreview.fxml", "", "/view/style.css", true,
+                                questions);
                         GlobalCache.showAnswer = false;
                         previewPane.reload();
                     }
@@ -2176,7 +2152,6 @@ public class ControlPane {
         parentPane.requestFocus();
 
     }
-
 
     // 答案显示
     @FXML
@@ -2205,7 +2180,7 @@ public class ControlPane {
             if (!GlobalCache.showAnswer) {
                 // 更新状态
                 TeamRuntime.updateMS();
-                //TeamRuntime.resetStatus();
+                // TeamRuntime.resetStatus();
                 GlobalCache.showAnswer = true;
                 MusicPlayer.play(MusicResource.SHOW_ANSWER);
                 List<Model61RuntimeData.ModelData> runtimeData = Model61RuntimeData.getRuntimeData();
@@ -2276,14 +2251,15 @@ public class ControlPane {
 
                         result.setDataItemList(items);
                         ShowAnswerPreview.setTeamResult(result);
-                        previewPane = Navigator.preview("/view/preview/ShowAnswer.fxml", "", "/view/style.css", true, true);
+                        previewPane = Navigator.preview("/view/preview/ShowAnswer.fxml", "", "/view/style.css", true,
+                                true);
                         messageHandler.notifyPage("model61R", result);
                     } else {
                         GlobalCache.showAnswer = false;
                         returnLast();
                     }
                 }
-//              
+                //
             } else {
                 TeamRuntime.updateS();
                 GlobalCache.showAnswer = !GlobalCache.showAnswer;
@@ -2314,8 +2290,7 @@ public class ControlPane {
 
     }
 
-
-    private void closeBuzzResultWindow(){
+    private void closeBuzzResultWindow() {
         Navigator.buzzBoardStage.close();
         ExtendedScreen.buzzBoardStage.close();
     }
@@ -2352,8 +2327,7 @@ public class ControlPane {
         parentPane.requestFocus();
         if (!(previewPane instanceof QuestionPreviewPreview
                 || previewPane instanceof CluePreviewPreview
-                || previewPane instanceof ShowAnswerPreview
-        )) {
+                || previewPane instanceof ShowAnswerPreview)) {
             return;
         }
         try {
@@ -2381,10 +2355,10 @@ public class ControlPane {
 
     }
 
-
     @FXML
     public void toBackend() {
-        //Navigator.openBackend("/view/Backend.fxml", "后台设置", "/view/style.css", false, false);
+        // Navigator.openBackend("/view/Backend.fxml", "后台设置", "/view/style.css", false,
+        // false);
         if (!GlobalCache.backendOpen) {
             GlobalCache.backendOpen = true;
             Navigator.openBackend("/view/Backend.fxml", "后台设置", "/view/style.css", false, false);
@@ -2393,7 +2367,6 @@ public class ControlPane {
         }
 
     }
-
 
     // 显示总规则
     @FXML
@@ -2408,16 +2381,21 @@ public class ControlPane {
                 if (last instanceof QuestionPreviewPreview) {
                     QuestionPreviewPreview x = (QuestionPreviewPreview) last;
                     Questions q = x.getData();
-                    previewPane = Navigator.preview("/view/preview/QuestionPreview.fxml", "", "/view/style.css", true, q);
+                    previewPane = Navigator.preview("/view/preview/QuestionPreview.fxml", "", "/view/style.css", true,
+                            q);
                 } else if (last instanceof StageQuestionPreviewPreview) {
-                    previewPane = Navigator.preview("/view/preview/StageQuestionPreview.fxml", "", "/view/style.css", true, last.getData());
+                    previewPane = Navigator.preview("/view/preview/StageQuestionPreview.fxml", "", "/view/style.css",
+                            true, last.getData());
                 } else if (last instanceof StageNamePreviewPreview) {
                     StageNamePreviewPreview x = (StageNamePreviewPreview) last;
-                    previewPane = Navigator.preview("/view/preview/StageNamePreview.fxml", "", "/view/style.css", true, last.getData());
+                    previewPane = Navigator.preview("/view/preview/StageNamePreview.fxml", "", "/view/style.css", true,
+                            last.getData());
                 } else if (last instanceof StagePreviewPreview) {
-                    previewPane = Navigator.preview("/view/preview/StagePreview.fxml", "", "/view/style.css", true, last.getData());
+                    previewPane = Navigator.preview("/view/preview/StagePreview.fxml", "", "/view/style.css", true,
+                            last.getData());
                 } else if (last instanceof Model3Preview) {
-                    previewPane = Navigator.preview("/view/preview/Model3Preview.fxml", "", "/view/style.css", true, last.getData());
+                    previewPane = Navigator.preview("/view/preview/Model3Preview.fxml", "", "/view/style.css", true,
+                            last.getData());
                 }
             } else {
                 enterMatch();
@@ -2425,7 +2403,6 @@ public class ControlPane {
             GlobalCache.showTotalRule = false;
         }
     }
-
 
     @FXML
     public void closeWindow() {
@@ -2436,7 +2413,6 @@ public class ControlPane {
         secondScreenBtn.setStyle("");
         messageHandler.notifyPage("wait", null);
     }
-
 
     @FXML
     public void miniApp() {
@@ -2451,7 +2427,6 @@ public class ControlPane {
         messageHandler.notifyPage("contestant", null);
         System.exit(0);
     }
-
 
     public void showScoreBoard() {
         Configs configs = configsMapper.selectById(1);
@@ -2478,13 +2453,15 @@ public class ControlPane {
         Model7RuntimeData.setTeams(TeamRuntime.getTeams());
         Model60RuntimeData.setTeams(TeamRuntime.getTeams());
         Model61RuntimeData.setTeams(TeamRuntime.getTeams());
-        teamComBox.setItems(FXCollections.observableList(teams.stream().map(x -> x.getShortName()).collect(Collectors.toList())));
+        teamComBox.setItems(
+                FXCollections.observableList(teams.stream().map(x -> x.getShortName()).collect(Collectors.toList())));
         if (!StringUtils.isEmpty(config)) {
             String[] split = config.split(ConfigSpliter.SPLITER);
             String boardLayout = split[14];
             if (boardLayout.equals("1")) {
                 if (scoreBoardPreview == null) {
-                    scoreBoardPreview = (BoardPane) Navigator.scoreWithPos("/view/board/preview/ScoreBoardH.fxml", "", "/view/style.css", true);
+                    scoreBoardPreview = (BoardPane) Navigator.scoreWithPos("/view/board/preview/ScoreBoardH.fxml", "",
+                            "/view/style.css", true);
                 }
                 if (scoreBoardPreview != null) {
                     scoreBoardPreview.shows();
@@ -2492,7 +2469,8 @@ public class ControlPane {
 
             } else if (boardLayout.equals("2")) {
                 if (scoreBoardPreview == null) {
-                    scoreBoardPreview = (BoardPane) Navigator.scoreWithPos("/view/board/preview/ScoreBoardV.fxml", "", "/view/style.css", true);
+                    scoreBoardPreview = (BoardPane) Navigator.scoreWithPos("/view/board/preview/ScoreBoardV.fxml", "",
+                            "/view/style.css", true);
                 }
                 if (scoreBoardPreview != null) {
                     scoreBoardPreview.shows();
@@ -2500,7 +2478,6 @@ public class ControlPane {
             }
         }
     }
-
 
     public void updateScoreBoard() {
         Configs configs = configsMapper.selectById(1);
@@ -2509,24 +2486,29 @@ public class ControlPane {
             String[] split = config.split(ConfigSpliter.SPLITER);
             String boardLayout = split[14];
             if (boardLayout.equals("1")) {
-                scoreBoardPreview = (BoardPane) Navigator.scoreWithPos("/view/board/preview/ScoreBoardH.fxml", "", "/view/style.css", true);
-//                if (scoreBoardPreview != null) {
-//                    scoreBoardPreview.reload();
-//                } else {
-//                    scoreBoardPreview = (BoardPane) Navigator.scoreWithPos("/view/board/preview/ScoreBoardH.fxml", "", "/view/style.css", true);
-//                }
+                scoreBoardPreview = (BoardPane) Navigator.scoreWithPos("/view/board/preview/ScoreBoardH.fxml", "",
+                        "/view/style.css", true);
+                // if (scoreBoardPreview != null) {
+                // scoreBoardPreview.reload();
+                // } else {
+                // scoreBoardPreview = (BoardPane)
+                // Navigator.scoreWithPos("/view/board/preview/ScoreBoardH.fxml", "",
+                // "/view/style.css", true);
+                // }
             } else if (boardLayout.equals("2")) {
-                scoreBoardPreview = (BoardPane) Navigator.scoreWithPos("/view/board/preview/ScoreBoardV.fxml", "", "/view/style.css", true);
+                scoreBoardPreview = (BoardPane) Navigator.scoreWithPos("/view/board/preview/ScoreBoardV.fxml", "",
+                        "/view/style.css", true);
 
-//                if (scoreBoardPreview != null) {
-//                    scoreBoardPreview.reload();
-//                } else {
-//                    scoreBoardPreview = (BoardPane) Navigator.scoreWithPos("/view/board/preview/ScoreBoardV.fxml", "", "/view/style.css", true);
-//                }
+                // if (scoreBoardPreview != null) {
+                // scoreBoardPreview.reload();
+                // } else {
+                // scoreBoardPreview = (BoardPane)
+                // Navigator.scoreWithPos("/view/board/preview/ScoreBoardV.fxml", "",
+                // "/view/style.css", true);
+                // }
             }
         }
     }
-
 
     @FXML
     public void enterMatch() {
@@ -2565,11 +2547,9 @@ public class ControlPane {
         return questionPreview;
     }
 
-
     public void setScoreBoard(BoardPane scoreBoard) {
         this.scoreBoard = scoreBoard;
     }
-
 
     public void setBuzzTimeBoard(ReloadPane buzzTimeBoard) {
         this.buzzTimeBoard = buzzTimeBoard;
@@ -2583,7 +2563,6 @@ public class ControlPane {
         this.timeBoard = timeBoard;
     }
 
-
     public ReloadPane getTimeBoard() {
         return timeBoard;
     }
@@ -2595,7 +2574,6 @@ public class ControlPane {
     public void setQuestionPreview(ReloadPane questionPreview) {
         this.questionPreview = questionPreview;
     }
-
 
     public void setPreviewPane(PreviewPane previewPane) {
         this.previewPane = previewPane;
@@ -2611,16 +2589,17 @@ public class ControlPane {
 
     public void configTimeAndScore(Stages belongStage, String value) {
         List<Questions> questionList = questionsMapper.selectList(new LambdaQueryWrapper<Questions>()
-                .eq(Questions::getStageNumber, belongStage.getSortVal())
-        );
+                .eq(Questions::getStageNumber, belongStage.getSortVal()));
 
         if (currentStage.getRandomSort() == 1) {
             questionList.sort(Comparator.comparing(Questions::getViewSort));
-            final List<String> questionKeys = questionList.stream().map(x -> x.getViewSort().toString()).collect(Collectors.toList());
+            final List<String> questionKeys = questionList.stream().map(x -> x.getViewSort().toString())
+                    .collect(Collectors.toList());
             questionCombox.setItems(FXCollections.observableList(questionKeys));
         } else {
             questionList.sort(Comparator.comparing(Questions::getQuestionNumber));
-            final List<String> questionKeys = questionList.stream().map(x -> x.getQuestionNumber().toString()).collect(Collectors.toList());
+            final List<String> questionKeys = questionList.stream().map(x -> x.getQuestionNumber().toString())
+                    .collect(Collectors.toList());
             questionCombox.setItems(FXCollections.observableList(questionKeys));
         }
         questionCombox.setValue(value);
@@ -2633,8 +2612,7 @@ public class ControlPane {
         scoreDescInput.setText(desValue + "");
     }
 
-
-    public void notifyBuzzByHardware(String teamAddress){
+    public void notifyBuzzByHardware(String teamAddress) {
         BuzzDevice buzzDevice = SerialPortConfig.getBuzzDevice(teamAddress);
         Teams teams = TeamRuntime.getByCode(teamAddress);
         if (buzzDevice != null) {
@@ -2642,21 +2620,19 @@ public class ControlPane {
         }
     }
 
-
     // 通知抢答结果
-    public void notifyBuzz(String team, String member){
+    public void notifyBuzz(String team, String member) {
         Buzz buzz = buzzMapper.selectById(1);
         // 抢答违规的时间间隔
-        long timeGap = (long)((
-                3 * Double.parseDouble(buzz.getSpeed()) +
-                        MusicPlayer.getAudioDuration(MusicResource.BUZZ_TIME(3)) +
-                        MusicPlayer.getAudioDuration(MusicResource.BUZZ_TIME(2)) +
-                        MusicPlayer.getAudioDuration(MusicResource.BUZZ_TIME(1)) +
-                                MusicPlayer.getAudioDuration(MusicResource.BUZZ_START)
-        ) * 1000000000L);
-        long slipTime =  System.nanoTime() - (RuntimeUtil.buzzStart);
+        long timeGap = (long) ((3 * Double.parseDouble(buzz.getSpeed()) +
+                MusicPlayer.getAudioDuration(MusicResource.BUZZ_TIME(3)) +
+                MusicPlayer.getAudioDuration(MusicResource.BUZZ_TIME(2)) +
+                MusicPlayer.getAudioDuration(MusicResource.BUZZ_TIME(1)) +
+                MusicPlayer.getAudioDuration(MusicResource.BUZZ_START)) * 1000000000L);
+        long slipTime = System.nanoTime() - (RuntimeUtil.buzzStart);
 
-        Teams teams = TeamRuntime.getTeams().stream().filter(x -> x.getShortName().equals(team)).collect(Collectors.toList()).get(0);
+        Teams teams = TeamRuntime.getTeams().stream().filter(x -> x.getShortName().equals(team))
+                .collect(Collectors.toList()).get(0);
         if (RuntimeUtil.buzzStart > 0) {
             String mode = buzz.getMode();
             if (currentStage != null && !StringUtils.isEmpty(currentStage.getpAType())) {
@@ -2675,7 +2651,7 @@ public class ControlPane {
                 }
                 // 提前抢答记录淘汰
                 if (slipTime < timeGap || RuntimeUtil.buzzCalculate == 0) {
-                    RuntimeUtil.buzzTimeMap.put(team,  -Math.abs(slipTime - timeGap));
+                    RuntimeUtil.buzzTimeMap.put(team, -Math.abs(slipTime - timeGap));
                     RuntimeUtil.buzzResult.put(team, false);
                     // 每次抢答都更新状态面板
                     if (RuntimeUtil.buzzTimeMap.size() == TeamRuntime.getTeams().size()) {
@@ -2691,17 +2667,18 @@ public class ControlPane {
                                     RuntimeUtil.buzzResult.put(team, true);
                                     BuzzResultPreview.setTeams(teams, true);
                                     stopBuzz(teams,
-                                            TeamRuntime.getTeams().stream().filter(x -> !x.getShortName().equals(team)).collect(Collectors.toList()),
+                                            TeamRuntime.getTeams().stream().filter(x -> !x.getShortName().equals(team))
+                                                    .collect(Collectors.toList()),
                                             true, false, false);
                                 });
                             } else {
                                 RuntimeUtil.buzzResult.put(team, true);
                                 BuzzResultPreview.setTeams(teams, true);
                                 stopBuzz(teams,
-                                        TeamRuntime.getTeams().stream().filter(x -> !x.getShortName().equals(team)).collect(Collectors.toList()),
+                                        TeamRuntime.getTeams().stream().filter(x -> !x.getShortName().equals(team))
+                                                .collect(Collectors.toList()),
                                         true, false, false);
                             }
-
 
                         } else {
                             // 抢答失败直接播放音效
@@ -2734,13 +2711,13 @@ public class ControlPane {
                             Boolean b = RuntimeUtil.buzzResult.get(t.getShortName());
                             if (b == null) {
                                 t.setBuzzStatus(0);
-                            }
-                            else if (b) {
+                            } else if (b) {
                                 t.setBuzzStatus(1);
                             } else {
                                 t.setBuzzStatus(2);
                             }
-                            t.setBuzzTime(NumberUtil.fix2Point(RuntimeUtil.buzzTimeMap.getOrDefault(t.getShortName(), 0L) / 1000000000.0));
+                            t.setBuzzTime(NumberUtil.fix2Point(
+                                    RuntimeUtil.buzzTimeMap.getOrDefault(t.getShortName(), 0L) / 1000000000.0));
                         }
                         Platform.runLater(this::reloadScoreBoard);
                         return;
@@ -2752,9 +2729,9 @@ public class ControlPane {
                     RuntimeUtil.buzzTimeMap.put(team, System.nanoTime() - RuntimeUtil.buzzCalculate);
                     RuntimeUtil.buzzResult.put(team, true);
                     RuntimeUtil.buzzCalculate = 0;
-                    List<Teams> taotaiTeams = TeamRuntime.getTeams().stream().filter(x ->
-                                    RuntimeUtil.buzzResult.containsKey(x.getShortName()) && !RuntimeUtil.buzzResult.get(x.getShortName())
-                            )
+                    List<Teams> taotaiTeams = TeamRuntime.getTeams().stream()
+                            .filter(x -> RuntimeUtil.buzzResult.containsKey(x.getShortName())
+                                    && !RuntimeUtil.buzzResult.get(x.getShortName()))
                             .collect(Collectors.toList());
                     // 顺便更新抢答计分
                     updateBuzzTimely();
@@ -2791,8 +2768,7 @@ public class ControlPane {
                     BuzzResultPreview.setTeams(teams, false);
                     Navigator.buzzResult("/view/preview/BuzzResult.fxml", "", "/view/style.css", true);
                 });
-            } else
-            {
+            } else {
                 // 防止其他人抢到
                 RuntimeUtil.buzzStart = 0;
                 // 抢答成功
@@ -2813,14 +2789,13 @@ public class ControlPane {
             Boolean b = RuntimeUtil.buzzResult.get(t.getShortName());
             if (b == null) {
                 t.setBuzzStatus(0);
-            }
-            else
-            if (b) {
+            } else if (b) {
                 t.setBuzzStatus(1);
             } else {
                 t.setBuzzStatus(2);
             }
-            t.setBuzzTime(NumberUtil.fix2Point(RuntimeUtil.buzzTimeMap.getOrDefault(t.getShortName(), 0L) / 1000000000.0));
+            t.setBuzzTime(
+                    NumberUtil.fix2Point(RuntimeUtil.buzzTimeMap.getOrDefault(t.getShortName(), 0L) / 1000000000.0));
         }
         Platform.runLater(() -> {
             reloadScoreBoard();
@@ -2828,7 +2803,7 @@ public class ControlPane {
 
     }
 
-    public void updateBuzzTimely(){
+    public void updateBuzzTimely() {
         Platform.runLater(() -> {
             if (previewPane != null && previewPane instanceof BuzzRankPreview) {
                 BuzzRankPreview brp = (BuzzRankPreview) previewPane;
@@ -2837,7 +2812,7 @@ public class ControlPane {
         });
     }
 
-    public void reloadScoreBoard(){
+    public void reloadScoreBoard() {
         if (scoreBoardPreview != null) {
             scoreBoardPreview.reload();
         }
@@ -2846,7 +2821,7 @@ public class ControlPane {
     }
 
     // 停止抢答
-    private void stopBuzz(Teams successTeam, List<Teams> failTeams, boolean success, boolean fail, boolean standard){
+    private void stopBuzz(Teams successTeam, List<Teams> failTeams, boolean success, boolean fail, boolean standard) {
         TerminalConfig.sendStopBuzz();
         Buzz buzz = buzzMapper.selectById(1);
         Platform.runLater(() -> {
@@ -2906,9 +2881,9 @@ public class ControlPane {
 
             if (fail) {
                 // 不播放前置的违规音效
-//                if (buzz.getPlayError() != 1) {
-//                    return;
-//                }
+                // if (buzz.getPlayError() != 1) {
+                // return;
+                // }
                 // 播放违规音效
                 if (buzz.getErrorMusic() == 1 && buzz.getPlayError() == 1) {
                     if (standard) {
@@ -2921,9 +2896,10 @@ public class ControlPane {
                         }
                         MusicPlayer.playNext();
                     }
-                } else if (buzz.getErrorMusic() == 0 && buzz.getPlayError() == 1){
-                    MusicPlayer.playWithCallback(MusicResource.BUZZ_FAIL_BEFORE, () -> {});
-                } else if (buzz.getErrorMusic() == 1 && buzz.getPlayError() == 0){
+                } else if (buzz.getErrorMusic() == 0 && buzz.getPlayError() == 1) {
+                    MusicPlayer.playWithCallback(MusicResource.BUZZ_FAIL_BEFORE, () -> {
+                    });
+                } else if (buzz.getErrorMusic() == 1 && buzz.getPlayError() == 0) {
                     if (standard) {
                         MusicPlayer.play(MusicResource.BUZZ_FAIL(failTeams.get(0).getCode()));
                     } else {
@@ -2938,15 +2914,14 @@ public class ControlPane {
             }
 
             // 超时
-            //MusicPlayer.play(MusicResource.BUZZ_STOP);
+            // MusicPlayer.play(MusicResource.BUZZ_STOP);
             scoreBoardPreview.reload();
         });
     }
 
-    private void selectTeamOnSuccess(Teams teams){
+    private void selectTeamOnSuccess(Teams teams) {
         teamComBox.setValue(teams.getShortName());
     }
-
 
     @FXML
     public void registerSoftware() {
