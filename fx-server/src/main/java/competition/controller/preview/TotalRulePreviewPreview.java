@@ -3,8 +3,6 @@ package competition.controller.preview;
 import cn.hutool.core.io.FileUtil;
 import competition.controller.ControlPane;
 import competition.controller.board.BoardPane;
-import competition.controller.match.RulePreviewAttr;
-import competition.controller.match.StageQuestionPreviewAttr;
 import competition.controller.match.TotalRulePreview;
 import competition.entity.Configs;
 import competition.mapper.ConfigsMapper;
@@ -19,18 +17,14 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
-import javafx.scene.text.FontPosture;
-import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 import javafx.scene.transform.Shear;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
 import javax.annotation.Resource;
-import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 
@@ -45,13 +39,9 @@ public class TotalRulePreviewPreview extends PreviewPane {
 
     @Resource
     private ControlPane controlPane;
-    
+
     @Resource
     private WsMessageHandler messageHandler;
-    
-    
-    
-
 
     @FXML
     public void initPage() {
@@ -64,7 +54,7 @@ public class TotalRulePreviewPreview extends PreviewPane {
             public void handle(MouseEvent event) {
                 // 打开设置
                 if (event.getButton() == MouseButton.SECONDARY) {
-                    //RulePreviewAttr.setReloadPane(controlPane.getQuestionPreview());
+                    // RulePreviewAttr.setReloadPane(controlPane.getQuestionPreview());
                     Navigator.navigatorTo("/view/match/RulePreviewAttr.fxml", "", "/view/style.css", false, false);
                 }
             }
@@ -85,11 +75,12 @@ public class TotalRulePreviewPreview extends PreviewPane {
         }
         try {
             container.setBackground(new Background(new BackgroundImage(
-                    new Image(new FileInputStream(ImageResource.总规则背景())), BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT, BackgroundPosition.CENTER, 
-                    new BackgroundSize(Navigator.getWidth(), Navigator.getHeight(), false, false, false, false)
-            )));
+                    new Image(new FileInputStream(ImageResource.总规则背景())), BackgroundRepeat.NO_REPEAT,
+                    BackgroundRepeat.NO_REPEAT, BackgroundPosition.CENTER,
+                    new BackgroundSize(Navigator.getWidth(), Navigator.getHeight(), false, false, false, false))));
         } catch (FileNotFoundException e) {
-            container.setBackground(new Background(new BackgroundFill(Color.TRANSPARENT, new CornerRadii(10), Insets.EMPTY)));
+            container.setBackground(
+                    new Background(new BackgroundFill(Color.TRANSPARENT, new CornerRadii(10), Insets.EMPTY)));
         }
         container.getChildren().clear();
         final Configs ruleConfig = configsMapper.selectById(5);
@@ -114,7 +105,7 @@ public class TotalRulePreviewPreview extends PreviewPane {
             text.prefHeight(ScreenAdapter.calculateMainY(Integer.parseInt(cfgArr[3])));
             text.setFill(Color.valueOf(cfgArr[5]));
             Font font = FontMap.load(cfgArr[7], ScreenAdapter.calculateMainX(Integer.parseInt(cfgArr[8])));
-            
+
             text.setFont(font);
             if (Boolean.valueOf(cfgArr[10])) {
                 text.setStroke(text.getFill());
@@ -133,7 +124,7 @@ public class TotalRulePreviewPreview extends PreviewPane {
             text.setWrappingWidth(ScreenAdapter.calculateMainX(Integer.parseInt(cfgArr[2])));
             container.getChildren().add(text);
         }
-        messageHandler.notifyPage("rule" , ruleContent );
+        messageHandler.notifyPage("rule", ruleContent);
 
     }
 

@@ -93,6 +93,7 @@ public class ControlPane {
     private Button lastQBtn, nextQBtn;
 
     // 内衬预览屏
+    @SuppressWarnings("rawtypes")
     private PreviewPane previewPane;
 
     @FXML
@@ -164,30 +165,37 @@ public class ControlPane {
     private Stages currentStage, controlStage;
 
     // 外接显示屏展示题目
+    @SuppressWarnings("rawtypes")
     private ReloadPane questionPreview;
 
     // 主屏幕端计分板
     private BoardPane scoreBoardPreview;
 
     // 计时器
+    @SuppressWarnings("rawtypes")
     private ReloadPane timeBoardPreview;
 
     // 抢答计时器
+    @SuppressWarnings("rawtypes")
     private ReloadPane buzzTimeBoardPreview;
 
     // 外屏幕端抢答计时器
+    @SuppressWarnings("rawtypes")
     private ReloadPane buzzTimeBoard;
 
     // 抢答结果面板
+    @SuppressWarnings("rawtypes")
     private ReloadPane buzzResultPreview;
 
     // 外屏幕抢答结果面板
 
+    @SuppressWarnings("rawtypes")
     private ReloadPane buzzResult;
 
     // 外屏幕端计分板
     private BoardPane scoreBoard;
     // 外屏幕端计时器
+    @SuppressWarnings("rawtypes")
     private ReloadPane timeBoard;
 
     // private ReloadPane modelBoard;
@@ -1324,6 +1332,7 @@ public class ControlPane {
         }
     }
 
+    @SuppressWarnings("rawtypes")
     @FXML
     public void startTiming() {
         buzzReset();
@@ -1367,6 +1376,7 @@ public class ControlPane {
         });
     }
 
+    @SuppressWarnings("rawtypes")
     public void startBuzz(int passTime, boolean buzzBefore, int buzzTime) {
         parentPane.requestFocus();
         buzzTimeBoardPreview = (ReloadPane) Navigator.buzzTimeWithPos("/view/board/preview/BuzzTimeBoard.fxml", "",
@@ -1447,6 +1457,7 @@ public class ControlPane {
             return;
         }
 
+        @SuppressWarnings("rawtypes")
         PreviewPane last = PreviewStack.getLast();
 
         if (last instanceof QuestionPreviewPreview) {
@@ -1914,6 +1925,7 @@ public class ControlPane {
             previewPane = Navigator.preview("/view/preview/StagePreview.fxml", "", "/view/style.css", true, null);
             return;
         }
+        @SuppressWarnings("rawtypes")
         PreviewPane last = PreviewStack.getLast();
         if (last != null) {
             if (last instanceof QuestionPreviewPreview) {
@@ -1995,6 +2007,7 @@ public class ControlPane {
     }
 
     // 显示题目
+    @SuppressWarnings("unchecked")
     @FXML
     public void showQuestion() {
         if (StringUtils.isEmpty(questionCombox.getValue())) {
@@ -2016,7 +2029,6 @@ public class ControlPane {
             Integer m6 = currentStage.getM6();
             String tihao = questionCombox.getValue();
             Questions questions;
-            boolean showAnswer = GlobalCache.showAnswer;
             if (currentStage.getRandomSort() == 1) {
                 questions = questionsMapper.selectOne(new LambdaQueryWrapper<Questions>()
                         .eq(Questions::getStageNumber, currentStage.getSortVal())
@@ -2031,10 +2043,7 @@ public class ControlPane {
             }
 
             questions.setScore(currentStage.getScorePerQ());
-            if (questions == null) {
-                Information.error("请选择题号");
-                return;
-            }
+
             controlResourceBtn(tihao);
             if (m6 == 0) {
                 questions.setHasAnswer(true);
@@ -2079,10 +2088,6 @@ public class ControlPane {
                     questions.setOrder(questions.getQuestionNumber());
                 }
 
-                if (questions == null) {
-                    Information.error("请选择题号!!");
-                    return;
-                }
                 controlResourceBtn(questions);
                 questions.setScore(currentStage.getScorePerQ());
                 questions.setHasAnswer(true);
@@ -2112,10 +2117,7 @@ public class ControlPane {
                             .eq(Questions::getQuestionNumber, Integer.parseInt(tihao)));
                     questions.setOrder(questions.getQuestionNumber());
                 }
-                if (questions == null) {
-                    Information.error("请选择题号!!");
-                    return;
-                }
+
                 questions.setHasAnswer(true);
                 questions.setScore(currentStage.getScorePerQ());
                 questions.setShowNumber(currentStage.getShowNumber());
@@ -2376,6 +2378,7 @@ public class ControlPane {
 
             GlobalCache.showTotalRule = true;
         } else {
+            @SuppressWarnings("rawtypes")
             PreviewPane last = PreviewStack.getLast();
             if (last != null) {
                 if (last instanceof QuestionPreviewPreview) {
@@ -2387,7 +2390,6 @@ public class ControlPane {
                     previewPane = Navigator.preview("/view/preview/StageQuestionPreview.fxml", "", "/view/style.css",
                             true, last.getData());
                 } else if (last instanceof StageNamePreviewPreview) {
-                    StageNamePreviewPreview x = (StageNamePreviewPreview) last;
                     previewPane = Navigator.preview("/view/preview/StageNamePreview.fxml", "", "/view/style.css", true,
                             last.getData());
                 } else if (last instanceof StagePreviewPreview) {
@@ -2524,10 +2526,12 @@ public class ControlPane {
 
     }
 
+    @SuppressWarnings("rawtypes")
     public ReloadPane getTimeBoardPreview() {
         return timeBoardPreview;
     }
 
+    @SuppressWarnings("rawtypes")
     public ReloadPane getBuzzTimeBoardPreview() {
         return buzzTimeBoardPreview;
     }
@@ -2536,10 +2540,12 @@ public class ControlPane {
         return scoreBoardPreview;
     }
 
+    @SuppressWarnings("rawtypes")
     public PreviewPane getPreviewPane() {
         return previewPane;
     }
 
+    @SuppressWarnings("rawtypes")
     public ReloadPane getQuestionPreview() {
         if (!ExtendedScreen.hasShow()) {
             questionPreview = null;
@@ -2551,18 +2557,19 @@ public class ControlPane {
         this.scoreBoard = scoreBoard;
     }
 
-    public void setBuzzTimeBoard(ReloadPane buzzTimeBoard) {
+    public void setBuzzTimeBoard(@SuppressWarnings("rawtypes") ReloadPane buzzTimeBoard) {
         this.buzzTimeBoard = buzzTimeBoard;
     }
 
-    public void setBuzzTimeBoardPreview(ReloadPane buzzTimeBoardPreview) {
+    public void setBuzzTimeBoardPreview(@SuppressWarnings("rawtypes") ReloadPane buzzTimeBoardPreview) {
         this.buzzTimeBoardPreview = buzzTimeBoardPreview;
     }
 
-    public void setTimeBoard(ReloadPane timeBoard) {
+    public void setTimeBoard(@SuppressWarnings("rawtypes") ReloadPane timeBoard) {
         this.timeBoard = timeBoard;
     }
 
+    @SuppressWarnings("rawtypes")
     public ReloadPane getTimeBoard() {
         return timeBoard;
     }
@@ -2571,11 +2578,11 @@ public class ControlPane {
         return scoreBoard;
     }
 
-    public void setQuestionPreview(ReloadPane questionPreview) {
+    public void setQuestionPreview(@SuppressWarnings("rawtypes") ReloadPane questionPreview) {
         this.questionPreview = questionPreview;
     }
 
-    public void setPreviewPane(PreviewPane previewPane) {
+    public void setPreviewPane(@SuppressWarnings("rawtypes") PreviewPane previewPane) {
         this.previewPane = previewPane;
     }
 
@@ -2942,22 +2949,25 @@ public class ControlPane {
         }
     }
 
+    @SuppressWarnings("rawtypes")
     public ReloadPane getBuzzTimeBoard() {
         return buzzTimeBoard;
     }
 
-    public void setBuzzResult(ReloadPane buzzResult) {
+    public void setBuzzResult(@SuppressWarnings("rawtypes") ReloadPane buzzResult) {
         this.buzzResult = buzzResult;
     }
 
-    public void setBuzzResultPreview(ReloadPane buzzResultPreview) {
+    public void setBuzzResultPreview(@SuppressWarnings("rawtypes") ReloadPane buzzResultPreview) {
         this.buzzResultPreview = buzzResultPreview;
     }
 
+    @SuppressWarnings("rawtypes")
     public ReloadPane getBuzzResultPreview() {
         return buzzResultPreview;
     }
 
+    @SuppressWarnings("rawtypes")
     public ReloadPane getBuzzResult() {
         return buzzResult;
     }

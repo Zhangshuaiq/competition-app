@@ -17,8 +17,6 @@ import competition.ws.WsMessageHandler;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.geometry.Insets;
-import javafx.geometry.Pos;
-import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
@@ -29,12 +27,10 @@ import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextAlignment;
-import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
 import javax.annotation.Resource;
-import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.nio.charset.StandardCharsets;
@@ -80,7 +76,8 @@ public class MemberRankPreview extends RankPane {
             public void handle(MouseEvent event) {
                 if (event.getButton() == MouseButton.SECONDARY) {
                     // 显示属性配置弹出
-                    Navigator.navigatorTo("/view/match/MemberRankPreviewAttr.fxml", "", "/view/style.css", false, false);
+                    Navigator.navigatorTo("/view/match/MemberRankPreviewAttr.fxml", "", "/view/style.css", false,
+                            false);
                 }
             }
         });
@@ -125,7 +122,6 @@ public class MemberRankPreview extends RankPane {
             }
         });
 
-
         this.showData();
     }
 
@@ -138,17 +134,17 @@ public class MemberRankPreview extends RankPane {
 
         try {
             container.setBackground(new Background(new BackgroundImage(
-                    new Image(new FileInputStream(ImageResource.选手排名背景())), BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT, BackgroundPosition.DEFAULT,
-                    new BackgroundSize(Navigator.getWidth(), Navigator.getHeight(), false, false, false, false)
-            )));
+                    new Image(new FileInputStream(ImageResource.选手排名背景())), BackgroundRepeat.NO_REPEAT,
+                    BackgroundRepeat.NO_REPEAT, BackgroundPosition.DEFAULT,
+                    new BackgroundSize(Navigator.getWidth(), Navigator.getHeight(), false, false, false, false))));
         } catch (FileNotFoundException e) {
-            container.setBackground(new Background(new BackgroundFill(Color.TRANSPARENT, new CornerRadii(10), Insets.EMPTY)));
+            container.setBackground(
+                    new Background(new BackgroundFill(Color.TRANSPARENT, new CornerRadii(10), Insets.EMPTY)));
         }
 
         RankStyle rankStyle = rankStyleMapper.selectById(3);
         String rankConfig = rankStyle.getRankConfig();
         String headConfig = rankStyle.getHeadConfig();
-
 
         Configs configs = configsMapper.selectById(7);
         String config = configs.getConfig();
@@ -160,7 +156,6 @@ public class MemberRankPreview extends RankPane {
         int height = Integer.parseInt(cfgArr[12]);
         int count = 8;
         double rowSpace = 10;
-
 
         double size = 12;
         Font font = FontMap.load(FontMap.defaultFontName(), 12);
@@ -186,10 +181,10 @@ public class MemberRankPreview extends RankPane {
             titleBox.setLayoutY(ScreenAdapter.calculateMainY(Integer.parseInt(split[1])));
             titleBox.setPrefWidth(ScreenAdapter.calculateMainX(Integer.parseInt(split[2])));
             titleBox.setPrefHeight(ScreenAdapter.calculateMainY(Integer.parseInt(split[3])));
-//            competitionLab.setLayoutX(ScreenAdapter.calculateMainX(Integer.parseInt(split[0])));
-//            competitionLab.setLayoutY(ScreenAdapter.calculateMainY(Integer.parseInt(split[1])));
-//            competitionLab.setPrefWidth(ScreenAdapter.calculateMainX(Integer.parseInt(split[2])));
-//            competitionLab.setPrefHeight(ScreenAdapter.calculateMainY(Integer.parseInt(split[3])));
+            // competitionLab.setLayoutX(ScreenAdapter.calculateMainX(Integer.parseInt(split[0])));
+            // competitionLab.setLayoutY(ScreenAdapter.calculateMainY(Integer.parseInt(split[1])));
+            // competitionLab.setPrefWidth(ScreenAdapter.calculateMainX(Integer.parseInt(split[2])));
+            // competitionLab.setPrefHeight(ScreenAdapter.calculateMainY(Integer.parseInt(split[3])));
             int fs = Integer.parseInt(split[5]);
             Color color = Color.valueOf(split[4]);
             String fn = split[6];
@@ -223,13 +218,11 @@ public class MemberRankPreview extends RankPane {
         Color color2 = Color.valueOf(cfgArr[7]);
         Color color3 = Color.valueOf(cfgArr[8]);
 
-
         rankBox.setLayoutX(ScreenAdapter.calculateMainX(x));
         rankBox.setLayoutY(ScreenAdapter.calculateMainY(y));
         rankBox.setPrefWidth(ScreenAdapter.calculateMainX(width));
         rankBox.setPrefHeight(ScreenAdapter.calculateMainY(height * count + (rowSpace) * (count - 1)));
         rankBox.setSpacing(ScreenAdapter.calculateMainY(rowSpace));
-
 
         // 获取排名
         List<Teams> teams = TeamRuntime.getTeams();
@@ -341,7 +334,6 @@ public class MemberRankPreview extends RankPane {
         }
         teamPane.getChildren().add(teamL);
 
-
         StackPane scorePane = new StackPane();
         Text scoreL = new Text("分数");
         if (lines.size() > 4) {
@@ -357,7 +349,6 @@ public class MemberRankPreview extends RankPane {
             scoreL.setStrokeWidth(1);
         }
         scorePane.getChildren().add(scoreL);
-
 
         StackPane timePane = new StackPane();
         Text timeL = new Text("选手");
@@ -378,7 +369,6 @@ public class MemberRankPreview extends RankPane {
         title.getChildren().addAll(rankPane, teamPane, timePane, scorePane);
         title.setBackground(new Background(new BackgroundFill(bgcolor, new CornerRadii(10), Insets.EMPTY)));
         rankBox.getChildren().add(title);
-
 
         for (int i = start; i < end; i++) {
             TeamMemberRankData rankData = rankList.get(i);
@@ -421,7 +411,6 @@ public class MemberRankPreview extends RankPane {
             }
 
             teamItemPane.getChildren().add(teamD);
-
 
             StackPane scoreItemPane = new StackPane();
             Text scoreD = new Text(rankData.getMember() + "");

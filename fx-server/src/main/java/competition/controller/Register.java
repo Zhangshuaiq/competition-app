@@ -13,7 +13,6 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
@@ -29,16 +28,13 @@ public class Register {
 
     @Resource
     private RegisterInfoMapper registerInfoMapper;
-    
+
     @Value("${software.register.server}")
     private String registerServer;
 
-
-    
     @FXML
     private Label messageText;
-    
-    
+
     @FXML
     private TextField field1;
 
@@ -124,17 +120,18 @@ public class Register {
                         messageText.setText("获取电脑信息失败，请检查系统环境");
                         return;
                     }
-//                    if (cpuSerial.length() != 16) {
-//                       // 补充特殊字符0填充到长度为 16
-//                        cpuSerial = String.format("%-16s", cpuSerial).replace(' ', '0');
-//                    }
+                    // if (cpuSerial.length() != 16) {
+                    // // 补充特殊字符0填充到长度为 16
+                    // cpuSerial = String.format("%-16s", cpuSerial).replace(' ', '0');
+                    // }
                     String starter = cpuSerial.substring(0, 8);
                     String ender = cpuSerial.substring(8, 16);
                     String activeText = starter + activeCode + ender;
                     Map<String, Object> body = new HashMap<>();
                     body.put("deviceId", cpuSerial);
                     body.put("activeCode", activeCode);
-                    String responseText = HttpUtil.sendPostRequest(registerServer + "/api/v1/register", JSON.toJSONString(body));
+                    String responseText = HttpUtil.sendPostRequest(registerServer + "/api/v1/register",
+                            JSON.toJSONString(body));
                     JSONObject responseObj = JSON.parseObject(responseText);
                     if (responseObj.getString("code").equals("200")) {
                         registerInfo.setActiveCode(activeText);
@@ -177,7 +174,8 @@ public class Register {
                     body.put("deviceId", cpuSerial);
                     body.put("activeCode", activeCode);
 
-                    String responseText = HttpUtil.sendPostRequest(registerServer + "/api/v1/unregister", JSON.toJSONString(body));
+                    String responseText = HttpUtil.sendPostRequest(registerServer + "/api/v1/unregister",
+                            JSON.toJSONString(body));
                     JSONObject responseObj = JSON.parseObject(responseText);
                     if (responseObj.getString("code").equals("200")) {
                         registerInfo.setActiveCode("");
@@ -206,19 +204,18 @@ public class Register {
 
     }
 
-
-//        public static void main(String[] args) {
-//            try {
-//                String cpuSerial = getCPUSerial();
-//                if (cpuSerial == null || cpuSerial.isEmpty()) {
-//                    System.out.println("Failed to get CPU serial number.");
-//                    return;
-//                }
-//                //System.out.println("CPU Serial: " + cpuSerial);
-//            } catch (Exception e) {
-//                e.printStackTrace();
-//            }
-//        }
+    // public static void main(String[] args) {
+    // try {
+    // String cpuSerial = getCPUSerial();
+    // if (cpuSerial == null || cpuSerial.isEmpty()) {
+    // System.out.println("Failed to get CPU serial number.");
+    // return;
+    // }
+    // //System.out.println("CPU Serial: " + cpuSerial);
+    // } catch (Exception e) {
+    // e.printStackTrace();
+    // }
+    // }
 
     public static String getCPUSerial() throws Exception {
         String result = "";
@@ -239,6 +236,5 @@ public class Register {
         reader.close();
         return result;
     }
-
 
 }
