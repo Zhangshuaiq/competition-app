@@ -151,14 +151,14 @@ public class Model3 implements ReloadPane<Integer> {
         if (!StringUtils.isEmpty(headStyle)) {
             headArr = headStyle.split(ConfigSpliter.SPLITER);
         } else {
-            headArr = "750%%150%%400%%100%%false%%0x990000ff%%%%默认.ttf%%40%%false%%false%%false%%false%%居中对齐%%0%%0xffffffff".split(ConfigSpliter.SPLITER);
+            headArr = "750%%150%%400%%100%%false%%0xffffffff%%%%默认.ttf%%40%%false%%false%%false%%false%%居中对齐%%0%%0x000000ff".split(ConfigSpliter.SPLITER);
         }
 
         String [] titleArr = {};
         if (!StringUtils.isEmpty(titleStyle)) {
             titleArr = titleStyle.split(ConfigSpliter.SPLITER);
         } else {
-            titleArr = "250%%300%%150%%150%%false%%0x990000ff%%%%默认.ttf%%32%%false%%false%%false%%false%%居中对齐%%30%%0xffffffff"
+            titleArr = "250%%300%%150%%150%%false%%0xffffffff%%%%默认.ttf%%32%%false%%false%%false%%false%%居中对齐%%30%%0x000000ff"
                     .split(ConfigSpliter.SPLITER);
         }
 
@@ -166,7 +166,7 @@ public class Model3 implements ReloadPane<Integer> {
         if (!StringUtils.isEmpty(qStyle)) {
             qArr = qStyle.split(ConfigSpliter.SPLITER);
         } else {
-            qArr = "500%%300%%60%%60%%false%%0x990000ff%%%%默认.ttf%%36%%false%%false%%false%%false%%居中对齐%%30%%8%%40%%0xffffffff".split(ConfigSpliter.SPLITER);
+            qArr = "500%%300%%60%%60%%false%%0xffffffff%%%%默认.ttf%%36%%false%%false%%false%%false%%居中对齐%%30%%8%%40%%0x000000ff".split(ConfigSpliter.SPLITER);
         }
 
         Text head = new Text(stages.getName());

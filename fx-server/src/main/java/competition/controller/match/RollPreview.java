@@ -97,12 +97,7 @@ public class RollPreview implements ReloadPane<Stages> {
         String config = configs.getConfig();
         String stageConfigAttr = stageConfig.getConfig();
         String[] stageConfigAttrSplit = stageConfigAttr.split(ConfigSpliter.SPLITER);
-        List<Questions> questionList = questionsMapper.selectList(new LambdaQueryWrapper<Questions>()
-                .eq(Questions::getStageNumber, inner.getSortVal())
-                .orderByAsc(Questions::getQuestionNumber)
-        );
-
-        String questionStyle = "560%%240%%800%%100%%false%%0x990000ff%%%%默认.ttf%%40%%false%%false%%false%%false%%居中对齐%%0###920%%400%%80%%80%%false%%0x990000ff%%%%默认.ttf%%36%%false%%true%%false%%false%%居中对齐%%0%%1";
+        String questionStyle = "560%%240%%800%%100%%false%%0xffffffff%%%%默认.ttf%%40%%false%%false%%false%%false%%居中对齐%%0###920%%400%%80%%80%%false%%0xffffffff%%%%默认.ttf%%36%%false%%true%%false%%false%%居中对齐%%0%%1";
         if (!StringUtils.isEmpty(inner.getQuestionStyle())) {
             questionStyle = inner.getQuestionStyle();
         }

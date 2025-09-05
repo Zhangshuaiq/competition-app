@@ -38,7 +38,7 @@
       <CheckBox fx:id="hideCtl1" layoutX="223.0" layoutY="490.0" mnemonicParsing="false" text="隐藏题号列表" />
       <TextField fx:id="wfInput" layoutX="73.0" layoutY="294.0" prefHeight="30.0" prefWidth="132.0" />
       <Separator layoutX="80.0" layoutY="277.0" prefHeight="0.0" prefWidth="263.0" />
-      <Label layoutX="16.0" layoutY="271.0" text="等待界面" />
+      <Label layoutX="16.0" layoutY="271.0" text="信息界面" />
       <Label layoutX="16.0" layoutY="302.0" text="字体大小" />
       <Label layoutX="232.0" layoutY="302.0" text="字体颜色" />
       <ColorPicker fx:id="wfColor" layoutX="289.0" layoutY="296.0" prefHeight="30.0" prefWidth="30.0" />

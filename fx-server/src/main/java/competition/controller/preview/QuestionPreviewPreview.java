@@ -56,9 +56,6 @@ public class QuestionPreviewPreview extends PreviewPane<Questions> {
     private boolean componentsInitialized = false;
 
     @FXML
-    private VBox buzzBox;
-
-    @FXML
     private StackPane backPane, stagePane;
 
     @FXML
@@ -291,7 +288,7 @@ public class QuestionPreviewPreview extends PreviewPane<Questions> {
 
         // 设置基本布局
         tiganBox.setPadding(new Insets(ScreenAdapter.calculateMainX(20)));
-        backPane.setPadding(new Insets(0, ScreenAdapter.calculateMainX(20), 0, ScreenAdapter.calculateMainX(20)));
+        backPane.setPadding(new Insets(ScreenAdapter.calculateExX(20), 0, ScreenAdapter.calculateExX(20), 0));
 
         Stages currentStage = controlPane.getCurrentStage();
 
@@ -501,7 +498,7 @@ public class QuestionPreviewPreview extends PreviewPane<Questions> {
                 if (currentStage != null && currentStage.getQuestionType() == 3) {
                     Stages pstage = stagesMapper.selectById(stages.getParentId());
                     if (pstage != null) {
-                        stages.setName(pstage.getName() + " " + stages.getName());
+//                        stages.setName(pstage.getName() + " " + stages.getName());
                         messageHandler.notifyPageWithStage("question", inner, stages);
                     } else {
                         messageHandler.notifyPage("question", inner);
@@ -685,9 +682,9 @@ public class QuestionPreviewPreview extends PreviewPane<Questions> {
      */
     private void handleStyles() {
         // 获取样式配置
-        String style1 = "200%%200%%1550%%200%%false%%0xffffcc00%%%%默认.ttf%%30%%false%%false%%false%%false%%左对齐%%10%%0";
-        String style2 = "200%%700%%1550%%60%%false%%0x990000ff%%%%默认.ttf%%36%%false%%false%%false%%false%%居中对齐%%0";
-        String style3 = "2%%2%%300%%100%%false%%0xb31a1aff%%%%默认.ttf%%24%%false%%false%%false%%false%%居中对齐%%";
+        String style1 = "200%%200%%1550%%200%%false%%0xffffffff%%%%默认.ttf%%30%%false%%false%%false%%false%%左对齐%%10%%0";
+        String style2 = "200%%700%%1550%%60%%false%%0xffffffff%%%%默认.ttf%%36%%false%%false%%false%%false%%居中对齐%%0";
+        String style3 = "2%%2%%300%%100%%false%%0xffffffff%%%%默认.ttf%%24%%false%%false%%false%%false%%居中对齐%%";
 
         List<QuestionStyle> parse = ExcelParser.parse(ExcelParser.S_PATH, QuestionStyle.class);
         if (!parse.isEmpty() && inner.getSort() < parse.size()) {
@@ -745,19 +742,6 @@ public class QuestionPreviewPreview extends PreviewPane<Questions> {
         }
     }
 
-    /**
-     * 应用字间距到文本
-     */
-    private void applyWordSpacing(Text text, String spacer) {
-        String originalText = text.getText();
-        if (!StringUtils.isEmpty(originalText)) {
-            List<String> chars = new ArrayList<>();
-            for (char c : originalText.toCharArray()) {
-                chars.add(String.valueOf(c));
-            }
-            text.setText(String.join(spacer, chars));
-        }
-    }
 
     /**
      * 设置区域背景
@@ -1086,28 +1070,5 @@ public class QuestionPreviewPreview extends PreviewPane<Questions> {
         if (tiganLabel != null) tiganLabel.setText("");
         if (daanLabel != null) daanLabel.setText("");
         if (stageLabel != null) stageLabel.setText("");
-    }
-
-    /**
-     * 静态方法：清理字体缓存（在应用退出时调用）
-     */
-    public static void clearFontCache() {
-        FONT_CACHE.clear();
-    }
-
-    /**
-     * 获取当前内存使用情况（用于监控）
-     */
-    public static void logMemoryUsage() {
-        Runtime runtime = Runtime.getRuntime();
-        long maxMemory = runtime.maxMemory();
-        long totalMemory = runtime.totalMemory();
-        long freeMemory = runtime.freeMemory();
-        long usedMemory = totalMemory - freeMemory;
-
-        System.out.println("当前内存使用情况：总内存 = " + totalMemory / 1024 / 1024 + " MB, " +
-                "空闲内存 = " + freeMemory / 1024 / 1024 + " MB, " +
-                "已用内存 = " + usedMemory / 1024 / 1024 + " MB, " +
-                "最大内存 = " + maxMemory / 1024 / 1024 + " MB");
     }
 }

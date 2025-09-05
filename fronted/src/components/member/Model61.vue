@@ -6,8 +6,8 @@
     <div style="margin-top: 10px; padding-left: 100px; font-size: 28px; font-weight: bold; color: #4d8af5;
 text-shadow: -1px -1px 0 white, 1px -1px 0 white, -1px 1px 0 white, 1px 1px 0 white, -2px -2px 0 white, 2px -2px 0 white, -2px 2px 0 white, 2px 2px 0 white;" >
       <el-row>
-        <el-col span="4"> 环节: {{ stage.name}}</el-col>
-        <el-col :span="4">
+        <el-col span="7"> 环节: {{ stage.name}}</el-col>
+        <el-col :span="5">
           <div style="color: red; ">
             <span v-if="second >= 0">时间: {{second}} 秒</span>
             <span v-else style="opacity: 0;">占位文本</span>

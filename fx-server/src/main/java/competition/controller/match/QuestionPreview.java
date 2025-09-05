@@ -174,7 +174,7 @@ public class QuestionPreview implements ReloadPane<Questions>{
 
     private void showData() {
         tiganBox.setPadding(new Insets(ScreenAdapter.calculateExX(20)));
-        backPane.setPadding(new Insets(0, ScreenAdapter.calculateExX(20), 0, ScreenAdapter.calculateExX(20)));
+        backPane.setPadding(new Insets(ScreenAdapter.calculateExX(20), 0, ScreenAdapter.calculateExX(20), 0));
 
         // 设置容器背景 - 使用缓存优化
         try {
@@ -385,9 +385,9 @@ public class QuestionPreview implements ReloadPane<Questions>{
             // 答案颜色
             daanLabel.setFill(Color.valueOf(split[1]));
 
-            String style1 = "200%%200%%1550%%200%%false%%0xffffcc00%%%%默认.ttf%%30%%false%%false%%false%%false%%左对齐%%10%%0";
-            String style2 = "200%%700%%1550%%60%%false%%0x990000ff%%%%默认.ttf%%36%%false%%false%%false%%false%%居中对齐%%0";
-            String style3 = "2%%2%%300%%100%%false%%0xb31a1aff%%%%默认.ttf%%24%%false%%false%%false%%false%%居中对齐%%";
+            String style1 = "200%%200%%1550%%200%%false%%0xffffffff%%%%默认.ttf%%30%%false%%false%%false%%false%%左对齐%%10%%0";
+            String style2 = "200%%700%%1550%%60%%false%%0xffffffff%%%%默认.ttf%%36%%false%%false%%false%%false%%居中对齐%%0";
+            String style3 = "2%%2%%300%%100%%false%%0xffffffff%%%%默认.ttf%%24%%false%%false%%false%%false%%居中对齐%%";
 
             List<QuestionStyle> parse = ExcelParser.parse(ExcelParser.S_PATH, QuestionStyle.class);
             if (!parse.isEmpty()) {

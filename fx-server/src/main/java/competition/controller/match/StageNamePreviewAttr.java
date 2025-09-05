@@ -119,7 +119,7 @@ public class StageNamePreviewAttr {
     private void previewData(){
         final Stages stage = stagesMapper.selectById(stageId);
         final String config = stage.getStyle();
-        String[] detailArr = "750%%400%%400%%150%%false%%0x990000ff%%%%默认.ttf%%40%%false%%false%%false%%false%%居中对齐%%0%%0x000000ff".split(ConfigSpliter.SPLITER);
+        String[] detailArr = "750%%400%%400%%150%%false%%0xffffffff%%%%默认.ttf%%40%%false%%false%%false%%false%%居中对齐%%0".split(ConfigSpliter.SPLITER);
         if (!StringUtils.isEmpty(config)) {
             detailArr = config.split(ConfigSpliter.SPLITER);
         }

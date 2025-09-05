@@ -155,7 +155,7 @@ public class StagePreviewAttr {
                     .eq(StagesStyle::getParentId, level)
             );
         }
-        String defaultStyle = "550%%300%%350%%80%%false%%0xb31a1aff%%%%默认.ttf%%28%%false%%false%%false%%false%%居中对齐%%60%%0%%2";
+        String defaultStyle = "550%%300%%350%%80%%false%%0xffffffff%%%%默认.ttf%%28%%false%%false%%false%%false%%居中对齐%%60%%0%%2%%60%%0x000000ff";
         String[] detailArr = defaultStyle.split(ConfigSpliter.SPLITER);
         if (StringUtils.isEmpty(details)) {
 //            GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();

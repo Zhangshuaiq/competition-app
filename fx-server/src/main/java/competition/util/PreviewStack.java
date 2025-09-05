@@ -55,5 +55,9 @@ public class PreviewStack {
         PreviewPane pop = previewStack.peek();
         pop.reload(time, timeTxt);
     }
+
+    public static final void clear(){
+        previewStack.clear();
+    }
     
 }

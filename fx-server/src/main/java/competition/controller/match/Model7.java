@@ -165,7 +165,9 @@ public class Model7 implements ReloadPane<Stages> {
                     label.setTextAlignment(TextAlignment.CENTER);
                 }
             }
-
+            teamNameLabel.setTextAlignment(TextAlignment.LEFT);
+            teamNameLabel.setAlignment(Pos.CENTER_LEFT);
+            teamNameLabel.setPadding(new Insets(0, 0, 0, 10));
             // 创建第二行（圆圈显示） - 与Preview保持一致
             row2 = new GridPane();
             row2.setPadding(new Insets(2));
@@ -282,8 +284,11 @@ public class Model7 implements ReloadPane<Stages> {
         void updateLayout(double width, double height, boolean hideCircles, boolean hideDownArea) {
             mainPane.setPrefWidth(width);
             upArea.setPrefWidth(width);
+            upArea.setMinWidth(width);
             row1.setPrefWidth(width);
+            row1.setMinWidth(width);
             row2.setPrefWidth(width);
+            row2.setMinWidth(width);
             teamNameLabel.setPrefWidth(width * 0.2);
             scoreLabel.setPrefWidth(width * 0.2);
             timeLabel.setPrefWidth(width * 0.6);
@@ -322,7 +327,8 @@ public class Model7 implements ReloadPane<Stages> {
 
             // 答案区域 - 根据下方区域高度动态调整位置，与Preview保持一致
             answerArea.setPrefWidth(width);
-            double answerAreaY = Math.min(ScreenAdapter.calculateExY(190), downAreaHeight * 0.75);
+            double answerAreaHeight = ScreenAdapter.calculateMainY(70);
+            double answerAreaY = downAreaHeight - answerAreaHeight;
             answerArea.setLayoutY(answerAreaY);
 
             // 等待标签 - 填满整个下方区域，保持原字体大小，与Preview保持一致

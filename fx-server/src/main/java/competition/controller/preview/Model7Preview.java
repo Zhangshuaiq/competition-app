@@ -175,6 +175,9 @@ public class Model7Preview extends RankPane<Stages> {
                     label.setTextAlignment(TextAlignment.CENTER);
                 }
             }
+            teamNameLabel.setTextAlignment(TextAlignment.LEFT);
+            teamNameLabel.setAlignment(Pos.CENTER_LEFT);
+            teamNameLabel.setPadding(new Insets(0, 0, 0, 10));
 
             // 创建第二行（圆圈显示）
             row2 = new GridPane();
@@ -236,6 +239,8 @@ public class Model7Preview extends RankPane<Stages> {
 
             answerLabel = new Label();
             answerLabel.setPrefHeight(ScreenAdapter.calculateMainY(30));
+            answerLabel.setMinHeight(ScreenAdapter.calculateMainY(30));
+            answerLabel.setMaxHeight(ScreenAdapter.calculateMainY(30));
             answerLabel.setTextAlignment(TextAlignment.CENTER);
             answerLabel.setTextFill(Color.WHITE);
             answerLabel.setPrefWidth(width);
@@ -244,6 +249,9 @@ public class Model7Preview extends RankPane<Stages> {
 
             statusLabel = new Label();
             statusLabel.setPrefHeight(ScreenAdapter.calculateMainY(30));
+            statusLabel.setMinHeight(ScreenAdapter.calculateMainY(30));
+            statusLabel.setMaxHeight(ScreenAdapter.calculateMainY(30));
+
             statusLabel.setAlignment(Pos.CENTER);
             statusLabel.setTextAlignment(TextAlignment.CENTER);
             statusLabel.setTextFill(Color.WHITE);
@@ -251,11 +259,14 @@ public class Model7Preview extends RankPane<Stages> {
             statusLabel.setVisible(false);
 
             answerArea.getChildren().addAll(answerLabel, statusLabel);
-
+            answerArea.setPrefHeight(ScreenAdapter.calculateMainY(60));
+            answerArea.setMaxHeight(ScreenAdapter.calculateMainY(60));
             // 等待标签
             waitLabel = new Label("等待答题");
             waitLabel.setPrefWidth(width);
             waitLabel.setPrefHeight(height); // 初始化时设置为整个面板高度，后续会在updateLayout中调整
+            waitLabel.setMaxHeight(height);
+            waitLabel.setMinHeight(height);
             waitLabel.setLayoutY(0);
             waitLabel.setFont(FontMap.load(FontMap.defaultFontName(), ScreenAdapter.calculateMainX(35)));
             waitLabel.setTextFill(Color.BLACK);
@@ -292,8 +303,11 @@ public class Model7Preview extends RankPane<Stages> {
         void updateLayout(double width, double height, boolean hideCircles, boolean hideDownArea) {
             mainPane.setPrefWidth(width);
             upArea.setPrefWidth(width);
+            upArea.setMinWidth(width);
             row1.setPrefWidth(width);
+            row1.setMinWidth(width);
             row2.setPrefWidth(width);
+            row2.setMinWidth(width);
             teamNameLabel.setPrefWidth(width * 0.2);
             scoreLabel.setPrefWidth(width * 0.2);
             timeLabel.setPrefWidth(width * 0.6);
@@ -317,6 +331,7 @@ public class Model7Preview extends RankPane<Stages> {
             // 上方蓝色区域高度 = 第一行高度(22) + 圆圈区域高度 + 内边距
             double upAreaHeight = ScreenAdapter.calculateMainY(22 + circleRowHeight + (hideCircles ? 0 : 5));
             upArea.setPrefHeight(upAreaHeight);
+            upArea.setMaxHeight(upAreaHeight);
 
             // 下方区域的位置和高度
             downArea.setPrefWidth(width);
@@ -324,20 +339,26 @@ public class Model7Preview extends RankPane<Stages> {
             downArea.setLayoutY(downAreaY);
             double downAreaHeight = height - (downAreaY - ScreenAdapter.calculateMainY(10));
             downArea.setPrefHeight(downAreaHeight);
+            downArea.setMinHeight(downAreaHeight);
+            downArea.setMaxHeight(downAreaHeight);
             downArea.setVisible(!hideDownArea);
             downArea.setManaged(!hideDownArea);
+
 
             // 题目区域保持不变
             questionArea.setPrefWidth(width);
 
             // 答案区域 - 根据下方区域高度动态调整位置
             answerArea.setPrefWidth(width);
-            double answerAreaY = Math.min(ScreenAdapter.calculateMainY(190), downAreaHeight * 0.75);
+            double answerAreaHeight = ScreenAdapter.calculateMainY(70);
+            double answerAreaY = downAreaHeight - answerAreaHeight;
             answerArea.setLayoutY(answerAreaY);
 
             // 等待标签 - 填满整个下方区域，保持原字体大小
             waitLabel.setPrefWidth(width);
             waitLabel.setPrefHeight(downAreaHeight);
+            waitLabel.setMinHeight(downAreaHeight);
+            waitLabel.setMaxHeight(downAreaHeight);
             waitLabel.setLayoutY(0);
 
             // 结束相关标签 - 根据下方区域高度重新分布位置
@@ -345,14 +366,20 @@ public class Model7Preview extends RankPane<Stages> {
 
             endLabel.setPrefWidth(width);
             endLabel.setPrefHeight(labelHeight);
+            endLabel.setMinHeight(labelHeight);
+            endLabel.setMaxHeight(labelHeight);
             endLabel.setLayoutY(0);
 
             finalScoreLabel.setPrefWidth(width);
             finalScoreLabel.setPrefHeight(labelHeight);
+            finalScoreLabel.setMinHeight(labelHeight);
+            finalScoreLabel.setMaxHeight(labelHeight);
             finalScoreLabel.setLayoutY(labelHeight);
 
             finalTimeLabel.setPrefWidth(width);
             finalTimeLabel.setPrefHeight(labelHeight);
+            finalTimeLabel.setMinHeight(labelHeight);
+            finalTimeLabel.setMaxHeight(labelHeight);
             finalTimeLabel.setLayoutY(labelHeight * 2);
         }
     }

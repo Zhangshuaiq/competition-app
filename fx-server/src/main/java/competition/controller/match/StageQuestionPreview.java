@@ -115,14 +115,8 @@ public class StageQuestionPreview implements ReloadPane<Stages> {
                 q.setOrder(q.getQuestionNumber());
             }
         }
-//        questionList.sort(new Comparator<Questions>() {
-//            @Override
-//            public int compare(Questions o1, Questions o2) {
-//                return o1.getQuestionNumber().compareTo(o2.getQuestionNumber());
-//            }
-//        });
 
-        String questionStyle = "760%%240%%400%%80%%false%%0x990000ff%%%%默认.ttf%%40%%false%%false%%false%%false%%居中对齐%%10###415%%370%%100%%100%%false%%0x990000ff%%%%默认.ttf%%30%%false%%false%%false%%false%%居中对齐%%10%%10";
+        String questionStyle = "760%%240%%400%%80%%false%%0xffffffff%%%%默认.ttf%%40%%false%%false%%false%%false%%居中对齐%%10###415%%370%%100%%100%%false%%0xffffffff%%%%默认.ttf%%30%%false%%false%%false%%false%%居中对齐%%10%%10";
         String[] cfgArr = {};
 
         if (!StringUtils.isEmpty(config)) {

@@ -228,6 +228,18 @@ public class ControlPane {
     @Resource
     private Model7StatusMapper model7StatusMapper;
 
+
+    private final Comparator<Stages> comparator = (o1, o2) -> {
+        if (o1.getSortVal().length() > o2.getSortVal().length()) {
+            return 1;
+        } else if (o1.getSortVal().length() < o2.getSortVal().length()) {
+            return -1;
+        }
+        String[] split1 = o1.getSortVal().split("\\.");
+        String[] split2 = o2.getSortVal().split("\\.");
+        return Integer.compare(Integer.parseInt(split1[split1.length - 1]), Integer.parseInt(split2[split2.length - 1]));
+    };
+
     private void loadConnectionStatsBar() {
         Configs configs = configsMapper.selectById(12);
         String config = configs.getConfig();
@@ -798,7 +810,7 @@ public class ControlPane {
         final List<Stages> stages = stagesMapper.selectList(new LambdaQueryWrapper<Stages>()
                 .isNull(Stages::getParentId)
                 .orderByAsc(Stages::getSortVal));
-        stages.sort((o1, o2) -> (int) (Double.parseDouble(o1.getSortVal()) - Double.parseDouble(o2.getSortVal())));
+        stages.sort(comparator);
         showStageData(stages, stageList);
         showTopStage();
     }
@@ -1459,12 +1471,9 @@ public class ControlPane {
 
         @SuppressWarnings("rawtypes")
         PreviewPane last = PreviewStack.getLast();
-
         if (last instanceof QuestionPreviewPreview) {
             // 答题 返回 选题界面
             GlobalCache.showAnswer = false;
-            QuestionPreviewPreview x = (QuestionPreviewPreview) previewPane;
-            Questions q = x.getData();
             Stages stages = stagesMapper.selectById(currentStage.getId());
             // 返回关闭计时
             if (timeBoardPreview != null) {
@@ -1721,6 +1730,7 @@ public class ControlPane {
                 .eq(Stages::getParentId, controlStage.getId())
                 .orderByAsc(Stages::getSortVal));
         if (!CollectionUtils.isEmpty(stages)) {
+            stages.sort(comparator);
             stageList.setVisible(false);
             stageName.setVisible(false);
             stageChildList.setVisible(true);
@@ -2981,5 +2991,9 @@ public class ControlPane {
             }
 
         }
+    }
+
+    public void updateCurrentStage(Stages stages){
+        currentStage = stages;
     }
 }

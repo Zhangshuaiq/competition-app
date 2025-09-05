@@ -751,7 +751,7 @@ public class QuestionPreviewAttr {
             answerHeightInput.setText(cfgArr[8]);
             answerText.setText(questions.getAnswer());
             answerTextAlignSelector.setValue("左对齐");
-            String style1 = "200%%700%%1550%%60%%false%%0x990000ff%%%%默认.ttf%%36%%false%%false%%false%%false%%居中对齐%%0";
+            String style1 = "200%%700%%1550%%60%%false%%0xffffffff%%%%默认.ttf%%36%%false%%false%%false%%false%%居中对齐%%0";
             // 根据配置详情设置样式
             if (!questionStyleList.isEmpty()) {
                 QuestionStyle questionStyle = questionStyleList.get(questions.getSort());

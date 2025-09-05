@@ -378,10 +378,10 @@ public class StageQuestionPreviewAttr {
     private void showNumberConfig(Configs configs) {
         String details;
         if (currentStage.getQuestionType() == 4) {
-            details = "560%%240%%800%%100%%false%%0x990000ff%%%%默认.ttf%%40%%false%%false%%false%%false%%居中对齐%%0###920%%400%%80%%80%%false%%0x990000ff%%%%默认.ttf%%36%%false%%true%%false%%false%%居中对齐%%0%%1";
+            details = "560%%240%%800%%100%%false%%0xffffffff%%%%默认.ttf%%40%%false%%false%%false%%false%%居中对齐%%0###920%%400%%80%%80%%false%%0xffffffff%%%%默认.ttf%%36%%false%%true%%false%%false%%居中对齐%%0%%1";
         }
         else {
-            details = "760%%240%%400%%80%%false%%0x990000ff%%%%默认.ttf%%40%%false%%false%%false%%false%%居中对齐%%10###415%%370%%100%%100%%false%%0x990000ff%%%%默认.ttf%%30%%false%%false%%false%%false%%居中对齐%%10%%10";
+            details = "760%%240%%400%%80%%false%%0xffffffff%%%%默认.ttf%%40%%false%%false%%false%%false%%居中对齐%%10###415%%370%%100%%100%%false%%0xffffffff%%%%默认.ttf%%30%%false%%false%%false%%false%%居中对齐%%10%%10";
         }
 
         String[] split = details.split(ConfigSpliter.DIFFER);

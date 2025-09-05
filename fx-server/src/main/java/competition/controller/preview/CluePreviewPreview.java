@@ -119,7 +119,6 @@ public class CluePreviewPreview extends PreviewPane<Questions>{
     @Override
     public void scrollUp() {
         scrollPane.setVvalue(scrollPane.getVvalue() - 0.1);
-        //tiganBox.setTranslateY(tiganBox.getTranslateY() - ScreenAdapter.calculateMainH(GlobalCache.SCROLL_STEP));
         if (ExtendedScreen.hasShow()) {
             ReloadPane questionPreview = controlPane.getQuestionPreview();
             if (questionPreview != null) {
@@ -154,14 +153,11 @@ public class CluePreviewPreview extends PreviewPane<Questions>{
         buttonPane.setPrefWidth(Navigator.getWidth());
         buttonPane.setLayoutY(ScreenAdapter.calculateMainY(buttonPane.getLayoutY()));
         PreviewStack.addPreview(this);
-        container.setOnMouseClicked(new EventHandler<MouseEvent>() {
-            @Override
-            public void handle(MouseEvent event) {
-                // 鼠标右键打开详细的界面设置
-                if (event.getButton() == MouseButton.SECONDARY) {
-                    QuestionPreviewAttr.setQuestions(inner);
-                    Navigator.navigatorTo("/view/match/QuestionPreviewAttr.fxml", "", "/view/style.css", false, false);
-                }
+        container.setOnMouseClicked(event -> {
+            // 鼠标右键打开详细的界面设置
+            if (event.getButton() == MouseButton.SECONDARY) {
+                QuestionPreviewAttr.setQuestions(inner);
+                Navigator.navigatorTo("/view/match/QuestionPreviewAttr.fxml", "", "/view/style.css", false, false);
             }
         });
         showData();
@@ -176,16 +172,9 @@ public class CluePreviewPreview extends PreviewPane<Questions>{
 
     private void showData() {
         tiganBox.setPadding(new Insets(ScreenAdapter.calculateMainX(20)));
-        backPane.setPadding(new Insets(0, ScreenAdapter.calculateMainX(20), 0, ScreenAdapter.calculateMainX(20)));
+        backPane.setPadding(new Insets(ScreenAdapter.calculateMainX(20), 0, ScreenAdapter.calculateMainX(20), 0));
         Questions questions = JSON.parseObject(JSON.toJSONString(inner), Questions.class);
 
-//        questions.setChoiceA("");
-//        questions.setChoiceB("");
-//        questions.setChoiceC("");
-//        questions.setChoiceD("");
-//        questions.setChoiceE("");
-//        questions.setChoiceF("");
-//        messageHandler.notifyPage("clue", questions);
         if (ExtendedScreen.hasShow()) {
             // 进入比赛
             Object res = ExtendedScreen.showWithControl("/view/match/CluePreview.fxml", inner);
@@ -336,9 +325,9 @@ public class CluePreviewPreview extends PreviewPane<Questions>{
 
 
 
-            String style1 = "200%%200%%1550%%200%%false%%0xffffcc00%%%%默认.ttf%%30%%false%%false%%false%%false%%左对齐%%10%%0";
-            String style2 = "200%%700%%1550%%60%%false%%0x990000ff%%%%默认.ttf%%36%%false%%false%%false%%false%%居中对齐%%0";
-            String style3 = "2%%2%%300%%100%%false%%0xb31a1aff%%%%默认.ttf%%24%%false%%false%%false%%false%%居中对齐%%";
+            String style1 = "200%%200%%1550%%200%%false%%0xffffffff%%%%默认.ttf%%30%%false%%false%%false%%false%%左对齐%%10%%0";
+            String style2 = "200%%700%%1550%%60%%false%%0xffffffff%%%%默认.ttf%%36%%false%%false%%false%%false%%居中对齐%%0";
+            String style3 = "2%%2%%300%%100%%false%%0xffffffff%%%%默认.ttf%%24%%false%%false%%false%%false%%居中对齐%%";
             List<QuestionStyle> parse = ExcelParser.parse(ExcelParser.S_PATH, QuestionStyle.class);
 
             if (!parse.isEmpty()) {

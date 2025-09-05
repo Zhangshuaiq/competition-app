@@ -6,6 +6,7 @@ import competition.controller.preview.PreviewPane;
 import competition.entity.Stages;
 import competition.mapper.StagesMapper;
 import competition.util.ImageResource;
+import competition.util.PreviewStack;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.ObservableList;
@@ -123,6 +124,17 @@ public class StageConfig {
     private List<Integer> recorded;
 
     private String filePath;
+
+    private final Comparator<Stages> comparator = (o1, o2) -> {
+        if (o1.getSortVal().length() > o2.getSortVal().length()) {
+            return 1;
+        } else if (o1.getSortVal().length() < o2.getSortVal().length()) {
+            return -1;
+        }
+        String[] split1 = o1.getSortVal().split("\\.");
+        String[] split2 = o2.getSortVal().split("\\.");
+        return Integer.compare(Integer.parseInt(split1[split1.length - 1]), Integer.parseInt(split2[split2.length - 1]));
+    };
 
     @FXML
     public void initialize() {
@@ -268,7 +280,7 @@ public class StageConfig {
     private void showStageData(){
         List<Stages> stages = stagesMapper.selectList(new LambdaQueryWrapper<>());
         final List<Stages> firstStages = stages.stream().filter(x -> x.getParentId() == null)
-                .sorted(Comparator.comparingDouble(o -> Double.parseDouble(o.getSortVal()))).collect(Collectors.toList());
+                .sorted(comparator).collect(Collectors.toList());
         try {
             nextStageData(firstStages, firstBox, 1);
         } catch (FileNotFoundException e) {
@@ -364,7 +376,7 @@ public class StageConfig {
                     // 显示下一阶段的数据
                     List<Stages> stages = stagesMapper.selectList(new LambdaQueryWrapper<>());
                     final List<Stages> firstStages = stages.stream().filter(x -> Objects.equals(current.getId(), x.getParentId()))
-                        .sorted(Comparator.comparingDouble(o -> Double.parseDouble(o.getSortVal()))).collect(Collectors.toList());
+                        .sorted(comparator).collect(Collectors.toList());
                     Integer level = current.getLevel();
                     // 清除子环节
                     for (int i1 = 0; i1 < levelList.size(); i1++) {
@@ -479,14 +491,14 @@ public class StageConfig {
             // 顶级环节：parentId为null的所有环节
             return allStages.stream()
                 .filter(x -> x.getLevel() == 1 && x.getParentId() == null)
-                .sorted(Comparator.comparingDouble(o -> Double.parseDouble(o.getSortVal())))
+                .sorted(comparator)
                 .collect(Collectors.toList());
         } else {
             // 子环节：相同parentId的所有环节
             return allStages.stream()
                 .filter(x -> x.getLevel().equals(stage.getLevel()) &&
                     Objects.equals(x.getParentId(), stage.getParentId()))
-                .sorted(Comparator.comparingDouble(o -> Double.parseDouble(o.getSortVal())))
+                .sorted(comparator)
                 .collect(Collectors.toList());
         }
     }
@@ -502,7 +514,7 @@ public class StageConfig {
         stage2.setSortVal(originalSortVal1);
         stagesMapper.updateById(stage1);
         stagesMapper.updateById(stage2);
-
+        updateCurrentStage();
         System.out.println("交换后: " + stage1.getSortVal() + " <-> " + stage2.getSortVal());
 
         // 第二步：递归更新stage1的所有子孙环节
@@ -535,7 +547,7 @@ public class StageConfig {
 
             child.setSortVal(newChildSortVal);
             stagesMapper.updateById(child);
-
+            updateCurrentStage();
             // 递归更新这个子环节的所有子孙环节
             updateAllDescendants(allStages, child.getId(), oldChildSortVal, newChildSortVal);
         }
@@ -599,14 +611,14 @@ public class StageConfig {
             // 顶级环节：parentId为null的所有环节
             siblings = allStages.stream()
                 .filter(x -> x.getLevel() == 1 && x.getParentId() == null)
-                .sorted(Comparator.comparingDouble(o -> Double.parseDouble(o.getSortVal())))
+                .sorted(comparator)
                 .collect(Collectors.toList());
         } else {
             // 子环节：相同parentId的所有环节
             siblings = allStages.stream()
                 .filter(x -> x.getLevel().equals(deletedLevel) &&
                     Objects.equals(x.getParentId(), deletedParentId))
-                .sorted(Comparator.comparingDouble(o -> Double.parseDouble(o.getSortVal())))
+                .sorted(comparator)
                 .collect(Collectors.toList());
         }
 
@@ -635,7 +647,7 @@ public class StageConfig {
                 // 更新当前环节
                 stage.setSortVal(newSortVal);
                 stagesMapper.updateById(stage);
-
+                updateCurrentStage();
                 // 递归更新所有子孙环节
                 updateAllDescendants(allStages, stage.getId(), oldSortVal, newSortVal);
             }
@@ -667,7 +679,7 @@ public class StageConfig {
                 // 更新当前环节
                 stage.setSortVal(newSortVal);
                 stagesMapper.updateById(stage);
-
+                updateCurrentStage();
                 // 递归更新所有子孙环节
                 updateAllDescendants(allStages, stage.getId(), oldSortVal, newSortVal);
             }
@@ -826,7 +838,7 @@ public class StageConfig {
         current.setCountTotal(countTotal.isSelected()? 1: 0);
         current.setAnswerSingle(answerShow.isSelected()?1: 0);
         stagesMapper.updateById(current);
-
+        updateCurrentStage();
         refreshStageDisplay();
         PreviewPane previewPane = controlPane.getPreviewPane();
         if (previewPane != null) {
@@ -944,5 +956,14 @@ public class StageConfig {
 
         stagesMapper.insert(stages);
         refreshStageDisplay();
+    }
+
+    private void updateCurrentStage(){
+        Stages currentStage = controlPane.getCurrentStage();
+        if (currentStage != null) {
+            controlPane.updateCurrentStage(null);
+        }
+        PreviewStack.clear();
+        controlPane.closeWindow();
     }
 }

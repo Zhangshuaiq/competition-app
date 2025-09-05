@@ -70,6 +70,17 @@ public class StagePreviewPreview extends PreviewPane<Integer> {
         return container;
     }
 
+    private final Comparator<Stages> comparator = (o1, o2) -> {
+        if (o1.getSortVal().length() > o2.getSortVal().length()) {
+            return 1;
+        } else if (o1.getSortVal().length() < o2.getSortVal().length()) {
+            return -1;
+        }
+        String[] split1 = o1.getSortVal().split("\\.");
+        String[] split2 = o2.getSortVal().split("\\.");
+        return Integer.compare(Integer.parseInt(split1[split1.length - 1]), Integer.parseInt(split2[split2.length - 1]));
+    };
+
     @FXML
     public void initPage() {
         BoardPane scoreBoardPreview = controlPane.getScoreBoardPreview();
@@ -141,11 +152,10 @@ public class StagePreviewPreview extends PreviewPane<Integer> {
                             .eq(StagesStyle::getParentId, innerStageID)
                     );
                 }
-                stages.sort(Comparator.comparingDouble(o -> Double.parseDouble(o.getSortVal())));
+                stages.sort(comparator);
                 messageHandler.notifyPage("stages", stages);
-              
-                
-                String defaultStyle = "550%%300%%350%%80%%false%%0xb31a1aff%%%%默认.ttf%%28%%false%%false%%false%%false%%居中对齐%%60%%0%%2%%60";
+
+                String defaultStyle = "550%%300%%350%%80%%false%%0xffffffff%%%%默认.ttf%%28%%false%%false%%false%%false%%居中对齐%%60%%0%%2%%60%%0x000000ff";
                 String[] detailArr = defaultStyle.split(ConfigSpliter.SPLITER);
                 if (stagesStyle != null) {
                     detailArr = stagesStyle.getStyle().split(ConfigSpliter.SPLITER);
@@ -159,7 +169,6 @@ public class StagePreviewPreview extends PreviewPane<Integer> {
                 stageContainer.setLayoutX(x);
                 stageContainer.setLayoutY(y);
                 stageContainer.prefWidth(width);
-               // stageContainer.height
 
                 if (detailArr.length > 0) {
 

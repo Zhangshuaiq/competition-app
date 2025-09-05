@@ -152,7 +152,7 @@ public class StageQuestionPreviewPreview extends PreviewPane<Stages> {
             q.setScore(inner.getScorePerQ());
         }
 
-        String questionStyle = "760%%240%%400%%80%%false%%0x990000ff%%%%默认.ttf%%40%%false%%false%%false%%false%%居中对齐%%10###415%%370%%100%%100%%false%%0x990000ff%%%%默认.ttf%%30%%false%%false%%false%%false%%居中对齐%%10%%10";
+        String questionStyle = "760%%240%%400%%80%%false%%0xffffffff%%%%默认.ttf%%40%%false%%false%%false%%false%%居中对齐%%10###415%%370%%100%%100%%false%%0xffffffff%%%%默认.ttf%%30%%false%%false%%false%%false%%居中对齐%%10%%10";
         String[] cfgArr = {};
         if (!StringUtils.isEmpty(config)) {
             cfgArr = config.split(ConfigSpliter.SPLITER);

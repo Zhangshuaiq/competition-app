@@ -1,4 +1,4 @@
 target
 .idea
-competition.db
+competition_back.db
 /src/main/resources/frontend/

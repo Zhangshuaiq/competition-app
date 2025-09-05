@@ -264,19 +264,19 @@ public class Model3Attr {
         if (!StringUtils.isEmpty(model3Style.getTitleStyle())) {
             showNameConfig(model3Style.getTitleStyle());
         } else {
-            showNameConfig("250%%300%%150%%150%%false%%0x990000ff%%%%默认.ttf%%32%%false%%false%%false%%false%%居中对齐%%30%%0xffffffff");
+            showNameConfig("250%%300%%150%%150%%false%%0xffffffff%%%%默认.ttf%%32%%false%%false%%false%%false%%居中对齐%%30%%0x000000ff");
         }
 
         if (!StringUtils.isEmpty(model3Style.getQStyle())) {
             showNumberConfig(model3Style.getQStyle());
         } else {
-            showNumberConfig("500%%300%%60%%60%%false%%0x990000ff%%%%默认.ttf%%36%%false%%false%%false%%false%%居中对齐%%30%%8%%40%%0xffffffff");
+            showNumberConfig("500%%300%%60%%60%%false%%0xffffffff%%%%默认.ttf%%36%%false%%false%%false%%false%%居中对齐%%30%%8%%40%%0x000000ff");
         }
 
         if (!StringUtils.isEmpty(model3Style.getHeadStyle())) {
             showHeadConfig(model3Style.getHeadStyle());
         } else {
-            showHeadConfig("750%%150%%400%%100%%false%%0x990000ff%%%%默认.ttf%%40%%false%%false%%false%%false%%居中对齐%%0%%0xffffffff");
+            showHeadConfig("750%%150%%400%%100%%false%%0xffffffff%%%%默认.ttf%%40%%false%%false%%false%%false%%居中对齐%%0%%0x000000ff");
         }
     }
 
