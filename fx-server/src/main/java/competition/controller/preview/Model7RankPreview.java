@@ -629,6 +629,6 @@ public class Model7RankPreview extends RankPane {
         int s = second % 60;
         int m = second / 60;
 
-        return String.format("%02d 分 %02d 秒", m, s);
+        return String.format("%02d:%02d", m, s);
     }
 }

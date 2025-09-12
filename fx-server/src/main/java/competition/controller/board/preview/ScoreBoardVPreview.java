@@ -417,7 +417,7 @@ public class ScoreBoardVPreview extends PreviewPane implements BoardPane {
             box.setSpacing(1);
             right.getChildren().add(box);
         }
-        double size = (leftSize > rightSize)? leftSize : rightSize;
+        double size = Math.max(leftSize, rightSize);
         double prefHeight = ScreenAdapter.calculateMainY(size * (Double.parseDouble(cfgArr[20]) * leftCount) + (size - 1) * rowSpan);
         container.setPrefHeight(prefHeight);
         Navigator.scoreBoardStage.setWidth(container.getPrefWidth());

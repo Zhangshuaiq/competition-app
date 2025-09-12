@@ -365,6 +365,6 @@ public class Model7Rank implements ReloadPane<List<Model7RankData>>{
         int s = second % 60;
         int m = second / 60;
 
-        return String.format("%02d 分 %02d 秒", m, s);
+        return String.format("%02d:%02d", m, s);
     }
 }

@@ -367,11 +367,12 @@ public class ScoreBoardHPreview extends PreviewPane implements BoardPane {
 
         double prefWidth = ScreenAdapter.calculateMainX(Double.parseDouble(cfgArr[19])) * teams.size() + container.getSpacing() * teams.size();
         container.setPrefWidth(prefWidth);
-        int size = ((VBox) container.getChildren().get(0)).getChildren().size();
-        container.setPrefHeight(ScreenAdapter.calculateMainY(Integer.parseInt(cfgArr[20]) * size + size - 1));
+        if (!container.getChildren().isEmpty()) {
+            int size = ((VBox) container.getChildren().get(0)).getChildren().size();
+            container.setPrefHeight(ScreenAdapter.calculateMainY(Integer.parseInt(cfgArr[20]) * size + size - 1));
+        }
         Navigator.scoreBoardStage.setWidth(container.getPrefWidth());
         Navigator.scoreBoardStage.setHeight(container.getPrefHeight());
-
     }
 
 

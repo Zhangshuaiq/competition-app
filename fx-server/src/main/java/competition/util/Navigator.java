@@ -29,9 +29,7 @@ import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.util.StringUtils;
 
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicReference;
 
 @Slf4j
@@ -59,6 +57,7 @@ public class Navigator {
     // 抢答结束面板
     public static final Stage buzzBoardStage = new Stage();
 
+    private static final Set<String> attrCache = new HashSet<>();
 
     // 缓存的界面，和对应的控制器
     private static final Map<String, PreviewPane> cachedPreviews = new HashMap<>();
@@ -87,12 +86,7 @@ public class Navigator {
         connectionStage.setAlwaysOnTop(true);
         connectionStage.initStyle(StageStyle.TRANSPARENT);
 
-        backendStage.setOnCloseRequest(new EventHandler<WindowEvent>() {
-            @Override
-            public void handle(WindowEvent event) {
-                GlobalCache.backendOpen = false;
-            }
-        });
+        backendStage.setOnCloseRequest(event -> GlobalCache.backendOpen = false);
         activeStage.setAlwaysOnTop(true);
         activeStage.setTitle("软件激活");
     }
@@ -213,6 +207,9 @@ public class Navigator {
     }
 
     public static void navigatorTo(String fxml, String title, String cssFile, boolean hiddenControl, boolean fullScreen){
+        if (attrCache.contains(fxml)) {
+            return;
+        }
         Parent load = null;
         try {
             FXMLLoader loader = new FXMLLoader(Navigator.class.getResource(fxml));
@@ -232,9 +229,12 @@ public class Navigator {
                 stage.initStyle(StageStyle.TRANSPARENT);
             }
             scene.getStylesheets().add(cssFile); // 应用 CSS
-
+            stage.setOnCloseRequest(event -> {
+                attrCache.remove(fxml);
+            });
             stage.setScene(scene);
             stage.show();
+            attrCache.add(fxml);
         } catch (IOException e) {
             e.printStackTrace();
         }

@@ -29,7 +29,7 @@ public class TimeBoard implements ReloadPane {
     @FXML
     private AnchorPane container;
 
-    private String timeValue = "00秒";
+    private String timeValue = "00:00";
 
     private int timeVal;
 

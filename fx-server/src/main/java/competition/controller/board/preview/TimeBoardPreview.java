@@ -35,7 +35,7 @@ public class TimeBoardPreview extends PreviewPane {
     @FXML
     private AnchorPane container;
 
-    private String timeValue = "00秒";
+    private String timeValue = "00:00";
 
     private Timeline timeline;
 
@@ -261,7 +261,7 @@ public class TimeBoardPreview extends PreviewPane {
         if (timeBoard == null) {
             timeBoard = (ReloadPane) ExtendedScreen.timeWithPos("/view/board/match/TimeBoard.fxml", "", "/view/style.css", true);
         }
-        if (timeBoard != null && ExtendedScreen.hasShow()) {
+        if (timeBoard != null) {
             timeBoard.initPage();
             controlPane.setTimeBoard(timeBoard);
             timeBoard.shows();
@@ -291,7 +291,7 @@ public class TimeBoardPreview extends PreviewPane {
         Stage stage = (Stage) (timeLabel.getScene().getWindow());
         stage.hide();
         ReloadPane timeBoard = controlPane.getTimeBoard();
-        if (timeBoard != null && ExtendedScreen.hasShow()) {
+        if (timeBoard != null) {
             controlPane.setTimeBoard(timeBoard);
             timeBoard.close();
         }

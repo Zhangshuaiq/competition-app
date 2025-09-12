@@ -374,7 +374,7 @@ public class ScoreBoardV implements BoardPane {
             box.setSpacing(1);
             right.getChildren().add(box);
         }
-        double size = (leftSize > rightSize)? leftSize : rightSize;
+        double size = Math.max(leftSize, rightSize);
         double prefHeight = ScreenAdapter.calculateExY(size * (Double.parseDouble(cfgArr[20]) * leftCount) + (size - 1) * rowSpan);
         container.setPrefHeight(prefHeight);
         ExtendedScreen.scoreBoardStage.setWidth(container.getPrefWidth());

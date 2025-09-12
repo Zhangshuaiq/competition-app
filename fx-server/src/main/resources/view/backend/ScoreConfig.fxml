@@ -21,6 +21,7 @@
       </Label>
       <CheckBox fx:id="paneCheck" layoutX="111.0" layoutY="257.0" mnemonicParsing="false" prefHeight="16.0" prefWidth="506.0" text="   抢答成功/失败时相应平板和大屏更新图片" />
       <CheckBox fx:id="screenCheck" layoutX="111.0" layoutY="143.0" mnemonicParsing="false" prefHeight="16.0" prefWidth="506.0" text="   加减分数时相应记分屏闪烁一次" />
-      <Button layoutX="157.0" layoutY="337.0" mnemonicParsing="false" prefHeight="23.0" prefWidth="77.0" text="保  存" onMouseClicked="#saveConfig"/>
+      <Button layoutX="157.0" layoutY="337.0" mnemonicParsing="false" onMouseClicked="#saveConfig" prefHeight="23.0" prefWidth="77.0" text="保  存" />
+      <CheckBox fx:id="paneCheck1" layoutX="111.0" layoutY="292.0" mnemonicParsing="false" prefHeight="16.0" prefWidth="506.0" text="   抢答成功/失败时相应平板和大屏更新视频" />
    </children>
 </AnchorPane>
