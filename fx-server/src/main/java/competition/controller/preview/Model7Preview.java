@@ -125,10 +125,10 @@ public class Model7Preview extends RankPane<Stages> {
         }
 
         void initializeComponents(double width, double height, int totalQuestions, int cols,
-                                  double radius,
-                                  double wfSize, Color wfColor,
-                                  double qfSize, Color qfColor,
-                                  Color bkColor) {
+                double radius,
+                double wfSize, Color wfColor,
+                double qfSize, Color qfColor,
+                Color bkColor) {
             // 创建主面板
             mainPane = new VBox();
             mainPane.setPadding(new Insets(0, 0, 0, 0));
@@ -219,7 +219,7 @@ public class Model7Preview extends RankPane<Stages> {
             questionArea.getChildren().add(questionLabel);
 
             // 选择题选项
-            String[] choices = {"A", "B", "C", "D", "E", "F"};
+            String[] choices = { "A", "B", "C", "D", "E", "F" };
             for (String choice : choices) {
                 Label choiceLabel = new Label();
                 choiceLabel.setWrapText(true);
@@ -296,7 +296,8 @@ public class Model7Preview extends RankPane<Stages> {
             finalTimeLabel.setAlignment(Pos.CENTER);
             finalTimeLabel.setVisible(false);
 
-            downArea.getChildren().addAll(questionArea, answerArea, waitLabel, endLabel, finalScoreLabel, finalTimeLabel);
+            downArea.getChildren().addAll(questionArea, answerArea, waitLabel, endLabel, finalScoreLabel,
+                    finalTimeLabel);
             mainPane.getChildren().add(downArea);
         }
 
@@ -343,7 +344,6 @@ public class Model7Preview extends RankPane<Stages> {
             downArea.setMaxHeight(downAreaHeight);
             downArea.setVisible(!hideDownArea);
             downArea.setManaged(!hideDownArea);
-
 
             // 题目区域保持不变
             questionArea.setPrefWidth(width);
@@ -444,11 +444,12 @@ public class Model7Preview extends RankPane<Stages> {
         // 设置背景
         try {
             container.setBackground(new Background(new BackgroundImage(
-                    new Image(new FileInputStream(ImageResource.竞技模式背景())), BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT, BackgroundPosition.DEFAULT,
-                    new BackgroundSize(Navigator.getWidth(), Navigator.getHeight(), false, false, false, false)
-            )));
+                    new Image(new FileInputStream(ImageResource.竞技模式背景())), BackgroundRepeat.NO_REPEAT,
+                    BackgroundRepeat.NO_REPEAT, BackgroundPosition.DEFAULT,
+                    new BackgroundSize(Navigator.getWidth(), Navigator.getHeight(), false, false, false, false))));
         } catch (FileNotFoundException e) {
-            container.setBackground(new Background(new BackgroundFill(Color.TRANSPARENT, new CornerRadii(10), Insets.EMPTY)));
+            container.setBackground(
+                    new Background(new BackgroundFill(Color.TRANSPARENT, new CornerRadii(10), Insets.EMPTY)));
         }
 
         // 获取样式配置
@@ -547,8 +548,8 @@ public class Model7Preview extends RankPane<Stages> {
             if (!StringUtils.isEmpty(cfgVal)) {
                 String[] split = cfgVal.split(ConfigSpliter.SPLITER);
                 if (split.length > 10) {
-                    cachedTx = split[9];     // 题型
-                    cachedTxbz = split[10];  // 题型标注
+                    cachedTx = split[9]; // 题型
+                    cachedTxbz = split[10]; // 题型标注
                 }
             }
         } catch (Exception e) {
@@ -638,7 +639,7 @@ public class Model7Preview extends RankPane<Stages> {
         return questionText;
     }
 
-    public void clearCache(){
+    public void clearCache() {
         cachedQuestions = new ArrayList<>();
         Model7 bean = JavaFxApplication.getApplicationContext().getBean(Model7.class);
         if (bean != null) {
@@ -650,11 +651,11 @@ public class Model7Preview extends RankPane<Stages> {
      * 获取题目数据（带缓存）
      */
     private List<Questions> getQuestionsWithCache() {
-        if (cachedQuestions == null || cachedQuestions.isEmpty() || !Objects.equals(cachedStageNumber, inner.getSortVal())) {
+        if (cachedQuestions == null || cachedQuestions.isEmpty()
+                || !Objects.equals(cachedStageNumber, inner.getSortVal())) {
             cachedQuestions = questionsMapper.selectList(
                     new LambdaQueryWrapper<Questions>()
-                            .eq(Questions::getStageNumber, inner.getSortVal())
-            );
+                            .eq(Questions::getStageNumber, inner.getSortVal()));
             cachedStageNumber = inner.getSortVal();
         }
         return cachedQuestions;
@@ -717,7 +718,8 @@ public class Model7Preview extends RankPane<Stages> {
                         score -= controlPane.getCurrentStage().getDesValue();
                     }
                 }
-                score = score - ((Model7RuntimeData.totalNumber - questionList.size()) * controlPane.getCurrentStage().getDesValue());
+                score = score - ((Model7RuntimeData.totalNumber - questionList.size())
+                        * controlPane.getCurrentStage().getDesValue());
             } else {
                 for (Model7RuntimeData.ModelData data : questionList) {
                     if (data.getUserSelect() != null && data.getUserSelect().equals(data.getAnswer())) {
@@ -763,7 +765,6 @@ public class Model7Preview extends RankPane<Stages> {
 
         return rankList;
     }
-
     /**
      * 更新数据显示（只更新内容，不重新创建组件）
      */
@@ -799,46 +800,32 @@ public class Model7Preview extends RankPane<Stages> {
         boolean hideCircles = headStyleSplit.length > 1 ? Boolean.parseBoolean(headStyleSplit[1]) : false;
         boolean hideDownArea = headStyleSplit.length > 0 ? Boolean.parseBoolean(headStyleSplit[0]) : false;
 
-        // 更新每个队伍面板的数据
+        // 获取原始数据
         List<List<Model7RuntimeData.ModelData>> runtimeData = Model7RuntimeData.getRuntimeData();
         List<Teams> teams = TeamRuntime.getTeams();
 
-        for (int i = 0; i < runtimeData.size() && i < teamPanels.size(); i++) {
-            TeamDisplayPanel panel = teamPanels.get(i);
+        // 创建包含索引和分数的排序数据结构
+        List<TeamSortData> sortedTeamData = new ArrayList<>();
+
+        // 计算每个队伍的分数并创建排序数据
+        for (int i = 0; i < runtimeData.size(); i++) {
             List<Model7RuntimeData.ModelData> modelData = runtimeData.get(i);
 
-            // 更新布局（如果样式改变）
-            panel.updateLayout(cachedWidth, cachedHeight, hideCircles, hideDownArea);
-
-            // 计算分数和状态
+            // 计算分数
             int score = 0;
             int finish = 0;
             int correct = 0;
-            Model7RuntimeData.ModelData last = null;
 
-            for (int j = 0; j < modelData.size(); j++) {
-                Model7RuntimeData.ModelData m = modelData.get(j);
-                if (j < panel.circles.size()) {
-                    Circle circle = panel.circles.get(j);
-                    if (m.getUserSelect() == null) {
-                        circle.setFill(Color.WHITE);
-                    } else if (m.getUserSelect().equals(m.getAnswer())) {
-                        finish++;
-                        circle.setFill(Color.GREEN);
+            for (Model7RuntimeData.ModelData m : modelData) {
+                if (m.getUserSelect() != null) {
+                    if (m.getUserSelect().equals(m.getAnswer())) {
                         score += m.getScore();
                         correct++;
                     } else {
                         score -= controlPane.getCurrentStage().getDesValue();
-                        finish++;
-                        circle.setFill(Color.RED);
                     }
+                    finish++;
                 }
-                last = m;
-            }
-
-            // 重置剩余圆圈为白色
-            for (int j = modelData.size(); j < panel.circles.size(); j++) {
-                panel.circles.get(j).setFill(Color.WHITE);
             }
 
             // 补充未答题的分数扣除
@@ -846,19 +833,80 @@ public class Model7Preview extends RankPane<Stages> {
                 score -= controlPane.getCurrentStage().getDesValue() * (Model7RuntimeData.totalNumber - modelData.size());
             }
 
-            // 更新队伍信息
-            panel.teamNameLabel.setText(teams.get(i).getShortName());
-            panel.scoreLabel.setText(score + "分");
+            // 获取用时（秒）
+            int timeInSeconds = Model7RuntimeData.getSeconds().get(i);
 
-            String timeText = "完成" + finish + "题 答对" + correct + "题|" + timeValue;
-            if (Model7RuntimeData.getFinished().get(i)) {
-                timeText = "完成" + finish + "题 答对" + correct + "题|" + Model7RuntimeData.getFts().get(i);
+            // 创建排序数据
+            TeamSortData teamSortData = new TeamSortData();
+            teamSortData.originalIndex = i;
+            teamSortData.score = score;
+            teamSortData.timeInSeconds = timeInSeconds;
+            teamSortData.finishCount = finish;
+            teamSortData.correctCount = correct;
+            teamSortData.modelData = modelData;
+            teamSortData.team = teams.get(i);
+            teamSortData.isFinished = Model7RuntimeData.getFinished().get(i);
+
+            sortedTeamData.add(teamSortData);
+        }
+
+        // 按分数排序（分数高的在前，分数相同时用时短的在前）
+        sortedTeamData.sort((o1, o2) -> {
+            if (o1.score != o2.score) {
+                return Integer.compare(o2.score, o1.score); // 分数降序
+            } else {
+                return Integer.compare(o1.timeInSeconds, o2.timeInSeconds); // 用时升序
+            }
+        });
+
+        // 清空当前显示
+        container.getChildren().clear();
+
+        // 按排序后的顺序更新面板数据和位置
+        for (int displayIndex = 0; displayIndex < sortedTeamData.size() && displayIndex < teamPanels.size(); displayIndex++) {
+            TeamSortData teamData = sortedTeamData.get(displayIndex);
+            TeamDisplayPanel panel = teamPanels.get(teamData.originalIndex); // 使用原始索引获取面板
+
+            // 重新添加到容器中（按新的排序位置）
+            container.add(panel.mainPane, displayIndex % cachedCol, displayIndex / cachedCol);
+
+            // 更新布局
+            panel.updateLayout(cachedWidth, cachedHeight, hideCircles, hideDownArea);
+
+            // 更新圆圈状态
+            Model7RuntimeData.ModelData last = null;
+            for (int j = 0; j < teamData.modelData.size(); j++) {
+                Model7RuntimeData.ModelData m = teamData.modelData.get(j);
+                if (j < panel.circles.size()) {
+                    Circle circle = panel.circles.get(j);
+                    if (m.getUserSelect() == null) {
+                        circle.setFill(Color.WHITE);
+                    } else if (m.getUserSelect().equals(m.getAnswer())) {
+                        circle.setFill(Color.GREEN);
+                    } else {
+                        circle.setFill(Color.RED);
+                    }
+                }
+                last = m;
+            }
+
+            // 重置剩余圆圈为白色
+            for (int j = teamData.modelData.size(); j < panel.circles.size(); j++) {
+                panel.circles.get(j).setFill(Color.WHITE);
+            }
+
+            // 更新队伍信息
+            panel.teamNameLabel.setText(teamData.team.getShortName());
+            panel.scoreLabel.setText(teamData.score + "分");
+
+            String timeText = "完成" + teamData.finishCount + "题 答对" + teamData.correctCount + "题|" + timeValue;
+            if (teamData.isFinished) {
+                timeText = "完成" + teamData.finishCount + "题 答对" + teamData.correctCount + "题|" +
+                    Model7RuntimeData.getFts().get(teamData.originalIndex);
             }
             panel.timeLabel.setText(timeText);
 
             // 更新下方区域内容
-            boolean isFinished = Model7RuntimeData.getFinished().get(i);
-
             // 隐藏所有下方区域组件
             panel.questionArea.setVisible(false);
             panel.answerArea.setVisible(false);
@@ -867,12 +915,12 @@ public class Model7Preview extends RankPane<Stages> {
             panel.finalScoreLabel.setVisible(false);
             panel.finalTimeLabel.setVisible(false);
 
-            if (isFinished) {
+            if (teamData.isFinished) {
                 // 显示完成状态
                 panel.endLabel.setVisible(true);
-                panel.finalScoreLabel.setText(score + "分");
+                panel.finalScoreLabel.setText(teamData.score + "分");
                 panel.finalScoreLabel.setVisible(true);
-                panel.finalTimeLabel.setText(Model7RuntimeData.getFts().get(i));
+                panel.finalTimeLabel.setText(Model7RuntimeData.getFts().get(teamData.originalIndex));
                 panel.finalTimeLabel.setVisible(true);
             } else if (last == null) {
                 // 显示等待状态
@@ -886,9 +934,9 @@ public class Model7Preview extends RankPane<Stages> {
                 panel.questionLabel.setText(formattedQuestionText);
 
                 // 更新选择题选项
-                String[] choices = {last.getChoiceA(), last.getChoiceB(), last.getChoiceC(),
-                        last.getChoiceD(), last.getChoiceE(), last.getChoiceF()};
-                String[] choiceLabels = {"A", "B", "C", "D", "E", "F"};
+                String[] choices = { last.getChoiceA(), last.getChoiceB(), last.getChoiceC(),
+                    last.getChoiceD(), last.getChoiceE(), last.getChoiceF() };
+                String[] choiceLabels = { "A", "B", "C", "D", "E", "F" };
 
                 for (int j = 0; j < panel.choiceLabels.size(); j++) {
                     Label choiceLabel = panel.choiceLabels.get(j);
@@ -904,20 +952,35 @@ public class Model7Preview extends RankPane<Stages> {
                 if (last.getUserSelect() != null) {
                     panel.answerArea.setVisible(true);
                     panel.answerLabel.setText("回答:" + last.getUserSelect());
-                    panel.answerLabel.setBackground(new Background(new BackgroundFill(Color.BLUE, new CornerRadii(10), Insets.EMPTY)));
+                    panel.answerLabel.setBackground(
+                        new Background(new BackgroundFill(Color.BLUE, new CornerRadii(10), Insets.EMPTY)));
                     panel.answerLabel.setVisible(true);
 
                     if (last.getAnswer().equals(last.getUserSelect())) {
                         panel.statusLabel.setText("正确");
-                        panel.statusLabel.setBackground(new Background(new BackgroundFill(Color.GREEN, new CornerRadii(10), Insets.EMPTY)));
+                        panel.statusLabel.setBackground(
+                            new Background(new BackgroundFill(Color.GREEN, new CornerRadii(10), Insets.EMPTY)));
                     } else {
                         panel.statusLabel.setText("错误");
-                        panel.statusLabel.setBackground(new Background(new BackgroundFill(Color.RED, new CornerRadii(10), Insets.EMPTY)));
+                        panel.statusLabel.setBackground(
+                            new Background(new BackgroundFill(Color.RED, new CornerRadii(10), Insets.EMPTY)));
                     }
                     panel.statusLabel.setVisible(true);
                 }
             }
         }
+    }
+
+    // 添加辅助类用于排序
+    private static class TeamSortData {
+        int originalIndex;    // 原始索引
+        int score;           // 分数
+        int timeInSeconds;   // 用时（秒）
+        int finishCount;     // 完成题数
+        int correctCount;    // 正确题数
+        List<Model7RuntimeData.ModelData> modelData; // 题目数据
+        Teams team;          // 队伍信息
+        boolean isFinished;  // 是否完成
     }
 
     @Override
