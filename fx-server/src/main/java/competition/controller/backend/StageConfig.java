@@ -840,10 +840,10 @@ public class StageConfig {
         stagesMapper.updateById(current);
         updateCurrentStage();
         refreshStageDisplay();
-        PreviewPane previewPane = controlPane.getPreviewPane();
-        if (previewPane != null) {
-            previewPane.reload();
-        }
+//        PreviewPane previewPane = controlPane.getPreviewPane();
+//        if (previewPane != null) {
+//            previewPane.reload();
+//        }
     }
 
     @FXML

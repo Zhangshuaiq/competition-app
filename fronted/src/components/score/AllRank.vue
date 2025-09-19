@@ -45,25 +45,15 @@
 </template>
 
 <script>
+import {rankList} from "@/api";
+
 export default {
   name: 'RankingBoard',
   data() {
     return {
-      names: [
-        '重庆代表队',
-        '四川代表队', 
-        '上海代表队',
-        '浙江代表队',
-        '新疆代表队',
-        '江苏代表队',
-        '天津代表队',
-        '云南代表队',
-        '贵州代表队',
-        '西藏代表队'
-      ],
       medalColors: ['gold', 'silver', 'bronze'],
       rankingData: [],
-      refreshInterval: null
+      refreshInterval: null,
     };
   },
   computed: {
@@ -72,54 +62,23 @@ export default {
     }
   },
   methods: {
-    generateRanking() {
-      // 生成当前数据
-      const currentData = this.names.map((name, index) => {
-        console.log(index)
-        const previousItem = this.lastRanking.find(item => item.name === name);
-        return {
-          name,
-          score: Math.floor(Math.random() * 9000 + 1000),
-          previousRank: previousItem ? previousItem.currentRank : 0
-        };
-      });
+    async generateRanking() {
 
-      // 排序
-      currentData.sort((a, b) => b.score - a.score);
-      
-      // 添加当前排名和趋势信息
-      this.rankingData = currentData.map((item, index) => {
-        const currentRank = index + 1;
-        let trend = 'same';
-        let trendIcon = '';
-        let trendClass = '';
-        
-        if (item.previousRank === 0) {
-          trend = 'same';
-        } else if (currentRank < item.previousRank) {
-          trend = 'up';
-          trendIcon = 'fa-arrow-up';
-          trendClass = 'row-up';
-        } else if (currentRank > item.previousRank) {
-          trend = 'down';
-          trendIcon = 'fa-arrow-down';
-          trendClass = 'row-down';
-        }
-        
-        return {
-          ...item,
-          currentRank,
-          trend,
-          trendIcon,
-          trendClass
-        };
-      });
-
-      // 更新本地存储
-      localStorage.setItem('lastRanking', JSON.stringify(this.rankingData));
-    }
+      rankList().then(response => {
+        this.rankingData = response.data.map(item => ({
+          name: item.name,
+          score: item.score,
+          currentRank: item.currentRank,
+          previousRank: item.previousRank,
+          trend: item.trend,
+          trendIcon: item.trendIcon,
+          trendClass: item.trendClass
+        }));
+      })
+    },
   },
   mounted() {
+    sessionStorage.setItem("role", 'score')
     this.generateRanking();
     this.refreshInterval = setInterval(this.generateRanking, 3000);
   },
@@ -132,6 +91,9 @@ export default {
 </script>
 
 <style>
+
+
+
 :root {
   --gold: #ffd700;
   --silver: #e0e0e0;

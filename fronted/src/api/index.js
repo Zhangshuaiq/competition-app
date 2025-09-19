@@ -24,3 +24,5 @@ export const queryContact = () => get('/rest/contact')
 export const buzzQuestion = (data) => post(`/rest/quzz?`, data)
 
 export const queryModel7Questions = () => get('/rest/currentStageQuestions')
+
+export const rankList = () => get('/rest/ranklist')

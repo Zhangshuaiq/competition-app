@@ -41,6 +41,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
 import javax.annotation.Resource;
+import java.awt.*;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.net.*;
@@ -374,6 +375,15 @@ public class PaneConfig {
             Scene newScene = new Scene(newRoot, 1000, 600); // 可以调整新窗口的大小
             newStage.setScene(newScene);
             newStage.show();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    @FXML
+    public void openRankPage(){
+        try {
+            Desktop.getDesktop().browse(new URI("http://" + ipaddr.get() + ":8080/index.html#/allRank"));
         } catch (Exception e) {
             e.printStackTrace();
         }

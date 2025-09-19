@@ -378,7 +378,7 @@ public class ControlPane {
     private boolean enterModelQuestionPage() {
         return previewPane != null &&
                 ((previewPane instanceof QuestionPreviewPreview
-                        && (currentStage.getQuestionType() == 7 || currentStage.getQuestionType() == 6))
+                        && (currentStage != null && (currentStage.getQuestionType() == 7 || currentStage.getQuestionType() == 6)))
                         || (previewPane instanceof CluePreviewPreview)
                         || (previewPane instanceof Model7Preview));
     }
@@ -1560,7 +1560,7 @@ public class ControlPane {
                 previewPane = Navigator.preview("/view/preview/StagePreview.fxml", "", "/view/style.css", true, null);
             } else {
                 previewPane = Navigator.preview("/view/preview/StagePreview.fxml", "", "/view/style.css", true,
-                        currentStage.getParentId());
+                        stages.getParentId());
             }
         } else if (last instanceof StagePreviewPreview) {
             GlobalCache.showAnswer = false;

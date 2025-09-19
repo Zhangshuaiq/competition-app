@@ -190,6 +190,7 @@ export default {
   },
 
   mounted() {
+    sessionStorage.setItem("role", 'score')
     this.queryStyle()
     this.updateScore()
     this.checkImageUrl(this.imageUrl, (isValid) => {

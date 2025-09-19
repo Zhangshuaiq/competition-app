@@ -146,6 +146,7 @@ export default {
   },
   
   mounted() {
+    sessionStorage.setItem('role', 'score')
     const login =  sessionStorage.getItem('team')
     if (!login || login === '') {
       this.$router.push({name: "scoreLogin"})

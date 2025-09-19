@@ -22,6 +22,7 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.control.Label;
+import javafx.scene.control.OverrunStyle;
 import javafx.scene.image.Image;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
@@ -222,7 +223,8 @@ public class Model7Preview extends RankPane<Stages> {
             String[] choices = { "A", "B", "C", "D", "E", "F" };
             for (String choice : choices) {
                 Label choiceLabel = new Label();
-                choiceLabel.setWrapText(true);
+                choiceLabel.setWrapText(false);
+                choiceLabel.setTextOverrun(OverrunStyle.ELLIPSIS);
                 choiceLabel.setVisible(false);
                 choiceLabel.setFont(Font.font(ScreenAdapter.calculateMainX(qfSize)));
                 choiceLabel.setTextFill(qfColor);

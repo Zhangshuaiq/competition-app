@@ -6,7 +6,11 @@ import competition.controller.ControlPane;
 import competition.entity.*;
 import competition.mapper.*;
 import competition.resp.JsonResp;
+import competition.service.RankingService;
 import competition.util.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.springframework.core.io.UrlResource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -49,6 +53,9 @@ public class RestApi {
 
     @Resource
     private QuestionsMapper questionsMapper;
+
+    @Resource
+    private RankingService rankingService;
     
     
     
@@ -252,5 +259,15 @@ public class RestApi {
 
         return response;
     }
-    
+
+
+    @GetMapping("/ranklist")
+    public JsonResp getRanking() {
+        try {
+            List<RankingItem> rankingData = rankingService.getRankingData();
+            return JsonResp.success(rankingData);
+        } catch (Exception e) {
+            return JsonResp.error("获取排行榜数据失败: " + e.getMessage());
+        }
+    }
 }

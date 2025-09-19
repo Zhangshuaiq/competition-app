@@ -261,7 +261,8 @@ public class TimeBoardPreview extends PreviewPane {
         if (timeBoard == null) {
             timeBoard = (ReloadPane) ExtendedScreen.timeWithPos("/view/board/match/TimeBoard.fxml", "", "/view/style.css", true);
         }
-        if (timeBoard != null) {
+        boolean extendScreen = ExtendedScreen.extendShow();
+        if (extendScreen && timeBoard != null) {
             timeBoard.initPage();
             controlPane.setTimeBoard(timeBoard);
             timeBoard.shows();
@@ -291,7 +292,8 @@ public class TimeBoardPreview extends PreviewPane {
         Stage stage = (Stage) (timeLabel.getScene().getWindow());
         stage.hide();
         ReloadPane timeBoard = controlPane.getTimeBoard();
-        if (timeBoard != null) {
+        boolean extendScreen = ExtendedScreen.extendShow();
+        if (extendScreen && timeBoard != null) {
             controlPane.setTimeBoard(timeBoard);
             timeBoard.close();
         }

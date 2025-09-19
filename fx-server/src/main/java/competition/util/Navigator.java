@@ -88,6 +88,7 @@ public class Navigator {
 
         backendStage.setOnCloseRequest(event -> GlobalCache.backendOpen = false);
         activeStage.setAlwaysOnTop(true);
+        backendStage.setResizable(false);
         activeStage.setTitle("软件激活");
     }
 

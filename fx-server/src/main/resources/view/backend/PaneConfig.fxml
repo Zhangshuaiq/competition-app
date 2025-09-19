@@ -1,5 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import java.lang.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.scene.layout.*?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.CheckBox?>
 <?import javafx.scene.control.ColorPicker?>
@@ -9,7 +13,7 @@
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.AnchorPane?>
 
-<AnchorPane prefHeight="827.0" prefWidth="1100.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="competition.controller.backend.PaneConfig">
+<AnchorPane prefHeight="827.0" prefWidth="1100.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="competition.controller.backend.PaneConfig">
    <children>
       <Label layoutX="132.0" layoutY="64.0" text="选手平板网址：" />
       <Label layoutX="132.0" layoutY="130.0" text="主持人/评委平板网址：" />
@@ -81,8 +85,8 @@
       <TextField fx:id="y3" layoutX="854.0" layoutY="728.0" prefHeight="23.0" prefWidth="48.0" />
       <Label layoutX="823.0" layoutY="731.0" text="y" />
       <Label layoutX="130.0" layoutY="414.0" text="联系方式:" />
-      <TextArea fx:id="contactText" layoutX="293.0" layoutY="385.0" prefHeight="87.0" prefWidth="482.0" />
-      <Button layoutX="795.0" layoutY="410.0" mnemonicParsing="false" onMouseClicked="#update5" text="更新" />
+      <TextArea fx:id="contactText" layoutX="254.0" layoutY="385.0" prefHeight="87.0" prefWidth="482.0" />
+      <Button layoutX="756.0" layoutY="410.0" mnemonicParsing="false" onMouseClicked="#update5" text="更新" />
       <Label layoutX="130.0" layoutY="331.0" text="抢答网址：" />
       <TextField fx:id="scoreWebsite11" layoutX="353.0" layoutY="314.0" prefHeight="45.0" prefWidth="243.0" />
       <Button layoutX="795.0" layoutY="325.0" mnemonicParsing="false" onMouseClicked="#update44" text="更新" />
@@ -95,5 +99,6 @@
       <Button layoutX="856.0" layoutY="197.0" mnemonicParsing="false" onMouseClicked="#copy3" text="复制" />
       <Button layoutX="856.0" layoutY="265.0" mnemonicParsing="false" onMouseClicked="#copy4" text="复制" />
       <Button layoutX="856.0" layoutY="325.0" mnemonicParsing="false" onMouseClicked="#copy5" text="复制" />
+      <Hyperlink layoutX="848.0" layoutY="411.0" prefHeight="21.0" prefWidth="162.0" text="打开排行榜界面" onMouseClicked="#openRankPage"/>
    </children>
 </AnchorPane>

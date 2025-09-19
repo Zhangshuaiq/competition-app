@@ -308,7 +308,8 @@ public class CluePreviewPreview extends PreviewPane<Questions>{
                     tiganLabel.setText("[" + inner.getQuestionType() + "]" + inner.getOrder() + "、" + inner.getQuestion());
                 }
             }
-            if (controlPane.getCurrentStage().getShowNumber() == 0) {
+
+            if (controlPane.getCurrentStage() != null && controlPane.getCurrentStage().getShowNumber() == 0) {
                 tiganLabel.setText(tiganLabel.getText().replace(inner.getOrder() + "、", ""));
             }
             if (GlobalCache.MAX_TEAM_NUMBER <= 0) {
@@ -486,7 +487,9 @@ public class CluePreviewPreview extends PreviewPane<Questions>{
 
             stagePane.setVisible(Boolean.valueOf(split[12]));
             if (stagePane.isVisible()) {
-                stageLabel.setText(controlPane.getCurrentStage().getName());
+                if (controlPane.getCurrentStage() != null) {
+                    stageLabel.setText(controlPane.getCurrentStage().getName());
+                }
                 stageLabel.setFill(Color.valueOf(split[11]));
                 if (!StringUtils.isEmpty(style3)) {
                     String[] split1 = style3.split(ConfigSpliter.SPLITER);

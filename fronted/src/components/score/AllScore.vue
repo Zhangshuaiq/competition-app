@@ -289,6 +289,7 @@ export default {
   },
 
   mounted() {
+    sessionStorage.setItem("role", 'score')
     this.queryStyle()
     this.updateScore()
 
@@ -312,7 +313,6 @@ export default {
       }
     });
 
-    sessionStorage.setItem('role', 'score')
     this.timer = setInterval(() => {
       this.updateScore()
     }, 1000)

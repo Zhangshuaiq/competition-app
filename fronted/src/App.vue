@@ -1,6 +1,6 @@
 <template>
   <div id="app">
-    <FullscreenButton />
+    <FullscreenButton v-if="showGlobalHeader"/>
     <router-view :key="routerKey"></router-view>
   </div>
 </template>
@@ -13,11 +13,21 @@ export default {
   components: {
     FullscreenButton,
   },
+
   data() {
     return {
       routerKey: 0
     }
   },
+
+  computed: {
+    showGlobalHeader() {
+      // 排行榜页面隐藏全局组件
+      const hidden = ['allRank', 'allScore', 'teamScore', 'scoreLogin']
+      return hidden.indexOf(this.$route.name) <= -1;
+    }
+  },
+
   methods: {
     forceRefreshComponent() {
       // 通过改变 key 强制重新渲染组件

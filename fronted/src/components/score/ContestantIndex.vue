@@ -107,6 +107,7 @@ export default {
   },
   
   mounted() {
+    sessionStorage.setItem('role', 'score')
     this.checkImageUrl(this.imageUrl, (isValid) => {
       if (!isValid) {
         console.log("invalid....................")
