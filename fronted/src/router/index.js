@@ -47,7 +47,7 @@ import HMemberRank from "@/components/holder/MemberRank";
 import TeamScore from "@/components/score/TeamScore";
 import AllScore from "@/components/score/AllScore";
 import AllRank from '@/components/score/AllRank.vue';
-
+import AllMemberRank from '@/components/score/MemberRank.vue';
 Vue.use(Router);
 
 export default new Router({
@@ -299,6 +299,12 @@ export default new Router({
             path: '/allRank',
             name: 'allRank',
             component: AllRank
+        },
+
+        {
+            path: '/allMemberRank',
+            name: 'allMemberRank',
+            component: AllMemberRank
         },
 
         // 抢答界面

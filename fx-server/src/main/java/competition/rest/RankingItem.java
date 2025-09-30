@@ -10,6 +10,7 @@ import lombok.NoArgsConstructor;
 public class RankingItem {
     private String name;
     private Integer score;
+    private String team;
     private Integer currentRank;
     private Integer previousRank;
     private String trend;

@@ -1,5 +1,6 @@
 package competition.rest;
 
+import cn.hutool.core.io.FileUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import competition.JavaFxApplication;
 import competition.controller.ControlPane;
@@ -56,8 +57,11 @@ public class RestApi {
 
     @Resource
     private RankingService rankingService;
-    
-    
+
+
+    private static final String TEAM_RANK_TITLE = BaseDir.PB_RES_DIR + "团队排名标题.txt";
+
+    private static final String MEMBER_RANK_TITLE = BaseDir.PB_RES_DIR + "选手排名标题.txt";
     
     @GetMapping("/teams")
     public JsonResp teamList(){
@@ -269,5 +273,75 @@ public class RestApi {
         } catch (Exception e) {
             return JsonResp.error("获取排行榜数据失败: " + e.getMessage());
         }
+    }
+
+    @GetMapping("/memberRanklist")
+    public JsonResp getMemberRanking() {
+        try {
+            List<RankingItem> rankingData = rankingService.getMemberRankingData();
+            return JsonResp.success(rankingData);
+        } catch (Exception e) {
+            return JsonResp.error("获取排行榜数据失败: " + e.getMessage());
+        }
+    }
+
+    @GetMapping("/memberRankTitle")
+    public JsonResp getMemberRankingTitle() {
+        List<String> strings = FileUtil.readLines(MEMBER_RANK_TITLE, "utf-8");
+        Map<String, String> titleMap = new HashMap<>();
+        if (!strings.isEmpty()) {
+            titleMap.put("title", strings.get(0));
+        } else {
+            titleMap.put("title", "排行榜");
+        }
+        if (strings.size() >= 2) {
+            titleMap.put("col1", strings.get(1));
+        } else {
+            titleMap.put("col1", "名次");
+        }
+        if (strings.size() >= 3) {
+            titleMap.put("col2", strings.get(2));
+        } else {
+            titleMap.put("col2", "选手");
+        }
+        if (strings.size() >= 4) {
+            titleMap.put("col3", strings.get(3));
+        } else {
+            titleMap.put("col3", "团队");
+        }
+
+        if (strings.size() >= 5) {
+            titleMap.put("col4", strings.get(4));
+        } else {
+            titleMap.put("col4", "分数");
+        }
+        return JsonResp.success(titleMap);
+    }
+
+    @GetMapping("/rankTitle")
+    public JsonResp getRankingTitle() {
+        List<String> strings = FileUtil.readLines(TEAM_RANK_TITLE, "utf-8");
+        Map<String, String> titleMap = new HashMap<>();
+        if (!strings.isEmpty()) {
+            titleMap.put("title", strings.get(0));
+        } else {
+            titleMap.put("title", "排行榜");
+        }
+        if (strings.size() >= 2) {
+            titleMap.put("col1", strings.get(1));
+        } else {
+            titleMap.put("col1", "名次");
+        }
+        if (strings.size() >= 3) {
+            titleMap.put("col2", strings.get(2));
+        } else {
+            titleMap.put("col2", "团队");
+        }
+        if (strings.size() >= 4) {
+            titleMap.put("col3", strings.get(3));
+        } else {
+            titleMap.put("col3", "分数");
+        }
+        return JsonResp.success(titleMap);
     }
 }

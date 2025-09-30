@@ -26,3 +26,9 @@ export const buzzQuestion = (data) => post(`/rest/quzz?`, data)
 export const queryModel7Questions = () => get('/rest/currentStageQuestions')
 
 export const rankList = () => get('/rest/ranklist')
+
+export const rankTitle = () => get('/rest/rankTitle')
+
+export const memberRankList = () => get('/rest/memberRanklist')
+
+export const memberTitle = () => get('/rest/memberRankTitle')

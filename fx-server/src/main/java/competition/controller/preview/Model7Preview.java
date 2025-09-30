@@ -90,6 +90,7 @@ public class Model7Preview extends RankPane<Stages> {
     private double cachedVgap, cachedHgap, cachedX, cachedY, cachedWidth, cachedHeight;
     private double cachedWF, cachedTH, cachedQF;
     private Color cachedWFColor, cachedQFColor, cachedBkColor;
+    private boolean cachedSortScore;
     private int cachedCol;
 
     // 内部类：封装每个队伍的显示面板
@@ -476,6 +477,7 @@ public class Model7Preview extends RankPane<Stages> {
         String titleStyle = currentModel3Style.getTitleStyle();
 
         // 默认值
+        cachedSortScore = false;
         cachedVgap = ScreenAdapter.calculateMainY(20);
         cachedHgap = ScreenAdapter.calculateMainX(20);
         cachedX = ScreenAdapter.calculateMainX(10);
@@ -499,7 +501,7 @@ public class Model7Preview extends RankPane<Stages> {
             cachedVgap = ScreenAdapter.calculateMainY(Integer.parseInt(split[1]));
             cachedHgap = ScreenAdapter.calculateMainX(Integer.parseInt(split[2]));
             if (split.length > 7) {
-                cachedWF = ScreenAdapter.calculateMainX(Integer.parseInt(split[7]));
+                cachedWF = ScreenAdapter.calculateMainX(Integer.parseInt(split[7].trim()));
             }
             if (split.length > 8) {
                 cachedTH = ScreenAdapter.calculateMainX(Integer.parseInt(split[8]));
@@ -515,6 +517,9 @@ public class Model7Preview extends RankPane<Stages> {
             }
             if (split.length > 12) {
                 cachedBkColor = Color.web(split[12]);
+            }
+            if (split.length > 13) {
+                cachedSortScore = Boolean.parseBoolean(split[13]);
             }
         }
     }
@@ -853,13 +858,17 @@ public class Model7Preview extends RankPane<Stages> {
         }
 
         // 按分数排序（分数高的在前，分数相同时用时短的在前）
-        sortedTeamData.sort((o1, o2) -> {
-            if (o1.score != o2.score) {
-                return Integer.compare(o2.score, o1.score); // 分数降序
-            } else {
-                return Integer.compare(o1.timeInSeconds, o2.timeInSeconds); // 用时升序
-            }
-        });
+        // 使用分数排序
+        if (cachedSortScore) {
+            sortedTeamData.sort((o1, o2) -> {
+                if (o1.score != o2.score) {
+                    return Integer.compare(o2.score, o1.score); // 分数降序
+                } else {
+                    return Integer.compare(o1.timeInSeconds, o2.timeInSeconds); // 用时升序
+                }
+            });
+        }
+
 
         // 清空当前显示
         container.getChildren().clear();

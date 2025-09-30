@@ -3,7 +3,9 @@ package competition.util;
 import com.alibaba.fastjson2.JSON;
 import com.alibaba.fastjson2.JSONObject;
 import competition.JavaFxApplication;
+import competition.controller.ControlPane;
 import competition.controller.board.preview.ScoreBoardVPreview;
+import competition.controller.match.EmptyPreview;
 import competition.controller.match.ReloadPane;
 import competition.controller.preview.PreviewPane;
 import competition.entity.Buzz;
@@ -50,6 +52,8 @@ public class ExtendedScreen {
 
     private static volatile boolean extendShow = false;
 
+    private static volatile boolean loadSecondPage = false;
+
     static {
         extendScreen.initStyle(StageStyle.TRANSPARENT);
         timeBoardStage.initStyle(StageStyle.TRANSPARENT);
@@ -85,7 +89,15 @@ public class ExtendedScreen {
         ObservableList<Screen> screens = Screen.getScreens();
         if (screens.size() > 1) {
             ExtendedScreen.extendShow = true;
-            show("/view/match/Empty.fxml");
+            ControlPane controlPane = JavaFxApplication.getApplicationContext().getBean(ControlPane.class);
+            PreviewPane previewPane = controlPane.getPreviewPane();
+            if (!loadSecondPage) {
+                show("/view/match/Empty.fxml");
+                loadSecondPage = true;
+            }
+            if (previewPane != null) {
+                previewPane.reload();
+            }
             return true;
         }
         return false;

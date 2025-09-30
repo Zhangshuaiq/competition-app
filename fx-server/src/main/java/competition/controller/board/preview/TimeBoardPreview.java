@@ -161,14 +161,17 @@ public class TimeBoardPreview extends PreviewPane {
         });
 
         ReloadPane timeBoard = controlPane.getTimeBoard();
-        if (timeBoard == null) {
-            timeBoard = (ReloadPane) ExtendedScreen.timeWithPos("/view/board/match/TimeBoard.fxml", "", "/view/style.css", true);
-            controlPane.setTimeBoard(timeBoard);
+        if (ExtendedScreen.hasShow()) {
+            if (timeBoard == null) {
+                timeBoard = (ReloadPane) ExtendedScreen.timeWithPos("/view/board/match/TimeBoard.fxml", "", "/view/style.css", true);
+                controlPane.setTimeBoard(timeBoard);
+            }
+            if (timeBoard != null) {
+                timeBoard.initPage();
+                timeBoard.reload(timeVal, timeValue);
+            }
         }
-        if (timeBoard != null) {
-            timeBoard.initPage();
-            timeBoard.reload(timeVal, timeValue);
-        }
+
     }
 
     private String format(int timeVal) {
@@ -261,7 +264,7 @@ public class TimeBoardPreview extends PreviewPane {
         if (timeBoard == null) {
             timeBoard = (ReloadPane) ExtendedScreen.timeWithPos("/view/board/match/TimeBoard.fxml", "", "/view/style.css", true);
         }
-        boolean extendScreen = ExtendedScreen.extendShow();
+        boolean extendScreen = ExtendedScreen.hasShow();
         if (extendScreen && timeBoard != null) {
             timeBoard.initPage();
             controlPane.setTimeBoard(timeBoard);
@@ -292,7 +295,7 @@ public class TimeBoardPreview extends PreviewPane {
         Stage stage = (Stage) (timeLabel.getScene().getWindow());
         stage.hide();
         ReloadPane timeBoard = controlPane.getTimeBoard();
-        boolean extendScreen = ExtendedScreen.extendShow();
+        boolean extendScreen = ExtendedScreen.hasShow();
         if (extendScreen && timeBoard != null) {
             controlPane.setTimeBoard(timeBoard);
             timeBoard.close();

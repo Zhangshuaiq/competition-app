@@ -125,6 +125,7 @@ public class Navigator {
                 loader.setControllerFactory(JavaFxApplication.getApplicationContext()::getBean);
                 load = loader.load();
                 previewPane =  loader.getController();
+                previewPane.setSecondFxml(fxml.replace("preview", "match"));
                 cachedLoadRoot.put(fxml, load);
                 cachedPreviews.put(fxml, previewPane);
             }

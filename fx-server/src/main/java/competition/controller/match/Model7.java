@@ -79,6 +79,7 @@ public class Model7 implements ReloadPane<Stages> {
     private double cachedVgap, cachedHgap, cachedX, cachedY, cachedWidth, cachedHeight;
     private double cachedWF, cachedTH, cachedQF;
     private Color cachedWFColor, cachedQFColor, cachedBkColor;
+    private boolean cachedSortScore;
     private int cachedCol;
 
     // 内部类：封装每个队伍的显示面板 - 与Preview保持一致的结构
@@ -416,6 +417,7 @@ public class Model7 implements ReloadPane<Stages> {
         String titleStyle = currentModel3Style.getTitleStyle();
 
         // 默认值 - 与Preview保持一致
+        cachedSortScore = false;
         cachedVgap = ScreenAdapter.calculateExY(20);
         cachedHgap = ScreenAdapter.calculateExX(20);
         cachedX = ScreenAdapter.calculateExX(10);
@@ -456,6 +458,9 @@ public class Model7 implements ReloadPane<Stages> {
             }
             if (split.length > 12) {
                 cachedBkColor = Color.web(split[12]);
+            }
+            if (split.length > 13) {
+                cachedSortScore = Boolean.parseBoolean(split[13]);
             }
         }
     }
@@ -670,13 +675,16 @@ public class Model7 implements ReloadPane<Stages> {
         }
 
         // 按分数排序（分数高的在前，分数相同时用时短的在前）
-        sortedTeamData.sort((o1, o2) -> {
-            if (o1.score != o2.score) {
-                return Integer.compare(o2.score, o1.score); // 分数降序
-            } else {
-                return Integer.compare(o1.timeInSeconds, o2.timeInSeconds); // 用时升序
-            }
-        });
+        if (cachedSortScore) {
+            sortedTeamData.sort((o1, o2) -> {
+                if (o1.score != o2.score) {
+                    return Integer.compare(o2.score, o1.score); // 分数降序
+                } else {
+                    return Integer.compare(o1.timeInSeconds, o2.timeInSeconds); // 用时升序
+                }
+            });
+        }
+
 
         // 清空当前显示
         container.getChildren().clear();

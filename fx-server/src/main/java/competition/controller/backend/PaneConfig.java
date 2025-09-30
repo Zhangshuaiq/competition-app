@@ -390,6 +390,16 @@ public class PaneConfig {
     }
 
     @FXML
+    public void openMemberRankPage(){
+        try {
+            Desktop.getDesktop().browse(new URI("http://" + ipaddr.get() + ":8080/index.html#/allMemberRank"));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+
+    @FXML
     public void largeScoreQrcode11(){
         Stage newStage = new Stage();
         Image image = null;

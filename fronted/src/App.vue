@@ -23,7 +23,7 @@ export default {
   computed: {
     showGlobalHeader() {
       // 排行榜页面隐藏全局组件
-      const hidden = ['allRank', 'allScore', 'teamScore', 'scoreLogin']
+      const hidden = ['allRank', 'allScore', 'teamScore', 'scoreLogin', 'allMemberRank']
       return hidden.indexOf(this.$route.name) <= -1;
     }
   },

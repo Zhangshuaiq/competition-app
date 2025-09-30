@@ -108,13 +108,6 @@ public class StagePreviewPreview extends PreviewPane<Integer> {
     }
 
     private void showView() {
-        if (ExtendedScreen.hasShow()) {
-            // 进入比赛
-            Object res = ExtendedScreen.showWithControl("/view/match/StagePreview.fxml", innerStageID);
-            if (res != null) {
-                controlPane.setQuestionPreview((StagePreview) res);
-            }
-        }
         try {
             container.setBackground(new Background(new BackgroundImage(
                     new Image(new FileInputStream(ImageResource.环节背景())), BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT, BackgroundPosition.CENTER,
@@ -307,6 +300,14 @@ public class StagePreviewPreview extends PreviewPane<Integer> {
                     // stageContainer.getChildren().add(box);
                 }
                 container.getChildren().add(stageContainer);
+            }
+        }
+
+        if (ExtendedScreen.hasShow()) {
+            // 进入比赛
+            Object res = ExtendedScreen.showWithControl("/view/match/StagePreview.fxml", innerStageID);
+            if (res != null) {
+                controlPane.setQuestionPreview((StagePreview) res);
             }
         }
     }

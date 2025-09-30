@@ -53,6 +53,10 @@ public class Model7Attr {
     @FXML
     private ColorPicker wfColor, qfColor, bkColor;
 
+
+    @FXML
+    private CheckBox scoreSortBox;
+
     
     @FXML
     public void initialize(){
@@ -83,6 +87,7 @@ public class Model7Attr {
             wfColor.setValue(Color.BLACK);
             qfColor.setValue(Color.BLACK);
             bkColor.setValue(Color.BLACK);
+            scoreSortBox.setSelected(false);
         } else {
             String[] split = titleStyle.split(ConfigSpliter.SPLITER);
             colInput.setText(split[0]);
@@ -122,6 +127,11 @@ public class Model7Attr {
             } else {
                 bkColor.setValue(Color.BLACK);
             }
+            if (split.length > 13) {
+                scoreSortBox.setSelected(Boolean.parseBoolean(split[13]));
+            } else {
+                scoreSortBox.setSelected(false);
+            }
         }
     }
     
@@ -141,7 +151,8 @@ public class Model7Attr {
                 qfInput.getText() + ConfigSpliter.SPLITER +
                 wfColor.getValue().toString() + ConfigSpliter.SPLITER +
                 qfColor.getValue().toString() + ConfigSpliter.SPLITER +
-                bkColor.getValue().toString();
+                bkColor.getValue().toString() + ConfigSpliter.SPLITER +
+                scoreSortBox.isSelected();
         Model3Style model3Style = model3Mapper.selectById(2);
         model3Style.setTitleStyle(value);
         String headStyle = hideCtl.isSelected() + "," + hideCtl1.isSelected();

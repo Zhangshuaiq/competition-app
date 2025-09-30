@@ -99,6 +99,7 @@
       <Button layoutX="856.0" layoutY="197.0" mnemonicParsing="false" onMouseClicked="#copy3" text="复制" />
       <Button layoutX="856.0" layoutY="265.0" mnemonicParsing="false" onMouseClicked="#copy4" text="复制" />
       <Button layoutX="856.0" layoutY="325.0" mnemonicParsing="false" onMouseClicked="#copy5" text="复制" />
-      <Hyperlink layoutX="848.0" layoutY="411.0" prefHeight="21.0" prefWidth="162.0" text="打开排行榜界面" onMouseClicked="#openRankPage"/>
+      <Hyperlink layoutX="854.0" layoutY="393.0" onMouseClicked="#openRankPage" prefHeight="21.0" prefWidth="162.0" text="打开团队排行榜界面" />
+      <Hyperlink layoutX="854.0" layoutY="423.0" onMouseClicked="#openMemberRankPage" prefHeight="21.0" prefWidth="162.0" text="打开选手排行榜界面" />
    </children>
 </AnchorPane>

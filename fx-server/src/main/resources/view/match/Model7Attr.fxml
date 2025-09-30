@@ -52,5 +52,6 @@
       <TextField fx:id="thInput" layoutX="74.0" layoutY="421.0" prefHeight="30.0" prefWidth="132.0" />
       <Label layoutX="233.0" layoutY="227.0" text="背景颜色" />
       <ColorPicker fx:id="bkColor" layoutX="289.0" layoutY="220.0" prefHeight="30.0" prefWidth="30.0" />
+      <CheckBox fx:id="scoreSortBox" layoutX="231.0" layoutY="428.0" mnemonicParsing="false" prefHeight="16.0" prefWidth="104.0" text="按照得分排序" />
    </children>
 </AnchorPane>
