@@ -6,6 +6,7 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
+<?import competition.controls.CustomTextField?>
 <AnchorPane prefHeight="417.0" prefWidth="374.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1"
             fx:controller="competition.controller.match.TeamRankPreviewAttr">
    <children>
@@ -19,10 +20,10 @@
                      <Separator layoutX="67.0" layoutY="37.0" prefHeight="0.0" prefWidth="263.0" />
                      <Label layoutX="24.0" layoutY="67.0" text="X" />
                      <Label layoutX="208.0" layoutY="67.0" text="Y" />
-                     <TextField layoutX="54.0" layoutY="62.0" prefHeight="30.0" prefWidth="132.0" fx:id="xInput" />
-                     <TextField fx:id="yInput" layoutX="228.0" layoutY="62.0" prefHeight="30.0" prefWidth="132.0" />
-                     <TextField fx:id="widthInput" layoutX="54.0" layoutY="101.0" prefHeight="30.0" prefWidth="132.0" />
-                     <TextField fx:id="heightInput" layoutX="228.0" layoutY="101.0" prefHeight="30.0" prefWidth="132.0" />
+                     <CustomTextField layoutX="54.0" layoutY="62.0" prefHeight="30.0" prefWidth="132.0" fx:id="xInput"  inputType="NUMERIC"/>
+                     <CustomTextField fx:id="yInput" layoutX="228.0" layoutY="62.0" prefHeight="30.0" prefWidth="132.0"  inputType="NUMERIC"/>
+                     <CustomTextField fx:id="widthInput" layoutX="54.0" layoutY="101.0" prefHeight="30.0" prefWidth="132.0"  inputType="NUMERIC"/>
+                     <CustomTextField fx:id="heightInput" layoutX="228.0" layoutY="101.0" prefHeight="30.0" prefWidth="132.0"  inputType="NUMERIC"/>
                      <Label layoutX="22.0" layoutY="106.0" text="宽" />
                      <Label layoutX="204.0" layoutY="106.0" text="高" />
                      <Separator layoutX="73.0" layoutY="152.0" prefHeight="0.0" prefWidth="263.0" />
@@ -32,7 +33,7 @@
                      <Label layoutX="22.0" layoutY="189.0" text="颜色" />
                      <ColorPicker fx:id="colorInput" layoutX="58.0" layoutY="182.0" prefHeight="30.0" prefWidth="30.0" />
                      <Label layoutX="192.0" layoutY="190.0" text="字号" />
-                     <TextField fx:id="hfsInput" layoutX="228.0" layoutY="179.0" prefHeight="30.0" prefWidth="132.0" />
+                     <CustomTextField fx:id="hfsInput" layoutX="228.0" layoutY="179.0" prefHeight="30.0" prefWidth="132.0"  inputType="NUMERIC"/>
                      <ComboBox fx:id="hfSelector" layoutX="120.0" layoutY="239.0" prefHeight="30.0" prefWidth="244.0" />
                      <Label layoutX="22.0" layoutY="244.0" text="字体选择" />
                      <CheckBox fx:id="hfBold" layoutX="119.0" layoutY="189.0" mnemonicParsing="false" text="加粗" />
@@ -48,16 +49,16 @@
                      <Separator layoutX="67.0" layoutY="37.0" prefHeight="0.0" prefWidth="263.0" />
                      <Label layoutX="24.0" layoutY="67.0" text="X" />
                      <Label layoutX="208.0" layoutY="67.0" text="Y" />
-                     <TextField fx:id="rxInput" layoutX="54.0" layoutY="62.0" prefHeight="30.0" prefWidth="132.0" />
-                     <TextField fx:id="ryInput" layoutX="228.0" layoutY="62.0" prefHeight="30.0" prefWidth="132.0" />
-                     <TextField fx:id="rwidthInput" layoutX="54.0" layoutY="101.0" prefHeight="30.0" prefWidth="132.0" />
-                     <TextField fx:id="rheightInput" layoutX="228.0" layoutY="101.0" prefHeight="30.0" prefWidth="132.0" />
+                     <CustomTextField fx:id="rxInput" layoutX="54.0" layoutY="62.0" prefHeight="30.0" prefWidth="132.0"  inputType="NUMERIC"/>
+                     <CustomTextField fx:id="ryInput" layoutX="228.0" layoutY="62.0" prefHeight="30.0" prefWidth="132.0"  inputType="NUMERIC"/>
+                     <CustomTextField fx:id="rwidthInput" layoutX="54.0" layoutY="101.0" prefHeight="30.0" prefWidth="132.0"  inputType="NUMERIC"/>
+                     <CustomTextField fx:id="rheightInput" layoutX="228.0" layoutY="101.0" prefHeight="30.0" prefWidth="132.0"  inputType="NUMERIC"/>
                      <Label layoutX="22.0" layoutY="106.0" text="宽" />
                      <Label layoutX="204.0" layoutY="106.0" text="高" />
                      <Label layoutX="24.0" layoutY="132.0" text="布局" />
                      <Separator layoutX="68.0" layoutY="141.0" prefHeight="0.0" prefWidth="263.0" />
-                     <TextField fx:id="srInput" layoutX="54.0" layoutY="164.0" prefHeight="30.0" prefWidth="132.0" />
-                     <TextField fx:id="rowInput" layoutX="228.0" layoutY="163.0" prefHeight="30.0" prefWidth="132.0" />
+                     <CustomTextField fx:id="srInput" layoutX="54.0" layoutY="164.0" prefHeight="30.0" prefWidth="132.0"  inputType="NUMERIC"/>
+                     <CustomTextField fx:id="rowInput" layoutX="228.0" layoutY="163.0" prefHeight="30.0" prefWidth="132.0"  inputType="NUMERIC"/>
                      <Label layoutX="18.0" layoutY="168.0" text="行距" />
                      <Label layoutX="193.0" layoutY="169.0" text="行数" />
                      <Separator layoutX="68.0" layoutY="212.0" prefHeight="0.0" prefWidth="263.0" />
@@ -65,7 +66,7 @@
                      <Button layoutX="54.0" layoutY="336.0" mnemonicParsing="false" onMouseClicked="#saveRankConfig" prefHeight="30.0" prefWidth="87.0" text="保存" />
                      <Button layoutX="228.0" layoutY="336.0" mnemonicParsing="false" onMouseClicked="#closeWindow" prefHeight="30.0" prefWidth="87.0" text="关闭" />
                      <Label layoutX="24.0" layoutY="236.0" text="字号" />
-                     <TextField fx:id="rfsInput" layoutX="60.0" layoutY="229.0" prefHeight="30.0" prefWidth="163.0" />
+                     <CustomTextField fx:id="rfsInput" layoutX="60.0" layoutY="229.0" prefHeight="30.0" prefWidth="163.0"  inputType="NUMERIC"/>
                      <ComboBox fx:id="rfSelector" layoutX="118.0" layoutY="269.0" prefHeight="30.0" prefWidth="244.0" />
                      <Label layoutX="18.0" layoutY="274.0" text="字体选择" />
                      <CheckBox fx:id="rfsBold" layoutX="252.0" layoutY="236.0" mnemonicParsing="false" text="加粗" />

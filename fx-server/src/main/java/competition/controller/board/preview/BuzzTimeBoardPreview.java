@@ -110,6 +110,7 @@ public class BuzzTimeBoardPreview extends PreviewPane {
             speed =  Double.parseDouble(buzz.getSpeed());
         } catch (Exception ex) {
             System.out.println("抢答速率设置错误");
+            return;
         }
         // 避免二次运行
         if (timeline != null) {
@@ -190,6 +191,11 @@ public class BuzzTimeBoardPreview extends PreviewPane {
             }
             if (timeBoard != null) {
                 timeBoard.reload(timeVal, timeValue);
+            }
+            timeBoard.shows();
+        } else {
+            if (timeBoard != null) {
+                timeBoard.close();
             }
         }
 

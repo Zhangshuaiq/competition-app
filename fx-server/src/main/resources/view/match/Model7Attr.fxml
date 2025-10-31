@@ -10,22 +10,23 @@
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.AnchorPane?>
 
+<?import competition.controls.CustomTextField?>
 <AnchorPane prefHeight="571.0" prefWidth="374.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="competition.controller.match.Model7Attr">
    <children>
       <Label layoutX="24.0" layoutY="28.0" text="位置" />
       <Separator layoutX="67.0" layoutY="37.0" prefHeight="0.0" prefWidth="263.0" />
       <Label layoutX="24.0" layoutY="57.0" text="X" />
       <Label layoutX="208.0" layoutY="57.0" text="Y" />
-      <TextField layoutX="54.0" layoutY="52.0" prefHeight="30.0" prefWidth="132.0" fx:id="xInput" />
-      <TextField fx:id="yInput" layoutX="228.0" layoutY="52.0" prefHeight="30.0" prefWidth="132.0" />
-      <TextField fx:id="widthInput" layoutX="54.0" layoutY="91.0" prefHeight="30.0" prefWidth="132.0" />
-      <TextField fx:id="heightInput" layoutX="228.0" layoutY="91.0" prefHeight="30.0" prefWidth="132.0" />
+      <CustomTextField  inputType="NUMERIC" layoutX="54.0" layoutY="52.0" prefHeight="30.0" prefWidth="132.0" fx:id="xInput" />
+      <CustomTextField inputType="NUMERIC" fx:id="yInput" layoutX="228.0" layoutY="52.0" prefHeight="30.0" prefWidth="132.0" />
+      <CustomTextField  inputType="NUMERIC" fx:id="widthInput" layoutX="54.0" layoutY="91.0" prefHeight="30.0" prefWidth="132.0" />
+      <CustomTextField  inputType="NUMERIC" fx:id="heightInput" layoutX="228.0" layoutY="91.0" prefHeight="30.0" prefWidth="132.0" />
       <Label layoutX="22.0" layoutY="96.0" text="宽" />
       <Label layoutX="204.0" layoutY="96.0" text="高" />
       <Label layoutX="24.0" layoutY="124.0" text="间距" />
       <Separator layoutX="68.0" layoutY="133.0" prefHeight="0.0" prefWidth="263.0" />
-      <TextField fx:id="srInput" layoutX="54.0" layoutY="150.0" prefHeight="30.0" prefWidth="132.0" />
-      <TextField fx:id="scInput" layoutX="228.0" layoutY="149.0" prefHeight="30.0" prefWidth="132.0" />
+      <CustomTextField  inputType="NUMERIC" fx:id="srInput" layoutX="54.0" layoutY="150.0" prefHeight="30.0" prefWidth="132.0" />
+      <CustomTextField fx:id="scInput" layoutX="228.0" layoutY="149.0" prefHeight="30.0" prefWidth="132.0"  inputType="NUMERIC"/>
       <Label layoutX="18.0" layoutY="154.0" text="行距" />
       <Label layoutX="193.0" layoutY="155.0" text="列距" />
       <Separator layoutX="68.0" layoutY="200.0" prefHeight="0.0" prefWidth="263.0" />
@@ -33,10 +34,10 @@
       <CheckBox fx:id="hideCtl" layoutX="43.0" layoutY="490.0" mnemonicParsing="false" text="隐藏题目信息" />
       <Button layoutX="46.0" layoutY="521.0" mnemonicParsing="false" onMouseClicked="#saveConfig" prefHeight="30.0" prefWidth="87.0" text="保存" />
       <Button layoutX="226.0" layoutY="521.0" mnemonicParsing="false" onMouseClicked="#closeWindow" prefHeight="30.0" prefWidth="87.0" text="关闭" />
-      <TextField fx:id="colInput" layoutX="73.0" layoutY="222.0" prefHeight="30.0" prefWidth="132.0" />
+      <CustomTextField fx:id="colInput" layoutX="73.0" layoutY="222.0" prefHeight="30.0" prefWidth="132.0"  inputType="NUMERIC"/>
       <Label layoutX="18.0" layoutY="227.0" text="列数" />
       <CheckBox fx:id="hideCtl1" layoutX="223.0" layoutY="490.0" mnemonicParsing="false" text="隐藏题号列表" />
-      <TextField fx:id="wfInput" layoutX="73.0" layoutY="294.0" prefHeight="30.0" prefWidth="132.0" />
+      <CustomTextField fx:id="wfInput" layoutX="73.0" layoutY="294.0" prefHeight="30.0" prefWidth="132.0"  inputType="NUMERIC"/>
       <Separator layoutX="80.0" layoutY="277.0" prefHeight="0.0" prefWidth="263.0" />
       <Label layoutX="16.0" layoutY="271.0" text="信息界面" />
       <Label layoutX="16.0" layoutY="302.0" text="字体大小" />
@@ -47,9 +48,9 @@
       <ColorPicker fx:id="qfColor" layoutX="290.0" layoutY="377.0" prefHeight="30.0" prefWidth="30.0" />
       <Label layoutX="233.0" layoutY="383.0" text="字体颜色" />
       <Label layoutX="17.0" layoutY="383.0" text="字体大小" />
-      <TextField fx:id="qfInput" layoutX="74.0" layoutY="375.0" prefHeight="30.0" prefWidth="132.0" />
+      <CustomTextField fx:id="qfInput" layoutX="74.0" layoutY="375.0" prefHeight="30.0" prefWidth="132.0"  inputType="NUMERIC"/>
       <Label layoutX="17.0" layoutY="428.0" text="题号半径" />
-      <TextField fx:id="thInput" layoutX="74.0" layoutY="421.0" prefHeight="30.0" prefWidth="132.0" />
+      <CustomTextField fx:id="thInput" layoutX="74.0" layoutY="421.0" prefHeight="30.0" prefWidth="132.0"  inputType="NUMERIC"/>
       <Label layoutX="233.0" layoutY="227.0" text="背景颜色" />
       <ColorPicker fx:id="bkColor" layoutX="289.0" layoutY="220.0" prefHeight="30.0" prefWidth="30.0" />
       <CheckBox fx:id="scoreSortBox" layoutX="231.0" layoutY="428.0" mnemonicParsing="false" prefHeight="16.0" prefWidth="104.0" text="按照得分排序" />

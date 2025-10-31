@@ -1,10 +1,10 @@
 package competition.util;
 
-import java.util.HashMap;
 import java.util.LinkedHashMap;
-import java.util.Map;
 
 public class RuntimeUtil {
+
+    public static volatile boolean addLast = true;
 
     public static boolean showTimeBoard = true;
 
@@ -30,4 +30,7 @@ public class RuntimeUtil {
 
     // 链接状态
     public static boolean showConnectionStatus = false;
+
+    // 计时状态
+    public static volatile boolean isTiming = false;
 }

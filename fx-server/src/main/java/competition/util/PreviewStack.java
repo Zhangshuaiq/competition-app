@@ -1,5 +1,7 @@
 package competition.util;
 
+import competition.JavaFxApplication;
+import competition.controller.ControlPane;
 import competition.controller.preview.PreviewPane;
 
 import java.util.Stack;
@@ -10,7 +12,9 @@ public class PreviewStack {
     private static final Stack<PreviewPane> previewStack = new Stack<>();
 
     public static final void addPreview (PreviewPane pane) {
-        previewStack.add(pane);
+        if (RuntimeUtil.addLast) {
+            previewStack.add(pane);
+        }
     }
     
 
@@ -24,19 +28,19 @@ public class PreviewStack {
     
     
     public static final void reloadStyle(){
-        if (previewStack.isEmpty()) {
-            return ;
+        ControlPane controlPane = JavaFxApplication.getApplicationContext().getBean(ControlPane.class);
+        PreviewPane previewPane = controlPane.getPreviewPane();
+        if (previewPane != null) {
+            previewPane.reloadStyle();
         }
-        PreviewPane pop = previewStack.peek();
-        pop.reloadStyle();
     }
 
     public static final void reload() {
-        if (previewStack.isEmpty()) {
-            return ;
+        ControlPane controlPane = JavaFxApplication.getApplicationContext().getBean(ControlPane.class);
+        PreviewPane previewPane = controlPane.getPreviewPane();
+        if (previewPane != null) {
+            previewPane.reload();
         }
-        PreviewPane pop = previewStack.peek();
-        pop.reload();
     }
     
     public static final PreviewPane getLast(){

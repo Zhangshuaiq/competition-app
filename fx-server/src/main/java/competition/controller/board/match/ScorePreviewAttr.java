@@ -5,10 +5,7 @@ import competition.controller.ControlPane;
 import competition.controller.board.BoardPane;
 import competition.entity.ScoreStyle;
 import competition.mapper.ScoreStyleMapper;
-import competition.util.ConfigSpliter;
-import competition.util.ExtendedScreen;
-import competition.util.FontMap;
-import competition.util.RuntimeUtil;
+import competition.util.*;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.scene.control.CheckBox;
@@ -163,5 +160,6 @@ public class ScorePreviewAttr {
     public void closeStage(){
         Stage stage = (Stage) (underlineChoice.getScene().getWindow());
         stage.close();
+        Navigator.clearAttrCache();
     }
 }

@@ -17,6 +17,7 @@
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.text.Font?>
 
+<?import competition.controls.CustomTextField?>
 <TabPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="746.0" prefWidth="474.0" tabClosingPolicy="UNAVAILABLE" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="competition.controller.match.QuestionPreviewAttr">
     <tabs>
         <Tab text="              环节名              ">
@@ -30,10 +31,10 @@
                                         <Font name="微软雅黑" size="15.0" />
                                     </font></Label>
                                 <Label layoutX="26.0" layoutY="55.0" text="高" />
-                                <TextField fx:id="stageWidthInput" layoutX="52.0" layoutY="8.0" prefHeight="20.0" prefWidth="96.0" />
-                                <TextField fx:id="stageHeightInput" layoutX="52.0" layoutY="49.0" prefHeight="20.0" prefWidth="96.0" />
-                                <TextField fx:id="stageXInput" layoutX="259.0" layoutY="8.0" prefHeight="20.0" prefWidth="96.0" />
-                                <TextField fx:id="stageYInput" layoutX="259.0" layoutY="49.0" prefHeight="20.0" prefWidth="96.0" />
+                                <CustomTextField fx:id="stageWidthInput" layoutX="52.0" layoutY="8.0" prefHeight="20.0" prefWidth="96.0"  inputType="NUMERIC"/>
+                                <CustomTextField fx:id="stageHeightInput" layoutX="52.0" layoutY="49.0" prefHeight="20.0" prefWidth="96.0"  inputType="NUMERIC"/>
+                                <CustomTextField fx:id="stageXInput" layoutX="259.0" layoutY="8.0" prefHeight="20.0" prefWidth="96.0"  inputType="NUMERIC"/>
+                                <CustomTextField fx:id="stageYInput" layoutX="259.0" layoutY="49.0" prefHeight="20.0" prefWidth="96.0"  inputType="NUMERIC"/>
                                 <Label layoutX="226.0" layoutY="13.0" text="X">
                                     <font>
                                         <Font name="YouYuan" size="15.0" />
@@ -46,7 +47,7 @@
                                 <Label layoutX="255.0" layoutY="14.0" text="背景颜色" />
                                 <ColorPicker fx:id="stageColorInput" layoutX="336.0" layoutY="9.0" prefHeight="30.0" prefWidth="32.0" />
                                 <Label layoutX="27.0" layoutY="52.0" text="背景图片" />
-                                <TextField fx:id="stageBackgroundPath" disable="true" layoutX="108.0" layoutY="47.0" prefHeight="30.0" prefWidth="275.0" />
+                                <CustomTextField fx:id="stageBackgroundPath" disable="true" layoutX="108.0" layoutY="47.0" prefHeight="30.0" prefWidth="275.0" />
                                 <Button layoutX="106.0" layoutY="90.0" mnemonicParsing="false" onMouseClicked="#selectStageImg" text="选择图片" />
                                 <Button layoutX="196.0" layoutY="90.0" mnemonicParsing="false" onMouseClicked="#cancelStageImg" text="取消图片" />
                                 <CheckBox fx:id="stageBackgroundChoice" layoutX="86.0" layoutY="13.0" mnemonicParsing="false" text="填充背景" />
@@ -55,7 +56,7 @@
                         <Label layoutX="69.0" layoutY="322.0" text="名称" />
                         <ComboBox fx:id="stageFontSelector" layoutX="111.0" layoutY="317.0" prefWidth="150.0" />
                         <Label layoutX="286.0" layoutY="322.0" text="大小" />
-                        <TextField fx:id="stageFontSize" layoutX="327.0" layoutY="316.0" prefHeight="20.0" prefWidth="96.0" />
+                        <CustomTextField fx:id="stageFontSize" layoutX="327.0" layoutY="316.0" prefHeight="20.0" prefWidth="96.0"  inputType="NUMERIC"/>
                         <CheckBox fx:id="stageDeleteChoice" layoutX="48.0" layoutY="368.0" mnemonicParsing="false" text="删除线" />
                         <CheckBox fx:id="stageBoldChoice" layoutX="139.0" layoutY="368.0" mnemonicParsing="false" text="加粗" />
                         <CheckBox fx:id="stageIticChoice" layoutX="232.0" layoutY="368.0" mnemonicParsing="false" text="斜体" />
@@ -63,7 +64,7 @@
                         <Label layoutX="69.0" layoutY="435.0" text="水平" />
                         <ComboBox fx:id="stageTextAlignSelector" layoutX="111.0" layoutY="430.0" prefWidth="150.0" />
                         <Label layoutX="288.0" layoutY="435.0" text="行间距" />
-                        <TextField fx:id="stageSpaceInput" layoutX="341.0" layoutY="430.0" prefHeight="20.0" prefWidth="96.0" />
+                        <CustomTextField fx:id="stageSpaceInput" layoutX="341.0" layoutY="430.0" prefHeight="20.0" prefWidth="96.0"  inputType="NUMERIC"/>
                         <Label layoutX="16.0" layoutY="14.0" text="位置大小" textFill="#8a8686" />
                         <Label layoutX="16.0" layoutY="139.0" text="背景设置" textFill="#8a8686" />
                         <Label layoutX="16.0" layoutY="287.0" text="字体" textFill="#8a8686" />
@@ -91,10 +92,10 @@
                                     </font>
                                 </Label>
                                 <Label layoutX="26.0" layoutY="55.0" text="高" />
-                                <TextField fx:id="nameWidthInput" layoutX="52.0" layoutY="8.0" prefHeight="20.0" prefWidth="96.0" />
-                                <TextField fx:id="nameHeightInput" layoutX="52.0" layoutY="49.0" prefHeight="20.0" prefWidth="96.0" />
-                                <TextField fx:id="nameXInput" layoutX="259.0" layoutY="8.0" prefHeight="20.0" prefWidth="96.0" />
-                                <TextField fx:id="nameYInput" layoutX="259.0" layoutY="49.0" prefHeight="20.0" prefWidth="96.0" />
+                                <CustomTextField fx:id="nameWidthInput" layoutX="52.0" layoutY="8.0" prefHeight="20.0" prefWidth="96.0"  inputType="NUMERIC"/>
+                                <CustomTextField fx:id="nameHeightInput" layoutX="52.0" layoutY="49.0" prefHeight="20.0" prefWidth="96.0"  inputType="NUMERIC"/>
+                                <CustomTextField fx:id="nameXInput" layoutX="259.0" layoutY="8.0" prefHeight="20.0" prefWidth="96.0"  inputType="NUMERIC"/>
+                                <CustomTextField fx:id="nameYInput" layoutX="259.0" layoutY="49.0" prefHeight="20.0" prefWidth="96.0"  inputType="NUMERIC"/>
                                 <Label layoutX="226.0" layoutY="13.0" text="X">
                                     <font>
                                         <Font name="YouYuan" size="15.0" />
@@ -108,7 +109,7 @@
                                 <Label layoutX="255.0" layoutY="14.0" text="背景颜色" />
                                 <ColorPicker fx:id="nameColorInput" layoutX="336.0" layoutY="9.0" prefHeight="30.0" prefWidth="32.0" />
                                 <Label layoutX="27.0" layoutY="52.0" text="背景图片" />
-                                <TextField fx:id="nameBackgroundPath" disable="true" layoutX="108.0" layoutY="47.0" prefHeight="30.0" prefWidth="275.0" />
+                                <CustomTextField fx:id="nameBackgroundPath" disable="true" layoutX="108.0" layoutY="47.0" prefHeight="30.0" prefWidth="275.0" />
                                 <Button layoutX="106.0" layoutY="90.0" mnemonicParsing="false" onMouseClicked="#selectNameImg" text="选择图片" />
                                 <Button layoutX="196.0" layoutY="90.0" mnemonicParsing="false" onMouseClicked="#cancelNameImg" text="取消图片" />
                                 <CheckBox fx:id="nameBackgroundChoice" layoutX="86.0" layoutY="13.0" mnemonicParsing="false" text="填充背景" />
@@ -117,7 +118,7 @@
                         <Label layoutX="69.0" layoutY="322.0" text="名称" />
                         <ComboBox fx:id="nameFontSelector" layoutX="111.0" layoutY="317.0" prefWidth="150.0" />
                         <Label layoutX="286.0" layoutY="322.0" text="大小" />
-                        <TextField fx:id="nameFontSize" layoutX="327.0" layoutY="316.0" prefHeight="20.0" prefWidth="96.0" />
+                        <CustomTextField fx:id="nameFontSize" layoutX="327.0" layoutY="316.0" prefHeight="20.0" prefWidth="96.0"  inputType="NUMERIC"/>
                         <CheckBox fx:id="nameDeleteChoice" layoutX="43.0" layoutY="368.0" mnemonicParsing="false" text="删除线" />
                         <CheckBox fx:id="nameBoldChoice" layoutX="128.0" layoutY="368.0" mnemonicParsing="false" text="加粗" />
                         <CheckBox fx:id="nameIticChoice" layoutX="200.0" layoutY="368.0" mnemonicParsing="false" text="斜体" />
@@ -125,7 +126,7 @@
                         <Label layoutX="20.0" layoutY="437.0" text="水平" />
                         <ComboBox fx:id="nameTextAlignSelector" layoutX="58.0" layoutY="430.0" prefHeight="30.0" prefWidth="140.0" />
                         <Label layoutX="247.0" layoutY="438.0" text="行间距" />
-                        <TextField fx:id="nameSpaceInput" layoutX="310.0" layoutY="434.0" prefHeight="23.0" prefWidth="132.0" />
+                        <CustomTextField fx:id="nameSpaceInput" layoutX="310.0" layoutY="434.0" prefHeight="23.0" prefWidth="132.0"  inputType="NUMERIC"/>
                         <Label layoutX="16.0" layoutY="14.0" text="位置大小" textFill="#8a8686" />
                         <Label layoutX="16.0" layoutY="139.0" text="背景设置" textFill="#8a8686" />
                         <Label layoutX="16.0" layoutY="287.0" text="字体" textFill="#8a8686" />
@@ -140,7 +141,7 @@
                         <TextArea fx:id="nameText" layoutX="23.0" layoutY="493.0" prefHeight="167.0" prefWidth="441.0" />
                   <Button layoutX="242.0" layoutY="667.0" mnemonicParsing="false" onMouseClicked="#saveStageNameConfig" prefHeight="30.0" prefWidth="96.0" text="本环节应用" />
                   <Button layoutX="138.0" layoutY="667.0" mnemonicParsing="false" onMouseClicked="#saveAllNameConfig" prefHeight="30.0" prefWidth="96.0" text="全部应用" />
-                  <TextField fx:id="wordSpaceInput" layoutX="379.0" layoutY="429.0" prefHeight="30.0" prefWidth="91.0" visible="false" />
+                  <CustomTextField fx:id="wordSpaceInput" layoutX="379.0" layoutY="429.0" prefHeight="30.0" prefWidth="91.0" visible="false"  inputType="NUMERIC"/>
                   <Button layoutX="42.0" layoutY="667.0" mnemonicParsing="false" onAction="#updateQuestionContent" text="更新文本" />
                   <CheckBox fx:id="spaceLineChoice" layoutX="358.0" layoutY="368.0" mnemonicParsing="false" text="间隔一行" />
                     </children>
@@ -159,10 +160,10 @@
                                     </font>
                                 </Label>
                                 <Label layoutX="26.0" layoutY="55.0" text="高" />
-                                <TextField fx:id="answerWidthInput" layoutX="52.0" layoutY="8.0" prefHeight="20.0" prefWidth="96.0" />
-                                <TextField fx:id="answerHeightInput" layoutX="52.0" layoutY="49.0" prefHeight="20.0" prefWidth="96.0" />
-                                <TextField fx:id="answerXInput" layoutX="259.0" layoutY="8.0" prefHeight="20.0" prefWidth="96.0" />
-                                <TextField fx:id="answerYInput" layoutX="259.0" layoutY="49.0" prefHeight="20.0" prefWidth="96.0" />
+                                <CustomTextField fx:id="answerWidthInput" layoutX="52.0" layoutY="8.0" prefHeight="20.0" prefWidth="96.0"  inputType="NUMERIC"/>
+                                <CustomTextField fx:id="answerHeightInput" layoutX="52.0" layoutY="49.0" prefHeight="20.0" prefWidth="96.0"  inputType="NUMERIC"/>
+                                <CustomTextField fx:id="answerXInput" layoutX="259.0" layoutY="8.0" prefHeight="20.0" prefWidth="96.0"  inputType="NUMERIC"/>
+                                <CustomTextField fx:id="answerYInput" layoutX="259.0" layoutY="49.0" prefHeight="20.0" prefWidth="96.0"  inputType="NUMERIC"/>
                                 <Label layoutX="226.0" layoutY="13.0" text="X">
                                     <font>
                                         <Font name="YouYuan" size="15.0" />
@@ -176,7 +177,7 @@
                                 <Label layoutX="255.0" layoutY="14.0" text="背景颜色" />
                                 <ColorPicker fx:id="answerColorInput" layoutX="336.0" layoutY="9.0" prefHeight="30.0" prefWidth="32.0" />
                                 <Label layoutX="27.0" layoutY="52.0" text="背景图片" />
-                                <TextField fx:id="answerBackgroundPath" disable="true" layoutX="108.0" layoutY="47.0" prefHeight="30.0" prefWidth="275.0" />
+                                <CustomTextField fx:id="answerBackgroundPath" disable="true" layoutX="108.0" layoutY="47.0" prefHeight="30.0" prefWidth="275.0" />
                                 <Button layoutX="106.0" layoutY="90.0" mnemonicParsing="false" onMouseClicked="#selectCodeImg" text="选择图片" />
                                 <Button layoutX="196.0" layoutY="90.0" mnemonicParsing="false" onMouseClicked="#cancelCodeImg" text="取消图片" />
                                 <CheckBox fx:id="answerBackgroundChoice" layoutX="86.0" layoutY="13.0" mnemonicParsing="false" text="填充背景" />
@@ -185,7 +186,7 @@
                         <Label layoutX="69.0" layoutY="322.0" text="名称" />
                         <ComboBox fx:id="answerFontSelector" layoutX="111.0" layoutY="317.0" prefWidth="150.0" />
                         <Label layoutX="286.0" layoutY="322.0" text="大小" />
-                        <TextField fx:id="answerFontSize" layoutX="327.0" layoutY="316.0" prefHeight="20.0" prefWidth="96.0" />
+                        <CustomTextField fx:id="answerFontSize" layoutX="327.0" layoutY="316.0" prefHeight="20.0" prefWidth="96.0"  inputType="NUMERIC"/>
                         <CheckBox fx:id="answerDeleteChoice" layoutX="48.0" layoutY="368.0" mnemonicParsing="false" text="删除线" />
                         <CheckBox fx:id="answerBoldChoice" layoutX="139.0" layoutY="368.0" mnemonicParsing="false" text="加粗" />
                         <CheckBox fx:id="answerIticChoice" layoutX="232.0" layoutY="368.0" mnemonicParsing="false" text="斜体" />
@@ -193,7 +194,7 @@
                         <Label layoutX="69.0" layoutY="435.0" text="水平" />
                         <ComboBox fx:id="answerTextAlignSelector" layoutX="111.0" layoutY="430.0" prefWidth="150.0" />
                         <Label layoutX="288.0" layoutY="435.0" text="行间距" />
-                        <TextField fx:id="answerSpaceInput" layoutX="341.0" layoutY="430.0" prefHeight="20.0" prefWidth="96.0" />
+                        <CustomTextField fx:id="answerSpaceInput" layoutX="341.0" layoutY="430.0" prefHeight="20.0" prefWidth="96.0"  inputType="NUMERIC"/>
                         <Label layoutX="16.0" layoutY="14.0" text="位置大小" textFill="#8a8686" />
                         <Label layoutX="16.0" layoutY="139.0" text="背景设置" textFill="#8a8686" />
                         <Label layoutX="16.0" layoutY="287.0" text="字体" textFill="#8a8686" />

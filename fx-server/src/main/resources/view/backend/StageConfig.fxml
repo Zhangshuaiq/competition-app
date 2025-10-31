@@ -2,14 +2,10 @@
 
 <?import javafx.scene.image.*?>
 <?import javafx.scene.text.*?>
-<?import java.lang.*?>
-<?import java.util.*?>
-<?import javafx.scene.*?>
 <?import javafx.scene.control.*?>
-<?import javafx.scene.control.ToggleGroup?>
 <?import javafx.scene.layout.*?>
-<?import javafx.scene.image.ImageView?>
 
+<?import competition.controls.CustomTextField?>
 <AnchorPane prefHeight="827.0" prefWidth="1100.0" style="-fx-background-color: #e8e8e4;" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="competition.controller.backend.StageConfig">
    <children>
       <ScrollPane layoutX="14.0" layoutY="24.0" prefHeight="774.0" prefWidth="515.0">
@@ -26,9 +22,9 @@
             <TextField fx:id="nameInput" layoutX="105.0" layoutY="19.0" prefHeight="30.0" prefWidth="282.0" />
             <CheckBox fx:id="randomSort" layoutX="441.0" layoutY="24.0" mnemonicParsing="false" text="随机乱序" />
             <Label layoutX="28.0" layoutY="79.0" text="分值" />
-            <TextField fx:id="scoreInput" layoutX="99.0" layoutY="70.0" prefHeight="30.0" prefWidth="42.0" />
+            <CustomTextField fx:id="scoreInput" layoutX="99.0" layoutY="70.0" prefHeight="30.0" prefWidth="42.0" inputType="NUMERIC"/>
             <Label layoutX="250.0" layoutY="78.0" text="倒计时" />
-            <TextField fx:id="timeDescInput" layoutX="295.0" layoutY="70.0" prefHeight="30.0" prefWidth="42.0" />
+            <CustomTextField fx:id="timeDescInput" layoutX="295.0" layoutY="70.0" prefHeight="30.0" prefWidth="42.0" inputType="NUMERIC"/>
             <CheckBox fx:id="showNumberSelect" layoutX="355.0" layoutY="77.0" mnemonicParsing="false" text="显示题号" />
             <CheckBox fx:id="selectGreySelect" layoutX="443.0" layoutY="78.0" mnemonicParsing="false" text="选后变灰" />
             <Label layoutX="28.0" layoutY="126.0" prefHeight="20.0" prefWidth="71.0" text="计时方式" />
@@ -68,7 +64,7 @@
                <font>
                   <Font size="6.0" />
                </font></Label>
-            <TextField fx:id="desValue" layoutX="175.0" layoutY="70.0" prefHeight="30.0" prefWidth="42.0" text="0" />
+            <CustomTextField fx:id="desValue" layoutX="175.0" layoutY="70.0" prefHeight="30.0" prefWidth="42.0" text="0" inputType="NUMERIC"/>
             <CheckBox fx:id="answerShow" layoutX="316.0" layoutY="347.0" mnemonicParsing="false" text="答案单独展示" visible="false"/>
             <Label layoutX="82.0" layoutY="75.0" text="+">
                <font>

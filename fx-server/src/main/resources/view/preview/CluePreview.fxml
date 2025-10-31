@@ -30,8 +30,7 @@
         </ScrollPane>
 
         <StackPane fx:id="buttonPane" prefWidth="1920" layoutX="0" layoutY="900">
-            <Button mnemonicParsing="false" prefHeight="30.0" prefWidth="100.0" text="线索"
-                    onMouseClicked="#showClue"/>
+
         </StackPane>
 
         <VBox fx:id="buzzBox" prefHeight="400.0" prefWidth="422.0" visible="false">

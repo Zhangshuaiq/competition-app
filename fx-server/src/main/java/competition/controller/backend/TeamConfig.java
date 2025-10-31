@@ -288,7 +288,7 @@ public class TeamConfig {
         File selectedFile = fileChooser.showOpenDialog(null);
         if (selectedFile != null) {
             List<Teams> teamsList = ExcelParser.parse(selectedFile.getAbsolutePath(), Teams.class);
-            
+            teamsList.sort(Comparator.comparingInt(o -> Integer.parseInt(o.getCode())));
             // 删除旧的内容
             teamsMapper.delete(new LambdaQueryWrapper<>());
             for (Teams teams : teamsList) {

@@ -268,8 +268,8 @@ public class NavigatorEnhancer {
             load.setOnMouseReleased(event -> {
                 if (!StringUtils.isEmpty(config)) {
                     JSONObject jsonObject = JSON.parseObject(config);
-                    jsonObject.put("x", stage.getX() + "");
-                    jsonObject.put("y", stage.getY() + "");
+                    jsonObject.put("x", (int)stage.getX() + "");
+                    jsonObject.put("y", (int)stage.getY() + "");
                     configs.setConfig(jsonObject.toJSONString());
                     configsMapper.updateById(configs);
                 }
@@ -335,8 +335,8 @@ public class NavigatorEnhancer {
             load.setOnMouseReleased(event -> {
                 BuzzMapper buzzMapper = JavaFxApplication.getApplicationContext().getBean(BuzzMapper.class);
                 Buzz buzz = buzzMapper.selectById(1);
-                buzz.setX(stage.getX() + "");
-                buzz.setY(stage.getY() + "");
+                buzz.setX((int)stage.getX() + "");
+                buzz.setY((int)stage.getY() + "");
                 buzzMapper.updateById(buzz);
             });
 
@@ -399,8 +399,8 @@ public class NavigatorEnhancer {
                 configs.set(configsMapper.selectById(1));
                 config.set(configs.get().getConfig());
                 String[] split = config.get().split(ConfigSpliter.SPLITER);
-                split[29] = stage.getX() + "";
-                split[30] = stage.getY() + "";
+                split[29] = (int)stage.getX() + "";
+                split[30] = (int)stage.getY() + "";
                 configs.get().setConfig(String.join(ConfigSpliter.SPLITER, split));
                 configsMapper.updateById(configs.get());
             });
@@ -527,8 +527,8 @@ public class NavigatorEnhancer {
                 configs.set(configsMapper.selectById(1));
                 config.set(configs.get().getConfig());
                 String[] split = config.get().split(ConfigSpliter.SPLITER);
-                split[17] = stage.getX() + "";
-                split[18] = stage.getY() + "";
+                split[17] = (int)stage.getX() + "";
+                split[18] = (int)stage.getY() + "";
                 configs.get().setConfig(String.join(ConfigSpliter.SPLITER, split));
                 configsMapper.updateById(configs.get());
             });

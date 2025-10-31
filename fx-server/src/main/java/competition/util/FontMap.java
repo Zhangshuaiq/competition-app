@@ -14,7 +14,8 @@ public class FontMap {
     private static final Map<String, Font> fontCache = new HashMap<>();
     
     public static List<String> fontNames() {
-        List<String> fontNames = FileUtil.listFileNames(BaseDir.FONT_DIR);
+        List<String> fontNames = Font.getFamilies();
+//        List<String> fontNames = FileUtil.listFileNames(BaseDir.FONT_DIR);
         return fontNames;
     }
     
@@ -33,16 +34,22 @@ public class FontMap {
             return fontCache.get(key);
         }
         Font font = null;
+//        try {
+//            font = Font.loadFont(new FileInputStream(new File(FontMap.getFont(name))), size);
+//            fontCache.put(key, font);
+//        } catch (FileNotFoundException e) {
+//            try {
+//                font =  Font.loadFont(new FileInputStream(new File(FontMap.defaultFont())), size);
+//                fontCache.put(key, font);
+//            } catch (FileNotFoundException ex) {
+//                font = Font.font(size);
+//            }
+//        }
         try {
-            font = Font.loadFont(new FileInputStream(new File(FontMap.getFont(name))), size);
+            font = Font.font(name, size);
             fontCache.put(key, font);
-        } catch (FileNotFoundException e) {
-            try {
-                font =  Font.loadFont(new FileInputStream(new File(FontMap.defaultFont())), size);
-                fontCache.put(key, font);
-            } catch (FileNotFoundException ex) {
-                font = Font.font(size);
-            }
+        } catch (Exception e) {
+            font = Font.font(size);
         }
         return font;
     }

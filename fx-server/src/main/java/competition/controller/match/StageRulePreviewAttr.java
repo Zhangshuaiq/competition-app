@@ -191,7 +191,7 @@ public class StageRulePreviewAttr {
             headColorInput.setValue(Color.valueOf(detailArr[5].replace("0x", "#")));
             headBackgroundPath.setText(detailArr[6]);
             headFontSelector.setValue(detailArr[7]);
-            headFontSize.setText(Double.parseDouble(detailArr[8]) + "");
+            headFontSize.setText(Integer.parseInt(detailArr[8]) + "");
             headDeleteChoice.setSelected(Boolean.valueOf(detailArr[9]));
             headBoldChoice.setSelected(Boolean.valueOf(detailArr[10]));
             headIticChoice.setSelected(Boolean.valueOf(detailArr[11]));

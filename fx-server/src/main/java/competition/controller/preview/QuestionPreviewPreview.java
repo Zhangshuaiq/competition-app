@@ -727,7 +727,7 @@ public class QuestionPreviewPreview extends PreviewPane<Questions> {
         // 设置间距和字体（覆盖基础设置）
         tiganBox.setSpacing(ScreenAdapter.calculateMainY(Integer.parseInt(split1[14])));
         Font font = getCachedFont(split1[7], ScreenAdapter.calculateMainX(Integer.parseInt(split1[8])));
-
+        //Font font = Font.font(ScreenAdapter.calculateMainX(Integer.parseInt(split1[8])));
         // 应用字体样式到所有文本组件（覆盖基础样式）
         applyFontStyleToAllTexts(font, split1);
 
@@ -739,7 +739,7 @@ public class QuestionPreviewPreview extends PreviewPane<Questions> {
                 // 如果不需要空行，确保没有多余的空行
                 tiganBox.getChildren().removeIf(node -> node instanceof Text && ((Text) node).getText().equals(BLACK_LINE));
             }
-        }
+        } 
     }
 
 
@@ -1023,8 +1023,6 @@ public class QuestionPreviewPreview extends PreviewPane<Questions> {
             inner = null;
 
             // 从PreviewStack中移除
-            PreviewStack.removePreview();
-
             // 建议垃圾回收
             System.gc();
 

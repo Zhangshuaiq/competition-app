@@ -3,7 +3,6 @@ package competition.controller.board.preview;
 import competition.JavaFxApplication;
 import competition.controller.ControlPane;
 import competition.controller.match.ReloadPane;
-import competition.controller.preview.Model7Preview;
 import competition.controller.preview.PreviewPane;
 import competition.entity.Configs;
 import competition.mapper.ConfigsMapper;
@@ -170,6 +169,11 @@ public class TimeBoardPreview extends PreviewPane {
                 timeBoard.initPage();
                 timeBoard.reload(timeVal, timeValue);
             }
+            timeBoard.shows();
+        } else {
+            if (timeBoard != null) {
+                timeBoard.close();
+            }
         }
 
     }
@@ -218,11 +222,12 @@ public class TimeBoardPreview extends PreviewPane {
         }
         timeLabel.setText(timeValue);
         timeline = new Timeline(new KeyFrame(Duration.seconds(1), e -> {
+            boolean close = false;
             if (order) {
                 timeVal++;
                 if (timeVal == endTime) {
                     MusicPlayer.play(MusicResource.SECOND_0);
-                    close();
+                    close = true;
                     controlPane.resetTimeBtn();
                 }
             } else {
@@ -230,7 +235,7 @@ public class TimeBoardPreview extends PreviewPane {
                 timeVal--;
                 if (timeVal == 0) {
                     MusicPlayer.play(MusicResource.SECOND_0);
-                    close();
+                    close = true;
                     controlPane.resetTimeBtn();
                 } else {
                     if (timeVal <= alertValue) {
@@ -259,20 +264,26 @@ public class TimeBoardPreview extends PreviewPane {
             }
             PreviewStack.reload(this.timeVal, this.timeValue);
             showData();
+            if (close) {
+                close();
+            }
         }));
-        ReloadPane timeBoard = controlPane.getTimeBoard();
-        if (timeBoard == null) {
-            timeBoard = (ReloadPane) ExtendedScreen.timeWithPos("/view/board/match/TimeBoard.fxml", "", "/view/style.css", true);
-        }
+
         boolean extendScreen = ExtendedScreen.hasShow();
-        if (extendScreen && timeBoard != null) {
-            timeBoard.initPage();
+        if (extendScreen) {
+            ReloadPane timeBoard = controlPane.getTimeBoard();
+            if (timeBoard == null) {
+                timeBoard = (ReloadPane) ExtendedScreen.timeWithPos("/view/board/match/TimeBoard.fxml", "", "/view/style.css", true);
+            } else {
+                timeBoard.initPage();
+            }
             controlPane.setTimeBoard(timeBoard);
             timeBoard.shows();
             timeBoard.reload(timeVal, timeValue);
         }
         timeline.setCycleCount(-1);
         timeline.playFromStart();
+        RuntimeUtil.isTiming = true;
     }
 
     public void stopTiming() {

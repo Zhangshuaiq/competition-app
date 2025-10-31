@@ -13,6 +13,7 @@
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.AnchorPane?>
 
+<?import competition.controls.CustomTextField?>
 <AnchorPane prefHeight="827.0" prefWidth="1100.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="competition.controller.backend.PaneConfig">
    <children>
       <Label layoutX="132.0" layoutY="64.0" text="选手平板网址：" />
@@ -39,36 +40,36 @@
       <ColorPicker fx:id="codeColor" layoutX="447.0" layoutY="501.0" prefHeight="30.0" prefWidth="30.0" />
       <Label layoutX="393.0" layoutY="510.0" text="颜色" />
       <Label layoutX="558.0" layoutY="509.0" text="字体大小" />
-      <TextField fx:id="codeSize" layoutX="614.0" layoutY="504.0" prefHeight="23.0" prefWidth="110.0" />
+      <CustomTextField fx:id="codeSize" layoutX="614.0" layoutY="504.0" prefHeight="23.0" prefWidth="110.0" inputType="NUMERIC"/>
       <Label layoutX="558.0" layoutY="551.0" text="字体大小" />
       <Label layoutX="911.0" layoutY="507.0" text="y" />
-      <TextField fx:id="codeY" layoutX="942.0" layoutY="504.0" prefHeight="23.0" prefWidth="48.0" />
-      <TextField fx:id="teamY" layoutX="942.0" layoutY="551.0" prefHeight="23.0" prefWidth="48.0" />
+      <CustomTextField fx:id="codeY" layoutX="942.0" layoutY="504.0" prefHeight="23.0" prefWidth="48.0" inputType="NUMERIC"/>
+      <CustomTextField fx:id="teamY" layoutX="942.0" layoutY="551.0" prefHeight="23.0" prefWidth="48.0" inputType="NUMERIC"/>
       <Label layoutX="910.0" layoutY="553.0" text="y" />
-      <TextField fx:id="teamSize" layoutX="614.0" layoutY="548.0" prefHeight="23.0" prefWidth="110.0" />
+      <CustomTextField fx:id="teamSize" layoutX="614.0" layoutY="548.0" prefHeight="23.0" prefWidth="110.0" inputType="NUMERIC"/>
       <Label layoutX="393.0" layoutY="552.0" text="颜色" />
       <ColorPicker fx:id="teamColor" layoutX="447.0" layoutY="545.0" prefHeight="30.0" prefWidth="30.0" />
       <ColorPicker fx:id="scoreColor" layoutX="447.0" layoutY="586.0" prefHeight="30.0" prefWidth="30.0" />
       <Label layoutX="393.0" layoutY="594.0" text="颜色" />
       <Label layoutX="558.0" layoutY="594.0" text="字体大小" />
-      <TextField fx:id="scoreSize" layoutX="614.0" layoutY="590.0" prefHeight="23.0" prefWidth="110.0" />
+      <CustomTextField fx:id="scoreSize" layoutX="614.0" layoutY="590.0" prefHeight="23.0" prefWidth="110.0" inputType="NUMERIC"/>
       <Label layoutX="910.0" layoutY="594.0" text="y" />
-      <TextField fx:id="scoreY" layoutX="942.0" layoutY="590.0" prefHeight="23.0" prefWidth="48.0" />
+      <CustomTextField fx:id="scoreY" layoutX="942.0" layoutY="590.0" prefHeight="23.0" prefWidth="48.0" inputType="NUMERIC"/>
       <Label layoutX="132.0" layoutY="626.0" prefHeight="15.0" prefWidth="84.0" text="整体分数设置：" />
-      <TextField fx:id="size1" layoutX="473.0" layoutY="662.0" prefHeight="23.0" prefWidth="110.0" />
+      <CustomTextField fx:id="size1" layoutX="473.0" layoutY="662.0" prefHeight="23.0" prefWidth="110.0" inputType="NUMERIC"/>
       <Label layoutX="417.0" layoutY="667.0" text="字体大小" />
       <Label layoutX="247.0" layoutY="668.0" text="编号颜色" />
       <ColorPicker fx:id="color1" layoutX="306.0" layoutY="659.0" prefHeight="30.0" prefWidth="30.0" />
-      <TextField fx:id="size2" layoutX="472.0" layoutY="695.0" prefHeight="23.0" prefWidth="110.0" />
+      <CustomTextField fx:id="size2" layoutX="472.0" layoutY="695.0" prefHeight="23.0" prefWidth="110.0" inputType="NUMERIC"/>
       <Label layoutX="416.0" layoutY="700.0" text="字体大小" />
       <Label layoutX="248.0" layoutY="701.0" text="名称颜色" />
       <ColorPicker fx:id="color2" layoutX="305.0" layoutY="692.0" prefHeight="30.0" prefWidth="30.0" />
-      <TextField fx:id="size3" layoutX="472.0" layoutY="729.0" prefHeight="23.0" prefWidth="110.0" />
+      <CustomTextField fx:id="size3" layoutX="472.0" layoutY="729.0" prefHeight="23.0" prefWidth="110.0" inputType="NUMERIC"/>
       <Label layoutX="416.0" layoutY="734.0" text="字体大小" />
       <Label layoutX="248.0" layoutY="735.0" text="分数颜色" />
       <ColorPicker fx:id="color3" layoutX="305.0" layoutY="726.0" prefHeight="30.0" prefWidth="30.0" />
-      <TextField fx:id="rows" layoutX="329.0" layoutY="622.0" prefHeight="23.0" prefWidth="110.0" />
-      <TextField fx:id="cols" layoutX="598.0" layoutY="622.0" prefHeight="23.0" prefWidth="110.0" />
+      <CustomTextField fx:id="rows" layoutX="329.0" layoutY="622.0" prefHeight="23.0" prefWidth="110.0" inputType="NUMERIC"/>
+      <CustomTextField fx:id="cols" layoutX="598.0" layoutY="622.0" prefHeight="23.0" prefWidth="110.0" inputType="NUMERIC"/>
       <Label layoutX="289.0" layoutY="626.0" text="行" />
       <Label layoutX="558.0" layoutY="626.0" text="列" />
       <Button layoutX="435.0" layoutY="772.0" mnemonicParsing="false" onMouseClicked="#updateConfig" prefHeight="23.0" prefWidth="187.0" text="更新配置信息" />
@@ -78,11 +79,11 @@
       <TextField fx:id="scoreWebsite1" layoutX="353.0" layoutY="256.0" prefHeight="45.0" prefWidth="243.0" />
       <Label layoutX="130.0" layoutY="268.0" text="个人分数网址：" />
       <ImageView fx:id="scoreQrcode1" fitHeight="54.0" fitWidth="54.0" layoutX="915.0" layoutY="251.0" onMouseClicked="#largeScoreQrcode1" pickOnBounds="true" preserveRatio="true" />
-      <TextField fx:id="y1" layoutX="856.0" layoutY="662.0" prefHeight="23.0" prefWidth="48.0" />
+      <CustomTextField fx:id="y1" layoutX="856.0" layoutY="662.0" prefHeight="23.0" prefWidth="48.0" inputType="NUMERIC"/>
       <Label layoutX="825.0" layoutY="665.0" text="y" />
-      <TextField fx:id="y2" layoutX="855.0" layoutY="695.0" prefHeight="23.0" prefWidth="48.0" />
+      <CustomTextField fx:id="y2" layoutX="855.0" layoutY="695.0" prefHeight="23.0" prefWidth="48.0" inputType="NUMERIC"/>
       <Label layoutX="824.0" layoutY="698.0" text="y" />
-      <TextField fx:id="y3" layoutX="854.0" layoutY="728.0" prefHeight="23.0" prefWidth="48.0" />
+      <CustomTextField fx:id="y3" layoutX="854.0" layoutY="728.0" prefHeight="23.0" prefWidth="48.0" inputType="NUMERIC"/>
       <Label layoutX="823.0" layoutY="731.0" text="y" />
       <Label layoutX="130.0" layoutY="414.0" text="联系方式:" />
       <TextArea fx:id="contactText" layoutX="254.0" layoutY="385.0" prefHeight="87.0" prefWidth="482.0" />

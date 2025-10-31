@@ -390,7 +390,7 @@ public class QuestionPreview implements ReloadPane<Questions>{
             String style3 = "2%%2%%300%%100%%false%%0xffffffff%%%%默认.ttf%%24%%false%%false%%false%%false%%居中对齐%%";
 
             List<QuestionStyle> parse = ExcelParser.parse(ExcelParser.S_PATH, QuestionStyle.class);
-            if (!parse.isEmpty()) {
+            if (!parse.isEmpty() && inner.getSort() < parse.size()) {
                 QuestionStyle questionStyle = parse.get(inner.getSort());
                 if (questionStyle != null) {
                     if (!StringUtils.isEmpty(questionStyle.getStyle1())) {
@@ -404,6 +404,7 @@ public class QuestionPreview implements ReloadPane<Questions>{
                     }
                 }
             }
+
 
             // 应用样式1
             {

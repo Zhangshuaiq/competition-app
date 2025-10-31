@@ -6,10 +6,7 @@ import competition.entity.Buzz;
 import competition.entity.Configs;
 import competition.mapper.BuzzMapper;
 import competition.mapper.ConfigsMapper;
-import competition.util.BaseDir;
-import competition.util.FontMap;
-import competition.util.ImageResource;
-import competition.util.NumberUtil;
+import competition.util.*;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
@@ -20,7 +17,10 @@ import org.springframework.util.StringUtils;
 
 import javax.annotation.Resource;
 import java.io.File;
+import java.lang.reflect.Field;
 import java.text.DecimalFormat;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 @Component
@@ -213,8 +213,42 @@ public class BuzzConfig {
         }
     }
 
+    public List<TextField> getAllTextFields() {
+        List<TextField> textFields = new ArrayList<>();
+        Field[] fields = this.getClass().getDeclaredFields();
+
+        for (Field field : fields) {
+            if (TextField.class.isAssignableFrom(field.getType())) {
+                try {
+                    field.setAccessible(true);
+                    TextField textField = (TextField) field.get(this);
+                    if (textField != null) {
+                        textFields.add(textField);
+                    }
+                } catch (IllegalAccessException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+
+        return textFields;
+    }
+
     @FXML
     public void updateConfig() {
+        boolean valid = true;
+        List<TextField> inputs = getAllTextFields();
+        for (TextField input : inputs) {
+            if (StringUtils.isEmpty(input.getText())) {
+                valid = false;
+                break;
+            }
+        }
+
+        if (!valid) {
+            Information.error("请填写界面的输入框");
+            return;
+        }
         //          buzzCombox.setValue(buzz.getMode());
         //            buzzSpeedText.setText(String.valueOf(buzz.getSpeed()));
         //            speedAdjust.setValue(Double.valueOf(buzz.getSpeed()));

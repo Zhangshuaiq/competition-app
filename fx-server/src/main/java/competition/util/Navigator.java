@@ -242,6 +242,10 @@ public class Navigator {
         }
     }
 
+    public static void clearAttrCache(){
+        attrCache.clear();
+    }
+
     public static Object buzzResult(String fxml, String title, String cssFile, boolean hiddenControl){
         Parent load = null;
         try {
@@ -292,8 +296,8 @@ public class Navigator {
             load.setOnMouseReleased(event -> {
                 if (!StringUtils.isEmpty(config)) {
                     JSONObject jsonObject = JSON.parseObject(config);
-                    jsonObject.put("x", stage.getX() + "");
-                    jsonObject.put("y", stage.getY() + "");
+                    jsonObject.put("x", (int)stage.getX() + "");
+                    jsonObject.put("y", (int)stage.getY() + "");
                     configs.setConfig(jsonObject.toJSONString());
                     configsMapper.updateById(configs);
                 }
@@ -362,8 +366,8 @@ public class Navigator {
             load.setOnMouseReleased(event -> {
                 BuzzMapper buzzMapper = JavaFxApplication.getApplicationContext().getBean(BuzzMapper.class);
                 Buzz buzz = buzzMapper.selectById(1);
-                buzz.setX(stage.getX() + "");
-                buzz.setY(stage.getY() + "");
+                buzz.setX((int)stage.getX() + "");
+                buzz.setY((int)stage.getY() + "");
                 buzzMapper.updateById(buzz);
             });
 
@@ -430,8 +434,8 @@ public class Navigator {
                 configs.set(configsMapper.selectById(1));
                 config.set(configs.get().getConfig());
                 String[] split = config.get().split(ConfigSpliter.SPLITER);
-                split[29] = stage.getX() + "";
-                split[30] = stage.getY() + "";
+                split[29] = (int)stage.getX() + "";
+                split[30] = (int)stage.getY() + "";
                 configs.get().setConfig(String.join(ConfigSpliter.SPLITER, split));
                 configsMapper.updateById(configs.get());
             });
@@ -548,8 +552,8 @@ public class Navigator {
                 configs.set(configsMapper.selectById(1));
                 config.set(configs.get().getConfig());
                 String[] split = config.get().split(ConfigSpliter.SPLITER);
-                split[17] = stage.getX() + "";
-                split[18] = stage.getY() + "";
+                split[17] = (int)stage.getX() + "";
+                split[18] = (int)stage.getY() + "";
                 configs.get().setConfig(String.join(ConfigSpliter.SPLITER, split));
                 configsMapper.updateById(configs.get());
             });
@@ -569,16 +573,9 @@ public class Navigator {
     public static Node load(String fxml){
         Parent load = null;
         try {
-
-            if (cachedLoadRoot.containsKey(fxml)) {
-                load = cachedLoadRoot.get(fxml);
-                log.info("从缓存加载预览界面: {}", fxml);
-            } else {
-                FXMLLoader loader = new FXMLLoader(Navigator.class.getResource(fxml));
-                loader.setControllerFactory(JavaFxApplication.getApplicationContext()::getBean);
-                load = loader.load();
-                cachedLoadRoot.put(fxml, load);
-            }
+            FXMLLoader loader = new FXMLLoader(Navigator.class.getResource(fxml));
+            loader.setControllerFactory(JavaFxApplication.getApplicationContext()::getBean);
+            load = loader.load();
             return load;
         } catch (IOException e) {
             e.printStackTrace();

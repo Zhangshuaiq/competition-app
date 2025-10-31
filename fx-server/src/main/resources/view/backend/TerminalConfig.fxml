@@ -10,6 +10,7 @@
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.AnchorPane?>
 
+<?import competition.controls.CustomTextField?>
 <AnchorPane prefHeight="827.0" prefWidth="1100.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="competition.controller.backend.TerminalConfig">
    <children>
       <Label layoutX="82.0" layoutY="49.0" text="硬件 COM 口：" />
@@ -17,7 +18,7 @@
       <Button fx:id="connectBtn" layoutX="741.0" layoutY="44.0" mnemonicParsing="false" onMouseClicked="#controlPort" prefHeight="30.0" prefWidth="106.0" text="打开" />
       <Label layoutX="82.0" layoutY="92.0" text="硬件终端信息" />
       <Label layoutX="82.0" layoutY="137.0" text="主机显示器信道：" />
-      <TextField fx:id="portField" layoutX="204.0" layoutY="130.0" prefHeight="30.0" prefWidth="118.0" />
+      <CustomTextField fx:id="portField" layoutX="204.0" layoutY="130.0" prefHeight="30.0" prefWidth="118.0" inputType="NUMERIC"/>
       <Button layoutX="396.0" layoutY="130.0" mnemonicParsing="false" onMouseClicked="#saveScreenPort" prefHeight="30.0" prefWidth="76.0" text="保存" />
       <Separator layoutX="198.0" layoutY="98.0" prefHeight="0.0" prefWidth="715.0" />
       <Label layoutX="82.0" layoutY="189.0" text="显示器列表：" />
@@ -35,7 +36,7 @@
       </TableView>
       <Label layoutX="631.0" layoutY="223.0" prefHeight="15.0" prefWidth="35.0" text="地址" />
       <Label layoutX="631.0" layoutY="269.0" prefHeight="15.0" prefWidth="35.0" text="颜色" />
-      <TextField fx:id="screenAddressField" layoutX="676.0" layoutY="219.0" prefHeight="26.0" prefWidth="256.0" />
+      <CustomTextField fx:id="screenAddressField" layoutX="676.0" layoutY="219.0" prefHeight="26.0" prefWidth="256.0" inputType="NUMERIC"/>
       <ComboBox fx:id="color1Selector" layoutX="710.0" layoutY="265.0" prefHeight="23.0" prefWidth="91.0" />
       <ComboBox fx:id="color2Selector" layoutX="846.0" layoutY="265.0" prefHeight="23.0" prefWidth="85.0" />
       <ComboBox fx:id="color3Selector" layoutX="973.0" layoutY="265.0" prefHeight="23.0" prefWidth="91.0" />
@@ -44,14 +45,14 @@
       <Label layoutX="937.0" layoutY="269.0" prefHeight="15.0" prefWidth="35.0" text="管道3" />
       <Button layoutX="711.0" layoutY="306.0" mnemonicParsing="false" onMouseClicked="#saveScreenInfo" prefHeight="23.0" prefWidth="60.0" text="保存" />
       <Button layoutX="881.0" layoutY="306.0" mnemonicParsing="false" onMouseClicked="#deleteScreenInfo" prefHeight="23.0" prefWidth="60.0" text="删除" />
-      <TextField fx:id="buzzAddressField" layoutX="673.0" layoutY="437.0" prefHeight="26.0" prefWidth="256.0" />
+      <CustomTextField fx:id="buzzAddressField" layoutX="673.0" layoutY="437.0" prefHeight="26.0" prefWidth="256.0" inputType="NUMERIC"/>
       <Label layoutX="631.0" layoutY="441.0" prefHeight="15.0" prefWidth="35.0" text="地址" />
       <Button layoutX="881.0" layoutY="488.0" mnemonicParsing="false" onMouseClicked="#deleteBuzzInfo" prefHeight="23.0" prefWidth="60.0" text="删除" />
       <Button layoutX="711.0" layoutY="488.0" mnemonicParsing="false" onMouseClicked="#saveBuzzInfo" prefHeight="23.0" prefWidth="60.0" text="保存" />
       <TextArea fx:id="logArea" layoutX="76.0" layoutY="603.0" prefHeight="192.0" prefWidth="977.0" />
       <Label layoutX="76.0" layoutY="574.0" text="日志：" />
       <Label layoutX="565.0" layoutY="138.0" text="主机抢答器信道：" />
-      <TextField fx:id="portField1" layoutX="685.0" layoutY="131.0" prefHeight="30.0" prefWidth="118.0" />
+      <CustomTextField fx:id="portField1" layoutX="685.0" layoutY="131.0" prefHeight="30.0" prefWidth="118.0" inputType="NUMERIC"/>
       <Button layoutX="840.0" layoutY="130.0" mnemonicParsing="false" onMouseClicked="#saveBuzzPort" prefHeight="30.0" prefWidth="76.0" text="保存" />
    </children>
 </AnchorPane>

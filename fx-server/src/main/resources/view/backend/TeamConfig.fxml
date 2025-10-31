@@ -10,7 +10,8 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane prefHeight="827.0" prefWidth="1100.0" style="-fx-background-color: #e8e8e4;" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" 
+<?import competition.controls.CustomTextField?>
+<AnchorPane prefHeight="827.0" prefWidth="1100.0" style="-fx-background-color: #e8e8e4;" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1"
             fx:controller="competition.controller.backend.TeamConfig">
     <children>
         <!--      <Button layoutX="44.0" layoutY="48.0" mnemonicParsing="false" prefHeight="30.0" prefWidth="82.0" text="新增" />-->
@@ -62,10 +63,10 @@
         <Button layoutX="717.0" layoutY="643.0" mnemonicParsing="false" onMouseClicked="#deleteTeamInfo" prefHeight="30.0" prefWidth="82.0" text="删除" />
         <Button layoutX="717.0" layoutY="703.0" mnemonicParsing="false" onMouseClicked="#importTeam" prefHeight="30.0" prefWidth="82.0" text="导入" />
         <Label layoutX="66.0" layoutY="708.0" text="团队基础分" />
-        <TextField fx:id="teamBaseScore" layoutX="155.0" layoutY="705.0" prefHeight="30.0" prefWidth="100.0" />
+        <CustomTextField inputType="NUMERIC"  fx:id="teamBaseScore" layoutX="155.0" layoutY="705.0" prefHeight="30.0" prefWidth="100.0" />
         <Button layoutX="274.0" layoutY="703.0" mnemonicParsing="false" onMouseClicked="#resetTeamScore" prefHeight="30.0" prefWidth="82.0" text="复位" />
         <Label layoutX="66.0" layoutY="771.0" text="队员基础分" />
-        <TextField fx:id="memberBaseScore" layoutX="157.0" layoutY="766.0" prefHeight="30.0" prefWidth="100.0" />
+        <CustomTextField inputType="NUMERIC" fx:id="memberBaseScore" layoutX="157.0" layoutY="766.0" prefHeight="30.0" prefWidth="100.0" />
         <Button layoutX="274.0" layoutY="765.0" mnemonicParsing="false" onMouseClicked="#resetMemberScore" prefHeight="30.0" prefWidth="82.0" text="复位" />
       <TextField fx:id="holderPassword" layoutX="148.0" layoutY="48.0" prefHeight="30.0" prefWidth="283.0" />
       <Label layoutX="62.0" layoutY="56.0" prefHeight="15.0" prefWidth="69.0" text="主持人密码" />

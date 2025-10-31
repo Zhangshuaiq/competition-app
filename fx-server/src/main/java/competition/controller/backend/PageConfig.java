@@ -19,6 +19,9 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
 import javax.annotation.Resource;
+import java.lang.reflect.Field;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -389,7 +392,27 @@ public class PageConfig {
         
         showData();
     }
-    
+
+    public List<TextField> getAllTextFields() {
+        List<TextField> textFields = new ArrayList<>();
+        Field[] fields = this.getClass().getDeclaredFields();
+
+        for (Field field : fields) {
+            if (TextField.class.isAssignableFrom(field.getType())) {
+                try {
+                    field.setAccessible(true);
+                    TextField textField = (TextField) field.get(this);
+                    if (textField != null) {
+                        textFields.add(textField);
+                    }
+                } catch (IllegalAccessException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+
+        return textFields;
+    }
     
     private void showData(){
         final List<Configs> configs = configsMapper.selectList(new LambdaQueryWrapper<>());
@@ -587,6 +610,21 @@ public class PageConfig {
     
     @FXML
     public void updateConfig(){
+
+        boolean valid = true;
+        List<TextField> inputs = getAllTextFields();
+        for (TextField input : inputs) {
+            if (StringUtils.isEmpty(input.getText())) {
+                valid = false;
+                break;
+            }
+        }
+
+        if (!valid) {
+            Information.error("请填写界面的输入框");
+            return;
+        }
+
         // 答题  ------------------------------------------------
         final String tigan = tg.getValue().toString();
         final String daan = da.getValue().toString();
@@ -667,8 +705,8 @@ public class PageConfig {
                 ;
 
 
-        double dx = Double.parseDouble(daojishix);
-        double dy = Double.parseDouble(daojishiy);
+        int dx = Integer.parseInt(daojishix);
+        int dy = Integer.parseInt(daojishiy);
 
         Navigator.timeBoardStage.setX(dx);
         Navigator.timeBoardStage.setY(dy);
@@ -729,7 +767,6 @@ public class PageConfig {
                 + paimingkuan + ConfigSpliter.SPLITER
                 + paiminggao;
                 
-
         // 选题  ------------------------------------------------
         final String xuantizise = xtzs.getValue().toString();
         final String xuanxiangbeijing = xxbj.getValue().toString();
@@ -888,8 +925,8 @@ public class PageConfig {
         configsMapper.updateById(jingji);
 
         controlPane.updateScoreBoard();
-        Navigator.scoreBoardStage.setX(Double.parseDouble(duiwux));
-        Navigator.scoreBoardStage.setY(Double.parseDouble(duiwuy));
+        Navigator.scoreBoardStage.setX(Integer.parseInt(duiwux));
+        Navigator.scoreBoardStage.setY(Integer.parseInt(duiwuy));
         ReloadPane timeBoard = controlPane.getTimeBoardPreview();
         if (timeBoard != null) {
             timeBoard.reload();

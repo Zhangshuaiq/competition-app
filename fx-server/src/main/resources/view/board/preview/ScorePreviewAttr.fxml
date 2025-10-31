@@ -11,6 +11,7 @@
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.AnchorPane?>
 
+<?import competition.controls.CustomTextField?>
 <AnchorPane prefHeight="442.0" prefWidth="473.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="competition.controller.board.match.ScorePreviewAttr">
    <children>
       <AnchorPane layoutX="40.0" layoutY="42.0" prefHeight="30.0" prefWidth="399.0">
@@ -22,7 +23,7 @@
       <Label layoutX="69.0" layoutY="111.0" text="名称" />
       <ComboBox fx:id="fontSelector" layoutX="111.0" layoutY="106.0" prefWidth="150.0" />
       <Label layoutX="286.0" layoutY="111.0" text="大小" />
-      <TextField fx:id="fontSize" layoutX="327.0" layoutY="105.0" prefHeight="20.0" prefWidth="96.0" />
+      <CustomTextField fx:id="fontSize" layoutX="327.0" layoutY="105.0" prefHeight="20.0" prefWidth="96.0" inputType="NUMERIC"/>
       <CheckBox fx:id="deleteChoice" layoutX="53.0" layoutY="157.0" mnemonicParsing="false" text="删除线" />
       <CheckBox fx:id="boldChoice" layoutX="139.0" layoutY="157.0" mnemonicParsing="false" text="加粗" />
       <CheckBox fx:id="iticChoice" layoutX="232.0" layoutY="157.0" mnemonicParsing="false" text="斜体" />
@@ -36,11 +37,11 @@
       <Separator layoutX="58.0" layoutY="321.0" prefHeight="3.0" prefWidth="337.0" />
       <Label layoutX="16.0" layoutY="310.0" text="外观" textFill="#8a8686" />
       <Label layoutX="58.0" layoutY="346.0" text="列间距" />
-      <TextField fx:id="colSpan" layoutX="126.0" layoutY="341.0" prefHeight="30.0" prefWidth="96.0" />
+      <CustomTextField fx:id="colSpan" layoutX="126.0" layoutY="341.0" prefHeight="30.0" prefWidth="96.0"  inputType="NUMERIC"/>
       <Label layoutX="68.0" layoutY="226.0" text="名称" />
       <ComboBox fx:id="sfontSelector" layoutX="110.0" layoutY="221.0" prefWidth="150.0" />
       <Label layoutX="285.0" layoutY="226.0" text="大小" />
-      <TextField fx:id="sfontSize" layoutX="326.0" layoutY="220.0" prefHeight="20.0" prefWidth="96.0" />
+      <CustomTextField fx:id="sfontSize" layoutX="326.0" layoutY="220.0" prefHeight="20.0" prefWidth="96.0"  inputType="NUMERIC"/>
       <CheckBox fx:id="sdeleteChoice" layoutX="52.0" layoutY="272.0" mnemonicParsing="false" text="删除线" />
       <CheckBox fx:id="sboldChoice" layoutX="138.0" layoutY="272.0" mnemonicParsing="false" text="加粗" />
       <CheckBox fx:id="siticChoice" layoutX="231.0" layoutY="272.0" mnemonicParsing="false" text="斜体" />
@@ -50,6 +51,6 @@
       <Label layoutX="230.0" layoutY="14.0" prefHeight="15.0" prefWidth="68.0" text="分数条控制" textFill="#8a8686" />
       <Separator layoutX="311.0" layoutY="27.0" prefHeight="3.0" prefWidth="96.0" />
       <Label layoutX="255.0" layoutY="346.0" prefHeight="15.0" prefWidth="45.0" text="行间距" />
-      <TextField fx:id="rowSpan" layoutX="311.0" layoutY="339.0" prefHeight="30.0" prefWidth="96.0" />
+      <CustomTextField fx:id="rowSpan" layoutX="311.0" layoutY="339.0" prefHeight="30.0" prefWidth="96.0"  inputType="NUMERIC"/>
    </children>
 </AnchorPane>

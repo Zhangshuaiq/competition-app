@@ -10,13 +10,14 @@
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.AnchorPane?>
 
+<?import competition.controls.CustomTextField?>
 <AnchorPane prefHeight="827.0" prefWidth="1100.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
             fx:controller="competition.controller.backend.BuzzConfig">
    <children>
       <Label layoutX="145.0" layoutY="39.0" text="模式设置：" />
       <ComboBox fx:id="buzzCombox" layoutX="251.0" layoutY="34.0" prefHeight="30.0" prefWidth="454.0" />
       <Label layoutX="145.0" layoutY="128.0" text="抢答限时：" />
-      <TextField fx:id="timeLimitText" layoutX="251.0" layoutY="123.0" prefHeight="30.0" prefWidth="102.0" />
+      <CustomTextField fx:id="timeLimitText" layoutX="251.0" layoutY="123.0" prefHeight="30.0" prefWidth="102.0" inputType="NUMERIC"/>
       <Label layoutX="369.0" layoutY="128.0" text="秒" />
       <CheckBox fx:id="lastSuccessCheck" layoutX="429.0" layoutY="128.0" mnemonicParsing="false" text="全部违规时最后一个抢答成功" />
       <Label layoutX="145.0" layoutY="176.0" text="抢答效果：" />
@@ -30,7 +31,7 @@
       <Label layoutX="157.0" layoutY="298.0" text="字体：" />
       <ComboBox fx:id="fontSelector" layoutX="212.0" layoutY="294.0" prefWidth="150.0" />
       <Label layoutX="441.0" layoutY="298.0" text="字体大小" />
-      <TextField fx:id="fontSizeInput" layoutX="511.0" layoutY="291.0" prefHeight="30.0" prefWidth="102.0" />
+      <CustomTextField fx:id="fontSizeInput" layoutX="511.0" layoutY="291.0" prefHeight="30.0" prefWidth="102.0" inputType="NUMERIC"/>
       <Label layoutX="161.0" layoutY="341.0" text="颜色" />
       <ColorPicker fx:id="fontColor" layoutX="212.0" layoutY="336.0" prefHeight="30.0" prefWidth="30.0" />
       <CheckBox fx:id="fontBold" layoutX="294.0" layoutY="341.0" mnemonicParsing="false" text="加粗" />
@@ -50,17 +51,17 @@
       <Label layoutX="691.0" layoutY="442.0" text="高" />
       <Label layoutX="824.0" layoutY="442.0" text="行距" />
       <ColorPicker fx:id="backColor" layoutX="227.0" layoutY="434.0" prefHeight="30.0" prefWidth="30.0" />
-      <TextField fx:id="widthInput" layoutX="575.0" layoutY="438.0" prefHeight="23.0" prefWidth="87.0" />
-      <TextField fx:id="heightInput" layoutX="714.0" layoutY="437.0" prefHeight="23.0" prefWidth="87.0" />
-      <TextField fx:id="spaceInput" layoutX="867.0" layoutY="438.0" prefHeight="23.0" prefWidth="87.0" />
+      <CustomTextField fx:id="widthInput" layoutX="575.0" layoutY="438.0" prefHeight="23.0" prefWidth="87.0" inputType="NUMERIC"/>
+      <CustomTextField fx:id="heightInput" layoutX="714.0" layoutY="437.0" prefHeight="23.0" prefWidth="87.0" inputType="NUMERIC"/>
+      <CustomTextField fx:id="spaceInput" layoutX="867.0" layoutY="438.0" prefHeight="23.0" prefWidth="87.0" inputType="NUMERIC"/>
       <Label layoutX="309.0" layoutY="482.0" text="字体" />
       <Label layoutX="549.0" layoutY="482.0" text="颜色" />
       <ColorPicker layoutX="593.0" layoutY="475.0" prefHeight="30.0" prefWidth="30.0" fx:id="xuhaoColor" />
       <Label layoutX="693.0" layoutY="483.0" text="字号" />
-      <TextField layoutX="767.0" layoutY="478.0" fx:id="xuhaoSize" />
+      <CustomTextField layoutX="767.0" layoutY="478.0" fx:id="xuhaoSize" inputType="NUMERIC"/>
       <ComboBox layoutX="351.0" layoutY="478.0" prefWidth="150.0" fx:id="xuhaoFont" />
       <ComboBox fx:id="jianchengFont" layoutX="351.0" layoutY="519.0" prefWidth="150.0" />
-      <TextField fx:id="jianchengSize" layoutX="767.0" layoutY="519.0" />
+      <CustomTextField fx:id="jianchengSize" layoutX="767.0" layoutY="519.0" inputType="NUMERIC"/>
       <Label layoutX="693.0" layoutY="524.0" text="字号" />
       <ColorPicker fx:id="shortColor" layoutX="593.0" layoutY="516.0" prefHeight="30.0" prefWidth="30.0" />
       <Label layoutX="549.0" layoutY="523.0" text="颜色" />
@@ -69,10 +70,10 @@
       <Label layoutX="549.0" layoutY="561.0" text="颜色" />
       <ColorPicker fx:id="fullColor" layoutX="593.0" layoutY="554.0" prefHeight="30.0" prefWidth="30.0" />
       <Label layoutX="693.0" layoutY="562.0" text="字号" />
-      <TextField fx:id="quanchengSize" layoutX="767.0" layoutY="557.0" />
+      <CustomTextField fx:id="quanchengSize" layoutX="767.0" layoutY="557.0" inputType="NUMERIC"/>
       <ComboBox fx:id="quanchengFont" layoutX="351.0" layoutY="557.0" prefWidth="150.0" />
       <ComboBox fx:id="successFont" layoutX="350.0" layoutY="598.0" prefWidth="150.0" />
-      <TextField fx:id="successSize" layoutX="766.0" layoutY="598.0" />
+      <CustomTextField fx:id="successSize" layoutX="766.0" layoutY="598.0" inputType="NUMERIC"/>
       <Label layoutX="692.0" layoutY="603.0" text="字号" />
       <ColorPicker fx:id="successColor" layoutX="592.0" layoutY="595.0" prefHeight="30.0" prefWidth="30.0" />
       <Label layoutX="548.0" layoutY="602.0" text="颜色" />
@@ -83,17 +84,17 @@
       <Label layoutX="548.0" layoutY="643.0" text="颜色" />
       <ColorPicker fx:id="failColor" layoutX="592.0" layoutY="636.0" prefHeight="30.0" prefWidth="30.0" />
       <Label layoutX="692.0" layoutY="644.0" text="字号" />
-      <TextField fx:id="errorSize" layoutX="766.0" layoutY="639.0" />
+      <CustomTextField fx:id="errorSize" layoutX="766.0" layoutY="639.0" inputType="NUMERIC"/>
       <ComboBox fx:id="errorFont" layoutX="350.0" layoutY="639.0" prefWidth="150.0" />
       <CheckBox layoutX="139.0" layoutY="482.0" mnemonicParsing="false" text="团队序号" fx:id="xuhaoChecked" />
       <CheckBox fx:id="jianchengChecked" layoutX="139.0" layoutY="523.0" mnemonicParsing="false" text="团队简称" />
       <CheckBox fx:id="quanchengChecked" layoutX="139.0" layoutY="561.0" mnemonicParsing="false" text="团队全称" />
-      <TextField fx:id="yInput" layoutX="444.0" layoutY="437.0" prefHeight="23.0" prefWidth="87.0" />
-      <TextField layoutX="311.0" layoutY="437.0" prefHeight="23.0" prefWidth="87.0" fx:id="xInput" />
+      <CustomTextField fx:id="yInput" layoutX="444.0" layoutY="437.0" prefHeight="23.0" prefWidth="87.0" inputType="NUMERIC"/>
+      <CustomTextField layoutX="311.0" layoutY="437.0" prefHeight="23.0" prefWidth="87.0" fx:id="xInput" inputType="NUMERIC"/>
       <Label layoutX="285.0" layoutY="441.0" text="x" />
       <Label layoutX="428.0" layoutY="442.0" text="y" />
-      <TextField layoutX="693.0" layoutY="294.0" prefHeight="30.0" prefWidth="87.0" fx:id="xLoc" />
-      <TextField fx:id="yLoc" layoutX="856.0" layoutY="294.0" prefHeight="30.0" prefWidth="87.0" />
+      <CustomTextField layoutX="693.0" layoutY="294.0" prefHeight="30.0" prefWidth="87.0" fx:id="xLoc" inputType="NUMERIC"/>
+      <CustomTextField fx:id="yLoc" layoutX="856.0" layoutY="294.0" prefHeight="30.0" prefWidth="87.0" inputType="NUMERIC"/>
       <Label layoutX="666.0" layoutY="299.0" text="x" />
       <Label layoutX="834.0" layoutY="301.0" text="y" />
       <CheckBox fx:id="lightCheck" layoutX="632.0" layoutY="341.0" mnemonicParsing="false" text="闪烁" />
