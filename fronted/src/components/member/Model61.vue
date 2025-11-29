@@ -615,6 +615,12 @@ export default {
   border-radius: 8px;
 }
 
+.el-button {
+  position: relative;
+  z-index: 100 !important;
+  pointer-events: auto !important;
+}
+
 .blue-background {
   background-color: #4472C4;
 }

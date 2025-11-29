@@ -1,13 +1,13 @@
 <template>
   <div class="scoreboard">
     <el-row>
-      <el-col v-for="(item, index) in teamList" :key="item.id" span="2">
+      <el-col v-for="(item, index) in teamList" :key="item.id" :value="index" span="2">
         <div style="margin-bottom: 5px">
           <!-- 第一层：编号 + 分数 -->
           <el-row>
             <el-col span="10">
               <div class="round-board-item">
-                {{ index + 1 }}
+                {{ item.code }}
               </div>
             </el-col>
             <el-col span="12">
