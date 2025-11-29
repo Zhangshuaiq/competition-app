@@ -114,9 +114,13 @@ public class TeamRuntime {
         for (Teams team : teams) {
             team.setStatus(0);
             team.setQScore(0);
-            for (int i = 0; i < team.getStatusList().size(); i++) {
-                team.getStatusList().set(i, 0);
-                team.getQScores().set(i, 0);
+
+            if (team.getStatusList() != null) {
+                team.getStatusList().replaceAll(ignored -> 0);
+            }
+
+            if (team.getQScores() != null) {
+                team.getQScores().replaceAll(ignored -> 0);
             }
         }
     }

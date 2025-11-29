@@ -17,7 +17,10 @@ public class WsConfig implements WebSocketMessageBrokerConfigurer {
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
         // 注册一个STOMP的endpoint，并指定使用SockJS协议
-        registry.addEndpoint("/ws").setAllowedOrigins("*").withSockJS();
+        registry.addEndpoint("/ws").setAllowedOrigins("*").withSockJS()
+                .setStreamBytesLimit(512 * 1024)  // 增加流字节限制
+                .setHttpMessageCacheSize(1000)    // 增加HTTP消息缓存
+                .setDisconnectDelay(30 * 1000);   // 断开延迟30秒
     }
 
     @Override
@@ -35,10 +38,22 @@ public class WsConfig implements WebSocketMessageBrokerConfigurer {
     @Bean
     public TaskScheduler taskScheduler() {
         ThreadPoolTaskScheduler scheduler = new ThreadPoolTaskScheduler();
-        scheduler.setPoolSize(10);
+        scheduler.setPoolSize(20);
         scheduler.setThreadNamePrefix("websocket-heartbeat-");
+        scheduler.setWaitForTasksToCompleteOnShutdown(true);
+        scheduler.setAwaitTerminationSeconds(60);
         scheduler.initialize();
         return scheduler;
+    }
+
+
+    @Override
+    public void configureWebSocketTransport(WebSocketTransportRegistration registration) {
+        registration
+                .setMessageSizeLimit(128 * 1024)      // 128KB
+                .setSendBufferSizeLimit(512 * 1024)   // 512KB
+                .setSendTimeLimit(20000)              // 20秒超时
+                .setTimeToFirstMessage(30000);        // 首次消息30秒超时
     }
 
 }

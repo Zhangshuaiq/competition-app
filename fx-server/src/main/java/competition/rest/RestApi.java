@@ -4,6 +4,7 @@ import cn.hutool.core.io.FileUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import competition.JavaFxApplication;
 import competition.controller.ControlPane;
+import competition.controller.preview.Model7Preview;
 import competition.entity.*;
 import competition.mapper.*;
 import competition.resp.JsonResp;
@@ -226,32 +227,8 @@ public class RestApi {
     // 获取当前环节的题目列表 - 竞技模式
     @GetMapping("/currentStageQuestions")
     public JsonResp getCurrentStageQuestions() {
-        ControlPane controlPane = JavaFxApplication.getApplicationContext().getBean(ControlPane.class);
-        Stages currentStage = controlPane.getCurrentStage();
-
-        boolean random = currentStage.getrRandomSort() == 1;
-        List<Questions> questions = questionsMapper.selectList(
-            new LambdaQueryWrapper<Questions>().eq(Questions::getStageNumber, currentStage.getSortVal())
-        );
-
-        Configs configs = configsMapper.selectById(1);
-        String cfgVal = configs.getConfig();
-        String txbz = "4";
-        if (!StringUtils.isEmpty(cfgVal)) {
-            String[] split = cfgVal.split(ConfigSpliter.SPLITER);
-            txbz = split[10];
-        }
-
-        for (Questions question : questions) {
-            question.setScore(currentStage.getScorePerQ());
-            question.setDesValue(currentStage.getDesValue());
-            question.setTxbz(txbz);
-            question.setShowNumber(currentStage.getShowNumber());
-        }
-        Map<String, Object> res = new HashMap<>();
-        res.put("random", random);
-        res.put("questions", questions);
-        return JsonResp.success(res);
+        Model7Preview Model7Preview = JavaFxApplication.getApplicationContext().getBean(Model7Preview.class);
+        return JsonResp.success(Model7Preview.getQuestionCache());
     }
 
     @MessageMapping("/heartbeat")

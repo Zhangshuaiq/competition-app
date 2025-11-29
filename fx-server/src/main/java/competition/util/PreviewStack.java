@@ -42,6 +42,16 @@ public class PreviewStack {
             previewPane.reload();
         }
     }
+
+
+    public static final PreviewPane last(){
+        if (previewStack.isEmpty()) {
+            return null;
+        }
+        PreviewPane pop = previewStack.peek();
+        //  pop.destroy();
+        return pop;
+    }
     
     public static final PreviewPane getLast(){
         if (previewStack.isEmpty()) {

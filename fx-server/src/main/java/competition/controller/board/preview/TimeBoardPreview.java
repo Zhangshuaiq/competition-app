@@ -135,7 +135,7 @@ public class TimeBoardPreview extends PreviewPane {
             timeLabel.autosize();
             double textWidth = timeLabel.prefWidth(-1);
             double textHeight = timeLabel.prefHeight(-1);
-
+            // 打印大小
             // 确保容器足够大来显示文本
             if (textWidth > 0 && textHeight > 0) {
                 timeLabel.setPrefWidth(textWidth);
@@ -149,12 +149,8 @@ public class TimeBoardPreview extends PreviewPane {
                     stage.setMinHeight(textHeight + 40);
 
                     // 如果当前窗口太小，则调整大小
-                    if (stage.getWidth() < textWidth + 40) {
-                        stage.setWidth(textWidth + 40);
-                    }
-                    if (stage.getHeight() < textHeight + 40) {
-                        stage.setHeight(textHeight + 40);
-                    }
+                    stage.setWidth(textWidth + 40);
+                    stage.setHeight(textHeight + 40);
                 }
             }
         });
@@ -166,10 +162,12 @@ public class TimeBoardPreview extends PreviewPane {
                 controlPane.setTimeBoard(timeBoard);
             }
             if (timeBoard != null) {
-                timeBoard.initPage();
-                timeBoard.reload(timeVal, timeValue);
+                if (timeline != null) {
+                    timeBoard.initPage();
+                    timeBoard.reload(timeVal, timeValue);
+                    timeBoard.shows();
+                }
             }
-            timeBoard.shows();
         } else {
             if (timeBoard != null) {
                 timeBoard.close();

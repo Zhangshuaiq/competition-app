@@ -184,6 +184,7 @@ public class WsMessageHandler {
             if (isAllTeamsFinished()) {
                 log.info("所有团队答题完成，停止UI定时更新");
                 stopPeriodicUIUpdate();
+                Model7RuntimeData.exportResult();
             }
 
         } catch (Exception e) {
@@ -191,6 +192,10 @@ public class WsMessageHandler {
             e.printStackTrace();
         }
     }
+
+
+
+
 
     /**
      * 线程安全的团队数据更新

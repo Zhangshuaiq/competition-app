@@ -126,6 +126,7 @@ public class StageRulePreviewPreview extends PreviewPane<Stages>{
         }
         
         messageHandler.notifyPage("stagerule", innerStage.getRuleContent());
+        innerStage = stagesMapper.selectById(innerStage.getId());
         String titleRuleStyle = innerStage.getTitleRuleStyle();
         String[] trsArr = {};
         if (!StringUtils.isEmpty(titleRuleStyle)) {
@@ -135,7 +136,7 @@ public class StageRulePreviewPreview extends PreviewPane<Stages>{
         Text title = new Text(innerStage.getName());
         StackPane titlePane = new StackPane();
         titlePane.getChildren().add(title);
-        if (trsArr.length <= 0) {
+        if (trsArr.length == 0) {
 
             titlePane.setLayoutX(ScreenAdapter.calculateMainX(TITLE_X));
             titlePane.setLayoutY(ScreenAdapter.calculateMainY(TITLE_Y));

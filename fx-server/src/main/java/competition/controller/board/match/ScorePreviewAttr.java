@@ -3,15 +3,13 @@ package competition.controller.board.match;
 
 import competition.controller.ControlPane;
 import competition.controller.board.BoardPane;
+import competition.controls.GroupedComboBox;
 import competition.entity.ScoreStyle;
 import competition.mapper.ScoreStyleMapper;
 import competition.util.*;
-import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.scene.control.CheckBox;
-import javafx.scene.control.ComboBox;
 import javafx.scene.control.TextField;
-import javafx.scene.text.Font;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
 import org.springframework.stereotype.Component;
@@ -38,7 +36,7 @@ public class ScorePreviewAttr {
     private CheckBox underlineChoice, sunderlineChoice;
 
     @FXML
-    private ComboBox<String> fontSelector, sfontSelector;
+    private GroupedComboBox<String> fontSelector, sfontSelector;
 
     @FXML
     private CheckBox iticChoice, siticChoice;
@@ -59,9 +57,14 @@ public class ScorePreviewAttr {
 
         // 队伍名称字体设置
         scoreShowBox.setSelected(RuntimeUtil.showScoreBar);
-        fontSelector.setItems(FXCollections.observableList(FontMap.fontNames()));
+
+        FontMap.fontNames().forEach((key, value) -> {
+            fontSelector.addGroup(key, value);
+            sfontSelector.addGroup(key, value);
+        });
+
         ScoreStyle scoreStyle = scoreStyleMapper.selectById(1);
-        fontSelector.setValue(FontMap.defaultFontName());
+        fontSelector.setSelectedValue(FontMap.defaultFontName());
         fontSize.setText(12 + "");
         colSpan.setText("0");
         secondOpenBox.setSelected(RuntimeUtil.showSecondScorePane);
@@ -71,7 +74,7 @@ public class ScorePreviewAttr {
             String styles = scoreStyle.getStyles();
             if (!StringUtils.isEmpty(styles)) {
                 String[] split = styles.split(ConfigSpliter.SPLITER);
-                fontSelector.setValue((split[0]));
+                fontSelector.setSelectedValue((split[0]));
                 fontSize.setText((split[1]));
                 deleteChoice.setSelected(Boolean.valueOf(split[2]));
                 boldChoice.setSelected(Boolean.valueOf(split[3]));
@@ -93,15 +96,14 @@ public class ScorePreviewAttr {
         }
 
         // 分数字体设置
-        sfontSelector.setItems(FXCollections.observableList(FontMap.fontNames()));
         ScoreStyle sscoreStyle = scoreStyleMapper.selectById(3);
-        sfontSelector.setValue(FontMap.defaultFontName());
+        sfontSelector.setSelectedValue(FontMap.defaultFontName());
         sfontSize.setText(12 + "");
         if (sscoreStyle != null) {
             String styles = sscoreStyle.getStyles();
             if (!StringUtils.isEmpty(styles)) {
                 String[] split = styles.split(ConfigSpliter.SPLITER);
-                sfontSelector.setValue((split[0]));
+                sfontSelector.setSelectedValue((split[0]));
                 sfontSize.setText((split[1]));
                 sdeleteChoice.setSelected(Boolean.valueOf(split[2]));
                 sboldChoice.setSelected(Boolean.valueOf(split[3]));
@@ -115,7 +117,7 @@ public class ScorePreviewAttr {
     public void saveConfig(){
 
         // 保存队伍名字字体配置
-        String value = fontSelector.getValue() + ConfigSpliter.SPLITER
+        String value = fontSelector.getSelectedValue() + ConfigSpliter.SPLITER
                 + fontSize.getText() + ConfigSpliter.SPLITER
                 + deleteChoice.isSelected() + ConfigSpliter.SPLITER
                 + boldChoice.isSelected() + ConfigSpliter.SPLITER
@@ -130,7 +132,7 @@ public class ScorePreviewAttr {
 
 
         // 保存分数字体配置
-        String svalue = sfontSelector.getValue() + ConfigSpliter.SPLITER
+        String svalue = sfontSelector.getSelectedValue() + ConfigSpliter.SPLITER
             + sfontSize.getText() + ConfigSpliter.SPLITER
             + sdeleteChoice.isSelected() + ConfigSpliter.SPLITER
             + sboldChoice.isSelected() + ConfigSpliter.SPLITER

@@ -2,15 +2,14 @@ package competition.controller.match;
 
 import competition.controller.ControlPane;
 import competition.controller.preview.PreviewPane;
+import competition.controls.GroupedComboBox;
 import competition.entity.AnswerStyle;
 import competition.mapper.AnswerStyleMapper;
 import competition.util.AlignmentUtil;
 import competition.util.ConfigSpliter;
 import competition.util.FontMap;
-import competition.util.PreviewStack;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
-import javafx.scene.Node;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ColorPicker;
 import javafx.scene.control.ComboBox;
@@ -36,7 +35,7 @@ public class AnswerAttr {
     private TextField f1Size, f2Size, f3Size, f4Size, f5Size;
 
     @FXML
-    private ComboBox<String> f4Selector;
+    private GroupedComboBox<String> f4Selector;
 
     @FXML
     private ColorPicker f5Color;
@@ -45,7 +44,7 @@ public class AnswerAttr {
     private TextField widthInput;
 
     @FXML
-    private ComboBox<String> f2Selector;
+    private GroupedComboBox<String> f2Selector;
 
     @FXML
     private ColorPicker f3BackColor;
@@ -87,7 +86,7 @@ public class AnswerAttr {
     private CheckBox f2UD;
 
     @FXML
-    private ComboBox<String> f1Selector;
+    private GroupedComboBox<String> f1Selector;
 
     @FXML
     private TextField f1Path;
@@ -105,7 +104,7 @@ public class AnswerAttr {
     private CheckBox f5BD;
 
     @FXML
-    private ComboBox<String> f5Selector;
+    private GroupedComboBox<String> f5Selector;
 
     @FXML
     private TextField colInput;
@@ -117,7 +116,7 @@ public class AnswerAttr {
     private ColorPicker f2Color;
 
     @FXML
-    private ComboBox<String> f3Selector;
+    private GroupedComboBox<String> f3Selector;
 
     @FXML
     private ColorPicker f4BackColor;
@@ -211,7 +210,7 @@ public class AnswerAttr {
                 + widthInput.getText() + ConfigSpliter.SPLITER
                 + heightInput.getText() ;
 
-        String style2 = f1Selector.getValue() + ConfigSpliter.SPLITER
+        String style2 = f1Selector.getSelectedValue() + ConfigSpliter.SPLITER
                 + f1Color.getValue() + ConfigSpliter.SPLITER
                 + l1Selector.getValue() + ConfigSpliter.SPLITER
                 + f1Size.getText() + ConfigSpliter.SPLITER
@@ -224,7 +223,7 @@ public class AnswerAttr {
                 + f1Path.getText()
                 ;
 
-        String style3 = f2Selector.getValue() + ConfigSpliter.SPLITER
+        String style3 = f2Selector.getSelectedValue() + ConfigSpliter.SPLITER
                 + f2Color.getValue() + ConfigSpliter.SPLITER
                 + l2Selector.getValue() + ConfigSpliter.SPLITER
                 + f2Size.getText() + ConfigSpliter.SPLITER
@@ -237,7 +236,7 @@ public class AnswerAttr {
                 + f2Path.getText()
                 ;
 
-        String style4 =f3Selector.getValue() + ConfigSpliter.SPLITER
+        String style4 =f3Selector.getSelectedValue() + ConfigSpliter.SPLITER
                 + f3Color.getValue() + ConfigSpliter.SPLITER
                 + l3Selector.getValue() + ConfigSpliter.SPLITER
                 + f3Size.getText() + ConfigSpliter.SPLITER
@@ -250,7 +249,7 @@ public class AnswerAttr {
                 + f3Path.getText()
                 ;
 
-        String style5 = f4Selector.getValue() + ConfigSpliter.SPLITER
+        String style5 = f4Selector.getSelectedValue() + ConfigSpliter.SPLITER
                 + f4Color.getValue() + ConfigSpliter.SPLITER
                 + l4Selector.getValue() + ConfigSpliter.SPLITER
                 + f4Size.getText() + ConfigSpliter.SPLITER
@@ -263,7 +262,7 @@ public class AnswerAttr {
                 + f4Path.getText()
                 ;
 
-        String style6 = f5Selector.getValue() + ConfigSpliter.SPLITER
+        String style6 = f5Selector.getSelectedValue() + ConfigSpliter.SPLITER
                 + f5Color.getValue() + ConfigSpliter.SPLITER
                 + l5Selector.getValue() + ConfigSpliter.SPLITER
                 + f5Size.getText() + ConfigSpliter.SPLITER
@@ -334,7 +333,7 @@ public class AnswerAttr {
             //                + f1Path.getText() 
             //                ;
             String[] split = answerStyle.getStyle2().split(ConfigSpliter.SPLITER);
-            f1Selector.setValue(split[0]);
+            f1Selector.setSelectedValue(split[0]);
             f1Color.setValue(Color.valueOf(split[1]));
             l1Selector.setValue(split[2]);
             f1Size.setText(split[3]);
@@ -351,7 +350,7 @@ public class AnswerAttr {
 
         if (!StringUtils.isEmpty(answerStyle.getStyle3())) {
             String[] split = answerStyle.getStyle3().split(ConfigSpliter.SPLITER);
-            f2Selector.setValue(split[0]);
+            f2Selector.setSelectedValue(split[0]);
             f2Color.setValue(Color.valueOf(split[1]));
             l2Selector.setValue(split[2]);
             f2Size.setText(split[3]);
@@ -368,7 +367,7 @@ public class AnswerAttr {
 
         if (!StringUtils.isEmpty(answerStyle.getStyle4())) {
             String[] split = answerStyle.getStyle4().split(ConfigSpliter.SPLITER);
-            f3Selector.setValue(split[0]);
+            f3Selector.setSelectedValue(split[0]);
             f3Color.setValue(Color.valueOf(split[1]));
             l3Selector.setValue(split[2]);
             f3Size.setText(split[3]);
@@ -386,7 +385,7 @@ public class AnswerAttr {
 
         if (!StringUtils.isEmpty(answerStyle.getStyle5())) {
             String[] split = answerStyle.getStyle5().split(ConfigSpliter.SPLITER);
-            f4Selector.setValue(split[0]);
+            f4Selector.setSelectedValue(split[0]);
             f4Color.setValue(Color.valueOf(split[1]));
             l4Selector.setValue(split[2]);
             f4Size.setText(split[3]);
@@ -404,7 +403,7 @@ public class AnswerAttr {
 
         if (!StringUtils.isEmpty(answerStyle.getStyle6())) {
             String[] split = answerStyle.getStyle6().split(ConfigSpliter.SPLITER);
-            f5Selector.setValue(split[0]);
+            f5Selector.setSelectedValue(split[0]);
             f5Color.setValue(Color.valueOf(split[1]));
             l5Selector.setValue(split[2]);
             f5Size.setText(split[3]);
@@ -447,17 +446,20 @@ public class AnswerAttr {
         f3BackColor.setValue(Color.WHITE);
         f4BackColor.setValue(Color.WHITE);
         f5BackColor.setValue(Color.WHITE);
-        f1Selector.setItems(FXCollections.observableList(FontMap.fontNames()));
-        f2Selector.setItems(FXCollections.observableList(FontMap.fontNames()));
-        f3Selector.setItems(FXCollections.observableList(FontMap.fontNames()));
-        f4Selector.setItems(FXCollections.observableList(FontMap.fontNames()));
-        f5Selector.setItems(FXCollections.observableList(FontMap.fontNames()));
 
-        f1Selector.setValue(defaultFont.getName());
-        f2Selector.setValue(defaultFont.getName());
-        f3Selector.setValue(defaultFont.getName());
-        f4Selector.setValue(defaultFont.getName());
-        f5Selector.setValue(defaultFont.getName());
+        FontMap.fontNames().forEach((key, value) -> {
+            f1Selector.addGroup(key, value);
+            f2Selector.addGroup(key, value);
+            f3Selector.addGroup(key, value);
+            f4Selector.addGroup(key, value);
+            f5Selector.addGroup(key, value);
+        });
+
+        f1Selector.setSelectedValue(defaultFont.getName());
+        f2Selector.setSelectedValue(defaultFont.getName());
+        f3Selector.setSelectedValue(defaultFont.getName());
+        f4Selector.setSelectedValue(defaultFont.getName());
+        f5Selector.setSelectedValue(defaultFont.getName());
         
         f1Size.setText((int)defaultFont.getSize() + "");
         f2Size.setText((int)defaultFont.getSize() + "");

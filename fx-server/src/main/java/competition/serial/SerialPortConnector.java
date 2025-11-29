@@ -83,7 +83,7 @@ public class SerialPortConnector {
                                 String responseData = FRAME_HEAD + s.trim();
                                 switch (Command.valueOf(responseData.substring(7, 11))) {
                                     case HEAT:
-                                        log.info(" 心跳包:{}", Command.HEAT);
+                                        log.info(" 心跳包:{}", responseData);
                                         break;
                                     case SMOD:
                                         response = responseData;

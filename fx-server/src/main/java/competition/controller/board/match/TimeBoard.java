@@ -7,6 +7,7 @@ import competition.mapper.ConfigsMapper;
 import competition.util.ConfigSpliter;
 import competition.util.FontMap;
 import competition.util.RuntimeUtil;
+import competition.util.ScreenAdapter;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.geometry.Insets;
@@ -17,6 +18,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.TextAlignment;
 import javafx.stage.Stage;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
@@ -24,6 +26,7 @@ import java.io.File;
 import java.io.FileInputStream;
 
 @Component
+@Slf4j
 public class TimeBoard implements ReloadPane {
 
     @FXML
@@ -41,6 +44,7 @@ public class TimeBoard implements ReloadPane {
     @FXML
     public void initPage() {
         container.getChildren().clear();
+        timeLabel = new Label();
         container.getChildren().add(timeLabel);
         container.setVisible(RuntimeUtil.showTimeBoard);
 
@@ -77,7 +81,7 @@ public class TimeBoard implements ReloadPane {
         // 设置字体和样式
         timeLabel.setAlignment(Pos.CENTER);
         timeLabel.setTextAlignment(TextAlignment.CENTER);
-        timeLabel.setFont(FontMap.load(split[33], Integer.parseInt(split[24])));
+        timeLabel.setFont(FontMap.load(split[33], ScreenAdapter.calculateExX(Integer.parseInt(split[24]))));
         timeLabel.setTextFill(Color.valueOf(split[23]));
 
         // 设置自动换行为false，确保文本在一行显示
@@ -107,6 +111,7 @@ public class TimeBoard implements ReloadPane {
             timeLabel.autosize();
             double textWidth = timeLabel.prefWidth(-1);
             double textHeight = timeLabel.prefHeight(-1);
+            log.error("width: {}, height: {}", textWidth, textHeight);
 
             // 确保容器足够大来显示文本
             if (textWidth > 0 && textHeight > 0) {
@@ -120,13 +125,10 @@ public class TimeBoard implements ReloadPane {
                     stage.setMinWidth(textWidth + 40);
                     stage.setMinHeight(textHeight + 40);
 
+
                     // 如果当前窗口太小，则调整大小
-                    if (stage.getWidth() < textWidth + 40) {
-                        stage.setWidth(textWidth + 40);
-                    }
-                    if (stage.getHeight() < textHeight + 40) {
-                        stage.setHeight(textHeight + 40);
-                    }
+                    stage.setWidth(textWidth + 40);
+                    stage.setHeight(textHeight + 40);
                 }
             }
         });
@@ -188,14 +190,8 @@ public class TimeBoard implements ReloadPane {
                     // 给窗口设置最小大小，确保能显示完整文本
                     stage.setMinWidth(textWidth + 40);
                     stage.setMinHeight(textHeight + 40);
-
-                    // 如果当前窗口太小，则调整大小
-                    if (stage.getWidth() < textWidth + 40) {
-                        stage.setWidth(textWidth + 40);
-                    }
-                    if (stage.getHeight() < textHeight + 40) {
-                        stage.setHeight(textHeight + 40);
-                    }
+                    stage.setWidth(textWidth + 40);
+                    stage.setHeight(textHeight + 40);
                 }
             }
         });
@@ -251,6 +247,8 @@ public class TimeBoard implements ReloadPane {
     @Override
     public void close() {
         Stage stage = (Stage) (timeLabel.getScene().getWindow());
+        this.timeVal = 0;
+        this.timeValue = format(timeVal);
         stage.hide();
     }
 

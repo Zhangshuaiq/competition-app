@@ -1,6 +1,7 @@
 package competition.controller.match;
 
 import competition.controller.ControlPane;
+import competition.controls.GroupedComboBox;
 import competition.entity.Configs;
 import competition.entity.Stages;
 import competition.mapper.ConfigsMapper;
@@ -44,7 +45,7 @@ public class StageQuestionPreviewAttr {
     private CheckBox numberBackgroundChoice;
 
     @FXML
-    private ComboBox<String> numberFontSelector;
+    private GroupedComboBox<String> numberFontSelector;
 
     @FXML
     private TextField nameXInput;
@@ -74,7 +75,7 @@ public class StageQuestionPreviewAttr {
     private ComboBox<String> numberTextAlignSelector;
 
     @FXML
-    private ComboBox<String> nameFontSelector;
+    private GroupedComboBox<String> nameFontSelector;
 
     @FXML
     private CheckBox nameBoldChoice;
@@ -181,11 +182,13 @@ public class StageQuestionPreviewAttr {
     @FXML
     public void initialize() {
         Configs configs = configsMapper.selectById(4);
-        nameTextAlignSelector.setItems(FXCollections.observableList(AlignmentUtil.alignNames()));
-        nameFontSelector.setItems(FXCollections.observableList(FontMap.fontNames()));
 
+        FontMap.fontNames().forEach((key, value) -> {
+            nameFontSelector.addGroup(key, value);
+            numberFontSelector.addGroup(key, value);
+        });
+        nameTextAlignSelector.setItems(FXCollections.observableList(AlignmentUtil.alignNames()));
         numberTextAlignSelector.setItems(FXCollections.observableList(AlignmentUtil.alignNames()));
-        numberFontSelector.setItems(FXCollections.observableList(FontMap.fontNames()));
 
         showNameConfig();
         showNumberConfig(configs);
@@ -201,7 +204,7 @@ public class StageQuestionPreviewAttr {
         final String backgroundColor = nameColorInput.getValue().toString();
         final String fontColor = fontColorInput.getValue().toString();
         String backgroundImage = nameBackgroundPath.getText();
-        final String fontFamily = nameFontSelector.getValue();
+        final String fontFamily = nameFontSelector.getSelectedValue();
         String fsize = nameFontSize.getText();
         final boolean delete = nameDeleteChoice.isSelected();
         final boolean bold = nameBoldChoice.isSelected();
@@ -283,7 +286,7 @@ public class StageQuestionPreviewAttr {
         boolean fillBackground = numberBackgroundChoice.isSelected();
         final String backgroundColor = numberColorInput.getValue().toString();
         String backgroundImage = numberBackgroundPath.getText();
-        final String fontFamily = numberFontSelector.getValue();
+        final String fontFamily = numberFontSelector.getSelectedValue();
         String fsize = numberFontSize.getText();
         final boolean delete = numberDeleteChoice.isSelected();
         final boolean bold = numberBoldChoice.isSelected();
@@ -405,7 +408,7 @@ public class StageQuestionPreviewAttr {
             numberXInput.setText(cfgArr[3]);
             numberYInput.setText(cfgArr[4]);
         }
-        numberFontSelector.setValue(FontMap.defaultFontName());
+        numberFontSelector.setSelectedValue(FontMap.defaultFontName());
         numberFontSize.setText(12 + "");
         numberIticChoice.setSelected(false);
         numberDeleteChoice.setSelected(false);
@@ -425,7 +428,7 @@ public class StageQuestionPreviewAttr {
                 numberBackgroundChoice.setSelected(Boolean.valueOf(cfgArr[4]));
                 numberColorInput.setValue(Color.valueOf(cfgArr[5].replace("0x", "#")));
                 numberBackgroundPath.setText(cfgArr[6]);
-                numberFontSelector.setValue(cfgArr[7]);
+                numberFontSelector.setSelectedValue(cfgArr[7]);
                 numberFontSize.setText(Integer.parseInt(cfgArr[8]) + "");
                 numberDeleteChoice.setSelected(Boolean.valueOf(cfgArr[9]));
                 numberBoldChoice.setSelected(Boolean.valueOf(cfgArr[10]));
@@ -443,7 +446,7 @@ public class StageQuestionPreviewAttr {
 
 
     private void showNameConfig() {
-        nameFontSelector.setValue(FontMap.defaultFontName());
+        nameFontSelector.setSelectedValue(FontMap.defaultFontName());
         nameFontSize.setText(12 + "");
         nameIticChoice.setSelected(false);
         nameDeleteChoice.setSelected(false);
@@ -456,9 +459,9 @@ public class StageQuestionPreviewAttr {
 
         String details;
         if (currentStage.getQuestionType() == 4) {
-            details = "560%%240%%800%%100%%false%%0x990000ff%%%%默认.ttf%%40%%false%%false%%false%%false%%居中对齐%%0###920%%400%%80%%80%%false%%0x990000ff%%%%默认.ttf%%36%%false%%true%%false%%false%%居中对齐%%0%%1";
+            details = "560%%240%%800%%100%%false%%0xffffffff%%%%默认.ttf%%40%%false%%false%%false%%false%%居中对齐%%0###920%%400%%80%%80%%false%%0x990000ff%%%%默认.ttf%%36%%false%%true%%false%%false%%居中对齐%%0%%1";
         } else {
-            details = "760%%240%%400%%80%%false%%0x990000ff%%%%默认.ttf%%40%%false%%false%%false%%false%%居中对齐%%10###415%%370%%100%%100%%false%%0x990000ff%%%%默认.ttf%%30%%false%%false%%false%%false%%居中对齐%%10%%10";
+            details = "760%%240%%400%%80%%false%%0xffffffff%%%%默认.ttf%%40%%false%%false%%false%%false%%居中对齐%%10###415%%370%%100%%100%%false%%0x990000ff%%%%默认.ttf%%30%%false%%false%%false%%false%%居中对齐%%10%%10";
         }
         String[] split = details.split(ConfigSpliter.DIFFER);
 
@@ -483,7 +486,7 @@ public class StageQuestionPreviewAttr {
         nameBackgroundChoice.setSelected(Boolean.valueOf(cfgArr[4]));
         nameColorInput.setValue(Color.valueOf(cfgArr[5]));
         nameBackgroundPath.setText(cfgArr[6]);
-        nameFontSelector.setValue(cfgArr[7]);
+        nameFontSelector.setSelectedValue(cfgArr[7]);
         nameFontSize.setText(Integer.parseInt(cfgArr[8]) + "");
         nameDeleteChoice.setSelected(Boolean.valueOf(cfgArr[9]));
         nameBoldChoice.setSelected(Boolean.valueOf(cfgArr[10]));

@@ -1,6 +1,7 @@
 package competition.controller.match;
 
 import competition.controller.preview.Model3Preview;
+import competition.controls.GroupedComboBox;
 import competition.entity.Model3Style;
 import competition.entity.Stages;
 import competition.mapper.Model3Mapper;
@@ -112,7 +113,7 @@ public class Model3Attr {
     private TextField nameWidthInput;
 
     @FXML
-    private ComboBox<String> numberFontSelector;
+    private GroupedComboBox<String> numberFontSelector;
 
     @FXML
     private TextField numberXInput;
@@ -145,7 +146,7 @@ public class Model3Attr {
     private TextField numberColSpaceInput;
 
     @FXML
-    private ComboBox<String> nameFontSelector;
+    private GroupedComboBox<String> nameFontSelector;
 
     @FXML
     private TextField headFontSize;
@@ -163,7 +164,7 @@ public class Model3Attr {
     private TextField nameYInput;
 
     @FXML
-    private ComboBox<String> headFontSelector;
+    private GroupedComboBox<String> headFontSelector;
 
     @FXML
     private TextField headSpaceInput;
@@ -251,13 +252,18 @@ public class Model3Attr {
 
     @FXML
     public void initialize() {
-        nameTextAlignSelector.setItems(FXCollections.observableList(AlignmentUtil.alignNames()));
-        nameFontSelector.setItems(FXCollections.observableList(FontMap.fontNames()));
+
+
+        FontMap.fontNames().forEach((key, value) -> {
+            nameFontSelector.addGroup(key, value);
+            numberFontSelector.addGroup(key, value);
+            headFontSelector.addGroup(key, value);
+        });
 
         numberTextAlignSelector.setItems(FXCollections.observableList(AlignmentUtil.alignNames()));
-        numberFontSelector.setItems(FXCollections.observableList(FontMap.fontNames()));
         headTextAlignSelector.setItems(FXCollections.observableList(AlignmentUtil.alignNames()));
-        headFontSelector.setItems(FXCollections.observableList(FontMap.fontNames()));
+        nameTextAlignSelector.setItems(FXCollections.observableList(AlignmentUtil.alignNames()));
+
 
         Model3Style model3Style = mapper.selectById(1);
 
@@ -291,7 +297,7 @@ public class Model3Attr {
         boolean fillBackground = headBackgroundChoice.isSelected();
         final String backgroundColor = headColorInput.getValue().toString();
         String backgroundImage = headBackgroundPath.getText();
-        final String fontFamily = headFontSelector.getValue();
+        final String fontFamily = headFontSelector.getSelectedValue();
         String fsize = headFontSize.getText();
         final boolean delete = headDeleteChoice.isSelected();
         final boolean bold = headBoldChoice.isSelected();
@@ -332,7 +338,7 @@ public class Model3Attr {
         boolean fillBackground = nameBackgroundChoice.isSelected();
         final String backgroundColor = nameColorInput.getValue().toString();
         String backgroundImage = nameBackgroundPath.getText();
-        final String fontFamily = nameFontSelector.getValue();
+        final String fontFamily = nameFontSelector.getSelectedValue();
         String fsize = nameFontSize.getText();
         final boolean delete = nameDeleteChoice.isSelected();
         final boolean bold = nameBoldChoice.isSelected();
@@ -385,7 +391,7 @@ public class Model3Attr {
         boolean fillBackground = numberBackgroundChoice.isSelected();
         final String backgroundColor = numberColorInput.getValue().toString();
         String backgroundImage = numberBackgroundPath.getText();
-        final String fontFamily = numberFontSelector.getValue();
+        final String fontFamily = numberFontSelector.getSelectedValue();
         String fsize = numberFontSize.getText();
         final boolean delete = numberDeleteChoice.isSelected();
         final boolean bold = numberBoldChoice.isSelected();
@@ -424,7 +430,7 @@ public class Model3Attr {
 
     private void showNumberConfig(String config) {
         Font defaultFont = new JLabel().getFont();
-        numberFontSelector.setValue(FontMap.defaultFontName());
+        numberFontSelector.setSelectedValue(FontMap.defaultFontName());
         numberFontSize.setText(12 + "");
         numberIticChoice.setSelected(false);
         numberDeleteChoice.setSelected(false);
@@ -452,7 +458,7 @@ public class Model3Attr {
                 numberBackgroundChoice.setSelected(Boolean.valueOf(cfgArr[4]));
                 numberColorInput.setValue(Color.valueOf(cfgArr[5].replace("0x", "#")));
                 numberBackgroundPath.setText(cfgArr[6]);
-                numberFontSelector.setValue(cfgArr[7]);
+                numberFontSelector.setSelectedValue(cfgArr[7]);
                 numberFontSize.setText(Integer.parseInt(cfgArr[8]) + "");
                 numberDeleteChoice.setSelected(Boolean.valueOf(cfgArr[9]));
                 numberBoldChoice.setSelected(Boolean.valueOf(cfgArr[10]));
@@ -480,7 +486,7 @@ public class Model3Attr {
 
 
     private void showHeadConfig(String style) {
-        headFontSelector.setValue(FontMap.defaultFontName());
+        headFontSelector.setSelectedValue(FontMap.defaultFontName());
         headFontSize.setText(12 + "");
         headIticChoice.setSelected(false);
         headDeleteChoice.setSelected(false);
@@ -505,7 +511,7 @@ public class Model3Attr {
                 headBackgroundChoice.setSelected(Boolean.valueOf(cfgArr[4]));
                 headColorInput.setValue(Color.valueOf(cfgArr[5]));
                 headBackgroundPath.setText(cfgArr[6]);
-                headFontSelector.setValue(cfgArr[7]);
+                headFontSelector.setSelectedValue(cfgArr[7]);
                 headFontSize.setText(Integer.parseInt(cfgArr[8]) + "");
                 headDeleteChoice.setSelected(Boolean.valueOf(cfgArr[9]));
                 headBoldChoice.setSelected(Boolean.valueOf(cfgArr[10]));
@@ -520,7 +526,7 @@ public class Model3Attr {
 
 
     private void showNameConfig(String style) {
-        nameFontSelector.setValue(FontMap.defaultFontName());
+        nameFontSelector.setSelectedValue(FontMap.defaultFontName());
         nameFontSize.setText(12 + "");
         nameIticChoice.setSelected(false);
         nameDeleteChoice.setSelected(false);
@@ -545,7 +551,7 @@ public class Model3Attr {
                 nameBackgroundChoice.setSelected(Boolean.valueOf(cfgArr[4]));
                 nameColorInput.setValue(Color.valueOf(cfgArr[5]));
                 nameBackgroundPath.setText(cfgArr[6]);
-                nameFontSelector.setValue(cfgArr[7]);
+                nameFontSelector.setSelectedValue(cfgArr[7]);
                 nameFontSize.setText(Integer.parseInt(cfgArr[8]) + "");
                 nameDeleteChoice.setSelected(Boolean.valueOf(cfgArr[9]));
                 nameBoldChoice.setSelected(Boolean.valueOf(cfgArr[10]));

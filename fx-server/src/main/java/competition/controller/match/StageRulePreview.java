@@ -97,7 +97,7 @@ public class StageRulePreview implements ReloadPane<Stages>{
         if (innerStage == null) {
             return;
         }
-
+        innerStage = stagesMapper.selectById(innerStage.getId());
         String titleRuleStyle = innerStage.getTitleRuleStyle();
         String[] trsArr = {};
         if (!StringUtils.isEmpty(titleRuleStyle)) {

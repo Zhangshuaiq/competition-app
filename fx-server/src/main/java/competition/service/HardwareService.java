@@ -37,7 +37,7 @@ public class HardwareService {
 
             ScreenDevice screenDevice = SerialPortConfig.getScreenDevice(team.getCode());
             if (screenDevice != null) {
-                instance.send(Command.SHOW, SerialPortConfig.buildScreenData(screenDevice, Integer.parseInt(totalScore), false));
+                instance.send(Command.SHOW, SerialPortConfig.buildScreenData(screenDevice, Integer.parseInt(totalScore), true));
             }
         } catch (Exception e) {
             System.err.println("硬件显示更新失败: " + e.getMessage());

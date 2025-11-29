@@ -265,6 +265,7 @@ public class TeamConfig {
         tableView.getSelectionModel().select(0);
         ObservableList<Teams> items = tableView.getItems();
         TeamRuntime.setTeams(new ArrayList<>(items));
+        controlPane.refreshTeam();
     }
     
     @FXML

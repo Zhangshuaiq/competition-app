@@ -11,6 +11,7 @@ import competition.mapper.ConfigsMapper;
 import competition.mapper.Model3Mapper;
 import competition.mapper.QuestionsMapper;
 import competition.modal.Model7RankData;
+import competition.rest.RestApi;
 import competition.util.*;
 import competition.ws.Model7RuntimeData;
 import competition.ws.WsMessageHandler;
@@ -92,6 +93,9 @@ public class Model7Preview extends RankPane<Stages> {
     private Color cachedWFColor, cachedQFColor, cachedBkColor;
     private boolean cachedSortScore;
     private int cachedCol;
+
+    private final Map<String, Object>  questionCache = new HashMap<>();
+
 
     // 内部类：封装每个队伍的显示面板
     private static class TeamDisplayPanel {
@@ -406,11 +410,29 @@ public class Model7Preview extends RankPane<Stages> {
         if (scoreBoardPreview != null) {
             scoreBoardPreview.getSelected().clear();
         }
+
+        Stages currentStage = controlPane.getCurrentStage();
+
+        Configs configs = configsMapper.selectById(1);
+        String cfgVal = configs.getConfig();
+        String txbz = "4";
+        if (!StringUtils.isEmpty(cfgVal)) {
+            String[] split = cfgVal.split(ConfigSpliter.SPLITER);
+            txbz = split[10];
+        }
         // 获取题目数据并缓存
         List<Questions> questions = getQuestionsWithCache();
         for (Questions question : questions) {
+            question.setScore(currentStage.getScorePerQ());
+            question.setDesValue(currentStage.getDesValue());
+            question.setTxbz(txbz);
             question.setShowNumber(inner.getShowNumber());
         }
+        boolean random = currentStage.getrRandomSort() == 1;
+
+        questionCache.put("random", random);
+        questionCache.put("questions", questions);
+
         messageHandler.notifyPage("model7", questions);
 
         Model7RuntimeData.totalNumber = questions.size();
@@ -1062,5 +1084,9 @@ public class Model7Preview extends RankPane<Stages> {
     @Override
     public Stages getData() {
         return inner;
+    }
+
+    public Map<String, Object> getQuestionCache() {
+        return questionCache;
     }
 }

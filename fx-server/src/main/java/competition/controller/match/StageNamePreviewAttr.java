@@ -1,6 +1,7 @@
 package competition.controller.match;
 
 
+import competition.controls.GroupedComboBox;
 import competition.entity.Configs;
 import competition.entity.Stages;
 import competition.mapper.ConfigsMapper;
@@ -49,7 +50,7 @@ public class StageNamePreviewAttr {
     private TextField widthInput;
 
     @FXML
-    private ComboBox<String> fontSelector;
+    private GroupedComboBox<String> fontSelector;
 
     @FXML
     private CheckBox iticChoice;
@@ -92,7 +93,10 @@ public class StageNamePreviewAttr {
     @FXML
     public void initialize(){
         textAlignSelector.setItems(FXCollections.observableList(AlignmentUtil.alignNames()));
-        fontSelector.setItems(FXCollections.observableList(FontMap.fontNames()));
+
+        FontMap.fontNames().forEach((key, value) -> {
+            fontSelector.addGroup(key, value);
+        });
         previewData();
     }
 
@@ -130,7 +134,7 @@ public class StageNamePreviewAttr {
         backgroundChoice.setSelected(Boolean.valueOf(detailArr[4]));
         colorInput.setValue(Color.valueOf(detailArr[5].replace("0x", "#")));
         backgroundPath.setText(detailArr[6]);
-        fontSelector.setValue(detailArr[7]);
+        fontSelector.setSelectedValue(detailArr[7]);
         fontSize.setText(Integer.parseInt(detailArr[8]) + "");
         deleteChoice.setSelected(Boolean.valueOf(detailArr[9]));
         boldChoice.setSelected(Boolean.valueOf(detailArr[10]));
@@ -166,7 +170,7 @@ public class StageNamePreviewAttr {
         final String backgroundColor = colorInput.getValue().toString();
         final String fontColor = fontColorInput.getValue().toString();
         String backgroundImage = backgroundPath.getText();
-        final String fontFamily = fontSelector.getValue();
+        final String fontFamily = fontSelector.getSelectedValue();
         String fsize = fontSize.getText();
         final boolean delete = deleteChoice.isSelected();
         final boolean bold = boldChoice.isSelected();

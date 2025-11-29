@@ -4,6 +4,7 @@ import competition.controller.ControlPane;
 import competition.controller.preview.CluePreviewPreview;
 import competition.controller.preview.PreviewPane;
 import competition.controller.preview.QuestionPreviewPreview;
+import competition.controls.GroupedComboBox;
 import competition.entity.Configs;
 import competition.entity.QuestionStyle;
 import competition.entity.Questions;
@@ -24,10 +25,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
 import javax.annotation.Resource;
-import javax.swing.*;
-import java.awt.*;
 import java.io.File;
-import java.util.Arrays;
 import java.util.List;
 
 @Component
@@ -49,7 +47,10 @@ public class QuestionPreviewAttr {
             stageIticChoice, stageUnderlineChoice;
     
     @FXML
-    private ComboBox<String> stageFontSelector, stageTextAlignSelector;
+    private ComboBox<String> stageTextAlignSelector;
+
+    @FXML
+    private GroupedComboBox<String> stageFontSelector;
 
 
     @FXML
@@ -101,7 +102,7 @@ public class QuestionPreviewAttr {
     private ComboBox<String> answerTextAlignSelector;
 
     @FXML
-    private ComboBox<String> nameFontSelector;
+    private GroupedComboBox<String> nameFontSelector;
 
     @FXML
     private CheckBox nameBoldChoice;
@@ -143,7 +144,7 @@ public class QuestionPreviewAttr {
     private CheckBox answerIticChoice;
 
     @FXML
-    private ComboBox<String> answerFontSelector;
+    private GroupedComboBox<String> answerFontSelector;
 
     @FXML
     private TextField nameFontSize;
@@ -181,13 +182,14 @@ public class QuestionPreviewAttr {
         questionStyleList = ExcelParser.parse(ExcelParser.S_PATH, QuestionStyle.class);
         
         // 初始化展示所有的字体和居中样式
-
-        stageFontSelector.setItems(FXCollections.observableList(FontMap.fontNames()));
+        FontMap.fontNames().forEach((key, value) -> {
+            stageFontSelector.addGroup(key, value);
+            nameFontSelector.addGroup(key, value);
+            answerFontSelector.addGroup(key, value);
+        });
         stageTextAlignSelector.setItems(FXCollections.observableList(AlignmentUtil.alignNames()));
         nameTextAlignSelector.setItems(FXCollections.observableList(AlignmentUtil.alignNames()));
-        nameFontSelector.setItems(FXCollections.observableList(FontMap.fontNames()));
         answerTextAlignSelector.setItems(FXCollections.observableList(AlignmentUtil.alignNames()));
-        answerFontSelector.setItems(FXCollections.observableList(FontMap.fontNames()));
         // 回显数据
         showConfigData();
     }
@@ -264,7 +266,7 @@ public class QuestionPreviewAttr {
         stageHeightInput.setText("100");
 
        
-        stageFontSelector.setValue(FontMap.defaultFontName());
+        stageFontSelector.setSelectedValue(FontMap.defaultFontName());
         stageFontSize.setText(12 + "");
 
         String style1 = "2%%2%%300%%100%%false%%0xb31a1aff%%%%默认.ttf%%24%%false%%false%%false%%false%%居中对齐%%";
@@ -287,7 +289,7 @@ public class QuestionPreviewAttr {
         stageBackgroundChoice.setSelected(Boolean.valueOf(split[4]));
         stageColorInput.setValue(Color.valueOf(split[5]));
         stageBackgroundPath.setText(split[6]);
-        stageFontSelector.setValue(split[7]);
+        stageFontSelector.setSelectedValue(split[7]);
         stageFontSize.setText(Integer.parseInt(split[8]) + "");
         stageDeleteChoice.setSelected(Boolean.valueOf(split[9]));
         stageBoldChoice.setSelected(Boolean.valueOf(split[10]));
@@ -306,7 +308,7 @@ public class QuestionPreviewAttr {
         if (!StringUtils.isEmpty(config)) {
             String[] cfgArr = config.split(ConfigSpliter.SPLITER);
             // 默认的字体
-            nameFontSelector.setValue(FontMap.defaultFontName());
+            nameFontSelector.setSelectedValue(FontMap.defaultFontName());
             nameFontSize.setText(12 + "");
             // x y w h
             nameSpaceInput.setText("0");
@@ -355,7 +357,7 @@ public class QuestionPreviewAttr {
             nameBackgroundChoice.setSelected(Boolean.valueOf(split[4]));
             nameColorInput.setValue(Color.valueOf(split[5]));
             nameBackgroundPath.setText(split[6]);
-            nameFontSelector.setValue(split[7]);
+            nameFontSelector.setSelectedValue(split[7]);
             nameFontSize.setText(Integer.parseInt(split[8]) + "");
             nameDeleteChoice.setSelected(Boolean.valueOf(split[9]));
             nameBoldChoice.setSelected(Boolean.valueOf(split[10]));
@@ -384,7 +386,7 @@ public class QuestionPreviewAttr {
                         stageBackgroundChoice.isSelected() + ConfigSpliter.SPLITER +
                         stageColorInput.getValue() + ConfigSpliter.SPLITER +
                         stageBackgroundPath.getText() + ConfigSpliter.SPLITER +
-                        stageFontSelector.getValue() + ConfigSpliter.SPLITER +
+                        stageFontSelector.getSelectedValue() + ConfigSpliter.SPLITER +
                         stageFontSize.getText() + ConfigSpliter.SPLITER +
                         stageDeleteChoice.isSelected() + ConfigSpliter.SPLITER +
                         stageBoldChoice.isSelected() + ConfigSpliter.SPLITER +
@@ -409,7 +411,7 @@ public class QuestionPreviewAttr {
                         stageBackgroundChoice.isSelected() + ConfigSpliter.SPLITER +
                         stageColorInput.getValue() + ConfigSpliter.SPLITER +
                         stageBackgroundPath.getText() + ConfigSpliter.SPLITER +
-                        stageFontSelector.getValue() + ConfigSpliter.SPLITER +
+                        stageFontSelector.getSelectedValue() + ConfigSpliter.SPLITER +
                         stageFontSize.getText() + ConfigSpliter.SPLITER +
                         stageDeleteChoice.isSelected() + ConfigSpliter.SPLITER +
                         stageBoldChoice.isSelected() + ConfigSpliter.SPLITER +
@@ -440,7 +442,7 @@ public class QuestionPreviewAttr {
                         stageBackgroundChoice.isSelected() + ConfigSpliter.SPLITER +
                         stageColorInput.getValue() + ConfigSpliter.SPLITER +
                         stageBackgroundPath.getText() + ConfigSpliter.SPLITER +
-                        stageFontSelector.getValue() + ConfigSpliter.SPLITER +
+                        stageFontSelector.getSelectedValue() + ConfigSpliter.SPLITER +
                         stageFontSize.getText() + ConfigSpliter.SPLITER +
                         stageDeleteChoice.isSelected() + ConfigSpliter.SPLITER +
                         stageBoldChoice.isSelected() + ConfigSpliter.SPLITER +
@@ -468,7 +470,7 @@ public class QuestionPreviewAttr {
                         nameBackgroundChoice.isSelected() + ConfigSpliter.SPLITER +
                         nameColorInput.getValue() + ConfigSpliter.SPLITER +
                         nameBackgroundPath.getText() + ConfigSpliter.SPLITER +
-                        nameFontSelector.getValue() + ConfigSpliter.SPLITER +
+                        nameFontSelector.getSelectedValue() + ConfigSpliter.SPLITER +
                         nameFontSize.getText() + ConfigSpliter.SPLITER +
                         nameDeleteChoice.isSelected() + ConfigSpliter.SPLITER +
                         nameBoldChoice.isSelected() + ConfigSpliter.SPLITER +
@@ -517,7 +519,7 @@ public class QuestionPreviewAttr {
                         nameBackgroundChoice.isSelected() + ConfigSpliter.SPLITER +
                         nameColorInput.getValue() + ConfigSpliter.SPLITER +
                         nameBackgroundPath.getText() + ConfigSpliter.SPLITER +
-                        nameFontSelector.getValue() + ConfigSpliter.SPLITER +
+                        nameFontSelector.getSelectedValue() + ConfigSpliter.SPLITER +
                         nameFontSize.getText() + ConfigSpliter.SPLITER +
                         nameDeleteChoice.isSelected() + ConfigSpliter.SPLITER +
                         nameBoldChoice.isSelected() + ConfigSpliter.SPLITER +
@@ -616,7 +618,7 @@ public class QuestionPreviewAttr {
                         nameBackgroundChoice.isSelected() + ConfigSpliter.SPLITER +
                         nameColorInput.getValue() + ConfigSpliter.SPLITER +
                         nameBackgroundPath.getText() + ConfigSpliter.SPLITER +
-                        nameFontSelector.getValue() + ConfigSpliter.SPLITER +
+                        nameFontSelector.getSelectedValue() + ConfigSpliter.SPLITER +
                         nameFontSize.getText() + ConfigSpliter.SPLITER +
                         nameDeleteChoice.isSelected() + ConfigSpliter.SPLITER +
                         nameBoldChoice.isSelected() + ConfigSpliter.SPLITER +
@@ -656,7 +658,7 @@ public class QuestionPreviewAttr {
                         answerBackgroundChoice.isSelected() + ConfigSpliter.SPLITER +
                         answerColorInput.getValue() + ConfigSpliter.SPLITER +
                         answerBackgroundPath.getText() + ConfigSpliter.SPLITER +
-                        answerFontSelector.getValue() + ConfigSpliter.SPLITER +
+                        answerFontSelector.getSelectedValue() + ConfigSpliter.SPLITER +
                         answerFontSize.getText() + ConfigSpliter.SPLITER +
                         answerDeleteChoice.isSelected() + ConfigSpliter.SPLITER +
                         answerBoldChoice.isSelected() + ConfigSpliter.SPLITER +
@@ -680,7 +682,7 @@ public class QuestionPreviewAttr {
                         answerBackgroundChoice.isSelected() + ConfigSpliter.SPLITER +
                         answerColorInput.getValue() + ConfigSpliter.SPLITER +
                         answerBackgroundPath.getText() + ConfigSpliter.SPLITER +
-                        answerFontSelector.getValue() + ConfigSpliter.SPLITER +
+                        answerFontSelector.getSelectedValue() + ConfigSpliter.SPLITER +
                         answerFontSize.getText() + ConfigSpliter.SPLITER +
                         answerDeleteChoice.isSelected() + ConfigSpliter.SPLITER +
                         answerBoldChoice.isSelected() + ConfigSpliter.SPLITER +
@@ -708,7 +710,7 @@ public class QuestionPreviewAttr {
                         answerBackgroundChoice.isSelected() + ConfigSpliter.SPLITER +
                         answerColorInput.getValue() + ConfigSpliter.SPLITER +
                         answerBackgroundPath.getText() + ConfigSpliter.SPLITER +
-                        answerFontSelector.getValue() + ConfigSpliter.SPLITER +
+                        answerFontSelector.getSelectedValue() + ConfigSpliter.SPLITER +
                         answerFontSize.getText() + ConfigSpliter.SPLITER +
                         answerDeleteChoice.isSelected() + ConfigSpliter.SPLITER +
                         answerBoldChoice.isSelected() + ConfigSpliter.SPLITER +
@@ -730,7 +732,7 @@ public class QuestionPreviewAttr {
         if (!StringUtils.isEmpty(config)) {
             String[] cfgArr = config.split(ConfigSpliter.SPLITER);
             // 默认的字体
-            answerFontSelector.setValue(FontMap.defaultFontName());
+            answerFontSelector.setSelectedValue(FontMap.defaultFontName());
             answerFontSize.setText(12 + "");
             // x y w h
             // 
@@ -771,7 +773,7 @@ public class QuestionPreviewAttr {
             answerBackgroundChoice.setSelected(Boolean.valueOf(split[4]));
             answerColorInput.setValue(Color.valueOf(split[5]));
             answerBackgroundPath.setText(split[6]);
-            answerFontSelector.setValue(split[7]);
+            answerFontSelector.setSelectedValue(split[7]);
             answerFontSize.setText(Integer.parseInt(split[8]) + "");
             answerDeleteChoice.setSelected(Boolean.valueOf(split[9]));
             answerBoldChoice.setSelected(Boolean.valueOf(split[10]));

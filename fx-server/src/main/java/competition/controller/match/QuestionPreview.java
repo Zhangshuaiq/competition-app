@@ -88,18 +88,28 @@ public class QuestionPreview implements ReloadPane<Questions>{
      */
     private void setImageSafely(String imagePath, double width, double height, boolean isAnswer) {
         try {
+            File file = new File(imagePath);
             if (isAnswer) {
                 if (currentAnswerImage != null) {
                     currentAnswerImage = null;
                 }
-                currentAnswerImage = new Image(new FileInputStream(new File(imagePath)), width, height, false, true);
-                imageQ.setImage(currentAnswerImage);
+                if (file.exists()) {
+                    currentAnswerImage = new Image(new FileInputStream(new File(imagePath)), width, height, false, true);
+                    imageQ.setImage(currentAnswerImage);
+                } else {
+                    throw new RuntimeException();
+                }
             } else {
                 if (currentQuestionImage != null) {
                     currentQuestionImage = null;
                 }
-                currentQuestionImage = new Image(new FileInputStream(new File(imagePath)), width, height, false, true);
-                imageQ.setImage(currentQuestionImage);
+                if (file.exists()) {
+                    currentQuestionImage = new Image(new FileInputStream(new File(imagePath)), width, height, false, true);
+                    imageQ.setImage(currentQuestionImage);
+                } else {
+                    throw new RuntimeException();
+                }
+
             }
         } catch (FileNotFoundException e) {
             e.printStackTrace();
@@ -612,6 +622,11 @@ public class QuestionPreview implements ReloadPane<Questions>{
     }
 
     public void showAnswer() {
+        if (inner == null) return;
+        if (StringUtils.isEmpty(inner.getResourceType())) {
+            inner.setResourceType("图片");
+        }
+
         if (inner.getResourceType().equals("图片")) {
             imageQ.setVisible(true);
             imageQ.setLayoutX(0);

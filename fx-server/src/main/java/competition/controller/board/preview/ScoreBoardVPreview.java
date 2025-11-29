@@ -231,13 +231,22 @@ public class ScoreBoardVPreview extends PreviewPane implements BoardPane {
                     buzzTime.setFill(Color.valueOf(cfgArr[37]));
                 }
 
-                if (Boolean.valueOf(split[3])) {
-                    buzzTime.setStroke(teamScore.getFill());
-                    buzzTime.setStrokeWidth(1);
+                if (cfgArr.length >= 39) {
+                    Font f = FontMap.load(cfgArr[38], buzzTime.getFont().getSize());
+                    buzzTime.setFont(f);
+                }
+
+                if (cfgArr.length >= 40) {
+                    if (Boolean.parseBoolean(cfgArr[39])) {
+                        buzzTime.setStroke(buzzTime.getFill());
+                        buzzTime.setStrokeWidth(1);
+                    } else {
+                        buzzTime.setStroke(null);
+                    }
                 } else {
                     buzzTime.setStroke(null);
-
                 }
+
                 buzzTime.getTransforms().clear();
                 buzzPane.getChildren().add(buzzTime);
                 box.getChildren().add(buzzPane);
@@ -258,7 +267,9 @@ public class ScoreBoardVPreview extends PreviewPane implements BoardPane {
                 statusSize = Integer.parseInt(cfgArr[31]);
                 statusColor = Color.valueOf(cfgArr[32]);
             }
-            Font statusFont = FontMap.load(FontMap.defaultFontName(), statusSize);
+            String sf = cfgArr.length >= 41 ? cfgArr[40] : FontMap.defaultFontName();
+            boolean sb = cfgArr.length >= 42 && Boolean.parseBoolean(cfgArr[41]);
+            Font statusFont = FontMap.load(sf, statusSize);
 
             // 面板分数调整（Model60 模式）
             Stages currentStage = controlPane.getCurrentStage();
@@ -281,6 +292,12 @@ public class ScoreBoardVPreview extends PreviewPane implements BoardPane {
 //                    userSelect.prefHeight(Integer.parseInt(cfgArr[20]));
                         userSelect.setFont(statusFont);
                         userSelect.setFill(statusColor);
+                        if (sb) {
+                            userSelect.setStroke(userSelect.getFill());
+                            userSelect.setStrokeWidth(1);
+                        } else {
+                            userSelect.setStroke(null);
+                        }
                         if (team.getStatus() == 1) {
                             // 回答但是未展示答案
                             stackPane2.setBackground(new Background(new BackgroundFill(Color.valueOf(cfgArr[26]), new CornerRadii(10), Insets.EMPTY)));
@@ -338,6 +355,14 @@ public class ScoreBoardVPreview extends PreviewPane implements BoardPane {
                                 l.prefWidth(w);
                                 l.setFont(statusFont);
                                 l.setFill(statusColor);
+
+                                if (sb) {
+                                    l.setStroke(l.getFill());
+                                    l.setStrokeWidth(1);
+                                } else {
+                                    l.setStroke(null);
+                                }
+
                                 if (team.getStatusList().get(x) == 1) {
                                     stackPane2.setBackground(new Background(new BackgroundFill(Color.valueOf(cfgArr[26]), new CornerRadii(10), Insets.EMPTY)));
                                 } else {

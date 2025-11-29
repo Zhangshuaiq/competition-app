@@ -27,10 +27,18 @@ public class WsTeamMemberWaiter {
 
     // 添加连接的队伍，登录时调用
     public static void addConnectedTeam(String clientId, String member) {
-        TeamRuntime.getTeams().stream().filter(team -> member.contains(team.getFullName())).findFirst().ifPresent(team -> {
+        List<Teams> teams = TeamRuntime.getTeams();
+        String[] split = member.split("-");
+        String te = split[0];
+        String mem = split[1].trim();
+        teams.stream().filter(team -> te.equals(team.getShortName())).findFirst().ifPresent(team -> {
             if (!connectTeams.get(team.getShortName()).contains(clientId)) {
                 connectTeams.get(team.getShortName()).add(clientId);
-                connectMembers.get(team.getShortName()).add(member.split("-")[1].trim());
+                connectMembers.get(team.getShortName()).add(mem);
+            } else {
+                if ( !connectMembers.get(team.getShortName()).contains(mem)) {
+                    connectMembers.get(team.getShortName()).add(mem);
+                }
             }
         });
     }
@@ -42,14 +50,17 @@ public class WsTeamMemberWaiter {
             return;
         }
         List<Teams> teams = TeamRuntime.getTeams();
-        Optional<Teams> first = teams.stream().filter(team -> member.startsWith(team.getShortName())).findFirst();
+        String[] split = member.split("-");
+        String te = split[0];
+        String mem = split[1].trim();
+        Optional<Teams> first = teams.stream().filter(team -> te.equals(team.getShortName())).findFirst();
         first.ifPresent(team -> {
-            if ( connectMembers.get(team.getShortName()).contains(member.split("-")[1].trim()) ) {
+            if ( connectMembers.get(team.getShortName()).contains(mem)) {
                 // 防止多个链接进入
                 return;
             }
             connectTeams.get(team.getShortName()).add(clientId);
-            connectMembers.get(team.getShortName()).add(member.split("-")[1].trim());
+            connectMembers.get(team.getShortName()).add(mem);
         });
     }
 

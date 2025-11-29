@@ -2,6 +2,7 @@ package competition.controller.backend;
 
 import com.alibaba.fastjson2.JSON;
 import com.alibaba.fastjson2.JSONObject;
+import competition.controls.GroupedComboBox;
 import competition.entity.Buzz;
 import competition.entity.Configs;
 import competition.mapper.BuzzMapper;
@@ -42,7 +43,7 @@ public class BuzzConfig {
     private CheckBox playErrorCheck;
 
     @FXML
-    private ComboBox<String> fontSelector;
+    private GroupedComboBox<String> fontSelector;
 
     @FXML
     private CheckBox lastSuccessCheck;
@@ -81,7 +82,7 @@ public class BuzzConfig {
     private TextField xInput, xLoc, yLoc, yInput, widthInput, heightInput, spaceInput, xuhaoSize, jianchengSize, quanchengSize, successSize, errorSize;
 
     @FXML
-    private ComboBox<String> xuhaoFont, jianchengFont, quanchengFont, successFont, errorFont;
+    private GroupedComboBox<String> xuhaoFont, jianchengFont, quanchengFont, successFont, errorFont;
 
     @Resource
     private BuzzMapper buzzMapper;
@@ -108,19 +109,22 @@ public class BuzzConfig {
         successColor.setValue(Color.BLACK);
         failColor.setValue(Color.BLACK);
 
-        fontSelector.setItems(FXCollections.observableList(FontMap.fontNames()));
-        xuhaoFont.getItems().addAll(FXCollections.observableList(FontMap.fontNames()));
-        jianchengFont.setItems(FXCollections.observableList(FontMap.fontNames()));
-        quanchengFont.setItems(FXCollections.observableList(FontMap.fontNames()));
-        successFont.setItems(FXCollections.observableList(FontMap.fontNames()));
-        errorFont.setItems(FXCollections.observableList(FontMap.fontNames()));
+        FontMap.fontNames().forEach((key, value) -> {
+            fontSelector.addGroup(key, value);
+            xuhaoFont.addGroup(key, value);
+            jianchengFont.addGroup(key, value);
+            quanchengFont.addGroup(key, value);
+            successFont.addGroup(key, value);
+            errorFont.addGroup(key, value);
+        });
 
-        fontSelector.setValue("默认.ttf");
-        xuhaoFont.setValue("默认.ttf");
-        jianchengFont.setValue("默认.ttf");
-        quanchengFont.setValue("默认.ttf");
-        successFont.setValue("默认.ttf");
-        errorFont.setValue("默认.ttf");
+
+        fontSelector.setSelectedValue(FontMap.defaultFontName());
+        xuhaoFont.setSelectedValue(FontMap.defaultFontName());
+        jianchengFont.setSelectedValue(FontMap.defaultFontName());
+        quanchengFont.setSelectedValue(FontMap.defaultFontName());
+        successFont.setSelectedValue(FontMap.defaultFontName());
+        errorFont.setSelectedValue(FontMap.defaultFontName());
 
         xuhaoSize.setText("12");
         jianchengSize.setText("12");
@@ -148,7 +152,7 @@ public class BuzzConfig {
             fontColor.setValue(Color.valueOf(buzz.getColor()));
             fontSizeInput.setText(String.valueOf(buzz.getFontSize()));
             fontBold.setSelected(buzz.getBold() != null && buzz.getBold() == 1);
-            fontSelector.setValue(String.valueOf(buzz.getFont()));
+            fontSelector.setSelectedValue(String.valueOf(buzz.getFont()));
 
             errorMusicCheck.setSelected(buzz.getErrorMusic() != null && buzz.getErrorMusic() == 1);
             successMusicCheck.setSelected(buzz.getSuccessMusic() != null && buzz.getSuccessMusic() == 1);
@@ -185,12 +189,12 @@ public class BuzzConfig {
                 successColor.setValue(Color.valueOf(jsonObject.getOrDefault("successColor", "BLACK").toString()));
                 failColor.setValue(Color.valueOf(jsonObject.getOrDefault("failColor", "BLACK").toString()));
 
-                fontSelector.setValue(jsonObject.getOrDefault("fontSelector", "默认.ttf").toString());
-                xuhaoFont.setValue(jsonObject.getOrDefault("xuhaoFont", "默认.ttf").toString());
-                jianchengFont.setValue(jsonObject.getOrDefault("jianchengFont", "默认.ttf").toString());
-                quanchengFont.setValue(jsonObject.getOrDefault("quanchengFont", "默认.ttf").toString());
-                successFont.setValue(jsonObject.getOrDefault("successFont", "默认.ttf").toString());
-                errorFont.setValue(jsonObject.getOrDefault("errorFont", "默认.ttf").toString());
+                fontSelector.setSelectedValue(jsonObject.getOrDefault("fontSelector", "默认.ttf").toString());
+                xuhaoFont.setSelectedValue(jsonObject.getOrDefault("xuhaoFont", "默认.ttf").toString());
+                jianchengFont.setSelectedValue(jsonObject.getOrDefault("jianchengFont", "默认.ttf").toString());
+                quanchengFont.setSelectedValue(jsonObject.getOrDefault("quanchengFont", "默认.ttf").toString());
+                successFont.setSelectedValue(jsonObject.getOrDefault("successFont", "默认.ttf").toString());
+                errorFont.setSelectedValue(jsonObject.getOrDefault("errorFont", "默认.ttf").toString());
 
                 xuhaoSize.setText(jsonObject.getOrDefault("xuhaoSize", "12").toString());
                 jianchengSize.setText(jsonObject.getOrDefault("jianchengSize", "12").toString());
@@ -286,7 +290,7 @@ public class BuzzConfig {
             sizeInputText = "12";
         }
         boolean boldSelected = fontBold.isSelected();
-        String fontFile = fontSelector.getValue();
+        String fontFile = fontSelector.getSelectedValue();
         boolean errorMusicCheckSelected = errorMusicCheck.isSelected();
         boolean successMusicCheckSelected = successMusicCheck.isSelected();
         boolean playErrorCheckSelected = playErrorCheck.isSelected();
@@ -343,12 +347,12 @@ public class BuzzConfig {
         jsonObject.put("x", xInput.getText());
         jsonObject.put("y", yInput.getText());
         jsonObject.put("rowSpace", spaceInput.getText());
-        jsonObject.put("fontSelector", fontSelector.getValue());
-        jsonObject.put("xuhaoFont", xuhaoFont.getValue());
-        jsonObject.put("jianchengFont", jianchengFont.getValue());
-        jsonObject.put("quanchengFont", quanchengFont.getValue());
-        jsonObject.put("successFont", successFont.getValue());
-        jsonObject.put("errorFont", errorFont.getValue());
+        jsonObject.put("fontSelector", fontSelector.getSelectedValue());
+        jsonObject.put("xuhaoFont", xuhaoFont.getSelectedValue());
+        jsonObject.put("jianchengFont", jianchengFont.getSelectedValue());
+        jsonObject.put("quanchengFont", quanchengFont.getSelectedValue());
+        jsonObject.put("successFont", successFont.getSelectedValue());
+        jsonObject.put("errorFont", errorFont.getSelectedValue());
 
         jsonObject.put("xuhaoSize", xuhaoSize.getText());
         jsonObject.put("jianchengSize", jianchengSize.getText());

@@ -18,6 +18,7 @@
 <?import javafx.scene.text.Font?>
 
 <?import competition.controls.CustomTextField?>
+<?import competition.controls.GroupedComboBox?>
 <TabPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="746.0" prefWidth="474.0" tabClosingPolicy="UNAVAILABLE" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="competition.controller.match.QuestionPreviewAttr">
     <tabs>
         <Tab text="              环节名              ">
@@ -54,7 +55,7 @@
                             </children>
                         </AnchorPane>
                         <Label layoutX="69.0" layoutY="322.0" text="名称" />
-                        <ComboBox fx:id="stageFontSelector" layoutX="111.0" layoutY="317.0" prefWidth="150.0" />
+                        <GroupedComboBox fx:id="stageFontSelector" layoutX="111.0" layoutY="317.0" prefWidth="150.0" />
                         <Label layoutX="286.0" layoutY="322.0" text="大小" />
                         <CustomTextField fx:id="stageFontSize" layoutX="327.0" layoutY="316.0" prefHeight="20.0" prefWidth="96.0"  inputType="NUMERIC"/>
                         <CheckBox fx:id="stageDeleteChoice" layoutX="48.0" layoutY="368.0" mnemonicParsing="false" text="删除线" />
@@ -116,7 +117,7 @@
                             </children>
                         </AnchorPane>
                         <Label layoutX="69.0" layoutY="322.0" text="名称" />
-                        <ComboBox fx:id="nameFontSelector" layoutX="111.0" layoutY="317.0" prefWidth="150.0" />
+                        <GroupedComboBox fx:id="nameFontSelector" layoutX="111.0" layoutY="317.0" prefWidth="150.0" />
                         <Label layoutX="286.0" layoutY="322.0" text="大小" />
                         <CustomTextField fx:id="nameFontSize" layoutX="327.0" layoutY="316.0" prefHeight="20.0" prefWidth="96.0"  inputType="NUMERIC"/>
                         <CheckBox fx:id="nameDeleteChoice" layoutX="43.0" layoutY="368.0" mnemonicParsing="false" text="删除线" />
@@ -184,7 +185,7 @@
                             </children>
                         </AnchorPane>
                         <Label layoutX="69.0" layoutY="322.0" text="名称" />
-                        <ComboBox fx:id="answerFontSelector" layoutX="111.0" layoutY="317.0" prefWidth="150.0" />
+                        <GroupedComboBox fx:id="answerFontSelector" layoutX="111.0" layoutY="317.0" prefWidth="150.0" />
                         <Label layoutX="286.0" layoutY="322.0" text="大小" />
                         <CustomTextField fx:id="answerFontSize" layoutX="327.0" layoutY="316.0" prefHeight="20.0" prefWidth="96.0"  inputType="NUMERIC"/>
                         <CheckBox fx:id="answerDeleteChoice" layoutX="48.0" layoutY="368.0" mnemonicParsing="false" text="删除线" />

@@ -1,5 +1,7 @@
 package competition.ws;
 
+import com.alibaba.excel.EasyExcel;
+import com.alibaba.excel.write.style.column.LongestMatchColumnWidthStyleStrategy;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import competition.JavaFxApplication;
 import competition.controller.ControlPane;
@@ -7,12 +9,20 @@ import competition.entity.Questions;
 import competition.entity.Teams;
 import competition.mapper.QuestionsMapper;
 import competition.mapper.TeamsMapper;
+import competition.modal.Model7RankData;
 import competition.service.ScoreService;
+import competition.util.BaseDir;
+import competition.util.Information;
 import competition.util.TeamRuntime;
+import javafx.application.Platform;
+import javafx.stage.FileChooser;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.util.CollectionUtils;
 
+import java.io.File;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -82,6 +92,54 @@ public class Model7RuntimeData {
             fts.add("00:00");
             finished.add(false);
         }
+    }
+
+    public static void exportResult(){
+        ControlPane controlPane = JavaFxApplication.getApplicationContext().getBean(ControlPane.class);
+        List<String> timeData = Model7RuntimeData.getFts();
+        List<Model7RankData> rankList = new ArrayList<>();
+        for (int i = 0; i < runtimeData.size(); i++) {
+            List<Model7RuntimeData.ModelData> questionList = runtimeData.get(i);
+            int score = 0;
+            for (Model7RuntimeData.ModelData data : questionList) {
+                if (data.getUserSelect() != null && data.getUserSelect().equals(data.getAnswer())) {
+                    score += data.getScore();
+                } else {
+                    score -= controlPane.getCurrentStage().getDesValue();
+                }
+            }
+            score = score - ((Model7RuntimeData.totalNumber - questionList.size()) * controlPane.getCurrentStage().getDesValue());
+            String team = Model7RuntimeData.getTeams().get(i).getFullName();
+
+            String time = timeData.get(i);
+
+            Model7RankData rankData = new Model7RankData();
+            rankData.setScore(score);
+            rankData.setSecond(seconds.get(i));
+            rankData.setTeam(team);
+            rankData.setTime(time);
+            rankList.add(rankData);
+        }
+
+        Platform.runLater(() -> {
+            try {
+                // 设置默认文件名
+                String defaultFileName = "竞技答题结果_" +
+                        LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMdd_HHmmss")) +
+                        ".xlsx";
+
+                File file = new File(System.getProperty("user.dir") +  File.separator + defaultFileName);
+                // 使用 EasyExcel 导出
+                EasyExcel.write(file, Model7RankData.class)
+                        .sheet("竞技答题结果")
+                        .registerWriteHandler(new LongestMatchColumnWidthStyleStrategy()) // 自动列宽
+                        .doWrite(rankList);
+            } catch (Exception e) {
+                e.printStackTrace();
+                Information.error("导出失败: " + e.getMessage());
+            }
+        });
+
     }
 
     public static void setRuntimeData(int i, ModelData data, String time, String second) {
@@ -282,6 +340,7 @@ public class Model7RuntimeData {
                         }
                     }
                 }
+                exportResult();
             } catch (Exception ex) {
                 log.error("强制结束答题时记录分数发生错误: {}", ex.getMessage());
             }

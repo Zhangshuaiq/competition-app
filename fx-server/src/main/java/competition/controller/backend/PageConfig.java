@@ -4,7 +4,9 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import competition.controller.ControlPane;
 import competition.controller.match.ReloadPane;
 import competition.controller.preview.PreviewPane;
+import competition.controls.GroupedComboBox;
 import competition.entity.Configs;
+import competition.entity.QuestionStyle;
 import competition.mapper.ConfigsMapper;
 import competition.mapper.StageMemberScoreMapper;
 import competition.util.*;
@@ -34,7 +36,10 @@ public class PageConfig {
     private ControlPane controlPane;
     
     @FXML
-    private ComboBox<String> fontSelector;
+    private GroupedComboBox<String> fontSelector;
+
+    @FXML
+    private TextField xxhz;
     
     
     @FXML
@@ -375,12 +380,30 @@ public class PageConfig {
     // 抢答时间字体颜色
     @FXML
     private ColorPicker qdys;
+
+    @FXML
+    private GroupedComboBox<String> dtztzt, qdztzt, tgzt, dazt;
+
+    @FXML
+    private CheckBox dtztct, qdztct;
     
     @FXML
     public void initialize(){
-        
-        fontSelector.setItems(FXCollections.observableList(FontMap.fontNames()));
-        fontSelector.setValue(FontMap.defaultFontName());
+
+        FontMap.fontNames().forEach((key, value) -> {
+            fontSelector.addGroup(key, value);
+            qdztzt.addGroup(key, value);
+            dtztzt.addGroup(key, value);
+            tgzt.addGroup(key, value);
+            dazt.addGroup(key, value);
+        });
+
+        fontSelector.setSelectedValue(FontMap.defaultFontName());
+        qdztzt.setSelectedValue(FontMap.defaultFontName());
+        dtztzt.setSelectedValue(FontMap.defaultFontName());
+        tgzt.setSelectedValue(FontMap.defaultFontName());
+        dazt.setSelectedValue(FontMap.defaultFontName());
+
         txGroup = new ToggleGroup();
         txGroup.getToggles().addAll(thq, thh, tgh);
 
@@ -463,7 +486,7 @@ public class PageConfig {
                 ztys.setValue(Color.valueOf(split[32]));
             }
             if (split.length >= 34) {
-                fontSelector.setValue(split[33]);
+                fontSelector.setSelectedValue(split[33]);
             }
             if (split.length >= 35) {
                 djsbj.setValue(Color.valueOf(split[34]));
@@ -489,6 +512,49 @@ public class PageConfig {
                 qdys.setValue(Color.valueOf(split[37]));
             } else {
                 qdys.setValue(Color.BLACK);
+            }
+
+            // 抢答状态字体 - 粗体
+            if (split.length >= 39) {
+                qdztzt.setSelectedValue(split[38]);
+            } else {
+                qdztzt.setSelectedValue(FontMap.defaultFont());
+            }
+
+            if (split.length >= 40) {
+                qdztct.setSelected(Boolean.parseBoolean(split[39]));
+            } else {
+                qdztct.setSelected(false);
+            }
+            // 答题状态字体 - 粗体
+            if (split.length >= 41) {
+                dtztzt.setSelectedValue(split[40]);
+            } else {
+                dtztzt.setSelectedValue(FontMap.defaultFont());
+            }
+
+            if (split.length >= 42) {
+                dtztct.setSelected(Boolean.parseBoolean(split[41]));
+            } else {
+                dtztct.setSelected(false);
+            }
+
+            if (split.length >= 43) {
+                xxhz.setText(split[42]);
+            } else {
+                xxhz.setText("");
+            }
+
+            if (split.length >= 44) {
+                tgzt.setSelectedValue(split[43]);
+            } else {
+                tgzt.setSelectedValue(FontMap.defaultFont());
+            }
+
+            if (split.length >= 45) {
+                dazt.setSelectedValue(split[44]);
+            } else {
+                dazt.setSelectedValue(FontMap.defaultFont());
             }
           
         }
@@ -661,7 +727,11 @@ public class PageConfig {
         final String ztyanse = ztys.getValue().toString();
         final String qdzyzh = qdzh.getText();
         final String qdztys = qdys.getValue().toString();
-        
+
+        final String qdztztValue = qdztzt.getSelectedValue();
+        final boolean qdztctValue = qdztct.isSelected();
+        final String dtztztValue = dtztzt.getSelectedValue();
+        final boolean dtztctValue = dtztct.isSelected();
         
         
         String datiValue = (!StringUtils.isEmpty(tigan) ? tigan: ConfigSpliter.DIFFER) + ConfigSpliter.SPLITER
@@ -697,11 +767,18 @@ public class PageConfig {
                 + daojishiy  + ConfigSpliter.SPLITER
                 + ztzihao + ConfigSpliter.SPLITER
                 + ztyanse + ConfigSpliter.SPLITER
-                + fontSelector.getValue() + ConfigSpliter.SPLITER
+                + fontSelector.getSelectedValue() + ConfigSpliter.SPLITER
                 + djsbj.getValue().toString() + ConfigSpliter.SPLITER
                 + djsct.isSelected() + ConfigSpliter.SPLITER
                 + qdzyzh + ConfigSpliter.SPLITER
-                + qdztys
+                + qdztys + ConfigSpliter.SPLITER
+                + qdztztValue + ConfigSpliter.SPLITER
+                + qdztctValue + ConfigSpliter.SPLITER
+                + dtztztValue + ConfigSpliter.SPLITER
+                + dtztctValue + ConfigSpliter.SPLITER
+                + xxhz.getText() + ConfigSpliter.SPLITER
+                + tgzt.getSelectedValue() + ConfigSpliter.SPLITER
+                + dazt.getSelectedValue()
                 ;
 
 
@@ -923,6 +1000,25 @@ public class PageConfig {
         jingji.setId(8);
         jingji.setConfig(jingjiVal);
         configsMapper.updateById(jingji);
+
+
+        // 更新题干 & 答案的字体
+
+        List<QuestionStyle>  questionStyleList = ExcelParser.parse(ExcelParser.S_PATH, QuestionStyle.class);
+        for (QuestionStyle questionStyle : questionStyleList) {
+            String style1 = questionStyle.getStyle1();
+            String[] style1Arr = style1.split(ConfigSpliter.SPLITER);
+            style1Arr[7] = tgzt.getSelectedValue();
+            questionStyle.setStyle1(String.join(ConfigSpliter.SPLITER, style1Arr));
+
+            String style2 = questionStyle.getStyle2();
+            if (!StringUtils.isEmpty(style2)) {
+                String[] style2Arr = style2.split(ConfigSpliter.SPLITER);
+                style2Arr[7] = dazt.getSelectedValue();
+                questionStyle.setStyle2(String.join(ConfigSpliter.SPLITER, style2Arr));
+            }
+        }
+        ExcelParser.write(ExcelParser.S_PATH, questionStyleList, QuestionStyle.class);
 
         controlPane.updateScoreBoard();
         Navigator.scoreBoardStage.setX(Integer.parseInt(duiwux));

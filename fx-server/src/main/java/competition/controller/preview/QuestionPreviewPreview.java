@@ -40,6 +40,7 @@ import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 
 // 试题显示主控屏幕 - 优化版本
@@ -144,13 +145,19 @@ public class QuestionPreviewPreview extends PreviewPane<Questions> {
     private void setImageSafely(ImageView imageView, String imagePath, double width, double height) {
         try {
             // 释放旧图片
-            if (imageView == imageQ) {
-                if (currentQuestionImage != null) {
-                    currentQuestionImage = null;
+            File file = new File(imagePath);
+            if (file.exists()) {
+                if (imageView == imageQ) {
+                    if (currentQuestionImage != null) {
+                        currentQuestionImage = null;
+                    }
+                    currentQuestionImage = new Image(new FileInputStream(file), width, height, false, true);
+                    imageView.setImage(currentQuestionImage);
                 }
-                currentQuestionImage = new Image(new FileInputStream(new File(imagePath)), width, height, false, true);
-                imageView.setImage(currentQuestionImage);
+            } else {
+               throw new RuntimeException();
             }
+
         } catch (FileNotFoundException e) {
             e.printStackTrace();
             imageView.setImage(null);
@@ -730,7 +737,6 @@ public class QuestionPreviewPreview extends PreviewPane<Questions> {
         //Font font = Font.font(ScreenAdapter.calculateMainX(Integer.parseInt(split1[8])));
         // 应用字体样式到所有文本组件（覆盖基础样式）
         applyFontStyleToAllTexts(font, split1);
-
         // 处理空行
         if (split1.length > 16) {
             if (Boolean.parseBoolean(split1[16])) {
@@ -930,6 +936,9 @@ public class QuestionPreviewPreview extends PreviewPane<Questions> {
      */
     public void showAnswer() {
         if (inner == null) return;
+        if (StringUtils.isEmpty(inner.getResourceType())) {
+            inner.setResourceType("图片");
+        }
 
         if (inner.getResourceType().equals("图片")) {
             imageQ.setVisible(true);

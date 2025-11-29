@@ -1,24 +1,24 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import competition.controls.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<?import competition.controls.CustomTextField?>
-<AnchorPane prefHeight="931.0" prefWidth="613.0" xmlns="http://javafx.com/javafx/11.0.14-internal" xmlns:fx="http://javafx.com/fxml/1" fx:controller="competition.controller.match.AnswerAttr">
+<AnchorPane prefHeight="931.0" prefWidth="613.0" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="competition.controller.match.AnswerAttr">
    <children>
       <Label layoutX="32.0" layoutY="23.0" text="布局" />
       <Label layoutX="32.0" layoutY="64.0" text="列" />
       <Label layoutX="156.0" layoutY="64.0" text="行距" />
       <Label layoutX="289.0" layoutY="64.0" text="列距" />
-      <CustomTextField fx:id="colInput" layoutX="62.0" layoutY="59.0" prefHeight="30.0" prefWidth="81.0" inputType="NUMERIC"/>
-      <CustomTextField fx:id="rowsInput" layoutX="187.0" layoutY="59.0" prefHeight="30.0" prefWidth="81.0" inputType="NUMERIC"/>
-      <CustomTextField fx:id="colsInput" layoutX="330.0" layoutY="59.0" prefHeight="30.0" prefWidth="81.0" inputType="NUMERIC"/>
+      <CustomTextField fx:id="colInput" inputType="NUMERIC" layoutX="62.0" layoutY="59.0" prefHeight="30.0" prefWidth="81.0" />
+      <CustomTextField fx:id="rowsInput" inputType="NUMERIC" layoutX="187.0" layoutY="59.0" prefHeight="30.0" prefWidth="81.0" />
+      <CustomTextField fx:id="colsInput" inputType="NUMERIC" layoutX="330.0" layoutY="59.0" prefHeight="30.0" prefWidth="81.0" />
       <Separator layoutX="79.0" layoutY="32.0" prefWidth="200.0" />
       <Label layoutX="32.0" layoutY="111.0" text="X" />
-      <CustomTextField layoutX="62.0" layoutY="106.0" prefHeight="30.0" prefWidth="81.0" fx:id="xInput" inputType="NUMERIC"/>
-      <CustomTextField fx:id="yInput" layoutX="179.0" layoutY="106.0" prefHeight="30.0" prefWidth="81.0" inputType="NUMERIC"/>
-      <CustomTextField fx:id="widthInput" layoutX="303.0" layoutY="106.0" prefHeight="30.0" prefWidth="81.0" inputType="NUMERIC"/>
-      <CustomTextField fx:id="heightInput" layoutX="431.0" layoutY="106.0" prefHeight="30.0" prefWidth="81.0" inputType="NUMERIC"/>
+      <CustomTextField inputType="NUMERIC" layoutX="62.0" layoutY="106.0" prefHeight="30.0" prefWidth="81.0" fx:id="xInput" />
+      <CustomTextField fx:id="yInput" inputType="NUMERIC" layoutX="179.0" layoutY="106.0" prefHeight="30.0" prefWidth="81.0" />
+      <CustomTextField fx:id="widthInput" inputType="NUMERIC" layoutX="303.0" layoutY="106.0" prefHeight="30.0" prefWidth="81.0" />
+      <CustomTextField fx:id="heightInput" inputType="NUMERIC" layoutX="431.0" layoutY="106.0" prefHeight="30.0" prefWidth="81.0" />
       <Label layoutX="159.0" layoutY="111.0" text="Y" />
       <Label layoutX="278.0" layoutY="111.0" text="宽" />
       <Label layoutX="400.0" layoutY="111.0" text="高" />
@@ -27,12 +27,12 @@
       <AnchorPane layoutX="20.0" layoutY="183.0" prefHeight="120.0" prefWidth="572.0">
          <children>
             <Label layoutX="14.0" layoutY="14.0" text="字体" />
-            <ComboBox fx:id="f1Selector" layoutX="51.0" layoutY="9.0" prefWidth="150.0" />
+            <GroupedComboBox fx:id="f1Selector" layoutX="51.0" layoutY="9.0" prefWidth="150.0" />
             <Label layoutX="275.0" layoutY="14.0" text="布局" />
             <ComboBox fx:id="l1Selector" layoutX="320.0" layoutY="9.0" prefWidth="100.0" />
             <Label layoutX="440.0" layoutY="14.0" text="大小" />
-            <CustomTextField fx:id="f1Size" layoutX="480.0" layoutY="9.0" prefHeight="30.0" prefWidth="100.0" inputType="NUMERIC"/>
-            
+            <CustomTextField fx:id="f1Size" inputType="NUMERIC" layoutX="480.0" layoutY="9.0" prefHeight="30.0" prefWidth="100.0" />
+
             <ColorPicker fx:id="f1Color" layoutX="229.0" layoutY="9.0" prefHeight="30.0" prefWidth="30.0" />
             <CheckBox fx:id="f1DL" layoutX="51.0" layoutY="50.0" mnemonicParsing="false" text="删除线" />
             <CheckBox fx:id="f1IT" layoutX="154.0" layoutY="50.0" mnemonicParsing="false" text="斜体" />
@@ -44,7 +44,7 @@
             <Button layoutX="389.0" layoutY="82.0" mnemonicParsing="false" text="选择文件" />
             <Button layoutX="478.0" layoutY="82.0" mnemonicParsing="false" text="取消文件" />
             <CheckBox fx:id="f1Fill" layoutX="64.0" layoutY="87.0" mnemonicParsing="false" text="填充背景" />
-            
+
          </children>
       </AnchorPane>
       <Label layoutX="32.0" layoutY="320.0" text="作答情况" />
@@ -52,13 +52,13 @@
       <AnchorPane layoutX="17.0" layoutY="350.0" prefHeight="120.0" prefWidth="572.0">
          <children>
             <Label layoutX="14.0" layoutY="14.0" text="字体" />
-            <ComboBox fx:id="f2Selector" layoutX="51.0" layoutY="9.0" prefWidth="150.0" />
+            <GroupedComboBox fx:id="f2Selector" layoutX="51.0" layoutY="9.0" prefWidth="150.0" />
 
             <Label layoutX="275.0" layoutY="14.0" text="布局" />
             <ComboBox fx:id="l2Selector" layoutX="320.0" layoutY="9.0" prefWidth="100.0" />
             <Label layoutX="440.0" layoutY="14.0" text="大小" />
-            <CustomTextField fx:id="f2Size" layoutX="480.0" layoutY="9.0" prefHeight="30.0" prefWidth="100.0" inputType="NUMERIC"/>
-            
+            <CustomTextField fx:id="f2Size" inputType="NUMERIC" layoutX="480.0" layoutY="9.0" prefHeight="30.0" prefWidth="100.0" />
+
             <ColorPicker fx:id="f2Color" layoutX="229.0" layoutY="9.0" prefHeight="30.0" prefWidth="30.0" />
             <CheckBox fx:id="f2DL" layoutX="51.0" layoutY="50.0" mnemonicParsing="false" text="删除线" />
             <CheckBox fx:id="f2IT" layoutX="154.0" layoutY="50.0" mnemonicParsing="false" text="斜体" />
@@ -75,13 +75,13 @@
       <AnchorPane layoutX="15.0" layoutY="492.0" prefHeight="120.0" prefWidth="572.0">
          <children>
             <Label layoutX="14.0" layoutY="14.0" text="字体" />
-            <ComboBox fx:id="f3Selector" layoutX="51.0" layoutY="9.0" prefWidth="150.0" />
+            <GroupedComboBox fx:id="f3Selector" layoutX="51.0" layoutY="9.0" prefWidth="150.0" />
 
             <Label layoutX="275.0" layoutY="14.0" text="布局" />
             <ComboBox fx:id="l3Selector" layoutX="320.0" layoutY="9.0" prefWidth="100.0" />
             <Label layoutX="440.0" layoutY="14.0" text="大小" />
-            <CustomTextField fx:id="f3Size" layoutX="480.0" layoutY="9.0" prefHeight="30.0" prefWidth="100.0" inputType="NUMERIC"/>
-            
+            <CustomTextField fx:id="f3Size" inputType="NUMERIC" layoutX="480.0" layoutY="9.0" prefHeight="30.0" prefWidth="100.0" />
+
             <ColorPicker fx:id="f3Color" layoutX="229.0" layoutY="9.0" prefHeight="30.0" prefWidth="30.0" />
             <CheckBox fx:id="f3DL" layoutX="51.0" layoutY="50.0" mnemonicParsing="false" text="删除线" />
             <CheckBox fx:id="f3IT" layoutX="154.0" layoutY="50.0" mnemonicParsing="false" text="斜体" />
@@ -98,13 +98,13 @@
       <AnchorPane layoutX="12.0" layoutY="625.0" prefHeight="120.0" prefWidth="572.0">
          <children>
             <Label layoutX="14.0" layoutY="14.0" text="字体" />
-            <ComboBox fx:id="f4Selector" layoutX="51.0" layoutY="9.0" prefWidth="150.0" />
+            <GroupedComboBox fx:id="f4Selector" layoutX="51.0" layoutY="9.0" prefWidth="150.0" />
 
             <Label layoutX="275.0" layoutY="14.0" text="布局" />
             <ComboBox fx:id="l4Selector" layoutX="320.0" layoutY="9.0" prefWidth="100.0" />
             <Label layoutX="440.0" layoutY="14.0" text="大小" />
-            <CustomTextField fx:id="f4Size" layoutX="480.0" layoutY="9.0" prefHeight="30.0" prefWidth="100.0" inputType="NUMERIC"/>
-            
+            <CustomTextField fx:id="f4Size" inputType="NUMERIC" layoutX="480.0" layoutY="9.0" prefHeight="30.0" prefWidth="100.0" />
+
             <ColorPicker fx:id="f4Color" layoutX="229.0" layoutY="9.0" prefHeight="30.0" prefWidth="30.0" />
             <CheckBox fx:id="f4DL" layoutX="51.0" layoutY="50.0" mnemonicParsing="false" text="删除线" />
             <CheckBox fx:id="f4IT" layoutX="154.0" layoutY="50.0" mnemonicParsing="false" text="斜体" />
@@ -121,14 +121,14 @@
       <AnchorPane layoutX="15.0" layoutY="767.0" prefHeight="120.0" prefWidth="572.0">
          <children>
             <Label layoutX="14.0" layoutY="14.0" text="字体" />
-            <ComboBox fx:id="f5Selector" layoutX="51.0" layoutY="9.0" prefWidth="150.0" />
+            <GroupedComboBox fx:id="f5Selector" layoutX="51.0" layoutY="9.0" prefWidth="150.0" />
 
             <Label layoutX="275.0" layoutY="14.0" text="布局" />
             <ComboBox fx:id="l5Selector" layoutX="320.0" layoutY="9.0" prefWidth="100.0" />
             <Label layoutX="440.0" layoutY="14.0" text="大小" />
-            <CustomTextField fx:id="f5Size" layoutX="480.0" layoutY="9.0" prefHeight="30.0" prefWidth="100.0" inputType="NUMERIC"/>
-            
-            
+            <CustomTextField fx:id="f5Size" inputType="NUMERIC" layoutX="480.0" layoutY="9.0" prefHeight="30.0" prefWidth="100.0" />
+
+
             <ColorPicker fx:id="f5Color" layoutX="229.0" layoutY="9.0" prefHeight="30.0" prefWidth="30.0" />
             <CheckBox fx:id="f5DL" layoutX="51.0" layoutY="50.0" mnemonicParsing="false" text="删除线" />
             <CheckBox fx:id="f5IT" layoutX="154.0" layoutY="50.0" mnemonicParsing="false" text="斜体" />
@@ -148,7 +148,6 @@
       <Separator layoutX="79.0" layoutY="479.0" prefWidth="200.0" />
       <Separator layoutX="79.0" layoutY="619.0" prefWidth="200.0" />
       <Separator layoutX="107.0" layoutY="754.0" prefWidth="200.0" />
-      <Button layoutX="173.0" layoutY="895.0" mnemonicParsing="false" onMouseClicked="#saveAttr" prefHeight="30.0" prefWidth="81.0" text="确定" />
-      <Button layoutX="303.0" layoutY="894.0" mnemonicParsing="false" onMouseClicked="#closeDialog" prefHeight="30.0" prefWidth="81.0" text="关闭" />
+      <Button layoutX="270.0" layoutY="887.0" mnemonicParsing="false" onMouseClicked="#saveAttr" prefHeight="30.0" prefWidth="81.0" text="确定" />
    </children>
 </AnchorPane>
