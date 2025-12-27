@@ -288,10 +288,17 @@ public class QuestionPreview implements ReloadPane<Questions>{
             tiganLabel.setText(tiganLabel.getText().replace("\u00A0", " "));
 
             // 只有选择题展示选项
+
+
+
             tiganBox.getChildren().add(tiganLabel);
             if (questionType.equals("单选题") || questionType.equals("多选题") || questionType.equals("不定项选择题")) {
+                String prefix = ".";
+                if (split.length >= 43) {
+                    prefix = split[42];
+                }
                 if (!StringUtils.isEmpty(inner.getChoiceA())) {
-                    Text chA = new Text("A." + inner.getChoiceA());
+                    Text chA = new Text("A"  + prefix +  inner.getChoiceA());
                     chA.prefWidth(ScreenAdapter.calculateExX(Integer.parseInt(split[7])));
                     chA.setWrappingWidth(ScreenAdapter.calculateExX(Integer.parseInt(split[7])));
                     chA.setFill(Color.valueOf(split[0]));
@@ -299,7 +306,7 @@ public class QuestionPreview implements ReloadPane<Questions>{
                 }
 
                 if (!StringUtils.isEmpty(inner.getChoiceB())) {
-                    Text chB = new Text("B." + inner.getChoiceB());
+                    Text chB = new Text("B"  + prefix +  inner.getChoiceB());
                     chB.prefWidth(ScreenAdapter.calculateExX(Integer.parseInt(split[7])));
                     chB.setWrappingWidth(ScreenAdapter.calculateExX(Integer.parseInt(split[7])));
                     chB.setFill(Color.valueOf(split[0]));
@@ -307,7 +314,7 @@ public class QuestionPreview implements ReloadPane<Questions>{
                 }
 
                 if (!StringUtils.isEmpty(inner.getChoiceC())) {
-                    Text chC = new Text("C." + inner.getChoiceC());
+                    Text chC = new Text("C"  + prefix +  inner.getChoiceC());
                     chC.prefWidth(ScreenAdapter.calculateExX(Integer.parseInt(split[7])));
                     chC.setWrappingWidth(ScreenAdapter.calculateExX(Integer.parseInt(split[7])));
                     chC.setFill(Color.valueOf(split[0]));
@@ -315,7 +322,7 @@ public class QuestionPreview implements ReloadPane<Questions>{
                 }
 
                 if (!StringUtils.isEmpty(inner.getChoiceD())) {
-                    Text chD = new Text("D." + inner.getChoiceD());
+                    Text chD = new Text("D"  + prefix +  inner.getChoiceD());
                     chD.prefWidth(ScreenAdapter.calculateExX(Integer.parseInt(split[7])));
                     chD.setWrappingWidth(ScreenAdapter.calculateExX(Integer.parseInt(split[7])));
                     chD.setFill(Color.valueOf(split[0]));
@@ -323,7 +330,7 @@ public class QuestionPreview implements ReloadPane<Questions>{
                 }
 
                 if (!StringUtils.isEmpty(inner.getChoiceE())) {
-                    Text chE = new Text("E." + inner.getChoiceE());
+                    Text chE = new Text("E"  + prefix +  inner.getChoiceE());
                     chE.prefWidth(ScreenAdapter.calculateExX(Integer.parseInt(split[7])));
                     chE.setWrappingWidth(ScreenAdapter.calculateExX(Integer.parseInt(split[7])));
                     chE.setFill(Color.valueOf(split[0]));
@@ -331,7 +338,7 @@ public class QuestionPreview implements ReloadPane<Questions>{
                 }
 
                 if (!StringUtils.isEmpty(inner.getChoiceF())) {
-                    Text chF = new Text("F." + inner.getChoiceF());
+                    Text chF = new Text("F"  + prefix +  inner.getChoiceF());
                     chF.prefWidth(ScreenAdapter.calculateExX(Integer.parseInt(split[7])));
                     chF.setWrappingWidth(ScreenAdapter.calculateExX(Integer.parseInt(split[7])));
                     chF.setFill(Color.valueOf(split[0]));

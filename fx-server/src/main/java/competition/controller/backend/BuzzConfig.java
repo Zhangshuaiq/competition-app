@@ -84,6 +84,9 @@ public class BuzzConfig {
     @FXML
     private GroupedComboBox<String> xuhaoFont, jianchengFont, quanchengFont, successFont, errorFont;
 
+    @FXML
+    private CheckBox useFileBk;
+
     @Resource
     private BuzzMapper buzzMapper;
 
@@ -108,6 +111,7 @@ public class BuzzConfig {
         fullColor.setValue(Color.BLACK);
         successColor.setValue(Color.BLACK);
         failColor.setValue(Color.BLACK);
+        useFileBk.setSelected(false);
 
         FontMap.fontNames().forEach((key, value) -> {
             fontSelector.addGroup(key, value);
@@ -161,6 +165,7 @@ public class BuzzConfig {
             lightCheck.setSelected(buzz.getLight() != null && buzz.getLight() == 1);
             timeLimitText.setText(String.valueOf(buzz.getTimeLimit()));
             paneBackgroundText.setText(buzz.getBackground());
+            useFileBk.setSelected(buzz.getSelectFileBk() != null && buzz.getSelectFileBk() == 1);
         }
 
         // 抢答结果面板信息
@@ -212,7 +217,7 @@ public class BuzzConfig {
         chooser.setInitialDirectory(new File(BaseDir.SUCAI_DIR));
         File file = chooser.showOpenDialog(null);
         if (file != null) {
-            String name = file.getName();
+            String name = file.getAbsolutePath();
             paneBackgroundText.setText(name);
         }
     }
@@ -253,23 +258,6 @@ public class BuzzConfig {
             Information.error("请填写界面的输入框");
             return;
         }
-        //          buzzCombox.setValue(buzz.getMode());
-        //            buzzSpeedText.setText(String.valueOf(buzz.getSpeed()));
-        //            speedAdjust.setValue(Double.valueOf(buzz.getSpeed()));
-        //
-        //            fontUnderline.setSelected(buzz.getUnderline() != null && buzz.getUnderline() == 1);
-        //            fontItic.setSelected(buzz.getItic() != null && buzz.getItic() == 1);
-        //            fontColor.setValue(Color.valueOf(buzz.getColor()));
-        //            fontSizeInput.setText(String.valueOf(buzz.getFontSize()));
-        //            fontBold.setSelected(buzz.getBold() != null && buzz.getBold() == 1);
-        //            fontSelector.setValue(String.valueOf(buzz.getFont()));
-        //
-        //            errorMusicCheck.setSelected(buzz.getErrorMusic() != null && buzz.getErrorMusic() == 1);
-        //            successMusicCheck.setSelected(buzz.getSuccessMusic() != null && buzz.getSuccessMusic() == 1);
-        //            playErrorCheck.setSelected(buzz.getPlayError() != null && buzz.getPlayError() == 1);
-        //            lastSuccessCheck.setSelected(buzz.getLastSuccess() != null && buzz.getLastSuccess() == 1);
-        //            timeLimitText.setText(String.valueOf(buzz.getTimeLimit()));
-        //            paneBackgroundText.setText(buzz.getBackground());
         Buzz buzz = buzzMapper.selectById(1);
         boolean exist = true;
         if (buzz == null) {
@@ -319,6 +307,7 @@ public class BuzzConfig {
         buzz.setBackground(text);
         buzz.setX(xLoc.getText());
         buzz.setY(yLoc.getText());
+        buzz.setSelectFileBk( useFileBk.isSelected() ? 1 : 0);
 
         if (exist) {
             buzzMapper.updateById(buzz);
@@ -353,7 +342,7 @@ public class BuzzConfig {
         jsonObject.put("quanchengFont", quanchengFont.getSelectedValue());
         jsonObject.put("successFont", successFont.getSelectedValue());
         jsonObject.put("errorFont", errorFont.getSelectedValue());
-
+        jsonObject.put("selectFileBk", useFileBk.isSelected());
         jsonObject.put("xuhaoSize", xuhaoSize.getText());
         jsonObject.put("jianchengSize", jianchengSize.getText());
         jsonObject.put("quanchengSize", quanchengSize.getText());

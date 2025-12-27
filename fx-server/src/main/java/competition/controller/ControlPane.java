@@ -470,6 +470,10 @@ public class ControlPane {
     @FXML
     public void initialize() {
 
+        Configs barConfig = configsMapper.selectById(14);
+        String barConfigVal = barConfig.getConfig();
+        RuntimeUtil.showBarStatus = Objects.equals("1", barConfigVal);
+
         ScoreStyle scoreStyle = scoreStyleMapper.selectById(1);
         String styles = "";
         if (scoreStyle != null && !StringUtils.isEmpty(scoreStyle.getStyles())) {
@@ -1249,8 +1253,19 @@ public class ControlPane {
                 }
 
                 for (Questions question : questions) {
-                    question.setScore(currentStage.getScorePerQ());
-                    question.setDesValue(currentStage.getDesValue());
+
+                    if (StringUtils.isEmpty(question.getAddScore()) || !NumberUtil.isInt(question.getAddScore())) {
+                        question.setScore(currentStage.getScorePerQ());
+                    } else {
+                        question.setScore(Integer.parseInt(question.getAddScore()));
+                    }
+
+                    if (StringUtils.isEmpty(question.getDescScore()) || !NumberUtil.isInt(question.getDescScore())) {
+                        question.setDesValue(currentStage.getDesValue());
+                    } else {
+                        question.setDesValue(Integer.parseInt(question.getDescScore()));
+                    }
+
                     question.setTxbz(txbz);
                     question.setShowNumber(currentStage.getShowNumber());
                 }
@@ -2033,6 +2048,26 @@ public class ControlPane {
         }
     }
 
+
+    public void setScore(Questions questions){
+        if (StringUtils.hasText(questions.getAddScore()) && NumberUtil.isInt(questions.getAddScore())) {
+            scoreInput.setText(questions.getAddScore() + "");
+        } else  {
+            scoreInput.setText(currentStage.getScorePerQ() + "");
+        }
+
+        if (StringUtils.hasText(questions.getDescScore()) && NumberUtil.isInt(questions.getDescScore())) {
+            scoreDescInput.setText(questions.getDescScore() +"");
+        } else {
+            int desValue = 0;
+            if (currentStage.getDesValue() != null) {
+                desValue = currentStage.getDesValue();
+            }
+            scoreDescInput.setText(desValue + "");
+        }
+        
+    }
+
     // 显示题目
     @SuppressWarnings("unchecked")
     @FXML
@@ -2069,7 +2104,12 @@ public class ControlPane {
                 questions.setOrder(questions.getQuestionNumber());
             }
 
-            questions.setScore(currentStage.getScorePerQ());
+
+            if (StringUtils.isEmpty(questions.getAddScore()) || !NumberUtil.isInt(questions.getAddScore())) {
+                questions.setScore(currentStage.getScorePerQ());
+            } else {
+                questions.setScore(Integer.parseInt(questions.getAddScore()));
+            }
 
             controlResourceBtn(tihao);
             if (m6 == 0) {
@@ -2116,7 +2156,12 @@ public class ControlPane {
                 }
 
                 controlResourceBtn(questions);
-                questions.setScore(currentStage.getScorePerQ());
+                if (StringUtils.isEmpty(questions.getAddScore()) || !NumberUtil.isInt(questions.getAddScore())) {
+                    questions.setScore(currentStage.getScorePerQ());
+                } else {
+                    questions.setScore(Integer.parseInt(questions.getAddScore()));
+                }
+
                 questions.setHasAnswer(true);
                 questionsMapper.updateById(questions);
                 GlobalCache.showAnswer = false;
@@ -2146,7 +2191,13 @@ public class ControlPane {
                 }
 
                 questions.setHasAnswer(true);
-                questions.setScore(currentStage.getScorePerQ());
+
+                if (StringUtils.isEmpty(questions.getAddScore()) || !NumberUtil.isInt(questions.getAddScore())) {
+                    questions.setScore(currentStage.getScorePerQ());
+                } else {
+                    questions.setScore(Integer.parseInt(questions.getAddScore()));
+                }
+
                 questions.setShowNumber(currentStage.getShowNumber());
                 questionsMapper.updateById(questions);
                 log.info("设置题目为已答题, {}", questions.getQuestionNumber());
@@ -2738,7 +2789,7 @@ public class ControlPane {
                         }
                         // 抢答失败扣分
                         if (currentStage != null && currentStage.getQdDesc() != null && currentStage.getQdDesc() == 1) {
-                            teams.setTeamScore(teams.getTeamScore() - currentStage.getDesValue());
+                            teams.setTeamScore(teams.getTeamScore() - currentStage.getQdDescValue());
                             teamsMapper.updateById(teams);
                         }
                         for (Teams t : TeamRuntime.getTeams()) {
@@ -2793,7 +2844,7 @@ public class ControlPane {
                 RuntimeUtil.buzzResult.put(team, false);
                 RuntimeUtil.buzzTimeMap.put(team, -Math.abs(slipTime - timeGap));
                 if (currentStage != null && currentStage.getQdDesc() != null && currentStage.getQdDesc() == 1) {
-                    teams.setTeamScore(teams.getTeamScore() - currentStage.getDesValue());
+                    teams.setTeamScore(teams.getTeamScore() - currentStage.getQdDescValue());
                     teamsMapper.updateById(teams);
                 }
                 updateBuzzTimely();
@@ -3001,12 +3052,10 @@ public class ControlPane {
 
     private void lightScreen(boolean light, Teams team) {
         if (light) {
-            ScreenDevice screenDevice = SerialPortConfig.getScreenDevice(team.getCode());
             SerialPortConnector instance = SerialPortConnector.getInstance();
             if (instance != null && instance.isConnected()) {
-                instance.send(Command.SHOW, SerialPortConfig.buildScreenData(screenDevice, team.getTeamScore(), true));
+                instance.send(Command.SHOW, SerialPortConfig.buildScreenData(team.getCode(), team.getTeamScore(), true));
             }
-
         }
     }
 

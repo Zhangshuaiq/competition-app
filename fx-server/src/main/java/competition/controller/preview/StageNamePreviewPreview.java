@@ -260,7 +260,13 @@ public class StageNamePreviewPreview extends PreviewPane<Integer> {
                     }
                     if (!CollectionUtils.isEmpty(parse)) {
                         for (int i = 0; i < parse.size(); i++) {
-                            parse.get(i).setDesValue(stages.getDesValue());
+                            Questions question = parse.get(i);
+                            if (StringUtils.isEmpty(question.getDescScore()) || !NumberUtil.isInt(question.getDescScore())) {
+                                question.setDesValue(stages.getDesValue());
+                            } else {
+                                question.setDesValue(Integer.parseInt(question.getDescScore()));
+                            }
+
                         }
                     }
 

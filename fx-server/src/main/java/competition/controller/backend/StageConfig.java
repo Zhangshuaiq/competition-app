@@ -67,7 +67,7 @@ public class StageConfig {
     private CheckBox countTotal;
 
     @FXML
-    private TextField desValue;
+    private TextField desValue, buzzDescInput;
 
     @FXML
     private TextField nameInput;
@@ -139,6 +139,7 @@ public class StageConfig {
     @FXML
     public void initialize() {
 
+        buzzDescInput.setText("0");
         recorded = new ArrayList<>();
         firstBox.getChildren().clear();
         secondBox.getChildren().clear();
@@ -719,6 +720,7 @@ public class StageConfig {
         if (current != null) {
             stageNoText.setText(current.getSortVal());
             nameInput.setText(current.getName());
+            buzzDescInput.setText(current.getQdDescValue().toString());
             scoreInput.setText(current.getScorePerQ() + "");
             timeDescInput.setText(current.getDescTime() + "");
             showNumberSelect.setSelected(current.getShowNumber() == 1);
@@ -837,6 +839,7 @@ public class StageConfig {
         current.setDesValue(Integer.parseInt(desValue.getText()));
         current.setCountTotal(countTotal.isSelected()? 1: 0);
         current.setAnswerSingle(answerShow.isSelected()?1: 0);
+        current.setQdDescValue(Integer.parseInt(buzzDescInput.getText()));
         stagesMapper.updateById(current);
         updateCurrentStage();
         refreshStageDisplay();
@@ -911,6 +914,7 @@ public class StageConfig {
         stages.setDesValue(Integer.parseInt(desValue.getText()));
         stages.setCountTotal(countTotal.isSelected()? 1: 0);
         stages.setAnswerSingle(answerShow.isSelected()?1: 0);
+        stages.setQdDescValue(Integer.parseInt(buzzDescInput.getText()));
         stages.setOrderVal(timeOrder.isSelected()? 1: 0);
         if (addLevel == 1) {
             int size = stagesMapper.selectList(new LambdaQueryWrapper<Stages>()

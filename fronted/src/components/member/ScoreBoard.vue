@@ -1,5 +1,5 @@
 <template>
-  <div class="scoreboard">
+  <div class="scoreboard" v-if="barStatus">
     <el-row>
       <el-col v-for="(item, index) in teamList" :key="item.id" :value="index" span="2">
         <div style="margin-bottom: 5px">
@@ -72,6 +72,7 @@ export default {
   name: "ScoreBoard",
   data() {
     return {
+      barStatus: true,
       buzzStatus: false,
       teamList: [],
       showStatus: false,
@@ -95,6 +96,10 @@ export default {
       sessionStorage.setItem('buzzStatus', newStatus);
       this.buzzStatus = newStatus;
     },
+    '$store.state.barStatus': function (newStatus) {
+      sessionStorage.setItem('barStatus', newStatus);
+      this.barStatus = newStatus;
+    },
     questionItem(newVal, oldVal) {
       console.log(oldVal)
       console.log('Session questionItem changed:', newVal);
@@ -103,7 +108,8 @@ export default {
   mounted() {
     const data = this.$store.state.teams;
     this.teamList = data;
-    this.buzzStatus = sessionStorage.getItem('buzzStatus') === 'true';
+     this.buzzStatus = this.$store.state.buzzStatus;
+    this.barStatus = this.$store.state.barStatus;
     const route = this.$store.state.currentRoute;
     if (route.includes('model61')) {
       this.showStatus = true;

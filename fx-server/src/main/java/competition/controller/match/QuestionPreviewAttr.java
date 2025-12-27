@@ -13,8 +13,6 @@ import competition.mapper.QuestionsMapper;
 import competition.util.*;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
-import javafx.scene.control.TextArea;
-import javafx.scene.control.TextField;
 import javafx.scene.control.*;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
@@ -67,6 +65,9 @@ public class QuestionPreviewAttr {
 
     @FXML
     private TextField answerFontSize;
+
+    @FXML
+    private TextField selectionA, selectionB, selectionC, selectionD, selectionE, selectionF;
 
     @FXML
     private TextField nameXInput;
@@ -319,22 +320,22 @@ public class QuestionPreviewAttr {
             nameHeightInput.setText(cfgArr[8]);
             nameText.setText(questions.getQuestion());
             if (!StringUtils.isEmpty(questions.getChoiceA())) {
-                nameText.appendText(System.lineSeparator() + questions.getChoiceA());
+                selectionA.setText(questions.getChoiceA());
             }
             if (!StringUtils.isEmpty(questions.getChoiceB())) {
-                nameText.appendText(System.lineSeparator() + questions.getChoiceB());
+                selectionB.setText(questions.getChoiceB());
             }
             if (!StringUtils.isEmpty(questions.getChoiceC())) {
-                nameText.appendText(System.lineSeparator() + questions.getChoiceC());
+                selectionC.setText(questions.getChoiceC());
             }
             if (!StringUtils.isEmpty(questions.getChoiceD())) {
-                nameText.appendText(System.lineSeparator() + questions.getChoiceD());
+                selectionD.setText(questions.getChoiceD());
             }
             if (!StringUtils.isEmpty(questions.getChoiceE())) {
-                nameText.appendText(System.lineSeparator() + questions.getChoiceE());
+                selectionE.setText(questions.getChoiceE());
             }
             if (!StringUtils.isEmpty(questions.getChoiceF())) {
-                nameText.appendText(System.lineSeparator() + questions.getChoiceF());
+                selectionF.setText(questions.getChoiceF());
             }
             nameTextAlignSelector.setValue("左对齐");
             // 根据配置详情设置样式
@@ -569,38 +570,16 @@ public class QuestionPreviewAttr {
         // 写入（更新）题干内容到 excel 里
         String group = questions.getGroup();
         List<Questions> parse =  ExcelParser.parse(BaseDir.TIKU_DIR + group, Questions.class);
-        String[] split = nameText.getText().split("\n");
-        questions.setQuestion(split[0]);
-        if (split.length >= 2) {
-            questions.setChoiceA(split[1]);
-        } else {
-            questions.setChoiceA("");
-        }
-        if (split.length >= 3) {
-            questions.setChoiceB(split[2]);
-        } else {
-            questions.setChoiceB("");
-        }
-        if (split.length >= 4) {
-            questions.setChoiceC(split[3]);
-        } else {
-            questions.setChoiceC("");
-        }
-        if (split.length >= 5) {
-            questions.setChoiceD(split[4]);
-        } else {
-            questions.setChoiceD("");
-        }
-        if (split.length >= 6) {
-            questions.setChoiceE(split[5]);
-        } else {
-            questions.setChoiceE("");
-        }
-        if (split.length >= 7) {
-            questions.setChoiceF(split[6]);
-        } else {
-            questions.setChoiceF("");
-        }
+        String questionText = nameText.getText();
+
+        questions.setQuestion(questionText);
+        questions.setChoiceA(selectionA.getText());
+        questions.setChoiceB(selectionB.getText());
+        questions.setChoiceC(selectionC.getText());
+        questions.setChoiceD(selectionD.getText());
+        questions.setChoiceE(selectionE.getText());
+        questions.setChoiceF(selectionF.getText());
+        
         parse.set(questions.getSort(), questions);
         // 更新到数据库
         questionsMapper.updateById(questions);
@@ -734,8 +713,6 @@ public class QuestionPreviewAttr {
             // 默认的字体
             answerFontSelector.setSelectedValue(FontMap.defaultFontName());
             answerFontSize.setText(12 + "");
-            // x y w h
-            // 
             PreviewPane previewPane = controlPane.getPreviewPane();
             VBox tiganBox = null;
             if (previewPane instanceof  QuestionPreviewPreview) {

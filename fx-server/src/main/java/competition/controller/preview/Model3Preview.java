@@ -160,7 +160,13 @@ public class Model3Preview extends PreviewPane<Integer>{
             );
             for (int i = 0; i < stageQuestions.size(); i++) {
                 // 每个题目分值
-                stageQuestions.get(i).setScore(child.getScorePerQ());
+                Questions questions = stageQuestions.get(i);
+
+                if (StringUtils.isEmpty(questions.getAddScore()) || !NumberUtil.isInt(questions.getAddScore())) {
+                    questions.setScore(child.getScorePerQ());
+                } else {
+                    questions.setScore(Integer.parseInt(questions.getAddScore()));
+                }
             }
             qs.add(stageQuestions);
         }

@@ -5,17 +5,17 @@ import com.alibaba.excel.write.style.column.LongestMatchColumnWidthStyleStrategy
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import competition.JavaFxApplication;
 import competition.controller.ControlPane;
+import competition.controller.preview.Model7Preview;
 import competition.entity.Questions;
 import competition.entity.Teams;
 import competition.mapper.QuestionsMapper;
 import competition.mapper.TeamsMapper;
 import competition.modal.Model7RankData;
 import competition.service.ScoreService;
-import competition.util.BaseDir;
 import competition.util.Information;
+import competition.util.NumberUtil;
 import competition.util.TeamRuntime;
 import javafx.application.Platform;
-import javafx.stage.FileChooser;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.util.CollectionUtils;
@@ -25,6 +25,9 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
 // 竞技模式实时更新数据,后端使用
@@ -98,6 +101,15 @@ public class Model7RuntimeData {
         ControlPane controlPane = JavaFxApplication.getApplicationContext().getBean(ControlPane.class);
         List<String> timeData = Model7RuntimeData.getFts();
         List<Model7RankData> rankList = new ArrayList<>();
+
+        Model7Preview model7Preview = JavaFxApplication.getApplicationContext().getBean(Model7Preview.class);
+
+        List<Object> values = (List<Object>) model7Preview.getQuestionCache().get("questions");
+
+        List<Questions> model7QuestionList = values.stream().map(obj -> (Questions) obj).collect(Collectors.toList());
+
+        Map<Integer, String> desMap = model7QuestionList.stream().collect(Collectors.toMap(Questions::getQuestionNumber, q -> q.getDescScore() != null ? q.getDescScore() : ""));
+
         for (int i = 0; i < runtimeData.size(); i++) {
             List<Model7RuntimeData.ModelData> questionList = runtimeData.get(i);
             int score = 0;
@@ -105,10 +117,25 @@ public class Model7RuntimeData {
                 if (data.getUserSelect() != null && data.getUserSelect().equals(data.getAnswer())) {
                     score += data.getScore();
                 } else {
-                    score -= controlPane.getCurrentStage().getDesValue();
+                    score -= data.getDesValue();
                 }
             }
-            score = score - ((Model7RuntimeData.totalNumber - questionList.size()) * controlPane.getCurrentStage().getDesValue());
+            // 扣除未答题分数[需要知道到底是哪些题没有回答]
+            Integer unAnsweredValue = 0;
+            List<Integer> answeredQuestion = questionList.stream().map(ModelData::getQuestionNumber).collect(Collectors.toList());
+
+            for (Entry<Integer,String> entrySet : desMap.entrySet()) {
+                int num = entrySet.getKey();
+                String val = entrySet.getValue();
+                if (!answeredQuestion.contains(num) && NumberUtil.isInt(val)) {
+                    unAnsweredValue += Integer.parseInt(val);
+                } else if (!answeredQuestion.contains(num)) {
+                    unAnsweredValue += controlPane.getCurrentStage().getDesValue();
+                }
+            }
+            
+            
+            score = score - unAnsweredValue;
             String team = Model7RuntimeData.getTeams().get(i).getFullName();
 
             String time = timeData.get(i);
@@ -179,6 +206,9 @@ public class Model7RuntimeData {
                                     // 需要更新环节获取分数
                                     scoreService.addScore(null, team, controlPane.getCurrentStage().getName(), data.getQuestionNumber().toString(), null,
                                         data.getScore(), team.getTeamScore().toString(), data.getUserSelect());
+                                } else {
+                                    scoreService.addScore(null, team, controlPane.getCurrentStage().getName(), data.getQuestionNumber().toString(), null,
+                                            0, team.getTeamScore().toString(), data.getUserSelect());
                                 }
                                 break;
                             }
@@ -201,6 +231,9 @@ public class Model7RuntimeData {
                             team.setTeamScore(team.getTeamScore() + data.getScore());
                             scoreService.addScore(null, team, controlPane.getCurrentStage().getName(), data.getQuestionNumber().toString(), null, data.getScore(),
                                 team.getTeamScore().toString(), data.getUserSelect());
+                        } else {
+                            scoreService.addScore(null, team, controlPane.getCurrentStage().getName(), data.getQuestionNumber().toString(), null, 0,
+                                    team.getTeamScore().toString(), data.getUserSelect()); 
                         }
                         break;
                     }
@@ -211,10 +244,13 @@ public class Model7RuntimeData {
                 for (Teams team : teams) {
                     if (team.getFullName().equals(data.getTeamName())) {
                         if (controlPane.getCurrentStage().getCountTotal() == 1) {
-                            Integer desValue = controlPane.getCurrentStage().getDesValue();
+                            Integer desValue = data.getDesValue();
                             team.setTeamScore(team.getTeamScore() - desValue);
                             scoreService.addScore(null, team, controlPane.getCurrentStage().getName(), data.getQuestionNumber().toString(),
                                 null, -desValue, team.getTeamScore().toString(), data.getUserSelect());
+                        } else {
+                            scoreService.addScore(null, team, controlPane.getCurrentStage().getName(), data.getQuestionNumber().toString(),
+                                    null, 0, team.getTeamScore().toString(), data.getUserSelect());
                         }
                         break;
                     }
@@ -271,12 +307,19 @@ public class Model7RuntimeData {
         }
     }
 
+
     // 强制停止答题
     public static void forceFinish() {
         ControlPane controlPane = JavaFxApplication.getApplicationContext().getBean(ControlPane.class);
         ScoreService scoreService = JavaFxApplication.getApplicationContext().getBean(ScoreService.class);
-        QuestionsMapper questionsMapper = JavaFxApplication.getApplicationContext().getBean(QuestionsMapper.class);
         TeamsMapper teamsMapper = JavaFxApplication.getApplicationContext().getBean(TeamsMapper.class);
+        
+        Model7Preview model7Preview = JavaFxApplication.getApplicationContext().getBean(Model7Preview.class);
+
+        List<Object> values = (List<Object>) model7Preview.getQuestionCache().get("questions");
+
+        List<Questions> questionList = values.stream().map(obj -> (Questions) obj).collect(Collectors.toList());
+        Map<Integer, String> desMap = questionList.stream().collect(Collectors.toMap(Questions::getQuestionNumber, q -> q.getDescScore() != null ? q.getDescScore() : ""));
 
         boolean dataChanged = false;
         for (int i = 0; i < teams.size(); i++) {
@@ -284,9 +327,20 @@ public class Model7RuntimeData {
                 // 异步操作减少代码执行时间
                 Teams teams = Model7RuntimeData.teams.get(i);
                 List<ModelData> modelData = runtimeData.get(i);
-                int size = modelData.size();
                 if (controlPane.getCurrentStage().getCountTotal() == 1) {
-                    teams.setTeamScore(teams.getTeamScore() - (totalNumber - size) * controlPane.getCurrentStage().getDesValue());
+                    Integer unAnsweredValue = 0;
+                    List<Integer> answeredQuestion = modelData.stream().map(ModelData::getQuestionNumber).collect(Collectors.toList());
+
+                    for (Entry<Integer,String> entrySet : desMap.entrySet()) {
+                        int num = entrySet.getKey();
+                        String val = entrySet.getValue();
+                        if (!answeredQuestion.contains(num) && NumberUtil.isInt(val)) {
+                            unAnsweredValue += Integer.parseInt(val);
+                        } else if (!answeredQuestion.contains(num)) {
+                            unAnsweredValue += controlPane.getCurrentStage().getDesValue();
+                        }
+                    }
+                    teams.setTeamScore(teams.getTeamScore() - unAnsweredValue);
                 }
                 fts.set(i, times.get(i));
                 finished.set(i, true);
@@ -308,15 +362,16 @@ public class Model7RuntimeData {
             log.error("通知停止UI更新失败: {}", e.getMessage());
         }
 
-        List<Questions> questionList = questionsMapper.selectList(new LambdaQueryWrapper<Questions>()
-            .eq(Questions::getStageNumber, controlPane.getCurrentStage().getSortVal())
-        );
+        // 优化，从缓存读数据，防止数据库加载慢
+
+        
         // 防止空指针出现
         if (CollectionUtils.isEmpty(questionList)) {
             return;
         }
         new Thread(() -> {
             try {
+                int desValue = controlPane.getCurrentStage().getDesValue();
                 for (int i = 0; i < teams.size(); i++) {
                     // 异步操作减少代码执行时间
                     Teams teams = Model7RuntimeData.teams.get(i);
@@ -326,17 +381,24 @@ public class Model7RuntimeData {
                     // 均没回答
                     if (size == 0) {
                         for (Questions questions : questionList) {
+                            if (NumberUtil.isInt(questions.getDescScore())) {
+                                desValue = Integer.parseInt(questions.getDescScore());
+                            }
                             scoreService.addScore(null, teams, controlPane.getCurrentStage().getName(), questions.getQuestionNumber().toString(),
-                                null, -controlPane.getCurrentStage().getDesValue(), teams.getTeamScore().toString(), "");
+                                null, -desValue, teams.getTeamScore().toString(), "");
                         }
                     } else {
                         // 回答一部分
                         List<Integer> total = questionList.stream().map(Questions::getQuestionNumber).collect(Collectors.toList());
                         List<Integer> answered = modelData.stream().map(ModelData::getQuestionNumber).collect(Collectors.toList());
+                        Map<Integer,String> collect = questionList.stream().collect(Collectors.toMap(Questions::getQuestionNumber, Questions::getDescScore));
                         total.removeAll(answered);
                         for (Integer integer : total) {
+                            if (NumberUtil.isInt(collect.get(integer))) {
+                                desValue = Integer.parseInt(collect.get(integer));
+                            }
                             scoreService.addScore(null, teams, controlPane.getCurrentStage().getName(), integer.toString(), null,
-                                -controlPane.getCurrentStage().getDesValue(), teams.getTeamScore().toString(), "");
+                                -desValue, teams.getTeamScore().toString(), "");
                         }
                     }
                 }

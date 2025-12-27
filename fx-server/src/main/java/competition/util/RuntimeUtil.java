@@ -31,6 +31,9 @@ public class RuntimeUtil {
     // 链接状态
     public static boolean showConnectionStatus = false;
 
+    // 计分屏展示
+    public static boolean showBarStatus = false;
+
     // 计时状态
     public static volatile boolean isTiming = false;
 }

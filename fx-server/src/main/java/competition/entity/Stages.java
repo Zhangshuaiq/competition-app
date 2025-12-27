@@ -70,6 +70,16 @@ public class Stages {
 
     private Integer qdDesc;
 
+    // 抢答犯规的自动扣分数值
+    private Integer qdDescValue;
+
+    public void setQdDescValue(Integer qdDescValue) {
+        this.qdDescValue = qdDescValue;
+    }
+
+    public Integer getQdDescValue() {
+        return qdDescValue;
+    }
 
     public void setQdDesc(Integer qdDesc) {
         this.qdDesc = qdDesc;

@@ -2,6 +2,9 @@ package competition.util;
 
 import java.text.DecimalFormat;
 
+import org.apache.poi.util.StringUtil;
+import org.springframework.util.StringUtils;
+
 public class NumberUtil {
 
     public static String fix2PointWithDefault(long number) {
@@ -19,6 +22,18 @@ public class NumberUtil {
     public static boolean isNumber(String number) {
         try {
             Double.parseDouble(number);
+            return true;
+        } catch (NumberFormatException e) {
+            return false;
+        }
+    }
+
+    public static boolean isInt(String number) {
+        if (!StringUtils.hasText(number)) {
+            return false;
+        }
+        try {
+            Integer.parseInt(number);
             return true;
         } catch (NumberFormatException e) {
             return false;

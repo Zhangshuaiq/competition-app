@@ -85,6 +85,11 @@ public class ExtendedScreen {
         return bounds.getHeight();
     }
 
+    public static boolean hasConnectedExtend(){
+        ObservableList<Screen> screens = Screen.getScreens();
+        return screens.size() > 1;
+    }
+
     public static boolean extendShow() {
         ObservableList<Screen> screens = Screen.getScreens();
         if (screens.size() > 1) {

@@ -148,8 +148,15 @@ public class StageQuestionPreviewPreview extends PreviewPane<Stages> {
             }
         }
 
-        for (Questions q : questionList) {
-            q.setScore(inner.getScorePerQ());
+
+
+        for (Questions question : questionList) {
+
+            if (StringUtils.isEmpty(question.getAddScore()) || !NumberUtil.isInt(question.getAddScore())) {
+                question.setScore(inner.getScorePerQ());
+            } else {
+                question.setScore(Integer.parseInt(question.getAddScore()));
+            }
         }
 
         String questionStyle = "760%%240%%400%%80%%false%%0xffffffff%%%%默认.ttf%%40%%false%%false%%false%%false%%居中对齐%%10###415%%370%%100%%100%%false%%0xffffffff%%%%默认.ttf%%30%%false%%false%%false%%false%%居中对齐%%10%%10";

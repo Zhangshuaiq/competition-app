@@ -101,6 +101,8 @@ public class Model60RuntimeData {
                                     modelData.getSecond().toString(),  data.getScore(), team.getNewScore().toString(), data.getUserSelect());
                         } else {
                             team.setNewScore(team.getTeamScore());
+                            scoreService.addScore(null, team,  controlPane.getCurrentStage().getName(), modelData.getQuestionNumber().toString(),
+                                    modelData.getSecond().toString(),  0, team.getNewScore().toString(), data.getUserSelect());
                         }
                         
                         team.setQScore(data.getScore());
@@ -117,6 +119,8 @@ public class Model60RuntimeData {
                                     modelData.getSecond().toString(),  - controlPane.getCurrentStage().getDesValue(), team.getNewScore().toString(), data.getUserSelect());
                         } else {
                             team.setNewScore(team.getTeamScore());
+                            scoreService.addScore(null, team,  controlPane.getCurrentStage().getName(), modelData.getQuestionNumber().toString(),
+                                    modelData.getSecond().toString(), 0, team.getNewScore().toString(), data.getUserSelect());
                         }
                     }
                 }
@@ -146,6 +150,9 @@ public class Model60RuntimeData {
 
                         scoreService.addScore(null, team,  controlPane.getCurrentStage().getName(), modelData.getQuestionNumber().toString(),
                                 modelData.getSecond().toString(),  - controlPane.getCurrentStage().getDesValue(), team.getNewScore().toString(), modelData.getUserSelect());
+                    } else {
+                        scoreService.addScore(null, team,  controlPane.getCurrentStage().getName(), modelData.getQuestionNumber().toString(),
+                                modelData.getSecond().toString(),  0, team.getNewScore().toString(), modelData.getUserSelect());
                     }
                 }
             }

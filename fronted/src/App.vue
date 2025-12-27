@@ -77,6 +77,7 @@ export default {
 
       this.$store.commit('setTeamsData', message.teams)
       this.$store.commit('setBuzzStatus', message.buzzStatus)
+      this.$store.commit('setBarStatus', message.barStatus)
     });
   }
 

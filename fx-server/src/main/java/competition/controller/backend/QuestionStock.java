@@ -65,7 +65,7 @@ public class QuestionStock {
     @FXML
     private TableColumn<Questions, String> stageNumberCol, stageNameCol, questionTypeCol, resourceTypeCol, resourceCol,
             questionCol, choiceACol, choiceBCol, choiceCCol, choiceDCol,
-            choiceECol, choiceFCol, answerCol, remarkCol;
+            choiceECol, choiceFCol, answerCol, remarkCol, addCol, descCol;
 
     private boolean changeStock;
 
@@ -86,6 +86,8 @@ public class QuestionStock {
         choiceFCol.setCellValueFactory(new PropertyValueFactory<>("choiceF"));
         answerCol.setCellValueFactory(new PropertyValueFactory<>("answer"));
         remarkCol.setCellValueFactory(new PropertyValueFactory<>("remark"));
+        addCol.setCellValueFactory(new PropertyValueFactory<>("addScore"));
+        descCol.setCellValueFactory(new PropertyValueFactory<>("descScore"));
 
         List<String> fileNames = FileUtil.listFileNames(BaseDir.TIKU_DIR);
         for (String fileName : fileNames) {
@@ -191,20 +193,6 @@ public class QuestionStock {
 
 
     }
-    
-//    @FXML
-//    public void openStyleData(){
-//        String filePath = ExcelParser.S_PATH;
-//        File file = new File(filePath);
-//        if (Desktop.isDesktopSupported()) {
-//            try {
-//                Desktop.getDesktop().open(file);
-//            } catch (IOException e) {
-//                e.printStackTrace();
-//            }
-//        }
-//    }
-
 
     @FXML
     public void importData() {

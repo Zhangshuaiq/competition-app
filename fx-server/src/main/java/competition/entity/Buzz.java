@@ -45,4 +45,6 @@ public class Buzz {
     private String x;
 
     private String y;
+
+    private Integer selectFileBk;
 }

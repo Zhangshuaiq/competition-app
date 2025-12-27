@@ -11,7 +11,6 @@ import competition.mapper.ConfigsMapper;
 import competition.mapper.Model3Mapper;
 import competition.mapper.QuestionsMapper;
 import competition.modal.Model7RankData;
-import competition.rest.RestApi;
 import competition.util.*;
 import competition.ws.Model7RuntimeData;
 import competition.ws.WsMessageHandler;
@@ -40,7 +39,9 @@ import javax.annotation.Resource;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.util.*;
+import java.util.Map.Entry;
 import java.util.concurrent.CompletableFuture;
+import java.util.stream.Collectors;
 
 // 竞技模式显示控制 - 优化版本，避免重复创建UI组件
 @Component
@@ -94,8 +95,7 @@ public class Model7Preview extends RankPane<Stages> {
     private boolean cachedSortScore;
     private int cachedCol;
 
-    private final Map<String, Object>  questionCache = new HashMap<>();
-
+    private final Map<String, Object> questionCache = new HashMap<>();
 
     // 内部类：封装每个队伍的显示面板
     private static class TeamDisplayPanel {
@@ -423,8 +423,19 @@ public class Model7Preview extends RankPane<Stages> {
         // 获取题目数据并缓存
         List<Questions> questions = getQuestionsWithCache();
         for (Questions question : questions) {
-            question.setScore(currentStage.getScorePerQ());
-            question.setDesValue(currentStage.getDesValue());
+
+            if (StringUtils.isEmpty(question.getAddScore()) || !NumberUtil.isInt(question.getAddScore())) {
+                question.setScore(currentStage.getScorePerQ());
+            } else {
+                question.setScore(Integer.parseInt(question.getAddScore()));
+            }
+
+            if (StringUtils.isEmpty(question.getDescScore()) || !NumberUtil.isInt(question.getDescScore())) {
+                question.setDesValue(currentStage.getDesValue());
+            } else {
+                question.setDesValue(Integer.parseInt(question.getDescScore()));
+            }
+
             question.setTxbz(txbz);
             question.setShowNumber(inner.getShowNumber());
         }
@@ -735,6 +746,10 @@ public class Model7Preview extends RankPane<Stages> {
             finish = finish & b;
         }
 
+        List<Questions> questions = (List<Questions>) questionCache.get("questions");
+        Map<Integer, String> desMap = questions.stream().collect(
+                Collectors.toMap(Questions::getQuestionNumber, q -> q.getDescScore() != null ? q.getDescScore() : ""));
+
         for (int i = 0; i < runtimeData.size(); i++) {
             List<Model7RuntimeData.ModelData> questionList = runtimeData.get(i);
             int score = 0;
@@ -744,17 +759,28 @@ public class Model7Preview extends RankPane<Stages> {
                     if (data.getUserSelect() != null && data.getUserSelect().equals(data.getAnswer())) {
                         score += data.getScore();
                     } else {
-                        score -= controlPane.getCurrentStage().getDesValue();
+                        score -= data.getDesValue();
                     }
                 }
-                score = score - ((Model7RuntimeData.totalNumber - questionList.size())
-                        * controlPane.getCurrentStage().getDesValue());
+                List<Integer> answeredQuestion = questionList.stream()
+                        .map(Model7RuntimeData.ModelData::getQuestionNumber).collect(Collectors.toList());
+                Integer unAnsweredValue = 0;
+                for (Entry<Integer, String> entrySet : desMap.entrySet()) {
+                    int num = entrySet.getKey();
+                    String val = entrySet.getValue();
+                    if (!answeredQuestion.contains(num) && NumberUtil.isInt(val)) {
+                        unAnsweredValue += Integer.parseInt(val);
+                    } else if (!answeredQuestion.contains(num)) {
+                        unAnsweredValue += controlPane.getCurrentStage().getDesValue();
+                    }
+                }
+                score = score - unAnsweredValue;
             } else {
                 for (Model7RuntimeData.ModelData data : questionList) {
                     if (data.getUserSelect() != null && data.getUserSelect().equals(data.getAnswer())) {
                         score += data.getScore();
                     } else {
-                        score -= controlPane.getCurrentStage().getDesValue();
+                        score -= data.getDesValue();
                     }
                 }
             }
@@ -794,6 +820,7 @@ public class Model7Preview extends RankPane<Stages> {
 
         return rankList;
     }
+
     /**
      * 更新数据显示（只更新内容，不重新创建组件）
      */
@@ -851,15 +878,31 @@ public class Model7Preview extends RankPane<Stages> {
                         score += m.getScore();
                         correct++;
                     } else {
-                        score -= controlPane.getCurrentStage().getDesValue();
+                        score -= m.getDesValue();
                     }
                     finish++;
                 }
             }
 
             // 补充未答题的分数扣除
+            List<Questions> questions = (List<Questions>) questionCache.get("questions");
+            Map<Integer, String> desMap = questions.stream().collect(Collectors.toMap(Questions::getQuestionNumber,
+                    q -> q.getDescScore() != null ? q.getDescScore() : ""));
+
+            List<Integer> answeredQuestion = modelData.stream().map(Model7RuntimeData.ModelData::getQuestionNumber)
+                    .collect(Collectors.toList());
+            Integer unAnsweredValue = 0;
+            for (Entry<Integer, String> entrySet : desMap.entrySet()) {
+                int num = entrySet.getKey();
+                String val = entrySet.getValue();
+                if (!answeredQuestion.contains(num) && NumberUtil.isInt(val)) {
+                    unAnsweredValue += Integer.parseInt(val);
+                } else if (!answeredQuestion.contains(num)) {
+                    unAnsweredValue += controlPane.getCurrentStage().getDesValue();
+                }
+            }
             if (Model7RuntimeData.getFinished().get(i)) {
-                score -= controlPane.getCurrentStage().getDesValue() * (Model7RuntimeData.totalNumber - modelData.size());
+                 score = score - unAnsweredValue;
             }
 
             // 获取用时（秒）
@@ -891,12 +934,12 @@ public class Model7Preview extends RankPane<Stages> {
             });
         }
 
-
         // 清空当前显示
         container.getChildren().clear();
 
         // 按排序后的顺序更新面板数据和位置
-        for (int displayIndex = 0; displayIndex < sortedTeamData.size() && displayIndex < teamPanels.size(); displayIndex++) {
+        for (int displayIndex = 0; displayIndex < sortedTeamData.size()
+                && displayIndex < teamPanels.size(); displayIndex++) {
             TeamSortData teamData = sortedTeamData.get(displayIndex);
             TeamDisplayPanel panel = teamPanels.get(teamData.originalIndex); // 使用原始索引获取面板
 
@@ -935,7 +978,7 @@ public class Model7Preview extends RankPane<Stages> {
             String timeText = "完成" + teamData.finishCount + "题 答对" + teamData.correctCount + "题|" + timeValue;
             if (teamData.isFinished) {
                 timeText = "完成" + teamData.finishCount + "题 答对" + teamData.correctCount + "题|" +
-                    Model7RuntimeData.getFts().get(teamData.originalIndex);
+                        Model7RuntimeData.getFts().get(teamData.originalIndex);
             }
             panel.timeLabel.setText(timeText);
 
@@ -968,7 +1011,7 @@ public class Model7Preview extends RankPane<Stages> {
 
                 // 更新选择题选项
                 String[] choices = { last.getChoiceA(), last.getChoiceB(), last.getChoiceC(),
-                    last.getChoiceD(), last.getChoiceE(), last.getChoiceF() };
+                        last.getChoiceD(), last.getChoiceE(), last.getChoiceF() };
                 String[] choiceLabels = { "A", "B", "C", "D", "E", "F" };
 
                 for (int j = 0; j < panel.choiceLabels.size(); j++) {
@@ -986,17 +1029,17 @@ public class Model7Preview extends RankPane<Stages> {
                     panel.answerArea.setVisible(true);
                     panel.answerLabel.setText("回答:" + last.getUserSelect());
                     panel.answerLabel.setBackground(
-                        new Background(new BackgroundFill(Color.BLUE, new CornerRadii(10), Insets.EMPTY)));
+                            new Background(new BackgroundFill(Color.BLUE, new CornerRadii(10), Insets.EMPTY)));
                     panel.answerLabel.setVisible(true);
 
                     if (last.getAnswer().equals(last.getUserSelect())) {
                         panel.statusLabel.setText("正确");
                         panel.statusLabel.setBackground(
-                            new Background(new BackgroundFill(Color.GREEN, new CornerRadii(10), Insets.EMPTY)));
+                                new Background(new BackgroundFill(Color.GREEN, new CornerRadii(10), Insets.EMPTY)));
                     } else {
                         panel.statusLabel.setText("错误");
                         panel.statusLabel.setBackground(
-                            new Background(new BackgroundFill(Color.RED, new CornerRadii(10), Insets.EMPTY)));
+                                new Background(new BackgroundFill(Color.RED, new CornerRadii(10), Insets.EMPTY)));
                     }
                     panel.statusLabel.setVisible(true);
                 }
@@ -1006,14 +1049,14 @@ public class Model7Preview extends RankPane<Stages> {
 
     // 添加辅助类用于排序
     private static class TeamSortData {
-        int originalIndex;    // 原始索引
-        int score;           // 分数
-        int timeInSeconds;   // 用时（秒）
-        int finishCount;     // 完成题数
-        int correctCount;    // 正确题数
+        int originalIndex; // 原始索引
+        int score; // 分数
+        int timeInSeconds; // 用时（秒）
+        int finishCount; // 完成题数
+        int correctCount; // 正确题数
         List<Model7RuntimeData.ModelData> modelData; // 题目数据
-        Teams team;          // 队伍信息
-        boolean isFinished;  // 是否完成
+        Teams team; // 队伍信息
+        boolean isFinished; // 是否完成
     }
 
     @Override

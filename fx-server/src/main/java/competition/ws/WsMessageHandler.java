@@ -336,6 +336,7 @@ public class WsMessageHandler {
         dataMap.put("buzzStatus", RuntimeUtil.showBuzzBar);
         dataMap.put("teams", TeamRuntime.getTeams());
         dataMap.put("stage", stages);
+        dataMap.put("barStatus", RuntimeUtil.showBarStatus);
         messagingTemplate.convertAndSend(PAGE_TOPIC, JSON.toJSONString(dataMap));
     }
 
@@ -345,6 +346,7 @@ public class WsMessageHandler {
         dataMap.put("route", route);
         dataMap.put("data", data);
         dataMap.put("buzzStatus", RuntimeUtil.showBuzzBar);
+        dataMap.put("barStatus", RuntimeUtil.showBarStatus);
         dataMap.put("teams", TeamRuntime.getTeams());
         dataMap.put("stage", controlPane != null ? controlPane.getCurrentStage() : null);
         log.info(controlPane != null && controlPane.getCurrentStage() != null ? controlPane.getCurrentStage().getName()

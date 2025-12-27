@@ -13,6 +13,7 @@ export default new Vuex.Store({
         data: {},  // 存储更多的数据,
         teams: {},
         buzzStatus: false,
+        barStatus: true,
     },
     mutations: {
         setStage(state, stage) {
@@ -30,6 +31,9 @@ export default new Vuex.Store({
 
         setBuzzStatus(state, data) {
             state.buzzStatus = data
+        },
+        setBarStatus (state, data) {
+            state.barStatus = data
         }
     },
 });

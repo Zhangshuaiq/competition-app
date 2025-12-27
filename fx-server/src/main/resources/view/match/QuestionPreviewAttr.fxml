@@ -1,219 +1,225 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import java.lang.*?>
+<?import competition.controls.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.*?>
-<?import javafx.scene.control.Button?>
-<?import javafx.scene.control.CheckBox?>
-<?import javafx.scene.control.ColorPicker?>
-<?import javafx.scene.control.ComboBox?>
-<?import javafx.scene.control.Label?>
-<?import javafx.scene.control.Separator?>
-<?import javafx.scene.control.Tab?>
-<?import javafx.scene.control.TabPane?>
-<?import javafx.scene.control.TextArea?>
-<?import javafx.scene.control.TextField?>
-<?import javafx.scene.layout.AnchorPane?>
-<?import javafx.scene.text.Font?>
 
-<?import competition.controls.CustomTextField?>
-<?import competition.controls.GroupedComboBox?>
-<TabPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="746.0" prefWidth="474.0" tabClosingPolicy="UNAVAILABLE" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="competition.controller.match.QuestionPreviewAttr">
-    <tabs>
-        <Tab text="              环节名              ">
-            <content>
-                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
-                    <children>
-                        <AnchorPane layoutX="40.0" layoutY="42.0" prefHeight="83.0" prefWidth="392.0">
-                            <children>
-                                <Label layoutX="26.0" layoutY="12.0" text="宽">
-                                    <font>
-                                        <Font name="微软雅黑" size="15.0" />
-                                    </font></Label>
-                                <Label layoutX="26.0" layoutY="55.0" text="高" />
-                                <CustomTextField fx:id="stageWidthInput" layoutX="52.0" layoutY="8.0" prefHeight="20.0" prefWidth="96.0"  inputType="NUMERIC"/>
-                                <CustomTextField fx:id="stageHeightInput" layoutX="52.0" layoutY="49.0" prefHeight="20.0" prefWidth="96.0"  inputType="NUMERIC"/>
-                                <CustomTextField fx:id="stageXInput" layoutX="259.0" layoutY="8.0" prefHeight="20.0" prefWidth="96.0"  inputType="NUMERIC"/>
-                                <CustomTextField fx:id="stageYInput" layoutX="259.0" layoutY="49.0" prefHeight="20.0" prefWidth="96.0"  inputType="NUMERIC"/>
-                                <Label layoutX="226.0" layoutY="13.0" text="X">
-                                    <font>
-                                        <Font name="YouYuan" size="15.0" />
-                                    </font></Label>
-                                <Label layoutX="226.0" layoutY="54.0" text="Y" />
-                            </children>
-                        </AnchorPane>
-                        <AnchorPane layoutX="40.0" layoutY="159.0" prefHeight="119.0" prefWidth="392.0">
-                            <children>
-                                <Label layoutX="255.0" layoutY="14.0" text="背景颜色" />
-                                <ColorPicker fx:id="stageColorInput" layoutX="336.0" layoutY="9.0" prefHeight="30.0" prefWidth="32.0" />
-                                <Label layoutX="27.0" layoutY="52.0" text="背景图片" />
-                                <CustomTextField fx:id="stageBackgroundPath" disable="true" layoutX="108.0" layoutY="47.0" prefHeight="30.0" prefWidth="275.0" />
-                                <Button layoutX="106.0" layoutY="90.0" mnemonicParsing="false" onMouseClicked="#selectStageImg" text="选择图片" />
-                                <Button layoutX="196.0" layoutY="90.0" mnemonicParsing="false" onMouseClicked="#cancelStageImg" text="取消图片" />
-                                <CheckBox fx:id="stageBackgroundChoice" layoutX="86.0" layoutY="13.0" mnemonicParsing="false" text="填充背景" />
-                            </children>
-                        </AnchorPane>
-                        <Label layoutX="69.0" layoutY="322.0" text="名称" />
-                        <GroupedComboBox fx:id="stageFontSelector" layoutX="111.0" layoutY="317.0" prefWidth="150.0" />
-                        <Label layoutX="286.0" layoutY="322.0" text="大小" />
-                        <CustomTextField fx:id="stageFontSize" layoutX="327.0" layoutY="316.0" prefHeight="20.0" prefWidth="96.0"  inputType="NUMERIC"/>
-                        <CheckBox fx:id="stageDeleteChoice" layoutX="48.0" layoutY="368.0" mnemonicParsing="false" text="删除线" />
-                        <CheckBox fx:id="stageBoldChoice" layoutX="139.0" layoutY="368.0" mnemonicParsing="false" text="加粗" />
-                        <CheckBox fx:id="stageIticChoice" layoutX="232.0" layoutY="368.0" mnemonicParsing="false" text="斜体" />
-                        <CheckBox fx:id="stageUnderlineChoice" layoutX="316.0" layoutY="368.0" mnemonicParsing="false" text="下划线" />
-                        <Label layoutX="69.0" layoutY="435.0" text="水平" />
-                        <ComboBox fx:id="stageTextAlignSelector" layoutX="111.0" layoutY="430.0" prefWidth="150.0" />
-                        <Label layoutX="288.0" layoutY="435.0" text="行间距" />
-                        <CustomTextField fx:id="stageSpaceInput" layoutX="341.0" layoutY="430.0" prefHeight="20.0" prefWidth="96.0"  inputType="NUMERIC"/>
-                        <Label layoutX="16.0" layoutY="14.0" text="位置大小" textFill="#8a8686" />
-                        <Label layoutX="16.0" layoutY="139.0" text="背景设置" textFill="#8a8686" />
-                        <Label layoutX="16.0" layoutY="287.0" text="字体" textFill="#8a8686" />
-                        <Label layoutX="16.0" layoutY="407.0" text="文字布局" textFill="#8a8686" />
-                        <Separator layoutX="89.0" layoutY="26.0" prefHeight="3.0" prefWidth="304.0" />
-                        <Separator layoutX="91.0" layoutY="149.0" prefHeight="3.0" prefWidth="304.0" />
-                        <Separator layoutX="58.0" layoutY="298.0" prefHeight="3.0" prefWidth="337.0" />
-                        <Separator layoutX="95.0" layoutY="417.0" prefHeight="3.0" prefWidth="304.0" />
-                        <Button layoutX="50.0" layoutY="482.0" mnemonicParsing="false" onMouseClicked="#saveCurrentConfig" prefHeight="30.0" prefWidth="96.0" text="本题应用" />
-                        <Button layoutX="193.0" layoutY="482.0" mnemonicParsing="false" onMouseClicked="#saveCurrentSConfig" prefHeight="30.0" prefWidth="96.0" text="本环节应用" />
-                  <Button layoutX="341.0" layoutY="482.0" mnemonicParsing="false" onMouseClicked="#saveAllSConfig" prefHeight="30.0" prefWidth="96.0" text="全部应用" />
-                    </children>
-                </AnchorPane>
-            </content>
-        </Tab>
-        <Tab text="              题目              ">
-            <content>
-                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
-                    <children>
-                        <AnchorPane layoutX="40.0" layoutY="42.0" prefHeight="83.0" prefWidth="392.0">
-                            <children>
-                                <Label layoutX="26.0" layoutY="12.0" text="宽">
-                                    <font>
-                                        <Font name="微软雅黑" size="15.0" />
-                                    </font>
-                                </Label>
-                                <Label layoutX="26.0" layoutY="55.0" text="高" />
-                                <CustomTextField fx:id="nameWidthInput" layoutX="52.0" layoutY="8.0" prefHeight="20.0" prefWidth="96.0"  inputType="NUMERIC"/>
-                                <CustomTextField fx:id="nameHeightInput" layoutX="52.0" layoutY="49.0" prefHeight="20.0" prefWidth="96.0"  inputType="NUMERIC"/>
-                                <CustomTextField fx:id="nameXInput" layoutX="259.0" layoutY="8.0" prefHeight="20.0" prefWidth="96.0"  inputType="NUMERIC"/>
-                                <CustomTextField fx:id="nameYInput" layoutX="259.0" layoutY="49.0" prefHeight="20.0" prefWidth="96.0"  inputType="NUMERIC"/>
-                                <Label layoutX="226.0" layoutY="13.0" text="X">
-                                    <font>
-                                        <Font name="YouYuan" size="15.0" />
-                                    </font>
-                                </Label>
-                                <Label layoutX="226.0" layoutY="54.0" text="Y" />
-                            </children>
-                        </AnchorPane>
-                        <AnchorPane layoutX="40.0" layoutY="159.0" prefHeight="119.0" prefWidth="392.0">
-                            <children>
-                                <Label layoutX="255.0" layoutY="14.0" text="背景颜色" />
-                                <ColorPicker fx:id="nameColorInput" layoutX="336.0" layoutY="9.0" prefHeight="30.0" prefWidth="32.0" />
-                                <Label layoutX="27.0" layoutY="52.0" text="背景图片" />
-                                <CustomTextField fx:id="nameBackgroundPath" disable="true" layoutX="108.0" layoutY="47.0" prefHeight="30.0" prefWidth="275.0" />
-                                <Button layoutX="106.0" layoutY="90.0" mnemonicParsing="false" onMouseClicked="#selectNameImg" text="选择图片" />
-                                <Button layoutX="196.0" layoutY="90.0" mnemonicParsing="false" onMouseClicked="#cancelNameImg" text="取消图片" />
-                                <CheckBox fx:id="nameBackgroundChoice" layoutX="86.0" layoutY="13.0" mnemonicParsing="false" text="填充背景" />
-                            </children>
-                        </AnchorPane>
-                        <Label layoutX="69.0" layoutY="322.0" text="名称" />
-                        <GroupedComboBox fx:id="nameFontSelector" layoutX="111.0" layoutY="317.0" prefWidth="150.0" />
-                        <Label layoutX="286.0" layoutY="322.0" text="大小" />
-                        <CustomTextField fx:id="nameFontSize" layoutX="327.0" layoutY="316.0" prefHeight="20.0" prefWidth="96.0"  inputType="NUMERIC"/>
-                        <CheckBox fx:id="nameDeleteChoice" layoutX="43.0" layoutY="368.0" mnemonicParsing="false" text="删除线" />
-                        <CheckBox fx:id="nameBoldChoice" layoutX="128.0" layoutY="368.0" mnemonicParsing="false" text="加粗" />
-                        <CheckBox fx:id="nameIticChoice" layoutX="200.0" layoutY="368.0" mnemonicParsing="false" text="斜体" />
-                        <CheckBox fx:id="nameUnderlineChoice" layoutX="273.0" layoutY="368.0" mnemonicParsing="false" text="下划线" />
-                        <Label layoutX="20.0" layoutY="437.0" text="水平" />
-                        <ComboBox fx:id="nameTextAlignSelector" layoutX="58.0" layoutY="430.0" prefHeight="30.0" prefWidth="140.0" />
-                        <Label layoutX="247.0" layoutY="438.0" text="行间距" />
-                        <CustomTextField fx:id="nameSpaceInput" layoutX="310.0" layoutY="434.0" prefHeight="23.0" prefWidth="132.0"  inputType="NUMERIC"/>
-                        <Label layoutX="16.0" layoutY="14.0" text="位置大小" textFill="#8a8686" />
-                        <Label layoutX="16.0" layoutY="139.0" text="背景设置" textFill="#8a8686" />
-                        <Label layoutX="16.0" layoutY="287.0" text="字体" textFill="#8a8686" />
-                        <Label layoutX="16.0" layoutY="407.0" text="文字布局" textFill="#8a8686" />
-                        <Separator layoutX="89.0" layoutY="26.0" prefHeight="3.0" prefWidth="304.0" />
-                        <Separator layoutX="91.0" layoutY="149.0" prefHeight="3.0" prefWidth="304.0" />
-                        <Separator layoutX="58.0" layoutY="298.0" prefHeight="3.0" prefWidth="337.0" />
-                        <Separator layoutX="95.0" layoutY="417.0" prefHeight="3.0" prefWidth="304.0" />
-                        <Button layoutX="351.0" layoutY="667.0" mnemonicParsing="false" onMouseClicked="#saveNameConfig" prefHeight="30.0" prefWidth="96.0" text="本题应用" />
-                        <Label layoutX="16.0" layoutY="468.0" text="文本内容" textFill="#8a8686" />
-                        <Separator layoutX="94.0" layoutY="477.0" prefHeight="3.0" prefWidth="304.0" />
-                        <TextArea fx:id="nameText" layoutX="23.0" layoutY="493.0" prefHeight="167.0" prefWidth="441.0" />
-                  <Button layoutX="242.0" layoutY="667.0" mnemonicParsing="false" onMouseClicked="#saveStageNameConfig" prefHeight="30.0" prefWidth="96.0" text="本环节应用" />
-                  <Button layoutX="138.0" layoutY="667.0" mnemonicParsing="false" onMouseClicked="#saveAllNameConfig" prefHeight="30.0" prefWidth="96.0" text="全部应用" />
-                  <CustomTextField fx:id="wordSpaceInput" layoutX="379.0" layoutY="429.0" prefHeight="30.0" prefWidth="91.0" visible="false"  inputType="NUMERIC"/>
-                  <Button layoutX="42.0" layoutY="667.0" mnemonicParsing="false" onAction="#updateQuestionContent" text="更新文本" />
-                  <CheckBox fx:id="spaceLineChoice" layoutX="358.0" layoutY="368.0" mnemonicParsing="false" text="间隔一行" />
-                    </children>
-                </AnchorPane>
-            </content>
-        </Tab>
-        <Tab text="              答案              ">
-            <content>
-                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
-                    <children>
-                        <AnchorPane layoutX="40.0" layoutY="42.0" prefHeight="83.0" prefWidth="392.0">
-                            <children>
-                                <Label layoutX="26.0" layoutY="12.0" text="宽">
-                                    <font>
-                                        <Font name="微软雅黑" size="15.0" />
-                                    </font>
-                                </Label>
-                                <Label layoutX="26.0" layoutY="55.0" text="高" />
-                                <CustomTextField fx:id="answerWidthInput" layoutX="52.0" layoutY="8.0" prefHeight="20.0" prefWidth="96.0"  inputType="NUMERIC"/>
-                                <CustomTextField fx:id="answerHeightInput" layoutX="52.0" layoutY="49.0" prefHeight="20.0" prefWidth="96.0"  inputType="NUMERIC"/>
-                                <CustomTextField fx:id="answerXInput" layoutX="259.0" layoutY="8.0" prefHeight="20.0" prefWidth="96.0"  inputType="NUMERIC"/>
-                                <CustomTextField fx:id="answerYInput" layoutX="259.0" layoutY="49.0" prefHeight="20.0" prefWidth="96.0"  inputType="NUMERIC"/>
-                                <Label layoutX="226.0" layoutY="13.0" text="X">
-                                    <font>
-                                        <Font name="YouYuan" size="15.0" />
-                                    </font>
-                                </Label>
-                                <Label layoutX="226.0" layoutY="54.0" text="Y" />
-                            </children>
-                        </AnchorPane>
-                        <AnchorPane layoutX="40.0" layoutY="159.0" prefHeight="119.0" prefWidth="392.0">
-                            <children>
-                                <Label layoutX="255.0" layoutY="14.0" text="背景颜色" />
-                                <ColorPicker fx:id="answerColorInput" layoutX="336.0" layoutY="9.0" prefHeight="30.0" prefWidth="32.0" />
-                                <Label layoutX="27.0" layoutY="52.0" text="背景图片" />
-                                <CustomTextField fx:id="answerBackgroundPath" disable="true" layoutX="108.0" layoutY="47.0" prefHeight="30.0" prefWidth="275.0" />
-                                <Button layoutX="106.0" layoutY="90.0" mnemonicParsing="false" onMouseClicked="#selectCodeImg" text="选择图片" />
-                                <Button layoutX="196.0" layoutY="90.0" mnemonicParsing="false" onMouseClicked="#cancelCodeImg" text="取消图片" />
-                                <CheckBox fx:id="answerBackgroundChoice" layoutX="86.0" layoutY="13.0" mnemonicParsing="false" text="填充背景" />
-                            </children>
-                        </AnchorPane>
-                        <Label layoutX="69.0" layoutY="322.0" text="名称" />
-                        <GroupedComboBox fx:id="answerFontSelector" layoutX="111.0" layoutY="317.0" prefWidth="150.0" />
-                        <Label layoutX="286.0" layoutY="322.0" text="大小" />
-                        <CustomTextField fx:id="answerFontSize" layoutX="327.0" layoutY="316.0" prefHeight="20.0" prefWidth="96.0"  inputType="NUMERIC"/>
-                        <CheckBox fx:id="answerDeleteChoice" layoutX="48.0" layoutY="368.0" mnemonicParsing="false" text="删除线" />
-                        <CheckBox fx:id="answerBoldChoice" layoutX="139.0" layoutY="368.0" mnemonicParsing="false" text="加粗" />
-                        <CheckBox fx:id="answerIticChoice" layoutX="232.0" layoutY="368.0" mnemonicParsing="false" text="斜体" />
-                        <CheckBox fx:id="answerUnderlineChoice" layoutX="316.0" layoutY="368.0" mnemonicParsing="false" text="下划线" />
-                        <Label layoutX="69.0" layoutY="435.0" text="水平" />
-                        <ComboBox fx:id="answerTextAlignSelector" layoutX="111.0" layoutY="430.0" prefWidth="150.0" />
-                        <Label layoutX="288.0" layoutY="435.0" text="行间距" />
-                        <CustomTextField fx:id="answerSpaceInput" layoutX="341.0" layoutY="430.0" prefHeight="20.0" prefWidth="96.0"  inputType="NUMERIC"/>
-                        <Label layoutX="16.0" layoutY="14.0" text="位置大小" textFill="#8a8686" />
-                        <Label layoutX="16.0" layoutY="139.0" text="背景设置" textFill="#8a8686" />
-                        <Label layoutX="16.0" layoutY="287.0" text="字体" textFill="#8a8686" />
-                        <Label layoutX="16.0" layoutY="407.0" text="文字布局" textFill="#8a8686" />
-                        <Separator layoutX="89.0" layoutY="26.0" prefHeight="3.0" prefWidth="304.0" />
-                        <Separator layoutX="91.0" layoutY="149.0" prefHeight="3.0" prefWidth="304.0" />
-                        <Separator layoutX="58.0" layoutY="298.0" prefHeight="3.0" prefWidth="337.0" />
-                        <Separator layoutX="95.0" layoutY="417.0" prefHeight="3.0" prefWidth="304.0" />
-                        <Button layoutX="341.0" layoutY="663.0" mnemonicParsing="false" onMouseClicked="#saveAnswerConfig" prefHeight="30.0" prefWidth="96.0" text="本题应用" />
-                        <Label layoutX="16.0" layoutY="462.0" text="文本内容" textFill="#8a8686" />
-                        <Separator layoutX="94.0" layoutY="472.0" prefHeight="3.0" prefWidth="304.0" />
-                        <TextArea fx:id="answerText" layoutX="26.0" layoutY="491.0" prefHeight="168.0" prefWidth="432.0" />
-                  <Button layoutX="227.0" layoutY="663.0" mnemonicParsing="false" onMouseClicked="#saveStageAnswerConfig" prefHeight="30.0" prefWidth="96.0" text="本环节应用" />
-                  <Button layoutX="120.0" layoutY="663.0" mnemonicParsing="false" onMouseClicked="#saveAllAnswerConfig" prefHeight="30.0" prefWidth="96.0" text="全部应用" />
-                  <Button layoutX="35.0" layoutY="663.0" mnemonicParsing="false" onAction="#updateAnswerText" text="更新文本" />
-                    </children>
-                </AnchorPane>
-            </content>
-        </Tab>
-    </tabs>
+<TabPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="746.0" 
+prefWidth="474.0" tabClosingPolicy="UNAVAILABLE" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" 
+fx:controller="competition.controller.match.QuestionPreviewAttr">
+  <tabs>
+    <Tab text="              环节名              ">
+      <content>
+        <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+          <children>
+            <AnchorPane layoutX="40.0" layoutY="42.0" prefHeight="83.0" prefWidth="392.0">
+              <children>
+                <Label layoutX="26.0" layoutY="12.0" text="宽">
+                  <font>
+                    <Font name="微软雅黑" size="15.0" />
+                  </font>
+                </Label>
+                <Label layoutX="26.0" layoutY="55.0" text="高" />
+                <CustomTextField fx:id="stageWidthInput" inputType="NUMERIC" layoutX="52.0" layoutY="8.0" prefHeight="20.0" prefWidth="96.0" />
+                <CustomTextField fx:id="stageHeightInput" inputType="NUMERIC" layoutX="52.0" layoutY="49.0" prefHeight="20.0" prefWidth="96.0" />
+                <CustomTextField fx:id="stageXInput" inputType="NUMERIC" layoutX="259.0" layoutY="8.0" prefHeight="20.0" prefWidth="96.0" />
+                <CustomTextField fx:id="stageYInput" inputType="NUMERIC" layoutX="259.0" layoutY="49.0" prefHeight="20.0" prefWidth="96.0" />
+                <Label layoutX="226.0" layoutY="13.0" text="X">
+                  <font>
+                    <Font name="YouYuan" size="15.0" />
+                  </font>
+                </Label>
+                <Label layoutX="226.0" layoutY="54.0" text="Y" />
+              </children>
+            </AnchorPane>
+            <AnchorPane layoutX="40.0" layoutY="159.0" prefHeight="119.0" prefWidth="392.0">
+              <children>
+                <Label layoutX="255.0" layoutY="14.0" text="背景颜色" />
+                <ColorPicker fx:id="stageColorInput" layoutX="336.0" layoutY="9.0" prefHeight="30.0" prefWidth="32.0" />
+                <Label layoutX="27.0" layoutY="52.0" text="背景图片" />
+                <CustomTextField fx:id="stageBackgroundPath" disable="true" layoutX="108.0" layoutY="47.0" prefHeight="30.0" prefWidth="275.0" />
+                <Button layoutX="106.0" layoutY="90.0" mnemonicParsing="false" onMouseClicked="#selectStageImg" text="选择图片" />
+                <Button layoutX="196.0" layoutY="90.0" mnemonicParsing="false" onMouseClicked="#cancelStageImg" text="取消图片" />
+                <CheckBox fx:id="stageBackgroundChoice" layoutX="86.0" layoutY="13.0" mnemonicParsing="false" text="填充背景" />
+              </children>
+            </AnchorPane>
+            <Label layoutX="69.0" layoutY="322.0" text="名称" />
+            <GroupedComboBox fx:id="stageFontSelector" layoutX="111.0" layoutY="317.0" prefWidth="150.0" />
+            <Label layoutX="286.0" layoutY="322.0" text="大小" />
+            <CustomTextField fx:id="stageFontSize" inputType="NUMERIC" layoutX="327.0" layoutY="316.0" prefHeight="20.0" prefWidth="96.0" />
+            <CheckBox fx:id="stageDeleteChoice" layoutX="48.0" layoutY="368.0" mnemonicParsing="false" text="删除线" />
+            <CheckBox fx:id="stageBoldChoice" layoutX="139.0" layoutY="368.0" mnemonicParsing="false" text="加粗" />
+            <CheckBox fx:id="stageIticChoice" layoutX="232.0" layoutY="368.0" mnemonicParsing="false" text="斜体" />
+            <CheckBox fx:id="stageUnderlineChoice" layoutX="316.0" layoutY="368.0" mnemonicParsing="false" text="下划线" />
+            <Label layoutX="69.0" layoutY="435.0" text="水平" />
+            <ComboBox fx:id="stageTextAlignSelector" layoutX="111.0" layoutY="430.0" prefWidth="150.0" />
+            <Label layoutX="288.0" layoutY="435.0" text="行间距" />
+            <CustomTextField fx:id="stageSpaceInput" inputType="NUMERIC" layoutX="341.0" layoutY="430.0" prefHeight="20.0" prefWidth="96.0" />
+            <Label layoutX="16.0" layoutY="14.0" text="位置大小" textFill="#8a8686" />
+            <Label layoutX="16.0" layoutY="139.0" text="背景设置" textFill="#8a8686" />
+            <Label layoutX="16.0" layoutY="287.0" text="字体" textFill="#8a8686" />
+            <Label layoutX="16.0" layoutY="407.0" text="文字布局" textFill="#8a8686" />
+            <Separator layoutX="89.0" layoutY="26.0" prefHeight="3.0" prefWidth="304.0" />
+            <Separator layoutX="91.0" layoutY="149.0" prefHeight="3.0" prefWidth="304.0" />
+            <Separator layoutX="58.0" layoutY="298.0" prefHeight="3.0" prefWidth="337.0" />
+            <Separator layoutX="95.0" layoutY="417.0" prefHeight="3.0" prefWidth="304.0" />
+            <Button layoutX="50.0" layoutY="482.0" mnemonicParsing="false" onMouseClicked="#saveCurrentConfig" prefHeight="30.0" prefWidth="96.0" text="本题应用" />
+            <Button layoutX="193.0" layoutY="482.0" mnemonicParsing="false" onMouseClicked="#saveCurrentSConfig" prefHeight="30.0" prefWidth="96.0" text="本环节应用" />
+            <Button layoutX="341.0" layoutY="482.0" mnemonicParsing="false" onMouseClicked="#saveAllSConfig" prefHeight="30.0" prefWidth="96.0" text="全部应用" />
+          </children>
+        </AnchorPane>
+      </content>
+    </Tab>
+    <Tab text="              题目              ">
+      <content>
+        <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="748.0" prefWidth="474.0">
+          <children>
+            <AnchorPane layoutX="40.0" layoutY="35.0" prefHeight="83.0" prefWidth="392.0">
+              <children>
+                <Label layoutX="26.0" layoutY="12.0" text="宽">
+                  <font>
+                    <Font name="微软雅黑" size="15.0" />
+                  </font>
+                </Label>
+                <Label layoutX="26.0" layoutY="55.0" text="高" />
+                <CustomTextField fx:id="nameWidthInput" inputType="NUMERIC" layoutX="52.0" layoutY="8.0" prefHeight="20.0" prefWidth="96.0" />
+                <CustomTextField fx:id="nameHeightInput" inputType="NUMERIC" layoutX="52.0" layoutY="49.0" prefHeight="20.0" prefWidth="96.0" />
+                <CustomTextField fx:id="nameXInput" inputType="NUMERIC" layoutX="259.0" layoutY="8.0" prefHeight="20.0" prefWidth="96.0" />
+                <CustomTextField fx:id="nameYInput" inputType="NUMERIC" layoutX="259.0" layoutY="49.0" prefHeight="20.0" prefWidth="96.0" />
+                <Label layoutX="226.0" layoutY="13.0" text="X">
+                  <font>
+                    <Font name="YouYuan" size="15.0" />
+                  </font>
+                </Label>
+                <Label layoutX="226.0" layoutY="54.0" text="Y" />
+              </children>
+            </AnchorPane>
+            <AnchorPane layoutX="40.0" layoutY="128.0" prefHeight="119.0" prefWidth="392.0">
+              <children>
+                <Label layoutX="255.0" layoutY="14.0" text="背景颜色" />
+                <ColorPicker fx:id="nameColorInput" layoutX="336.0" layoutY="9.0" prefHeight="30.0" prefWidth="32.0" />
+                <Label layoutX="27.0" layoutY="52.0" text="背景图片" />
+                <CustomTextField fx:id="nameBackgroundPath" disable="true" layoutX="108.0" layoutY="47.0" prefHeight="30.0" prefWidth="275.0" />
+                <Button layoutX="106.0" layoutY="90.0" mnemonicParsing="false" onMouseClicked="#selectNameImg" text="选择图片" />
+                <Button layoutX="196.0" layoutY="90.0" mnemonicParsing="false" onMouseClicked="#cancelNameImg" text="取消图片" />
+                <CheckBox fx:id="nameBackgroundChoice" layoutX="86.0" layoutY="13.0" mnemonicParsing="false" text="填充背景" />
+              </children>
+            </AnchorPane>
+            <Label layoutX="69.0" layoutY="266.0" text="名称" />
+            <GroupedComboBox fx:id="nameFontSelector" disable="true" layoutX="111.0" layoutY="261.0" prefWidth="150.0" />
+            <Label layoutX="286.0" layoutY="266.0" text="大小" />
+            <CustomTextField fx:id="nameFontSize" inputType="NUMERIC" layoutX="327.0" layoutY="260.0" prefHeight="20.0" prefWidth="96.0" />
+            <CheckBox fx:id="nameDeleteChoice" layoutX="43.0" layoutY="312.0" mnemonicParsing="false" text="删除线" />
+            <CheckBox fx:id="nameBoldChoice" layoutX="128.0" layoutY="312.0" mnemonicParsing="false" text="加粗" />
+            <CheckBox fx:id="nameIticChoice" layoutX="200.0" layoutY="312.0" mnemonicParsing="false" text="斜体" />
+            <CheckBox fx:id="nameUnderlineChoice" layoutX="273.0" layoutY="312.0" mnemonicParsing="false" text="下划线" />
+            <Label layoutX="20.0" layoutY="362.0" text="水平" />
+            <ComboBox fx:id="nameTextAlignSelector" layoutX="58.0" layoutY="355.0" prefHeight="30.0" prefWidth="140.0" />
+            <Label layoutX="247.0" layoutY="363.0" text="行间距" />
+            <CustomTextField fx:id="nameSpaceInput" inputType="NUMERIC" layoutX="310.0" layoutY="359.0" prefHeight="23.0" prefWidth="132.0" />
+            <Label layoutX="16.0" layoutY="14.0" text="位置大小" textFill="#8a8686" />
+            <Label layoutX="16.0" layoutY="118.0" text="背景设置" textFill="#8a8686" />
+            <Label layoutX="16.0" layoutY="238.0" text="字体" textFill="#8a8686" />
+            <Label layoutX="16.0" layoutY="331.0" text="文字布局" textFill="#8a8686" />
+            <Separator layoutX="89.0" layoutY="26.0" prefHeight="3.0" prefWidth="304.0" />
+            <Separator layoutX="91.0" layoutY="128.0" prefHeight="3.0" prefWidth="304.0" />
+            <Separator layoutX="58.0" layoutY="249.0" prefHeight="3.0" prefWidth="337.0" />
+            <Separator layoutX="95.0" layoutY="341.0" prefHeight="3.0" prefWidth="304.0" />
+            <Button layoutX="351.0" layoutY="667.0" mnemonicParsing="false" onMouseClicked="#saveNameConfig" prefHeight="30.0" prefWidth="96.0" text="本题应用" />
+            <Label layoutX="16.0" layoutY="393.0" text="文本内容" textFill="#8a8686" />
+            <Separator layoutX="94.0" layoutY="402.0" prefHeight="3.0" prefWidth="304.0" />
+            <TextArea fx:id="nameText" layoutX="23.0" layoutY="418.0" prefHeight="101.0" prefWidth="441.0" />
+            <Button layoutX="242.0" layoutY="667.0" mnemonicParsing="false" onMouseClicked="#saveStageNameConfig" prefHeight="30.0" prefWidth="96.0" text="本环节应用" />
+            <Button layoutX="138.0" layoutY="667.0" mnemonicParsing="false" onMouseClicked="#saveAllNameConfig" prefHeight="30.0" prefWidth="96.0" text="全部应用" />
+            <CustomTextField fx:id="wordSpaceInput" inputType="NUMERIC" layoutX="379.0" layoutY="429.0" prefHeight="30.0" prefWidth="91.0" visible="false" />
+            <Button layoutX="42.0" layoutY="667.0" mnemonicParsing="false" onAction="#updateQuestionContent" text="更新文本" />
+            <CheckBox fx:id="spaceLineChoice" layoutX="358.0" layoutY="312.0" mnemonicParsing="false" text="间隔一行" />
+                  <AnchorPane layoutX="23.0" layoutY="531.0" prefHeight="113.0" prefWidth="442.0">
+                     <children>
+                        <TextField fx:id="selectionA" layoutX="33.0" layoutY="14.0" />
+                        <TextField fx:id="selectionB" layoutX="254.0" layoutY="14.0" />
+                        <TextField fx:id="selectionC" layoutX="33.0" layoutY="45.0" />
+                        <TextField fx:id="selectionD" layoutX="254.0" layoutY="45.0" />
+                        <TextField fx:id="selectionE" layoutX="33.0" layoutY="76.0" />
+                        <TextField fx:id="selectionF" layoutX="254.0" layoutY="76.0" />
+                        <Label layoutX="14.0" layoutY="18.0" text="A:" /> 
+                        <Label layoutX="235.0" layoutY="18.0" text="B:" />
+                        <Label layoutX="14.0" layoutY="49.0" text="C:" />
+                        <Label layoutX="234.0" layoutY="49.0" text="D:" />
+                        <Label layoutX="15.0" layoutY="80.0" text="E:" />
+                        <Label layoutX="236.0" layoutY="80.0" text="F:" />
+                     </children>
+                  </AnchorPane>
+          </children>
+        </AnchorPane>
+      </content>
+    </Tab>
+    <Tab text="              答案              ">
+      <content>
+        <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+          <children>
+            <AnchorPane layoutX="40.0" layoutY="42.0" prefHeight="83.0" prefWidth="392.0">
+              <children>
+                <Label layoutX="26.0" layoutY="12.0" text="宽">
+                  <font>
+                    <Font name="微软雅黑" size="15.0" />
+                  </font>
+                </Label>
+                <Label layoutX="26.0" layoutY="55.0" text="高" />
+                <CustomTextField fx:id="answerWidthInput" inputType="NUMERIC" layoutX="52.0" layoutY="8.0" prefHeight="20.0" prefWidth="96.0" />
+                <CustomTextField fx:id="answerHeightInput" inputType="NUMERIC" layoutX="52.0" layoutY="49.0" prefHeight="20.0" prefWidth="96.0" />
+                <CustomTextField fx:id="answerXInput" inputType="NUMERIC" layoutX="259.0" layoutY="8.0" prefHeight="20.0" prefWidth="96.0" />
+                <CustomTextField fx:id="answerYInput" inputType="NUMERIC" layoutX="259.0" layoutY="49.0" prefHeight="20.0" prefWidth="96.0" />
+                <Label layoutX="226.0" layoutY="13.0" text="X">
+                  <font>
+                    <Font name="YouYuan" size="15.0" />
+                  </font>
+                </Label>
+                <Label layoutX="226.0" layoutY="54.0" text="Y" />
+              </children>
+            </AnchorPane>
+            <AnchorPane layoutX="40.0" layoutY="159.0" prefHeight="119.0" prefWidth="392.0">
+              <children>
+                <Label layoutX="255.0" layoutY="14.0" text="背景颜色" />
+                <ColorPicker fx:id="answerColorInput" layoutX="336.0" layoutY="9.0" prefHeight="30.0" prefWidth="32.0" />
+                <Label layoutX="27.0" layoutY="52.0" text="背景图片" />
+                <CustomTextField fx:id="answerBackgroundPath" disable="true" layoutX="108.0" layoutY="47.0" prefHeight="30.0" prefWidth="275.0" />
+                <Button layoutX="106.0" layoutY="90.0" mnemonicParsing="false" onMouseClicked="#selectCodeImg" text="选择图片" />
+                <Button layoutX="196.0" layoutY="90.0" mnemonicParsing="false" onMouseClicked="#cancelCodeImg" text="取消图片" />
+                <CheckBox fx:id="answerBackgroundChoice" layoutX="86.0" layoutY="13.0" mnemonicParsing="false" text="填充背景" />
+              </children>
+            </AnchorPane>
+            <Label layoutX="69.0" layoutY="322.0" text="名称" />
+            <GroupedComboBox fx:id="answerFontSelector" disable="true" layoutX="111.0" layoutY="317.0" prefWidth="150.0" />
+            <Label layoutX="286.0" layoutY="322.0" text="大小" />
+            <CustomTextField fx:id="answerFontSize" inputType="NUMERIC" layoutX="327.0" layoutY="316.0" prefHeight="20.0" prefWidth="96.0" />
+            <CheckBox fx:id="answerDeleteChoice" layoutX="48.0" layoutY="368.0" mnemonicParsing="false" text="删除线" />
+            <CheckBox fx:id="answerBoldChoice" layoutX="139.0" layoutY="368.0" mnemonicParsing="false" text="加粗" />
+            <CheckBox fx:id="answerIticChoice" layoutX="232.0" layoutY="368.0" mnemonicParsing="false" text="斜体" />
+            <CheckBox fx:id="answerUnderlineChoice" layoutX="316.0" layoutY="368.0" mnemonicParsing="false" text="下划线" />
+            <Label layoutX="69.0" layoutY="435.0" text="水平" />
+            <ComboBox fx:id="answerTextAlignSelector" layoutX="111.0" layoutY="430.0" prefWidth="150.0" />
+            <Label layoutX="288.0" layoutY="435.0" text="行间距" />
+            <CustomTextField fx:id="answerSpaceInput" inputType="NUMERIC" layoutX="341.0" layoutY="430.0" prefHeight="20.0" prefWidth="96.0" />
+            <Label layoutX="16.0" layoutY="14.0" text="位置大小" textFill="#8a8686" />
+            <Label layoutX="16.0" layoutY="139.0" text="背景设置" textFill="#8a8686" />
+            <Label layoutX="16.0" layoutY="287.0" text="字体" textFill="#8a8686" />
+            <Label layoutX="16.0" layoutY="407.0" text="文字布局" textFill="#8a8686" />
+            <Separator layoutX="89.0" layoutY="26.0" prefHeight="3.0" prefWidth="304.0" />
+            <Separator layoutX="91.0" layoutY="149.0" prefHeight="3.0" prefWidth="304.0" />
+            <Separator layoutX="58.0" layoutY="298.0" prefHeight="3.0" prefWidth="337.0" />
+            <Separator layoutX="95.0" layoutY="417.0" prefHeight="3.0" prefWidth="304.0" />
+            <Button layoutX="341.0" layoutY="663.0" mnemonicParsing="false" onMouseClicked="#saveAnswerConfig" prefHeight="30.0" prefWidth="96.0" text="本题应用" />
+            <Label layoutX="16.0" layoutY="462.0" text="文本内容" textFill="#8a8686" />
+            <Separator layoutX="94.0" layoutY="472.0" prefHeight="3.0" prefWidth="304.0" />
+            <TextArea fx:id="answerText" layoutX="26.0" layoutY="491.0" prefHeight="168.0" prefWidth="432.0" />
+            <Button layoutX="227.0" layoutY="663.0" mnemonicParsing="false" onMouseClicked="#saveStageAnswerConfig" prefHeight="30.0" prefWidth="96.0" text="本环节应用" />
+            <Button layoutX="120.0" layoutY="663.0" mnemonicParsing="false" onMouseClicked="#saveAllAnswerConfig" prefHeight="30.0" prefWidth="96.0" text="全部应用" />
+            <Button layoutX="35.0" layoutY="663.0" mnemonicParsing="false" onAction="#updateAnswerText" text="更新文本" />
+          </children>
+        </AnchorPane>
+      </content>
+    </Tab>
+  </tabs>
 </TabPane>

@@ -57,18 +57,11 @@ public class SerialPortConfig {
 //        return Integer.toBinaryString(reversedNumber);
 //    }
 
-    public static String buildScreenData(ScreenDevice screenDevice, int score, boolean light){
-        if (light) {
-            return screenDevice.getAddress() + SerialPortConnector.SPLITTER
+    public static String buildScreenData(String address, int score, boolean light){
+        return address + SerialPortConnector.SPLITTER 
                     +  String.format("%03d", score) + SerialPortConnector.SPLITTER
-                    + getColor(screenDevice.getColor()) + SerialPortConnector.SPLITTER
+                    + "111" + SerialPortConnector.SPLITTER
                     + "7"
                     ;
-        }
-        return screenDevice.getAddress() + SerialPortConnector.SPLITTER
-                +  String.format("%03d", score) + SerialPortConnector.SPLITTER
-                + getColor(screenDevice.getColor()) + SerialPortConnector.SPLITTER
-                + "0"
-                ;
     }
 }

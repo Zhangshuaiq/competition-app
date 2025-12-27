@@ -117,13 +117,22 @@ public class Model3 implements ReloadPane<Integer> {
             List<Questions> stageQuestions = questionsMapper.selectList(new LambdaQueryWrapper<Questions>()
                     .eq(Questions::getStageNumber, child.getSortVal())
             );
-//            List<Questions> stageQuestions = RuntimeQuestionStock.getStageQuestions(child.getSortVal());
             for (int i = 0; i < stageQuestions.size(); i++) {
                 // 每个题目分值
-                stageQuestions.get(i).setScore(child.getScorePerQ());
+                Questions questions = stageQuestions.get(i);
+
+                if (StringUtils.isEmpty(questions.getAddScore()) || !NumberUtil.isInt(questions.getAddScore())) {
+                    questions.setScore(child.getScorePerQ());
+                } else {
+                    questions.setScore(Integer.parseInt(questions.getAddScore()));
+                }
+
             }
+
             qs.add(stageQuestions);
         }
+
+
 
 
         Stages stages = stagesMapper.selectById(parentStageId);

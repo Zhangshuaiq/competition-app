@@ -1,6 +1,5 @@
 package competition.controller.board.match;
 
-import competition.JavaFxApplication;
 import competition.controller.match.ReloadPane;
 import competition.entity.Configs;
 import competition.mapper.ConfigsMapper;
@@ -15,15 +14,12 @@ import javafx.geometry.Pos;
 import javafx.scene.control.Label;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
-import javafx.scene.text.Font;
 import javafx.scene.text.TextAlignment;
 import javafx.stage.Stage;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
-import java.io.File;
-import java.io.FileInputStream;
 
 @Component
 @Slf4j
@@ -40,6 +36,10 @@ public class TimeBoard implements ReloadPane {
 
     @Resource
     private ConfigsMapper configsMapper;
+
+    private volatile double cacheTextWidth;
+
+    private volatile double cacheTextHeight;
 
     @FXML
     public void initPage() {
@@ -111,24 +111,28 @@ public class TimeBoard implements ReloadPane {
             timeLabel.autosize();
             double textWidth = timeLabel.prefWidth(-1);
             double textHeight = timeLabel.prefHeight(-1);
-            log.error("width: {}, height: {}", textWidth, textHeight);
+            
+            if (cacheTextWidth <= 0) {
+                cacheTextWidth = textWidth;
+                cacheTextHeight = textHeight;
+            }
 
+            // 打印大小
             // 确保容器足够大来显示文本
-            if (textWidth > 0 && textHeight > 0) {
-                timeLabel.setPrefWidth(textWidth);
-                timeLabel.setPrefHeight(textHeight);
+            if (cacheTextWidth > 0 && cacheTextHeight > 0) {
+                timeLabel.setPrefWidth(cacheTextWidth);
+                timeLabel.setPrefHeight(cacheTextHeight);
 
                 // 同时确保窗口大小足够
                 Stage stage = (Stage) container.getScene().getWindow();
                 if (stage != null) {
                     // 给窗口设置最小大小，确保能显示完整文本
-                    stage.setMinWidth(textWidth + 40);
-                    stage.setMinHeight(textHeight + 40);
-
+                    stage.setMinWidth(cacheTextWidth + 40);
+                    stage.setMinHeight(cacheTextHeight + 40);
 
                     // 如果当前窗口太小，则调整大小
-                    stage.setWidth(textWidth + 40);
-                    stage.setHeight(textHeight + 40);
+                    stage.setWidth(cacheTextWidth + 40);
+                    stage.setHeight(cacheTextHeight + 40);
                 }
             }
         });
@@ -246,6 +250,8 @@ public class TimeBoard implements ReloadPane {
 
     @Override
     public void close() {
+        cacheTextWidth = 0;
+        cacheTextHeight = 0;
         Stage stage = (Stage) (timeLabel.getScene().getWindow());
         this.timeVal = 0;
         this.timeValue = format(timeVal);

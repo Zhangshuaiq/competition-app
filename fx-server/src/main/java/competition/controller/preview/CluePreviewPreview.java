@@ -2,49 +2,36 @@ package competition.controller.preview;
 
 
 import com.alibaba.fastjson2.JSON;
-import com.alibaba.fastjson2.JSONObject;
 import competition.controller.ControlPane;
 import competition.controller.board.BoardPane;
 import competition.controller.match.CluePreview;
-import competition.controller.match.QuestionPreview;
 import competition.controller.match.QuestionPreviewAttr;
 import competition.controller.match.ReloadPane;
 import competition.entity.Configs;
 import competition.entity.QuestionStyle;
 import competition.entity.Questions;
-import competition.entity.Teams;
 import competition.mapper.ConfigsMapper;
 import competition.util.*;
 import competition.ws.WsMessageHandler;
 import javafx.collections.ObservableList;
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.geometry.Insets;
-import javafx.geometry.Pos;
 import javafx.scene.Node;
-import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.image.Image;
 import javafx.scene.input.*;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
-import javafx.scene.text.FontPosture;
-import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 import javafx.scene.transform.Shear;
-import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
 import javax.annotation.Resource;
-import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 
 @Component
@@ -174,6 +161,8 @@ public class CluePreviewPreview extends PreviewPane<Questions>{
         tiganBox.setPadding(new Insets(ScreenAdapter.calculateMainX(20)));
         backPane.setPadding(new Insets(ScreenAdapter.calculateMainX(20), 0, ScreenAdapter.calculateMainX(20), 0));
         Questions questions = JSON.parseObject(JSON.toJSONString(inner), Questions.class);
+        
+        controlPane.setScore(questions);
 
         if (ExtendedScreen.hasShow()) {
             // 进入比赛

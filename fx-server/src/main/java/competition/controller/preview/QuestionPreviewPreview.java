@@ -1,7 +1,5 @@
 package competition.controller.preview;
 
-import com.alibaba.fastjson2.JSON;
-import com.alibaba.fastjson2.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import competition.controller.ControlPane;
 import competition.controller.board.BoardPane;
@@ -29,7 +27,6 @@ import javafx.scene.paint.Paint;
 import javafx.scene.text.*;
 import javafx.scene.text.Font;
 import javafx.scene.transform.Shear;
-import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
@@ -37,10 +34,8 @@ import javax.annotation.Resource;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 
 // 试题显示主控屏幕 - 优化版本
@@ -293,6 +288,8 @@ public class QuestionPreviewPreview extends PreviewPane<Questions> {
             return;
         }
 
+        controlPane.setScore(inner);
+
         // 设置基本布局
         tiganBox.setPadding(new Insets(ScreenAdapter.calculateMainX(20)));
         backPane.setPadding(new Insets(ScreenAdapter.calculateExX(20), 0, ScreenAdapter.calculateExX(20), 0));
@@ -470,10 +467,14 @@ public class QuestionPreviewPreview extends PreviewPane<Questions> {
         // 处理题型标注
         handleQuestionTypeLabel(split);
 
+        String prefix = ".";
+        if (split.length >= 43) {
+            prefix = split[42];
+        }
         // 处理选项
         String questionType = inner.getQuestionType();
         if (questionType.equals("单选题") || questionType.equals("多选题") || questionType.equals("不定项选择题")) {
-            addChoicesWithLabels();
+            addChoicesWithLabels(prefix);
         } else {
             addChoicesWithoutLabels();
         }
@@ -597,13 +598,13 @@ public class QuestionPreviewPreview extends PreviewPane<Questions> {
     /**
      * 添加带标签的选项（A、B、C、D...）
      */
-    private void addChoicesWithLabels() {
-        addChoiceIfNotEmpty(choiceAText, "A." + inner.getChoiceA(), inner.getChoiceA());
-        addChoiceIfNotEmpty(choiceBText, "B." + inner.getChoiceB(), inner.getChoiceB());
-        addChoiceIfNotEmpty(choiceCText, "C." + inner.getChoiceC(), inner.getChoiceC());
-        addChoiceIfNotEmpty(choiceDText, "D." + inner.getChoiceD(), inner.getChoiceD());
-        addChoiceIfNotEmpty(choiceEText, "E." + inner.getChoiceE(), inner.getChoiceE());
-        addChoiceIfNotEmpty(choiceFText, "F." + inner.getChoiceF(), inner.getChoiceF());
+    private void addChoicesWithLabels(String prefix) {
+        addChoiceIfNotEmpty(choiceAText, "A" + prefix + inner.getChoiceA(), inner.getChoiceA());
+        addChoiceIfNotEmpty(choiceBText, "B" + prefix +inner.getChoiceB(), inner.getChoiceB());
+        addChoiceIfNotEmpty(choiceCText, "C" + prefix + inner.getChoiceC(), inner.getChoiceC());
+        addChoiceIfNotEmpty(choiceDText, "D" + prefix + inner.getChoiceD(), inner.getChoiceD());
+        addChoiceIfNotEmpty(choiceEText, "E" + prefix + inner.getChoiceE(), inner.getChoiceE());
+        addChoiceIfNotEmpty(choiceFText, "F" + prefix + inner.getChoiceF(), inner.getChoiceF());
     }
 
     /**

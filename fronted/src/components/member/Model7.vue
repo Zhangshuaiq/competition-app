@@ -513,7 +513,9 @@ export default {
             if (this.questionIndex + 1 === this.questionList.length) {
               this.score = this.score - this.questionItem.desValue
             } else {
-              this.score = this.score - ((this.questionList.length - this.questionIndex) * this.questionItem.desValue)
+              for(let i = this.questionIndex; i < this.questionList.length; i++) {
+                this.score = this.score - this.questionList[i].desValue
+              }
             }
             this.showResult = true
           }

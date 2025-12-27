@@ -56,11 +56,14 @@ public class Questions {
     @ExcelProperty(index = 12, value="答案")
     private String answer;
 
-    @ExcelProperty(index = 13, value="备注")
-    private String remark;
+    @ExcelProperty(index = 13, value="加分")
+    private String addScore;
 
-//    @ExcelProperty(index = 13, value="答案类型")
-//    private String answerType;
+    @ExcelProperty(index = 14, value="减分")
+    private String descScore;
+
+    @ExcelProperty(index = 15, value="备注")
+    private String remark;
 
     @TableField("`group`")
     @ExcelIgnore

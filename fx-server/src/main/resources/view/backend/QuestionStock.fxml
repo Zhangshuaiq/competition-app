@@ -22,6 +22,8 @@
                 <TableColumn fx:id="choiceECol" prefWidth="100.0" text="选项E" />
                 <TableColumn fx:id="choiceFCol" prefWidth="100.0" text="选项F" />
                 <TableColumn fx:id="answerCol" prefWidth="138.0" text="答案" />
+                <TableColumn fx:id="addCol" prefWidth="138.0" text="加分" />
+                <TableColumn fx:id="descCol" prefWidth="138.0" text="减分" />
                 <TableColumn fx:id="remarkCol" prefWidth="99.0" text="备注" />
             </columns>
         </TableView>

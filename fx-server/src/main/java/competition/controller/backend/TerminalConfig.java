@@ -1,28 +1,14 @@
 package competition.controller.backend;
 
-import com.alibaba.fastjson2.JSON;
-import competition.dto.BuzzDevice;
-import competition.dto.ScreenDevice;
-import competition.entity.TerminalInfo;
-import competition.mapper.TerminalInfoMapper;
+
 import competition.serial.Command;
-import competition.serial.SerialPortConfig;
 import competition.serial.SerialPortConnector;
-import competition.util.ColorUtil;
 import competition.util.Information;
-import competition.util.ObjectUtil;
 import competition.util.TimeUtil;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
-import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
-import javafx.scene.control.cell.PropertyValueFactory;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
-
-import javax.annotation.Resource;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 

@@ -49,7 +49,6 @@ export default {
   computed: {
     containerBoxStyle() {
       return {
-
         backgroundImage: `url(${this.imageUrl})`,
         backgroundSize: '100vw 100vh',
         height: '100vh',

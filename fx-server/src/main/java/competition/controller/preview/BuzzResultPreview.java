@@ -6,21 +6,18 @@ import competition.JavaFxApplication;
 import competition.controller.ControlPane;
 import competition.controller.match.BuzzResult;
 import competition.controller.match.CluePreview;
+import competition.entity.Buzz;
 import competition.entity.Configs;
 import competition.entity.Teams;
+import competition.mapper.BuzzMapper;
 import competition.mapper.ConfigsMapper;
-import competition.util.ExtendedScreen;
-import competition.util.FontMap;
-import competition.util.Navigator;
-import competition.util.ScreenAdapter;
+import competition.util.*;
 import javafx.fxml.FXML;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Label;
-import javafx.scene.layout.Background;
-import javafx.scene.layout.BackgroundFill;
-import javafx.scene.layout.CornerRadii;
-import javafx.scene.layout.VBox;
+import javafx.scene.image.Image;
+import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import org.springframework.context.annotation.Scope;
@@ -28,6 +25,9 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
 import javax.annotation.Resource;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -74,7 +74,11 @@ public class BuzzResultPreview extends PreviewPane{
             }
         }
 
+
+
         ConfigsMapper configsMapper = JavaFxApplication.getApplicationContext().getBean(ConfigsMapper.class);
+        BuzzMapper buzzMapper = JavaFxApplication.getApplicationContext().getBean(BuzzMapper.class);
+        Buzz buzz = buzzMapper.selectById(1);
         Configs configs = configsMapper.selectById(10);
         String config = configs.getConfig();
         if (!StringUtils.isEmpty(config)) {
@@ -130,12 +134,22 @@ public class BuzzResultPreview extends PreviewPane{
             result.setPadding(new Insets(10, 0, 10, 0));
 
             Color color = Color.valueOf(jsonObject.getOrDefault("backColor", "BLACK").toString());
-            container.setBackground(new Background(new BackgroundFill(color, new CornerRadii(8), null)));
             container.setPrefWidth(width);
             container.setPrefHeight(ScreenAdapter.calculateMainY(Double.parseDouble(jsonObject.getOrDefault("height", "200").toString())));
             container.setSpacing(ScreenAdapter.calculateMainY(Double.parseDouble(jsonObject.getOrDefault("rowSpace", "10").toString())));
-            //container.setLayoutX(ScreenAdapter.calculateMainX(Double.parseDouble(jsonObject.getOrDefault("x", "200").toString())));
-            //container.setLayoutY(ScreenAdapter.calculateMainY(Double.parseDouble(jsonObject.getOrDefault("y", "200").toString())));
+            if (buzz.getSelectFileBk() != null && buzz.getSelectFileBk() == 1) {
+                try {
+                    container.setBackground(new Background(new BackgroundImage(
+                            new Image(new FileInputStream(buzz.getBackground())),
+                            BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT, BackgroundPosition.DEFAULT,
+                            new BackgroundSize(container.getPrefWidth(), container.getPrefHeight(), false, false, false, false)
+                    )));
+                } catch (FileNotFoundException e) {
+                    container.setBackground(new Background(new BackgroundFill(color, new CornerRadii(8), null)));
+                }
+            } else {
+                container.setBackground(new Background(new BackgroundFill(color, new CornerRadii(8), null)));
+            }
 
             if (Boolean.parseBoolean(jsonObject.getOrDefault("xuhao", "false").toString())) {
                 container.getChildren().add(xuhao);

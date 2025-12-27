@@ -7,7 +7,6 @@ import com.google.zxing.client.j2se.MatrixToImageWriter;
 import com.google.zxing.common.BitMatrix;
 import com.google.zxing.qrcode.QRCodeWriter;
 import competition.controller.ControlPane;
-import competition.controller.preview.PreviewPane;
 import competition.entity.Configs;
 import competition.entity.ScoreConfig;
 import competition.entity.ScoreConfig1;
@@ -17,9 +16,8 @@ import competition.mapper.ScoreConfigMapper1;
 import competition.util.Information;
 import competition.util.Navigator;
 import competition.util.RuntimeUtil;
+import competition.ws.WsMessageHandler;
 import javafx.beans.property.SimpleStringProperty;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.event.Event;
 import javafx.fxml.FXML;
 import javafx.scene.Scene;
@@ -37,6 +35,7 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
@@ -51,9 +50,9 @@ import java.util.*;
 public class PaneConfig {
 
 
-    // 链接状态控制器
+    // 链接状态控制器 // 平板分数条展示控制
     @FXML
-    private CheckBox connectionStateControl;
+    private CheckBox connectionStateControl, scoreStateControl;
 
     @FXML
     private ImageView holderQrcode;
@@ -156,19 +155,22 @@ public class PaneConfig {
 
     
     private SimpleStringProperty ipaddr = new SimpleStringProperty("");
-    
-    
-    
+    @Autowired
+    private WsMessageHandler wsMessageHandler;
+
+
     @FXML
     public void initialize(){
 
         Configs configs = configsMapper.selectById(12);
         String config = configs.getConfig();
+
+        Configs barConfig = configsMapper.selectById(14);
         connectionStateControl.setSelected(Objects.equals("1", config));
 
+        scoreStateControl.setSelected(RuntimeUtil.showBarStatus);
         connectionStateControl.selectedProperty().addListener((observable, oldValue, newValue) -> {
-            System.out.println("链接状态展示.......");
-            System.out.println(newValue);
+
             RuntimeUtil.showConnectionStatus = newValue;
             if (RuntimeUtil.showConnectionStatus) {
                 // 展示前端链接状态
@@ -180,6 +182,20 @@ public class PaneConfig {
                 configsMapper.updateById(configs);
                 WindowEvent closeEvent = new WindowEvent( Navigator.connectionStage, WindowEvent.WINDOW_CLOSE_REQUEST);
                 Event.fireEvent( Navigator.connectionStage, closeEvent);  // 这会触发 setOnCloseRequest()
+            }
+        });
+
+        scoreStateControl.selectedProperty().addListener((observable, oldValue, newValue) -> {
+
+            RuntimeUtil.showBarStatus = newValue;
+            wsMessageHandler.notifyPage("", null);
+            if (RuntimeUtil.showBarStatus) {
+                // 展示前端链接状态
+                barConfig.setConfig("1");
+                configsMapper.updateById(barConfig);
+            } else {
+                barConfig.setConfig("0");
+                configsMapper.updateById(barConfig);
             }
         });
 

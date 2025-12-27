@@ -108,6 +108,8 @@ public class Model61RuntimeData {
                                     data.getSecond().toString(), data.getScore(), team.getNewScore().toString(), data.getUserSelect());
                         } else {
                             team.setNewScore(team.getTeamScore());
+                            scoreService.addScore(data.getUserName(), team, controlPane.getCurrentStage().getName(), data.getQuestionNumber().toString(),
+                                    data.getSecond().toString(), 0, team.getNewScore().toString(), data.getUserSelect());
                         }
                         Platform.runLater(() -> {
                             controlPane.teamScore.setText(team.getTeamScore().toString());
@@ -220,6 +222,8 @@ public class Model61RuntimeData {
 
                         } else {
                             team.setNewScore(team.getTeamScore());
+                            scoreService.addScore(data.getUserName(), team, controlPane.getCurrentStage().getName(), data.getQuestionNumber().toString(),
+                                    data.getSecond().toString(), 0, team.getNewScore().toString(), data.getUserSelect());
                         }
                         Platform.runLater(() -> {
                             controlPane.teamScore.setText(team.getTeamScore().toString());
@@ -232,6 +236,8 @@ public class Model61RuntimeData {
                                     data.getSecond().toString(), -controlPane.getCurrentStage().getDesValue(), team.getNewScore().toString(), data.getUserSelect());
                         } else {
                             team.setNewScore(team.getTeamScore());
+                            scoreService.addScore(data.getUserName(), team, controlPane.getCurrentStage().getName(), data.getQuestionNumber().toString(),
+                                    data.getSecond().toString(), 0, team.getNewScore().toString(), data.getUserSelect());
                         }
                     }
                 }
