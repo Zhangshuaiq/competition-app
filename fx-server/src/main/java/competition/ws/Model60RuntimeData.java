@@ -12,6 +12,7 @@ import org.springframework.util.StringUtils;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 // 答题模式-个人 实时更新数据,后端使用
@@ -98,11 +99,11 @@ public class Model60RuntimeData {
                             team.setNewScore(team.getTeamScore() + data.getScore());
 
                             scoreService.addScore(null, team,  controlPane.getCurrentStage().getName(), modelData.getQuestionNumber().toString(),
-                                    modelData.getSecond().toString(),  data.getScore(), team.getNewScore().toString(), data.getUserSelect());
+                                    modelData.getSecond().toString(),  data.getScore(), Objects.toString(team.getNewScore()), data.getUserSelect());
                         } else {
                             team.setNewScore(team.getTeamScore());
                             scoreService.addScore(null, team,  controlPane.getCurrentStage().getName(), modelData.getQuestionNumber().toString(),
-                                    modelData.getSecond().toString(),  0, team.getNewScore().toString(), data.getUserSelect());
+                                    modelData.getSecond().toString(),  0, Objects.toString(team.getNewScore()), data.getUserSelect());
                         }
                         
                         team.setQScore(data.getScore());
@@ -116,11 +117,11 @@ public class Model60RuntimeData {
                             team.setNewScore(team.getTeamScore() - controlPane.getCurrentStage().getDesValue());
 
                             scoreService.addScore(null, team,  controlPane.getCurrentStage().getName(), modelData.getQuestionNumber().toString(),
-                                    modelData.getSecond().toString(),  - controlPane.getCurrentStage().getDesValue(), team.getNewScore().toString(), data.getUserSelect());
+                                    modelData.getSecond().toString(),  - controlPane.getCurrentStage().getDesValue(), Objects.toString(team.getNewScore()), data.getUserSelect());
                         } else {
                             team.setNewScore(team.getTeamScore());
                             scoreService.addScore(null, team,  controlPane.getCurrentStage().getName(), modelData.getQuestionNumber().toString(),
-                                    modelData.getSecond().toString(), 0, team.getNewScore().toString(), data.getUserSelect());
+                                    modelData.getSecond().toString(), 0, Objects.toString(team.getNewScore()), data.getUserSelect());
                         }
                     }
                 }
@@ -149,10 +150,10 @@ public class Model60RuntimeData {
                         team.setNewScore(team.getTeamScore() - controlPane.getCurrentStage().getDesValue());
 
                         scoreService.addScore(null, team,  controlPane.getCurrentStage().getName(), modelData.getQuestionNumber().toString(),
-                                modelData.getSecond().toString(),  - controlPane.getCurrentStage().getDesValue(), team.getNewScore().toString(), modelData.getUserSelect());
+                                modelData.getSecond().toString(),  - controlPane.getCurrentStage().getDesValue(), Objects.toString(team.getNewScore()) , modelData.getUserSelect());
                     } else {
                         scoreService.addScore(null, team,  controlPane.getCurrentStage().getName(), modelData.getQuestionNumber().toString(),
-                                modelData.getSecond().toString(),  0, team.getNewScore().toString(), modelData.getUserSelect());
+                                modelData.getSecond().toString(),  0, Objects.toString(team.getNewScore()) , modelData.getUserSelect());
                     }
                 }
             }

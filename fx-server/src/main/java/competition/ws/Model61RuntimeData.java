@@ -15,6 +15,7 @@ import org.springframework.util.StringUtils;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 // 答题模式-个人 实时更新数据,后端使用
@@ -93,8 +94,7 @@ public class Model61RuntimeData {
                                         team.getQScores().set(j, -controlPane.getCurrentStage().getDesValue());
                                     }
                                     teamsMapper.updateById(team);
-                                    // 设置为已经回答完成
-                                    //team.getStatusList().set(j, 1);
+                                
                                 }
                             }
                         }
@@ -105,54 +105,25 @@ public class Model61RuntimeData {
                             team.setNewScore(team.getTeamScore() + scores);
 
                             scoreService.addScore(data.getUserName(), team, controlPane.getCurrentStage().getName(), data.getQuestionNumber().toString(),
-                                    data.getSecond().toString(), data.getScore(), team.getNewScore().toString(), data.getUserSelect());
+                                    data.getSecond().toString(), data.getScore(), Objects.toString(team.getNewScore()), data.getUserSelect());
                         } else {
                             team.setNewScore(team.getTeamScore());
                             scoreService.addScore(data.getUserName(), team, controlPane.getCurrentStage().getName(), data.getQuestionNumber().toString(),
-                                    data.getSecond().toString(), 0, team.getNewScore().toString(), data.getUserSelect());
+                                    data.getSecond().toString(), 0,Objects.toString(team.getNewScore()), data.getUserSelect());
                         }
                         Platform.runLater(() -> {
                             controlPane.teamScore.setText(team.getTeamScore().toString());
                         });
-
-//                        if (data.getAnswer().equals(data.getUserSelect())) {
-//                            // 更新队伍分数
-//                            if (controlPane.getCurrentStage().getCountTotal() == 1) {
-//                                int scores = team.getQScores().stream().mapToInt(x -> x).sum();
-//                                team.setNewScore(team.getTeamScore() + scores);
-//
-//                                scoreService.addScore(data.getUserName(), team.getFullName(), controlPane.getCurrentStage().getName(), data.getQuestionNumber().toString(),
-//                                        data.getSecond().toString(), data.getScore(), team.getNewScore().toString());
-//                            } else {
-//                                team.setNewScore(team.getTeamScore());
-//                            }
-//                            Platform.runLater(() -> {
-//                                controlPane.teamScore.setText(team.getTeamScore().toString());
-//                            });
-//                        } else {
-//                            if (controlPane.getCurrentStage().getCountTotal() == 1) {
-//                                int scores = team.getQScores().stream().mapToInt(x -> x).sum();
-//                                team.setNewScore(team.getTeamScore() + scores);
-//                              //  team.setNewScore(team.getTeamScore() - controlPane.getCurrentStage().getDesValue());
-//
-//                                scoreService.addScore(data.getUserName(), team.getFullName(), controlPane.getCurrentStage().getName(), data.getQuestionNumber().toString(),
-//                                        data.getSecond().toString(), -controlPane.getCurrentStage().getDesValue(), team.getNewScore().toString());
-//                            } else {
-//                                team.setNewScore(team.getTeamScore());
-//                            }
-//                        }
                     }
                 }
             }
 
             String stageNumber = runtimeData.get(0).getStageNumber();
-            //Integer questionNumber = runtimeData.get(0).getQuestionNumber();
             if (!StringUtils.isEmpty(stageNumber)) {
                 totalData.add(new ArrayList<>(runtimeData));
             }
 
         }
-        //  runtimeData.clear();
     }
 
     public static void setRuntimeData(Questions data) {
@@ -218,12 +189,12 @@ public class Model61RuntimeData {
                         if (controlPane.getCurrentStage().getCountTotal() == 1) {
                             team.setNewScore(team.getTeamScore() + data.getScore());
                             scoreService.addScore(data.getUserName(), team, controlPane.getCurrentStage().getName(), data.getQuestionNumber().toString(),
-                                    data.getSecond().toString(), data.getScore(), team.getNewScore().toString(), data.getUserSelect());
+                                    data.getSecond().toString(), data.getScore(), Objects.toString(team.getNewScore()), data.getUserSelect());
 
                         } else {
                             team.setNewScore(team.getTeamScore());
                             scoreService.addScore(data.getUserName(), team, controlPane.getCurrentStage().getName(), data.getQuestionNumber().toString(),
-                                    data.getSecond().toString(), 0, team.getNewScore().toString(), data.getUserSelect());
+                                    data.getSecond().toString(), 0, Objects.toString(team.getNewScore()), data.getUserSelect());
                         }
                         Platform.runLater(() -> {
                             controlPane.teamScore.setText(team.getTeamScore().toString());
@@ -233,11 +204,11 @@ public class Model61RuntimeData {
                             team.setNewScore(team.getTeamScore() - controlPane.getCurrentStage().getDesValue());
 
                             scoreService.addScore(data.getUserName(), team, controlPane.getCurrentStage().getName(), data.getQuestionNumber().toString(),
-                                    data.getSecond().toString(), -controlPane.getCurrentStage().getDesValue(), team.getNewScore().toString(), data.getUserSelect());
+                                    data.getSecond().toString(), -controlPane.getCurrentStage().getDesValue(), Objects.toString(team.getNewScore()), data.getUserSelect());
                         } else {
                             team.setNewScore(team.getTeamScore());
                             scoreService.addScore(data.getUserName(), team, controlPane.getCurrentStage().getName(), data.getQuestionNumber().toString(),
-                                    data.getSecond().toString(), 0, team.getNewScore().toString(), data.getUserSelect());
+                                    data.getSecond().toString(), 0, Objects.toString(team.getNewScore()), data.getUserSelect());
                         }
                     }
                 }

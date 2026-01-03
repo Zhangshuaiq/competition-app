@@ -65,7 +65,7 @@ public class TeamRuntime {
 
     public static void resetScore(){
         for (Teams team : teams) {
-            team.setNewScore(null);
+            team.setNewScore(0);
         }
     }
 
@@ -74,9 +74,9 @@ public class TeamRuntime {
         TeamsMapper teamsMapper = JavaFxApplication.getApplicationContext().getBean(TeamsMapper.class);
 
         for (Teams team : teams) {
-            if (team.getNewScore() != null) {
+            if (team.getNewScore() != 0) {
                 team.setTeamScore(team.getNewScore());
-                team.setNewScore(null);
+                team.setNewScore(0);
                 teamsMapper.updateById(team);
             }
         }

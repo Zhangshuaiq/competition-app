@@ -77,7 +77,7 @@ public class Teams {
     @ExcelIgnore
     // 新的分数，用于在展示答案时更新最新的分数
     @TableField(exist = false)
-    private Integer newScore;
+    private int newScore = 0;
 
     @ExcelIgnore
     // 抢答状态 0 未抢答 1 成功 2 失败
