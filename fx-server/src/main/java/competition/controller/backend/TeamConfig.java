@@ -12,6 +12,7 @@ import competition.mapper.ScoreStyleMapper;
 import competition.mapper.StageMemberScoreMapper;
 import competition.mapper.TeamsMapper;
 import competition.util.*;
+import competition.ws.Model7RuntimeData;
 import competition.ws.WsTeamMemberWaiter;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -367,7 +368,7 @@ public class TeamConfig {
         if (scoreBoardPreview != null) {
             scoreBoardPreview.reload();
         }
-
+        Model7RuntimeData.reset();
         scoreMapper.delete(new LambdaQueryWrapper<>());
     }
     

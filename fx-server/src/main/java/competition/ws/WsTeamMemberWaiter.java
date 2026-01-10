@@ -2,7 +2,6 @@ package competition.ws;
 
 import competition.entity.Teams;
 import competition.util.TeamRuntime;
-import javafx.beans.property.MapProperty;
 import org.springframework.util.CollectionUtils;
 
 import java.util.ArrayList;

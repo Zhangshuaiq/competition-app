@@ -1,7 +1,6 @@
 package competition.controller.board.preview;
 
 import competition.util.Navigator;
-import competition.util.ScreenAdapter;
 import competition.util.TeamRuntime;
 import competition.ws.WsTeamMemberWaiter;
 import javafx.animation.KeyFrame;
@@ -40,8 +39,6 @@ public class  TeamConnectionBarPreview {
 
     @FXML
     public void initialize(){
-        WsTeamMemberWaiter.initData();
-
         // 设置容器间距和边距
         this.container.setSpacing(V_SPACING);
         this.container.setPadding(new Insets(CONTAINER_PADDING));

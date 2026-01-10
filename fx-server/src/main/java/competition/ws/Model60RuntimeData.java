@@ -5,6 +5,7 @@ import competition.controller.ControlPane;
 import competition.entity.Questions;
 import competition.entity.Teams;
 import competition.service.ScoreService;
+import competition.util.NumberUtil;
 import competition.util.TeamRuntime;
 import javafx.application.Platform;
 import lombok.Data;
@@ -72,6 +73,11 @@ public class Model60RuntimeData {
             datum.setResource(data.getResource());
             datum.setRemark(data.getRemark());
             datum.setScore(data.getScore());
+            if (StringUtils.isEmpty(data.getDescScore()) || !NumberUtil.isInt(data.getDescScore())) {
+               
+            } else {
+                datum.setDesScore(Integer.parseInt(data.getDescScore()));
+            }
             datum.setSort(data.getSort());
             datum.setStageName(data.getStageName());
             datum.setStageNumber(data.getStageNumber());
@@ -114,10 +120,13 @@ public class Model60RuntimeData {
                     } else {
                         team.setQScore(-data.getScore());
                         if (controlPane.getCurrentStage().getCountTotal() == 1) {
-                            team.setNewScore(team.getTeamScore() - controlPane.getCurrentStage().getDesValue());
+
+                            int desScore = Objects.isNull(data.getDesScore()) ? controlPane.getCurrentStage().getDesValue() : data.getDesScore();
+
+                            team.setNewScore(team.getTeamScore() - desScore);
 
                             scoreService.addScore(null, team,  controlPane.getCurrentStage().getName(), modelData.getQuestionNumber().toString(),
-                                    modelData.getSecond().toString(),  - controlPane.getCurrentStage().getDesValue(), Objects.toString(team.getNewScore()), data.getUserSelect());
+                                    modelData.getSecond().toString(),  - desScore, Objects.toString(team.getNewScore()), data.getUserSelect());
                         } else {
                             team.setNewScore(team.getTeamScore());
                             scoreService.addScore(null, team,  controlPane.getCurrentStage().getName(), modelData.getQuestionNumber().toString(),
@@ -147,10 +156,12 @@ public class Model60RuntimeData {
                 ModelData modelData = runtimeData.get(i);
                 if (StringUtils.isEmpty(modelData.getUserSelect())) {
                     if (controlPane.getCurrentStage().getCountTotal() == 1) {
-                        team.setNewScore(team.getTeamScore() - controlPane.getCurrentStage().getDesValue());
+
+                        int desScore = Objects.isNull(modelData.getDesScore()) ? controlPane.getCurrentStage().getDesValue() : modelData.getDesScore();
+                        team.setNewScore(team.getTeamScore() - desScore);
 
                         scoreService.addScore(null, team,  controlPane.getCurrentStage().getName(), modelData.getQuestionNumber().toString(),
-                                modelData.getSecond().toString(),  - controlPane.getCurrentStage().getDesValue(), Objects.toString(team.getNewScore()) , modelData.getUserSelect());
+                                modelData.getSecond().toString(),  - desScore, Objects.toString(team.getNewScore()) , modelData.getUserSelect());
                     } else {
                         scoreService.addScore(null, team,  controlPane.getCurrentStage().getName(), modelData.getQuestionNumber().toString(),
                                 modelData.getSecond().toString(),  0, Objects.toString(team.getNewScore()) , modelData.getUserSelect());
@@ -173,6 +184,9 @@ public class Model60RuntimeData {
 
         // 题目分值
         private Integer score = 0;
+
+        // 罚分分值
+        private Integer desScore = 0;
 
         // 阶段
         private String stageNumber;

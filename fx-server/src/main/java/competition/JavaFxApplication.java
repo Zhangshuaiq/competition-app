@@ -23,6 +23,7 @@ public class JavaFxApplication extends Application {
     @Override
     public void init() throws Exception {
         System.setProperty("java.awt.headless", "false");
+        FontMap.initLoadFont();
         applicationContext = new SpringApplicationBuilder(Main.class).run();
     }
 

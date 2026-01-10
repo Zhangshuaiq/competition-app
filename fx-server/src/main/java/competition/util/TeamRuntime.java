@@ -5,7 +5,6 @@ import competition.entity.Teams;
 import competition.mapper.TeamsMapper;
 import org.springframework.util.CollectionUtils;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;

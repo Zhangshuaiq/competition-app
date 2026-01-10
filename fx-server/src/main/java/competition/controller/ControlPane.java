@@ -22,6 +22,7 @@ import competition.ws.Model60RuntimeData;
 import competition.ws.Model61RuntimeData;
 import competition.ws.Model7RuntimeData;
 import competition.ws.WsMessageHandler;
+import competition.ws.WsTeamMemberWaiter;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.application.Platform;
@@ -2260,7 +2261,6 @@ public class ControlPane {
             if (!GlobalCache.showAnswer) {
                 // 更新状态
                 TeamRuntime.updateMS();
-                // TeamRuntime.resetStatus();
                 GlobalCache.showAnswer = true;
                 MusicPlayer.play(MusicResource.SHOW_ANSWER);
                 List<Model61RuntimeData.ModelData> runtimeData = Model61RuntimeData.getRuntimeData();
@@ -2274,7 +2274,12 @@ public class ControlPane {
                     if (runtimeData.get(i).getAnswer().equals(runtimeData.get(i).getUserSelect())) {
                         item.setScore(runtimeData.get(i).getScore());
                     } else {
-                        item.setScore(-currentStage.getDesValue());
+
+                        if (Objects.isNull(runtimeData.get(i).getDesScore())) {
+                            item.setScore(-currentStage.getDesValue());
+                        } else {
+                            item.setScore(-runtimeData.get(i).getDesScore());
+                        }
                     }
                     item.setTeamName(runtimeData.get(i).getTeamName());
                     item.setMember(runtimeData.get(i).getUserName());
@@ -2323,7 +2328,11 @@ public class ControlPane {
                             if (runtimeData.get(i).getAnswer().equals(runtimeData.get(i).getUserSelect())) {
                                 item.setScore(runtimeData.get(i).getScore());
                             } else {
-                                item.setScore(-currentStage.getDesValue());
+                                 if (Objects.isNull(runtimeData.get(i).getDesScore())) {
+                                    item.setScore(-currentStage.getDesValue());
+                                } else {
+                                    item.setScore(-runtimeData.get(i).getDesScore());
+                                }
                             }
                             item.setTeamName(runtimeData.get(i).getTeamName());
                             items.add(item);
@@ -2530,6 +2539,7 @@ public class ControlPane {
         }
         // 若已有分数，则加载旧的分数
         TeamRuntime.setTeams(teams);
+        WsTeamMemberWaiter.initData();
         Model7RuntimeData.setTeams(TeamRuntime.getTeams());
         Model60RuntimeData.setTeams(TeamRuntime.getTeams());
         Model61RuntimeData.setTeams(TeamRuntime.getTeams());
@@ -2568,24 +2578,10 @@ public class ControlPane {
             if (boardLayout.equals("1")) {
                 scoreBoardPreview = (BoardPane) Navigator.scoreWithPos("/view/board/preview/ScoreBoardH.fxml", "",
                         "/view/style.css", true);
-                // if (scoreBoardPreview != null) {
-                // scoreBoardPreview.reload();
-                // } else {
-                // scoreBoardPreview = (BoardPane)
-                // Navigator.scoreWithPos("/view/board/preview/ScoreBoardH.fxml", "",
-                // "/view/style.css", true);
-                // }
             } else if (boardLayout.equals("2")) {
                 scoreBoardPreview = (BoardPane) Navigator.scoreWithPos("/view/board/preview/ScoreBoardV.fxml", "",
                         "/view/style.css", true);
 
-                // if (scoreBoardPreview != null) {
-                // scoreBoardPreview.reload();
-                // } else {
-                // scoreBoardPreview = (BoardPane)
-                // Navigator.scoreWithPos("/view/board/preview/ScoreBoardV.fxml", "",
-                // "/view/style.css", true);
-                // }
             }
         }
     }

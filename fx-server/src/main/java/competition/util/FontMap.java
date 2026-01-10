@@ -17,12 +17,16 @@ public class FontMap {
 
     private static final Map<String, String> fontGroupMapping = new HashMap<>();
 
+    public static void initLoadFont(){
+        fontNames();
+    }
+
     public static Map<String,List<String>> fontNames() {
         List<String> sysFontNames = Font.getFamilies();
         List<String> customFontNames = FileUtil.listFileNames(BaseDir.FONT_DIR);
         Map<String,List<String>> allFonts = new LinkedHashMap<>();
-        allFonts.put(SYS_FONT_GROUP, sysFontNames);
         allFonts.put(CUSTOM_FONT_GROUP, customFontNames);
+        allFonts.put(SYS_FONT_GROUP, sysFontNames);
 
         for (String sysFontName : sysFontNames) {
             fontGroupMapping.put(sysFontName, SYS_FONT_GROUP);
