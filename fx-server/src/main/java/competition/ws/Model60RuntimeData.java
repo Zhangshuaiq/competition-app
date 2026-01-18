@@ -16,29 +16,27 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
-// 答题模式-个人 实时更新数据,后端使用
+// 答题模式-团队 实时更新数据,后端使用
 public class Model60RuntimeData {
 
     // 已回答的所有状态
     public static List<List<ModelData>> totalData = new ArrayList<>();
-    
+
     // 实时回答状态
     private static List<ModelData> runtimeData = new ArrayList<>();
 
     private static List<Teams> teams = new ArrayList<>();
 
-
     public static List<Teams> getTeams() {
         return teams;
     }
 
-
     public static void setTeams(List<Teams> teams) {
         // 保存已有的数据，用于计算排名
-//        if (!runtimeData.isEmpty()) {
-//            totalData.add(runtimeData);
-//        }
-       // forceFinish();
+        // if (!runtimeData.isEmpty()) {
+        // totalData.add(runtimeData);
+        // }
+        // forceFinish();
         runtimeData.clear();
         Model60RuntimeData.teams = teams;
         for (Teams team : teams) {
@@ -47,7 +45,13 @@ public class Model60RuntimeData {
             runtimeData.add(md);
         }
     }
-    
+
+    public static void reset() {
+        totalData.clear();
+        runtimeData.clear();
+        teams.clear();
+    }
+
     // 更新计时
     public static void freshTime(int second) {
         for (Model60RuntimeData.ModelData datum : runtimeData) {
@@ -74,9 +78,9 @@ public class Model60RuntimeData {
             datum.setRemark(data.getRemark());
             datum.setScore(data.getScore());
             if (StringUtils.isEmpty(data.getDescScore()) || !NumberUtil.isInt(data.getDescScore())) {
-               
+
             } else {
-                datum.setDesScore(Integer.parseInt(data.getDescScore()));
+                datum.setDescScore(Integer.parseInt(data.getDescScore()));
             }
             datum.setSort(data.getSort());
             datum.setStageName(data.getStageName());
@@ -86,7 +90,9 @@ public class Model60RuntimeData {
     }
 
     public static void setRuntimeData(ModelData data) {
-        Optional<ModelData> first = runtimeData.stream().filter(x -> x.getTeamName().equals(data.getTeamName())).findFirst();
+        System.out.println("收到答题数据：" + data);
+        Optional<ModelData> first = runtimeData.stream().filter(x -> x.getTeamName().equals(data.getTeamName()))
+                .findFirst();
         if (first.isPresent()) {
             ModelData modelData = first.get();
             int i = runtimeData.indexOf(modelData);
@@ -104,16 +110,20 @@ public class Model60RuntimeData {
                         if (controlPane.getCurrentStage().getCountTotal() == 1) {
                             team.setNewScore(team.getTeamScore() + data.getScore());
 
-                            scoreService.addScore(null, team,  controlPane.getCurrentStage().getName(), modelData.getQuestionNumber().toString(),
-                                    modelData.getSecond().toString(),  data.getScore(), Objects.toString(team.getNewScore()), data.getUserSelect());
+                            scoreService.addScore(null, team, controlPane.getCurrentStage().getName(),
+                                    modelData.getQuestionNumber().toString(),
+                                    modelData.getSecond().toString(), data.getScore(),
+                                    Objects.toString(team.getNewScore()), data.getUserSelect());
                         } else {
                             team.setNewScore(team.getTeamScore());
-                            scoreService.addScore(null, team,  controlPane.getCurrentStage().getName(), modelData.getQuestionNumber().toString(),
-                                    modelData.getSecond().toString(),  0, Objects.toString(team.getNewScore()), data.getUserSelect());
+                            scoreService.addScore(null, team, controlPane.getCurrentStage().getName(),
+                                    modelData.getQuestionNumber().toString(),
+                                    modelData.getSecond().toString(), 0, Objects.toString(team.getNewScore()),
+                                    data.getUserSelect());
                         }
-                        
+
                         team.setQScore(data.getScore());
-                        
+
                         Platform.runLater(() -> {
                             controlPane.teamScore.setText(team.getTeamScore().toString());
                         });
@@ -121,23 +131,28 @@ public class Model60RuntimeData {
                         team.setQScore(-data.getScore());
                         if (controlPane.getCurrentStage().getCountTotal() == 1) {
 
-                            int desScore = Objects.isNull(data.getDesScore()) ? controlPane.getCurrentStage().getDesValue() : data.getDesScore();
+                            int desScore = Objects.isNull(data.getDescScore())
+                                    ? controlPane.getCurrentStage().getDesValue()
+                                    : data.getDescScore();
 
                             team.setNewScore(team.getTeamScore() - desScore);
 
-                            scoreService.addScore(null, team,  controlPane.getCurrentStage().getName(), modelData.getQuestionNumber().toString(),
-                                    modelData.getSecond().toString(),  - desScore, Objects.toString(team.getNewScore()), data.getUserSelect());
+                            scoreService.addScore(null, team, controlPane.getCurrentStage().getName(),
+                                    modelData.getQuestionNumber().toString(),
+                                    modelData.getSecond().toString(), -desScore, Objects.toString(team.getNewScore()),
+                                    data.getUserSelect());
                         } else {
                             team.setNewScore(team.getTeamScore());
-                            scoreService.addScore(null, team,  controlPane.getCurrentStage().getName(), modelData.getQuestionNumber().toString(),
-                                    modelData.getSecond().toString(), 0, Objects.toString(team.getNewScore()), data.getUserSelect());
+                            scoreService.addScore(null, team, controlPane.getCurrentStage().getName(),
+                                    modelData.getQuestionNumber().toString(),
+                                    modelData.getSecond().toString(), 0, Objects.toString(team.getNewScore()),
+                                    data.getUserSelect());
                         }
                     }
                 }
             }
         }
     }
-
 
     public static List<ModelData> getRuntimeData() {
         return runtimeData;
@@ -147,7 +162,7 @@ public class Model60RuntimeData {
         return totalData;
     }
 
-    public static void forceFinish(){
+    public static void forceFinish() {
         if (!runtimeData.isEmpty()) {
             ControlPane controlPane = JavaFxApplication.getApplicationContext().getBean(ControlPane.class);
             ScoreService scoreService = JavaFxApplication.getApplicationContext().getBean(ScoreService.class);
@@ -157,14 +172,20 @@ public class Model60RuntimeData {
                 if (StringUtils.isEmpty(modelData.getUserSelect())) {
                     if (controlPane.getCurrentStage().getCountTotal() == 1) {
 
-                        int desScore = Objects.isNull(modelData.getDesScore()) ? controlPane.getCurrentStage().getDesValue() : modelData.getDesScore();
+                        int desScore = Objects.isNull(modelData.getDescScore())
+                                ? controlPane.getCurrentStage().getDesValue()
+                                : modelData.getDescScore();
                         team.setNewScore(team.getTeamScore() - desScore);
 
-                        scoreService.addScore(null, team,  controlPane.getCurrentStage().getName(), modelData.getQuestionNumber().toString(),
-                                modelData.getSecond().toString(),  - desScore, Objects.toString(team.getNewScore()) , modelData.getUserSelect());
+                        scoreService.addScore(null, team, controlPane.getCurrentStage().getName(),
+                                modelData.getQuestionNumber().toString(),
+                                modelData.getSecond().toString(), -desScore, Objects.toString(team.getNewScore()),
+                                modelData.getUserSelect());
                     } else {
-                        scoreService.addScore(null, team,  controlPane.getCurrentStage().getName(), modelData.getQuestionNumber().toString(),
-                                modelData.getSecond().toString(),  0, Objects.toString(team.getNewScore()) , modelData.getUserSelect());
+                        scoreService.addScore(null, team, controlPane.getCurrentStage().getName(),
+                                modelData.getQuestionNumber().toString(),
+                                modelData.getSecond().toString(), 0, Objects.toString(team.getNewScore()),
+                                modelData.getUserSelect());
                     }
                 }
             }
@@ -173,7 +194,7 @@ public class Model60RuntimeData {
                 totalData.add(new ArrayList<>(runtimeData));
             }
         }
-        //runtimeData.clear();
+        // runtimeData.clear();
     }
 
     @Data
@@ -186,7 +207,7 @@ public class Model60RuntimeData {
         private Integer score = 0;
 
         // 罚分分值
-        private Integer desScore = 0;
+        private Integer descScore = 0;
 
         // 阶段
         private String stageNumber;
@@ -223,7 +244,7 @@ public class Model60RuntimeData {
 
         // 选手选项
         private String userSelect;
-        
+
         // 用时
         private Integer second = 0;
 

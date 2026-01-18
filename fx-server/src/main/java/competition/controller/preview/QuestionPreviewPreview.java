@@ -27,6 +27,8 @@ import javafx.scene.paint.Paint;
 import javafx.scene.text.*;
 import javafx.scene.text.Font;
 import javafx.scene.transform.Shear;
+import lombok.extern.slf4j.Slf4j;
+
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
@@ -40,11 +42,12 @@ import java.util.concurrent.ConcurrentHashMap;
 
 // 试题显示主控屏幕 - 优化版本
 @Component
+@Slf4j
 public class QuestionPreviewPreview extends PreviewPane<Questions> {
 
     // 字体缓存，避免重复加载
     private static final Map<String, Font> FONT_CACHE = new ConcurrentHashMap<>();
-    private final  String BLACK_LINE = "=======================================================";
+    private final String BLACK_LINE = "=======================================================";
 
     // UI组件复用
     private Text choiceAText, choiceBText, choiceCText, choiceDText, choiceEText, choiceFText;
@@ -87,7 +90,6 @@ public class QuestionPreviewPreview extends PreviewPane<Questions> {
     private Questions inner;
 
     private EventHandler<MouseEvent> mouseClickHandler;
-
 
     @Override
     public AnchorPane getPane() {
@@ -150,7 +152,7 @@ public class QuestionPreviewPreview extends PreviewPane<Questions> {
                     imageView.setImage(currentQuestionImage);
                 }
             } else {
-               throw new RuntimeException();
+                throw new RuntimeException();
             }
 
         } catch (FileNotFoundException e) {
@@ -171,8 +173,7 @@ public class QuestionPreviewPreview extends PreviewPane<Questions> {
             currentBackgroundImage = new Image(new FileInputStream(imagePath));
             region.setBackground(new Background(new BackgroundImage(
                     currentBackgroundImage, BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT,
-                    BackgroundPosition.DEFAULT, new BackgroundSize(width, height, false, false, false, false)
-            )));
+                    BackgroundPosition.DEFAULT, new BackgroundSize(width, height, false, false, false, false))));
         } catch (FileNotFoundException e) {
             region.setBackground(new Background(new BackgroundFill(Color.TRANSPARENT,
                     new CornerRadii(ScreenAdapter.calculateMainX(10)), Insets.EMPTY)));
@@ -198,8 +199,7 @@ public class QuestionPreviewPreview extends PreviewPane<Questions> {
         if (inner != null) {
             String stageNumber = inner.getStageNumber();
             Stages belongStage = stagesMapper.selectOne(new LambdaQueryWrapper<Stages>()
-                    .eq(Stages::getSortVal, stageNumber)
-            );
+                    .eq(Stages::getSortVal, stageNumber));
             if (belongStage != null) {
                 inner.setShowNumber(belongStage.getShowNumber());
             }
@@ -382,9 +382,8 @@ public class QuestionPreviewPreview extends PreviewPane<Questions> {
      */
     private void clearAndResetChoices() {
         // 从父容器中移除所有选项组件
-        tiganBox.getChildren().removeIf(node ->
-                node == choiceAText || node == choiceBText || node == choiceCText ||
-                        node == choiceDText || node == choiceEText || node == choiceFText);
+        tiganBox.getChildren().removeIf(node -> node == choiceAText || node == choiceBText || node == choiceCText ||
+                node == choiceDText || node == choiceEText || node == choiceFText);
 
         // 重置选项组件状态
         resetChoiceText(choiceAText);
@@ -413,7 +412,8 @@ public class QuestionPreviewPreview extends PreviewPane<Questions> {
      * 应用基本样式
      */
     private void applyBasicStyles(String[] split) {
-        if (split.length < 8) return;
+        if (split.length < 8)
+            return;
 
         // 题干颜色
         tiganLabel.setFill(Color.valueOf(split[0]));
@@ -484,7 +484,8 @@ public class QuestionPreviewPreview extends PreviewPane<Questions> {
      * 处理题型标注
      */
     private void handleQuestionTypeLabel(String[] split) {
-        if (split.length < 11) return;
+        if (split.length < 11)
+            return;
 
         String tx = split[9];
         String txbz = split[10];
@@ -492,6 +493,7 @@ public class QuestionPreviewPreview extends PreviewPane<Questions> {
 
         Stages currentStage = controlPane.getCurrentStage();
         if (currentStage != null && currentStage.getQuestionType() == 6) {
+            log.info("当前题目信息为 {}", inner);
             if (currentStage.getM6() == 0) {
                 messageHandler.notifyPage("model60", inner);
             } else {
@@ -506,7 +508,7 @@ public class QuestionPreviewPreview extends PreviewPane<Questions> {
                 if (currentStage != null && currentStage.getQuestionType() == 3) {
                     Stages pstage = stagesMapper.selectById(stages.getParentId());
                     if (pstage != null) {
-//                        stages.setName(pstage.getName() + " " + stages.getName());
+                        // stages.setName(pstage.getName() + " " + stages.getName());
                         messageHandler.notifyPageWithStage("question", inner, stages);
                     } else {
                         messageHandler.notifyPage("question", inner);
@@ -600,7 +602,7 @@ public class QuestionPreviewPreview extends PreviewPane<Questions> {
      */
     private void addChoicesWithLabels(String prefix) {
         addChoiceIfNotEmpty(choiceAText, "A" + prefix + inner.getChoiceA(), inner.getChoiceA());
-        addChoiceIfNotEmpty(choiceBText, "B" + prefix +inner.getChoiceB(), inner.getChoiceB());
+        addChoiceIfNotEmpty(choiceBText, "B" + prefix + inner.getChoiceB(), inner.getChoiceB());
         addChoiceIfNotEmpty(choiceCText, "C" + prefix + inner.getChoiceC(), inner.getChoiceC());
         addChoiceIfNotEmpty(choiceDText, "D" + prefix + inner.getChoiceD(), inner.getChoiceD());
         addChoiceIfNotEmpty(choiceEText, "E" + prefix + inner.getChoiceE(), inner.getChoiceE());
@@ -656,7 +658,8 @@ public class QuestionPreviewPreview extends PreviewPane<Questions> {
      * 处理阶段显示
      */
     private void handleStageDisplay(String[] split) {
-        if (split.length < 13) return;
+        if (split.length < 13)
+            return;
 
         stagePane.setVisible(Boolean.valueOf(split[12]));
 
@@ -721,7 +724,8 @@ public class QuestionPreviewPreview extends PreviewPane<Questions> {
      */
     private void applyStyle1(String style1) {
         String[] split1 = style1.split(ConfigSpliter.SPLITER);
-        if (split1.length < 15) return;
+        if (split1.length < 15)
+            return;
 
         // style1的位置和尺寸设置（覆盖基础设置）
         tiganBox.setLayoutX(ScreenAdapter.calculateMainX(Integer.parseInt(split1[0])));
@@ -735,7 +739,8 @@ public class QuestionPreviewPreview extends PreviewPane<Questions> {
         // 设置间距和字体（覆盖基础设置）
         tiganBox.setSpacing(ScreenAdapter.calculateMainY(Integer.parseInt(split1[14])));
         Font font = getCachedFont(split1[7], ScreenAdapter.calculateMainX(Integer.parseInt(split1[8])));
-        //Font font = Font.font(ScreenAdapter.calculateMainX(Integer.parseInt(split1[8])));
+        // Font font =
+        // Font.font(ScreenAdapter.calculateMainX(Integer.parseInt(split1[8])));
         // 应用字体样式到所有文本组件（覆盖基础样式）
         applyFontStyleToAllTexts(font, split1);
         // 处理空行
@@ -744,17 +749,18 @@ public class QuestionPreviewPreview extends PreviewPane<Questions> {
                 addBlankLine(font);
             } else {
                 // 如果不需要空行，确保没有多余的空行
-                tiganBox.getChildren().removeIf(node -> node instanceof Text && ((Text) node).getText().equals(BLACK_LINE));
+                tiganBox.getChildren()
+                        .removeIf(node -> node instanceof Text && ((Text) node).getText().equals(BLACK_LINE));
             }
-        } 
+        }
     }
-
 
     /**
      * 设置区域背景
      */
     private void setRegionBackground(Region region, String[] split1) {
-        if (split1.length < 7) return;
+        if (split1.length < 7)
+            return;
 
         if (Boolean.valueOf(split1[4])) {
             // 背景图片
@@ -797,7 +803,8 @@ public class QuestionPreviewPreview extends PreviewPane<Questions> {
      * 应用文本样式
      */
     private void applyTextStyle(Text text, Font font, String[] split1, Paint color) {
-        if (split1.length < 15) return;
+        if (split1.length < 15)
+            return;
 
         text.setFont(font);
         text.setUnderline(Boolean.valueOf(split1[12]));
@@ -852,7 +859,8 @@ public class QuestionPreviewPreview extends PreviewPane<Questions> {
      */
     private void applyStyle2(String style2) {
         String[] split1 = style2.split(ConfigSpliter.SPLITER);
-        if (split1.length < 15) return;
+        if (split1.length < 15)
+            return;
 
         // style2的位置和尺寸设置（覆盖基础答案位置）
         backPane.setLayoutX(ScreenAdapter.calculateMainX(Integer.parseInt(split1[0])));
@@ -875,10 +883,12 @@ public class QuestionPreviewPreview extends PreviewPane<Questions> {
      * 应用样式3（阶段样式）- 优先级最高，覆盖基础阶段设置
      */
     private void applyStyle3(String style3) {
-        if (StringUtils.isEmpty(style3)) return;
+        if (StringUtils.isEmpty(style3))
+            return;
 
         String[] split1 = style3.split(ConfigSpliter.SPLITER);
-        if (split1.length < 14) return;
+        if (split1.length < 14)
+            return;
 
         // style3的位置和尺寸设置（覆盖基础设置）
         stagePane.setLayoutX(ScreenAdapter.calculateMainX(Integer.parseInt(split1[0])));
@@ -936,7 +946,8 @@ public class QuestionPreviewPreview extends PreviewPane<Questions> {
      * 显示答案
      */
     public void showAnswer() {
-        if (inner == null) return;
+        if (inner == null)
+            return;
         if (StringUtils.isEmpty(inner.getResourceType())) {
             inner.setResourceType("图片");
         }
@@ -949,9 +960,8 @@ public class QuestionPreviewPreview extends PreviewPane<Questions> {
             imageQ.setFitWidth(Navigator.getWidth());
 
             try {
-                String imagePath = GlobalCache.showAnswer ?
-                        BaseDir.TIKU_RES_DIR + inner.getAnswer() :
-                        BaseDir.TIKU_RES_DIR + inner.getQuestion();
+                String imagePath = GlobalCache.showAnswer ? BaseDir.TIKU_RES_DIR + inner.getAnswer()
+                        : BaseDir.TIKU_RES_DIR + inner.getQuestion();
                 setImageSafely(imageQ, imagePath, Navigator.getWidth(), Navigator.getHeight());
                 backPane.setVisible(false);
             } catch (Exception e) {
@@ -1069,14 +1079,23 @@ public class QuestionPreviewPreview extends PreviewPane<Questions> {
         }
 
         // 重置文本组件
-        if (choiceAText != null) choiceAText.setText("");
-        if (choiceBText != null) choiceBText.setText("");
-        if (choiceCText != null) choiceCText.setText("");
-        if (choiceDText != null) choiceDText.setText("");
-        if (choiceEText != null) choiceEText.setText("");
-        if (choiceFText != null) choiceFText.setText("");
-        if (tiganLabel != null) tiganLabel.setText("");
-        if (daanLabel != null) daanLabel.setText("");
-        if (stageLabel != null) stageLabel.setText("");
+        if (choiceAText != null)
+            choiceAText.setText("");
+        if (choiceBText != null)
+            choiceBText.setText("");
+        if (choiceCText != null)
+            choiceCText.setText("");
+        if (choiceDText != null)
+            choiceDText.setText("");
+        if (choiceEText != null)
+            choiceEText.setText("");
+        if (choiceFText != null)
+            choiceFText.setText("");
+        if (tiganLabel != null)
+            tiganLabel.setText("");
+        if (daanLabel != null)
+            daanLabel.setText("");
+        if (stageLabel != null)
+            stageLabel.setText("");
     }
 }

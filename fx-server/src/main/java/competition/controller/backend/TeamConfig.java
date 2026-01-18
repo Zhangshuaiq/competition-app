@@ -12,6 +12,8 @@ import competition.mapper.ScoreStyleMapper;
 import competition.mapper.StageMemberScoreMapper;
 import competition.mapper.TeamsMapper;
 import competition.util.*;
+import competition.ws.Model60RuntimeData;
+import competition.ws.Model61RuntimeData;
 import competition.ws.Model7RuntimeData;
 import competition.ws.WsTeamMemberWaiter;
 import javafx.collections.FXCollections;
@@ -19,7 +21,6 @@ import javafx.collections.ObservableList;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.geometry.Pos;
-import javafx.scene.Node;
 import javafx.scene.control.Label;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
@@ -28,10 +29,10 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
-import javafx.scene.text.Font;
 import javafx.stage.FileChooser;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.logging.log4j.util.Strings;
+import org.apache.poi.ss.formula.functions.Mode;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
@@ -46,41 +47,39 @@ public class TeamConfig {
 
     @Resource
     private StageMemberScoreMapper scoreMapper;
-    
+
     @FXML
     private TextField holderPassword;
-    
+
     @FXML
     private VBox memberBox;
-    
+
     @FXML
     private TableView<Teams> tableView;
-    
+
     @FXML
     private TextField codeInput, shortNameInput, fullNameInput, passwordInput;
-    
+
     @FXML
     private TableColumn<Teams, String> codeCol, shortNameCol, fullNameCol, memberCol, passwordCol;
-    
+
     @Resource
     private TeamsMapper teamsMapper;
-    
+
     @FXML
     private TextField teamBaseScore;
-    
+
     @FXML
     private TextField memberBaseScore;
-    
-    
+
     @Resource
     private ControlPane controlPane;
-    
+
     @Resource
     private ScoreStyleMapper mapper;
-    
-    @FXML
-    public void initialize(){
 
+    @FXML
+    public void initialize() {
 
         ScoreStyle scoreStyle = mapper.selectById(2);
 
@@ -93,9 +92,9 @@ public class TeamConfig {
         passwordCol.setCellValueFactory(new PropertyValueFactory<>("password"));
         showTeam();
     }
-    
+
     @FXML
-    public void updateHolderPassword(){
+    public void updateHolderPassword() {
 
         ScoreStyle scoreStyle = mapper.selectById(2);
 
@@ -103,9 +102,9 @@ public class TeamConfig {
         scoreStyle.setStyles(text);
         mapper.updateById(scoreStyle);
     }
-    
+
     @FXML
-    public void addMember(){
+    public void addMember() {
         // prefHeight="38.0" prefWidth="38.0"
         final int size = memberBox.getChildren().size();
         Label code = new Label(size + "");
@@ -129,8 +128,7 @@ public class TeamConfig {
         hBox.getChildren().addAll(code, textField, delete);
         memberBox.getChildren().add(size - 1, hBox);
     }
-    
-    
+
     private void showMember(String member) {
         final int size = memberBox.getChildren().size();
         Label code = new Label(size + "");
@@ -151,13 +149,13 @@ public class TeamConfig {
                 memberBox.getChildren().remove(size - 1);
             }
         });
-        
+
         hBox.getChildren().addAll(code, textField, delete);
         memberBox.getChildren().add(size - 1, hBox);
     }
-    
+
     @FXML
-    public void addTeamInfo(){
+    public void addTeamInfo() {
 
         Long count = teamsMapper.selectCount(new LambdaQueryWrapper<>());
         if (count >= GlobalCache.MAX_TEAM_NUMBER) {
@@ -180,7 +178,7 @@ public class TeamConfig {
             members.add(node.getText());
             memberMap.put(node.getText(), 0);
         }
-        
+
         final String memberVal = Strings.join(members, ',');
         final String memberScore = JSON.toJSONString(memberMap);
 
@@ -194,9 +192,9 @@ public class TeamConfig {
         teamsMapper.insert(teams);
         showTeam();
     }
-    
+
     @FXML
-    public void clickTable(){
+    public void clickTable() {
         final Teams selectedItem = tableView.getSelectionModel().getSelectedItem();
         if (selectedItem == null) {
             return;
@@ -215,9 +213,9 @@ public class TeamConfig {
         }
 
     }
-    
+
     @FXML
-    public void updateTeamInfo(){
+    public void updateTeamInfo() {
         final Teams selectedItem = tableView.getSelectionModel().getSelectedItem();
         if (selectedItem == null) {
             return;
@@ -254,9 +252,9 @@ public class TeamConfig {
         teamsMapper.updateById(teams);
         showTeam();
     }
-    
+
     @FXML
-    public void deleteTeamInfo(){
+    public void deleteTeamInfo() {
         final Teams selectedItem = tableView.getSelectionModel().getSelectedItem();
         if (selectedItem == null) {
             return;
@@ -268,11 +266,11 @@ public class TeamConfig {
         TeamRuntime.setTeams(new ArrayList<>(items));
         controlPane.refreshTeam();
     }
-    
+
     @FXML
-    public void importTeam(){
-        //EasyExcel.
-        //file
+    public void importTeam() {
+        // EasyExcel.
+        // file
         // 创建FileChooser实例
         FileChooser fileChooser = new FileChooser();
 
@@ -283,8 +281,8 @@ public class TeamConfig {
         fileChooser.setInitialDirectory(new File(System.getProperty("user.home")));
 
         // 添加文件过滤器以只显示Excel文件
-        FileChooser.ExtensionFilter extFilter =
-                new FileChooser.ExtensionFilter("Excel 文件 (*.xls, *.xlsx)", "*.xls", "*.xlsx");
+        FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("Excel 文件 (*.xls, *.xlsx)", "*.xls",
+                "*.xlsx");
         fileChooser.getExtensionFilters().add(extFilter);
 
         File selectedFile = fileChooser.showOpenDialog(null);
@@ -322,10 +320,9 @@ public class TeamConfig {
         // 显示最新的队伍信息
         showTeam();
     }
-    
-    
+
     @FXML
-    public void resetTeamScore(){
+    public void resetTeamScore() {
         String text = teamBaseScore.getText();
         if (StringUtils.isEmpty(text)) {
             Information.error("请完善团队基础分！！");
@@ -346,7 +343,7 @@ public class TeamConfig {
             team.setMemberScore(JSON.toJSONString(memberMap));
             teamsMapper.updateById(team);
         }
-       // ScoreSaver.clear();
+        // ScoreSaver.clear();
 
         // 排序队伍，按照编码排序
         teams.sort(Comparator.comparingInt(o -> Integer.parseInt(o.getCode())));
@@ -369,12 +366,13 @@ public class TeamConfig {
             scoreBoardPreview.reload();
         }
         Model7RuntimeData.reset();
+        Model60RuntimeData.reset();
+        Model61RuntimeData.reset();
         scoreMapper.delete(new LambdaQueryWrapper<>());
     }
-    
-    
+
     @FXML
-    public void resetMemberScore(){
+    public void resetMemberScore() {
         String text = memberBaseScore.getText();
         if (StringUtils.isEmpty(text)) {
             Information.error("请完善个人基础分！！");
@@ -395,7 +393,7 @@ public class TeamConfig {
         }
 
         teams.sort(Comparator.comparingInt(o -> Integer.parseInt(o.getCode())));
-        
+
         for (Teams team : teams) {
             team.setQScores(new ArrayList<>());
             team.setStatusList(new ArrayList<>());
@@ -414,11 +412,11 @@ public class TeamConfig {
             scoreBoardPreview.reload();
         }
     }
-    
-    
-    private void showTeam(){
+
+    private void showTeam() {
         List<Teams> teams = teamsMapper.selectList(new LambdaQueryWrapper<>());
-        teams = teams.stream().sorted(Comparator.comparingInt(x -> Integer.parseInt(x.getCode()))).collect(Collectors.toList());
+        teams = teams.stream().sorted(Comparator.comparingInt(x -> Integer.parseInt(x.getCode())))
+                .collect(Collectors.toList());
         tableView.setItems(FXCollections.observableList(teams));
         TeamRuntime.setTeams(teams);
         controlPane.reloadScoreBoard();

@@ -230,7 +230,6 @@ public class ControlPane {
     @Resource
     private Model7StatusMapper model7StatusMapper;
 
-
     private final Comparator<Stages> comparator = (o1, o2) -> {
         if (o1.getSortVal().length() > o2.getSortVal().length()) {
             return 1;
@@ -239,7 +238,8 @@ public class ControlPane {
         }
         String[] split1 = o1.getSortVal().split("\\.");
         String[] split2 = o2.getSortVal().split("\\.");
-        return Integer.compare(Integer.parseInt(split1[split1.length - 1]), Integer.parseInt(split2[split2.length - 1]));
+        return Integer.compare(Integer.parseInt(split1[split1.length - 1]),
+                Integer.parseInt(split2[split2.length - 1]));
     };
 
     private void loadConnectionStatsBar() {
@@ -279,7 +279,6 @@ public class ControlPane {
 
     }
 
-
     public void refreshTeam() {
         List<Teams> teams = teamsMapper.selectList(new LambdaQueryWrapper<>());
         teams.sort(new Comparator<Teams>() {
@@ -288,7 +287,8 @@ public class ControlPane {
                 return Integer.parseInt(o1.getCode()) - Integer.parseInt(o2.getCode());
             }
         });
-        teamComBox.setItems(FXCollections.observableList(teams.stream().map(Teams::getShortName).collect(Collectors.toList())));
+        teamComBox.setItems(
+                FXCollections.observableList(teams.stream().map(Teams::getShortName).collect(Collectors.toList())));
     }
 
     @FXML
@@ -392,7 +392,8 @@ public class ControlPane {
     private boolean enterModelQuestionPage() {
         return previewPane != null &&
                 ((previewPane instanceof QuestionPreviewPreview
-                        && (currentStage != null && (currentStage.getQuestionType() == 7 || currentStage.getQuestionType() == 6)))
+                        && (currentStage != null
+                                && (currentStage.getQuestionType() == 7 || currentStage.getQuestionType() == 6)))
                         || (previewPane instanceof CluePreviewPreview)
                         || (previewPane instanceof Model7Preview));
     }
@@ -403,7 +404,6 @@ public class ControlPane {
                         || (previewPane instanceof CluePreviewPreview)
                         || (previewPane instanceof Model7Preview));
     }
-
 
     private void runTimeStatusUpdate() {
         Timeline timeline = new Timeline(new KeyFrame(javafx.util.Duration.millis(100), event -> {
@@ -432,7 +432,6 @@ public class ControlPane {
             } else {
                 clueBtn.setDisable(true);
             }
-
 
             // 检测开始答题状态
             if (enterModelQuestionPage()) {
@@ -1055,7 +1054,7 @@ public class ControlPane {
         }
         if (previewPane != null
                 && (previewPane instanceof MemberRankPreview || previewPane instanceof TeamRankPreview
-                || previewPane instanceof BuzzRankPreview)) {
+                        || previewPane instanceof BuzzRankPreview)) {
             previewPane.reload();
         }
 
@@ -1210,7 +1209,7 @@ public class ControlPane {
 
         if (previewPane != null
                 && (previewPane instanceof MemberRankPreview || previewPane instanceof TeamRankPreview
-                || previewPane instanceof BuzzRankPreview)) {
+                        || previewPane instanceof BuzzRankPreview)) {
             previewPane.reload();
         }
 
@@ -1322,7 +1321,6 @@ public class ControlPane {
             startAnswerBtn.setTextFill(Color.BLACK);
             startAnswerBtn.setStyle("");
         }
-
 
     }
 
@@ -1494,13 +1492,13 @@ public class ControlPane {
             return;
         }
 
-//        @SuppressWarnings("rawtypes")
-//        PreviewPane last = PreviewStack.getLast();
+        // @SuppressWarnings("rawtypes")
+        // PreviewPane last = PreviewStack.getLast();
         try {
             RuntimeUtil.addLast = false;
             if (previewPane instanceof QuestionPreviewPreview) {
                 PreviewPane last = PreviewStack.last();
-                if (last instanceof  QuestionPreviewPreview) {
+                if (last instanceof QuestionPreviewPreview) {
                     PreviewStack.removePreview();
                 }
                 // 答题 返回 选题界面
@@ -1513,11 +1511,13 @@ public class ControlPane {
                 // 判断当前环节的出题类型
                 if (stages.getQuestionType() == 2) {
                     // 自选题目
-                    previewPane = Navigator.preview("/view/preview/StageQuestionPreview.fxml", "", "/view/style.css", true,
+                    previewPane = Navigator.preview("/view/preview/StageQuestionPreview.fxml", "", "/view/style.css",
+                            true,
                             stages);
                 } else if (stages.getQuestionType() == 4) {
                     // 滚动选题
-                    previewPane = Navigator.preview("/view/preview/RollPreview.fxml", "", "/view/style.css", true, stages);
+                    previewPane = Navigator.preview("/view/preview/RollPreview.fxml", "", "/view/style.css", true,
+                            stages);
                 } else if (stages.getQuestionType() == 3) {
                     // 风险题
                     List<Stages> queryList = stagesMapper.selectList(new LambdaQueryWrapper<Stages>()
@@ -1531,7 +1531,8 @@ public class ControlPane {
                     }
                 } else if (stages.getQuestionType() == 6) {
                     // 答题模式
-                    previewPane = Navigator.preview("/view/preview/StageQuestionPreview.fxml", "", "/view/style.css", true,
+                    previewPane = Navigator.preview("/view/preview/StageQuestionPreview.fxml", "", "/view/style.css",
+                            true,
                             stages);
                 } else if (stages.getQuestionType() == 1) {
                     previewPane = Navigator.preview("/view/preview/StageNamePreview.fxml", "", "/view/style.css", true,
@@ -1541,7 +1542,7 @@ public class ControlPane {
             } else if (previewPane instanceof Model7Preview) {
 
                 PreviewPane last = PreviewStack.last();
-                if (last instanceof  Model7Preview) {
+                if (last instanceof Model7Preview) {
                     PreviewStack.removePreview();
                 }
 
@@ -1561,7 +1562,7 @@ public class ControlPane {
                         previewPane.getData());
             } else if (previewPane instanceof CluePreviewPreview) {
                 PreviewPane last = PreviewStack.last();
-                if (last instanceof  CluePreviewPreview) {
+                if (last instanceof CluePreviewPreview) {
                     PreviewStack.removePreview();
                 }
                 GlobalCache.showAnswer = false;
@@ -1598,7 +1599,8 @@ public class ControlPane {
                 Stages stages = stagesMapper.selectById(stageId);
                 if (stages.getParentId() == null) {
                     currentStage = null;
-                    previewPane = Navigator.preview("/view/preview/StagePreview.fxml", "", "/view/style.css", true, null);
+                    previewPane = Navigator.preview("/view/preview/StagePreview.fxml", "", "/view/style.css", true,
+                            null);
                 } else {
                     previewPane = Navigator.preview("/view/preview/StagePreview.fxml", "", "/view/style.css", true,
                             stages.getParentId());
@@ -2049,16 +2051,15 @@ public class ControlPane {
         }
     }
 
-
-    public void setScore(Questions questions){
+    public void setScore(Questions questions) {
         if (StringUtils.hasText(questions.getAddScore()) && NumberUtil.isInt(questions.getAddScore())) {
             scoreInput.setText(questions.getAddScore() + "");
-        } else  {
+        } else {
             scoreInput.setText(currentStage.getScorePerQ() + "");
         }
 
         if (StringUtils.hasText(questions.getDescScore()) && NumberUtil.isInt(questions.getDescScore())) {
-            scoreDescInput.setText(questions.getDescScore() +"");
+            scoreDescInput.setText(questions.getDescScore() + "");
         } else {
             int desValue = 0;
             if (currentStage.getDesValue() != null) {
@@ -2066,7 +2067,7 @@ public class ControlPane {
             }
             scoreDescInput.setText(desValue + "");
         }
-        
+
     }
 
     // 显示题目
@@ -2104,7 +2105,6 @@ public class ControlPane {
                         .eq(Questions::getQuestionNumber, Integer.parseInt(tihao)));
                 questions.setOrder(questions.getQuestionNumber());
             }
-
 
             if (StringUtils.isEmpty(questions.getAddScore()) || !NumberUtil.isInt(questions.getAddScore())) {
                 questions.setScore(currentStage.getScorePerQ());
@@ -2275,10 +2275,10 @@ public class ControlPane {
                         item.setScore(runtimeData.get(i).getScore());
                     } else {
 
-                        if (Objects.isNull(runtimeData.get(i).getDesScore())) {
+                        if (Objects.isNull(runtimeData.get(i).getDescScore())) {
                             item.setScore(-currentStage.getDesValue());
                         } else {
-                            item.setScore(-runtimeData.get(i).getDesScore());
+                            item.setScore(-runtimeData.get(i).getDescScore());
                         }
                     }
                     item.setTeamName(runtimeData.get(i).getTeamName());
@@ -2328,10 +2328,10 @@ public class ControlPane {
                             if (runtimeData.get(i).getAnswer().equals(runtimeData.get(i).getUserSelect())) {
                                 item.setScore(runtimeData.get(i).getScore());
                             } else {
-                                 if (Objects.isNull(runtimeData.get(i).getDesScore())) {
+                                if (Objects.isNull(runtimeData.get(i).getDescScore())) {
                                     item.setScore(-currentStage.getDesValue());
                                 } else {
-                                    item.setScore(-runtimeData.get(i).getDesScore());
+                                    item.setScore(-runtimeData.get(i).getDescScore());
                                 }
                             }
                             item.setTeamName(runtimeData.get(i).getTeamName());
@@ -3050,7 +3050,8 @@ public class ControlPane {
         if (light) {
             SerialPortConnector instance = SerialPortConnector.getInstance();
             if (instance != null && instance.isConnected()) {
-                instance.send(Command.SHOW, SerialPortConfig.buildScreenData(team.getCode(), team.getTeamScore(), true));
+                instance.send(Command.SHOW,
+                        SerialPortConfig.buildScreenData(team.getCode(), team.getTeamScore(), true));
             }
         }
     }

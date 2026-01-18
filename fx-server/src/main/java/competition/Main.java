@@ -8,7 +8,7 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 
 @SpringBootApplication
 @MapperScan("competition.mapper")
-@EnableScheduling  
+@EnableScheduling
 public class Main {
 
     public static void main(String[] args) throws Exception {
@@ -18,4 +18,3 @@ public class Main {
         //
     }
 }
- 

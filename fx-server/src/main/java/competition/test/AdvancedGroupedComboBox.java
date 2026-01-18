@@ -51,8 +51,7 @@ public class AdvancedGroupedComboBox extends Application {
                 new GroupItem("编程语言"),
                 new GroupItem("编程语言", "Java"),
                 new GroupItem("编程语言", "Python"),
-                new GroupItem("编程语言", "JavaScript")
-        );
+                new GroupItem("编程语言", "JavaScript"));
 
         comboBox.setCellFactory(lv -> new ListCell<GroupItem>() {
             @Override
