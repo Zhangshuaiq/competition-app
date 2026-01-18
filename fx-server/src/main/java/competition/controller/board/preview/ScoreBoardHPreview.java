@@ -409,7 +409,7 @@ public class ScoreBoardHPreview extends PreviewPane implements BoardPane {
             stackPane2.setBackground(new Background(new BackgroundFill(Color.valueOf(cfgArr[26]), 
                                                                        new CornerRadii(10), Insets.EMPTY)));
         } else {
-            if (StringUtils.isEmpty(userData.getUserSelect())) {
+            if ( userData == null || StringUtils.isEmpty(userData.getUserSelect())) {
                 if (team.getStatus() == 3) {
                     stackPane2.setBackground(new Background(new BackgroundFill(Color.valueOf(cfgArr[28]), 
                                                                                new CornerRadii(10), Insets.EMPTY)));
@@ -488,7 +488,7 @@ public class ScoreBoardHPreview extends PreviewPane implements BoardPane {
                     stackPane2.setBackground(new Background(new BackgroundFill(Color.valueOf(cfgArr[26]), 
                                                                                new CornerRadii(10), Insets.EMPTY)));
                 } else {
-                    if (StringUtils.isEmpty(modelData.getUserSelect())) {
+                    if ( modelData == null || StringUtils.isEmpty(modelData.getUserSelect())) {
                         if (team.getStatusList().get(i) == 3) {
                             stackPane2.setBackground(new Background(new BackgroundFill(Color.valueOf(cfgArr[28]), 
                                                                                        new CornerRadii(10), Insets.EMPTY)));

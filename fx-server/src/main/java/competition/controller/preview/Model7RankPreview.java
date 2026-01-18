@@ -263,7 +263,12 @@ public class Model7RankPreview extends RankPane {
                         if (modelData.getAnswer().equals(modelData.getUserSelect())) {
                             rankData.setScore(modelData.getScore());
                         } else {
-                            rankData.setScore(-controlPane.getCurrentStage().getDesValue());
+                            Integer descScore = modelData.getDescScore();
+                            if (descScore != null) {
+                                rankData.setScore(-descScore);
+                            } else {
+                                rankData.setScore(-controlPane.getCurrentStage().getDesValue());
+                            }
                         }
 
                         if (countType) {
@@ -306,7 +311,12 @@ public class Model7RankPreview extends RankPane {
                         if (modelData.getAnswer().equals(modelData.getUserSelect())) {
                             rankData.setScore(modelData.getScore());
                         } else {
-                            rankData.setScore(-controlPane.getCurrentStage().getDesValue());
+                            Integer descScore = modelData.getDescScore();
+                            if (descScore != null) {
+                                rankData.setScore(-descScore);
+                            } else {
+                                rankData.setScore(-controlPane.getCurrentStage().getDesValue());
+                            }
                         }
 
                         if (countType) {

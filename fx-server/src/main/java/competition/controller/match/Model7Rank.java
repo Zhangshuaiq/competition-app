@@ -125,10 +125,6 @@ public class Model7Rank implements ReloadPane<List<Model7RankData>>{
             titleBox.setPrefWidth(ScreenAdapter.calculateExX(Integer.parseInt(split[2])));
             titleBox.setPrefHeight(ScreenAdapter.calculateExY(Integer.parseInt(split[3])));
 
-//            competitionLab.setLayoutX(ScreenAdapter.calculateMainX(Integer.parseInt(split[0])));
-//            competitionLab.setLayoutY(ScreenAdapter.calculateMainY(Integer.parseInt(split[1])));
-//            competitionLab.prefWidth(ScreenAdapter.calculateMainX(Integer.parseInt(split[2])));
-//            competitionLab.prefHeight(ScreenAdapter.calculateMainY(Integer.parseInt(split[3])));
             int fs = Integer.parseInt(split[5]);
             Color color = Color.valueOf(split[4]);
             String fn = split[6];
