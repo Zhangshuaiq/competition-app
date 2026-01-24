@@ -470,6 +470,35 @@ public class ControlPane {
     @FXML
     public void initialize() {
 
+
+        // 加载团队信息
+        List<Teams> teams = teamsMapper.selectList(new LambdaQueryWrapper<>());
+        // 排序队伍，按照编码排序
+        teams.sort(Comparator.comparingInt(o -> Integer.parseInt(o.getCode())));
+
+        for (Teams team : teams) {
+            team.setQScores(new ArrayList<>());
+            team.setStatusList(new ArrayList<>());
+            team.setStatus(0);
+            if (!StringUtils.isEmpty(team.getMembers())) {
+                String[] split = team.getMembers().split(",");
+                for (String s : split) {
+                    team.getStatusList().add(0);
+                    team.getQScores().add(0);
+                }
+            }
+        }
+        // 若已有分数，则加载旧的分数
+        TeamRuntime.setTeams(teams);
+        WsTeamMemberWaiter.initData();
+        Model7RuntimeData.setTeams(TeamRuntime.getTeams());
+        Model60RuntimeData.setTeams(TeamRuntime.getTeams());
+        Model61RuntimeData.setTeams(TeamRuntime.getTeams());
+        teamComBox.setItems(
+                FXCollections.observableList(teams.stream().map(x -> x.getShortName()).collect(Collectors.toList())));
+
+
+
         Configs barConfig = configsMapper.selectById(14);
         String barConfigVal = barConfig.getConfig();
         RuntimeUtil.showBarStatus = Objects.equals("1", barConfigVal);
@@ -2521,30 +2550,6 @@ public class ControlPane {
         Configs configs = configsMapper.selectById(1);
         String config = configs.getConfig();
 
-        List<Teams> teams = teamsMapper.selectList(new LambdaQueryWrapper<>());
-        // 排序队伍，按照编码排序
-        teams.sort(Comparator.comparingInt(o -> Integer.parseInt(o.getCode())));
-
-        for (Teams team : teams) {
-            team.setQScores(new ArrayList<>());
-            team.setStatusList(new ArrayList<>());
-            team.setStatus(0);
-            if (!StringUtils.isEmpty(team.getMembers())) {
-                String[] split = team.getMembers().split(",");
-                for (String s : split) {
-                    team.getStatusList().add(0);
-                    team.getQScores().add(0);
-                }
-            }
-        }
-        // 若已有分数，则加载旧的分数
-        TeamRuntime.setTeams(teams);
-        WsTeamMemberWaiter.initData();
-        Model7RuntimeData.setTeams(TeamRuntime.getTeams());
-        Model60RuntimeData.setTeams(TeamRuntime.getTeams());
-        Model61RuntimeData.setTeams(TeamRuntime.getTeams());
-        teamComBox.setItems(
-                FXCollections.observableList(teams.stream().map(x -> x.getShortName()).collect(Collectors.toList())));
         if (!StringUtils.isEmpty(config)) {
             String[] split = config.split(ConfigSpliter.SPLITER);
             String boardLayout = split[14];

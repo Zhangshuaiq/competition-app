@@ -345,7 +345,7 @@ public class ScoreBoardH implements BoardPane {
         
         StackPane stackPane2 = new StackPane();
         stackPane2.setPrefSize(ScreenAdapter.calculateExX(Integer.parseInt(cfgArr[19])), 
-                              ScreenAdapter.calculateExY(Integer.parseInt(cfgArr[20])));
+                ScreenAdapter.calculateExY(Integer.parseInt(cfgArr[20])));
         
         Model60RuntimeData.ModelData userData = answerMap.get(team.getFullName());
         Text userSelect = new Text();
