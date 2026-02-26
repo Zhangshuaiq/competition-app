@@ -73,6 +73,12 @@ public class Stages {
     // 抢答犯规的自动扣分数值
     private Integer qdDescValue;
 
+    // 平板作答
+    private Integer boardAnswer;
+
+    // 团队答案单独展示
+    private Integer teamAnswerSingle;
+
     public void setQdDescValue(Integer qdDescValue) {
         this.qdDescValue = qdDescValue;
     }

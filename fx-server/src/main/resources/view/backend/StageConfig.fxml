@@ -1,19 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import java.lang.*?>
 <?import competition.controls.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.image.*?>
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.*?>
 
-<AnchorPane prefHeight="827.0" prefWidth="1100.0" style="-fx-background-color: #e8e8e4;" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="competition.controller.backend.StageConfig">
+<AnchorPane prefHeight="827.0" prefWidth="1100.0" style="-fx-background-color: #e8e8e4;" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="competition.controller.backend.StageConfig">
    <children>
       <ScrollPane layoutX="14.0" layoutY="24.0" prefHeight="774.0" prefWidth="515.0">
          <content>
-            <HBox fx:id="stageAddress" prefHeight="775.0" prefWidth="513.0">
-               <children>
-               </children>
-            </HBox>
+            <HBox fx:id="stageAddress" prefHeight="775.0" prefWidth="513.0" />
          </content>
       </ScrollPane>
       <AnchorPane layoutX="550.0" layoutY="46.0" prefHeight="768.0" prefWidth="537.0" style="-fx-background-color: #ffffff;">
@@ -38,10 +36,11 @@
             <RadioButton fx:id="ccType2" layoutX="170.0" layoutY="296.0" mnemonicParsing="false" text="自选题目" userData="2" />
             <RadioButton fx:id="ccType3" layoutX="284.0" layoutY="296.0" mnemonicParsing="false" text="风险题" userData="3" />
             <RadioButton fx:id="ccType4" layoutX="396.0" layoutY="296.0" mnemonicParsing="false" text="滚动选题" userData="4" />
-            <RadioButton fx:id="ccType5" layoutX="45.0" layoutY="347.0" mnemonicParsing="false" text="线索题" userData="5" />
-            <RadioButton fx:id="ccType6" layoutX="133.0" layoutY="347.0" mnemonicParsing="false" text="答题模式" userData="6" />
-            <RadioButton fx:id="ccType7" layoutX="46.0" layoutY="386.0" mnemonicParsing="false" text="竞技模式" userData="7" />
-            <CheckBox fx:id="randomSort2" layoutX="146.0" layoutY="386.0" mnemonicParsing="false" text="随机乱序" />
+            <RadioButton fx:id="ccType5" layoutX="45.0" layoutY="334.0" mnemonicParsing="false" text="线索题" userData="5" />
+            <RadioButton fx:id="ccType6" layoutX="133.0" layoutY="334.0" mnemonicParsing="false" text="答题模式" userData="6" />
+            <RadioButton fx:id="ccType7" layoutX="45.0" layoutY="372.0" mnemonicParsing="false" text="竞技模式" userData="7" />
+            <RadioButton fx:id="ccType8" layoutX="45.0" layoutY="408.0" mnemonicParsing="false" text="平板自选" userData="8"/>
+            <CheckBox fx:id="randomSort2" layoutX="146.0" layoutY="372.0" mnemonicParsing="false" text="随机乱序" />
             <Button layoutX="171.0" layoutY="724.0" mnemonicParsing="false" onAction="#submitStage" prefHeight="30.0" prefWidth="265.0" text="确认" />
             <Label layoutX="27.0" layoutY="492.0" prefHeight="20.0" prefWidth="71.0" text="抢答方式" />
             <ComboBox fx:id="paChoice" layoutX="107.0" layoutY="487.0" prefHeight="30.0" prefWidth="390.0" />
@@ -57,7 +56,7 @@
                
             </ImageView>
             <Button layoutX="425.0" layoutY="694.0" mnemonicParsing="false" onAction="#updateStage" prefHeight="30.0" prefWidth="72.0" text="修改" visible="false" />
-            <CheckBox fx:id="model6Check" layoutX="247.0" layoutY="347.0" mnemonicParsing="false" text="个人" visible="false" />
+            <CheckBox fx:id="model6Check" layoutX="246.0" layoutY="334.0" mnemonicParsing="false" text="个人" />
             <CheckBox fx:id="timeOrder" layoutX="231.0" layoutY="126.0" mnemonicParsing="false" text="正计时" />
             <CheckBox fx:id="countTotal" layoutX="145.0" layoutY="191.0" mnemonicParsing="false" text="当前环节是否计入总分" />
             <Label layoutX="161.0" layoutY="81.0" text="—">
@@ -65,7 +64,7 @@
                   <Font size="6.0" />
                </font></Label>
             <CustomTextField fx:id="desValue" inputType="NUMERIC" layoutX="175.0" layoutY="70.0" prefHeight="30.0" prefWidth="42.0" text="0" />
-            <CheckBox fx:id="answerShow" layoutX="316.0" layoutY="347.0" mnemonicParsing="false" text="答案单独展示" visible="false" />
+            <CheckBox fx:id="answerShow" layoutX="331.0" layoutY="334.0" mnemonicParsing="false" text="答案单独展示" />
             <Label layoutX="82.0" layoutY="75.0" text="+">
                <font>
                   <Font size="16.0" />
@@ -81,6 +80,8 @@
                   <Label prefHeight="26.0" prefWidth="31.0" text="分" />
                </children>
             </HBox>
+            <CheckBox fx:id="ccType8Mode" layoutX="146.0" layoutY="408.0" mnemonicParsing="false" text="平板做答" />
+            <CheckBox fx:id="ccType8AnswerShow" layoutX="245.0" layoutY="408.0" mnemonicParsing="false" text="团队答案单独页" />
          </children>
       </AnchorPane>
       <Label layoutX="550.0" layoutY="21.0" text="当前环节编号" />

@@ -2,7 +2,6 @@ package competition.controller.backend;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import competition.controller.ControlPane;
-import competition.controller.preview.PreviewPane;
 import competition.entity.Stages;
 import competition.mapper.StagesMapper;
 import competition.util.ImageResource;
@@ -88,7 +87,7 @@ public class StageConfig {
     RadioButton timeType1, timeType2;
 
     @FXML
-    RadioButton ccType1, ccType2, ccType3, ccType4, ccType5, ccType6, ccType7;
+    RadioButton ccType1, ccType2, ccType3, ccType4, ccType5, ccType6, ccType7, ccType8;
 
     @FXML
     CheckBox randomSort, randomSort2, stageShow;
@@ -103,7 +102,7 @@ public class StageConfig {
     ImageView previewImg;
 
     @FXML
-    CheckBox model6Check, answerShow;
+    CheckBox model6Check, answerShow, ccType8Mode, ccType8AnswerShow;
 
     @Resource
     private ControlPane controlPane;
@@ -174,7 +173,7 @@ public class StageConfig {
         timeCountType.getToggles().addAll(timeType1, timeType2);
 
         ccType = new ToggleGroup();
-        ccType.getToggles().addAll(ccType1, ccType2, ccType3, ccType4, ccType5, ccType6, ccType7);
+        ccType.getToggles().addAll(ccType1, ccType2, ccType3, ccType4, ccType5, ccType6, ccType7, ccType8);
 
         ccType1.selectedProperty().addListener(new ChangeListener<Boolean>() {
             @Override
@@ -182,6 +181,8 @@ public class StageConfig {
                 if (newValue) {
                     model6Check.setVisible(false);
                     answerShow.setVisible(false);
+                    ccType8Mode.setVisible(false);
+                    ccType8AnswerShow.setVisible(false);
                 }
             }
         });
@@ -192,6 +193,8 @@ public class StageConfig {
                 if (newValue) {
                     model6Check.setVisible(false);
                     answerShow.setVisible(false);
+                    ccType8Mode.setVisible(false);
+                    ccType8AnswerShow.setVisible(false);
                 }
             }
         });
@@ -202,6 +205,8 @@ public class StageConfig {
                 if (newValue) {
                     model6Check.setVisible(false);
                     answerShow.setVisible(false);
+                    ccType8Mode.setVisible(false);
+                    ccType8AnswerShow.setVisible(false);
                 }
             }
         });
@@ -212,6 +217,8 @@ public class StageConfig {
                 if (newValue) {
                     model6Check.setVisible(false);
                     answerShow.setVisible(false);
+                    ccType8Mode.setVisible(false);
+                    ccType8AnswerShow.setVisible(false);
                 }
             }
         });
@@ -222,6 +229,8 @@ public class StageConfig {
                 if (newValue) {
                     model6Check.setVisible(false);
                     answerShow.setVisible(false);
+                    ccType8Mode.setVisible(false);
+                    ccType8AnswerShow.setVisible(false);
                 }
             }
         });
@@ -232,6 +241,8 @@ public class StageConfig {
                 if (newValue) {
                     model6Check.setVisible(true);
                     answerShow.setVisible(true);
+                    ccType8Mode.setVisible(false);
+                    ccType8AnswerShow.setVisible(false);
                 }
             }
         });
@@ -242,9 +253,24 @@ public class StageConfig {
                 if (newValue) {
                     model6Check.setVisible(false);
                     answerShow.setVisible(false);
+                    ccType8Mode.setVisible(false);
+                    ccType8AnswerShow.setVisible(false);
                 }
             }
         });
+
+        ccType8.selectedProperty().addListener(new ChangeListener<Boolean>() {
+            @Override
+            public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
+                if (newValue) {
+                    ccType8Mode.setVisible(true);
+                    ccType8AnswerShow.setVisible(true);
+                    model6Check.setVisible(false);
+                    answerShow.setVisible(false);
+                }
+            }
+        });
+
 
         paChoice.getItems().addAll("直接抢答",
             "标准模式",
@@ -465,7 +491,9 @@ public class StageConfig {
             }
         }
 
-        if (currentIndex == -1) return;
+        if (currentIndex == -1) {
+            return;
+        }
 
         // 确定要交换的目标环节
         Stages targetStage = null;
@@ -475,7 +503,9 @@ public class StageConfig {
             targetStage = siblings.get(currentIndex + 1);
         }
 
-        if (targetStage == null) return; // 无法移动
+        if (targetStage == null) {
+            return; // 无法移动
+        }
 
         // 执行交换
         swapStagesAndChildren(allStages, stages, targetStage);
@@ -665,7 +695,9 @@ public class StageConfig {
             .findFirst()
             .orElse(null);
 
-        if (parentStage == null) return;
+        if (parentStage == null) {
+            return;
+        }
 
         String parentSortVal = parentStage.getSortVal();
 
@@ -737,6 +769,8 @@ public class StageConfig {
             countTotal.setSelected(current.getCountTotal() == 1);
             answerShow.setSelected(current.getAnswerSingle() == 1);
             desValue.setText(current.getDesValue().toString());
+            ccType8Mode.setSelected(current.getBoardAnswer() == 1);
+            ccType8AnswerShow.setSelected(current.getTeamAnswerSingle() == 1);
             for (Toggle toggle : ccType.getToggles()) {
                 if (toggle.getUserData().toString().equals(current.getQuestionType().toString())) {
                     toggle.setSelected(true);
@@ -840,6 +874,8 @@ public class StageConfig {
         current.setCountTotal(countTotal.isSelected()? 1: 0);
         current.setAnswerSingle(answerShow.isSelected()?1: 0);
         current.setQdDescValue(Integer.parseInt(buzzDescInput.getText()));
+        current.setTeamAnswerSingle(ccType8AnswerShow.isSelected()?1:0);
+        current.setBoardAnswer(ccType8Mode.isSelected()?1:0);
         stagesMapper.updateById(current);
         updateCurrentStage();
         refreshStageDisplay();
@@ -916,6 +952,8 @@ public class StageConfig {
         stages.setAnswerSingle(answerShow.isSelected()?1: 0);
         stages.setQdDescValue(Integer.parseInt(buzzDescInput.getText()));
         stages.setOrderVal(timeOrder.isSelected()? 1: 0);
+        stages.setTeamAnswerSingle(ccType8AnswerShow.isSelected()?1:0);
+        stages.setBoardAnswer(ccType8Mode.isSelected()?1:0);
         if (addLevel == 1) {
             int size = stagesMapper.selectList(new LambdaQueryWrapper<Stages>()
                 .isNull(Stages::getParentId)).size() + 1;
