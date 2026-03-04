@@ -7,8 +7,7 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<AnchorPane prefHeight="827.0" prefWidth="1280.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1"
-            fx:controller="competition.controller.Backend">
+<AnchorPane prefHeight="827.0" prefWidth="1280.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="competition.controller.Backend">
    <children>
       <VBox fx:id="menuBox" layoutY="99.0" prefHeight="728.0" prefWidth="180.0" style="-fx-background-color: #509077;">
          <children>
@@ -53,6 +52,11 @@
                </font>
             </Label>
             <Label alignment="CENTER" prefHeight="60.0" prefWidth="180.0" text="平板设置" textFill="WHITE">
+               <font>
+                  <Font size="18.0" />
+               </font>
+            </Label>
+            <Label alignment="CENTER" prefHeight="60.0" prefWidth="180.0" text="网页设置" textFill="WHITE">
                <font>
                   <Font size="18.0" />
                </font>

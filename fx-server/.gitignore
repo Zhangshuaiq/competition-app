@@ -2,3 +2,4 @@ target
 .idea
 competition_back.db
 /src/main/resources/frontend/
+**/.DS_Store
