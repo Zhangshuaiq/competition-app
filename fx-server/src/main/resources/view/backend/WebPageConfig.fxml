@@ -118,6 +118,6 @@
       <Button fx:id="model7PageWebSiteCopyBtn" layoutX="614.0" layoutY="607.0" mnemonicParsing="false" text="复制" />
       <Button fx:id="TeamScorePageWebSiteCopyBtn" layoutX="615.0" layoutY="641.0" mnemonicParsing="false" text="复制" />
       <Button fx:id="MemberScorePageWebSiteCopyBtn" layoutX="614.0" layoutY="677.0" mnemonicParsing="false" text="复制" />
-      <Button layoutX="432.0" layoutY="749.0" mnemonicParsing="false" prefHeight="24.0" prefWidth="229.0" text="保存" />
+      <Button  fx:id="saveBtn" layoutX="432.0" layoutY="749.0" mnemonicParsing="false" prefHeight="24.0" prefWidth="229.0" text="保存" />
    </children>
 </AnchorPane>
