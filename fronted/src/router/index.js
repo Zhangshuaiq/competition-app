@@ -48,6 +48,7 @@ import TeamScore from "@/components/score/TeamScore";
 import AllScore from "@/components/score/AllScore";
 import AllRank from '@/components/score/AllRank.vue';
 import AllMemberRank from '@/components/score/MemberRank.vue';
+import Model6Board from "@/components/score/Model6Board.vue";
 Vue.use(Router);
 
 export default new Router({
@@ -293,6 +294,12 @@ export default new Router({
             path: '/allScore',
             name: 'allScore',
             component: AllScore
+        },
+
+        {
+            path: '/model6Board',
+            name: 'model6Board',
+            component: Model6Board
         },
 
         {

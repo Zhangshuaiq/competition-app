@@ -21,7 +21,7 @@ export const queryStatus = (teamId) => get(`/rest/status/${teamId}`)
 
 export const queryContact = () => get('/rest/contact')
 
-export const buzzQuestion = (data) => post(`/rest/quzz?`, data)
+export const buzzQuestion = (data) => post(`/rest/quzz`, data)
 
 export const queryModel7Questions = () => get('/rest/currentStageQuestions')
 
@@ -32,3 +32,7 @@ export const rankTitle = () => get('/rest/rankTitle')
 export const memberRankList = () => get('/rest/memberRanklist')
 
 export const memberTitle = () => get('/rest/memberRankTitle')
+
+export const model6BoardStyle = () => get('/rest/model6BoardStyle')
+
+export const model6BoardData = () => get('/rest/model6BoardData')

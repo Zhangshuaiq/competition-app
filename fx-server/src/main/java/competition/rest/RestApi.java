@@ -2,14 +2,19 @@ package competition.rest;
 
 import cn.hutool.core.io.FileUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import competition.JavaFxApplication;
 import competition.controller.ControlPane;
 import competition.controller.preview.Model7Preview;
 import competition.entity.*;
 import competition.mapper.*;
+import competition.modal.Model7RankData;
 import competition.resp.JsonResp;
+import competition.resp.Model6RestData;
 import competition.service.RankingService;
 import competition.util.*;
+import competition.ws.Model60RuntimeData;
 import org.springframework.core.io.UrlResource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -17,14 +22,14 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.messaging.handler.annotation.SendTo;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/rest")
@@ -64,7 +69,7 @@ public class RestApi {
     public JsonResp teamList(){
         // 队伍数量限制
         List<Teams> teams = teamsMapper.selectList(new LambdaQueryWrapper<>());
-        teams.sort((o1, o2) -> Integer.parseInt(o1.getCode()) - Integer.parseInt(o2.getCode()));
+        teams.sort(Comparator.comparingInt(o -> Integer.parseInt(o.getCode())));
         List<Teams> teamWithStatus = TeamRuntime.getTeams();
         for (Teams team : teams) {
             for (Teams teams1 : teamWithStatus) {
@@ -316,5 +321,94 @@ public class RestApi {
             titleMap.put("col3", "分数");
         }
         return JsonResp.success(titleMap);
+    }
+
+    /** 前端初始化时拉取 model6 配置 */
+    @GetMapping("/model6BoardStyle")
+    public JsonResp getModel6() throws Exception {
+        int CONFIG_ID = 15;
+        ObjectMapper objectMapper = new ObjectMapper();
+
+        Configs configs = configsMapper.selectById(CONFIG_ID);
+        if (configs == null || configs.getConfig() == null) {
+            return JsonResp.success();
+        }
+        TypeReference<Map<String, Object>> typeReference = new TypeReference<Map<String, Object>>() {
+        };
+        Map<String, Object> root = objectMapper.readValue(configs.getConfig(), typeReference);
+        @SuppressWarnings("unchecked")
+        Map<String, Object> model6 = (Map<String, Object>) root.get("model6");
+        return JsonResp.success(model6);
+    }
+
+
+    @GetMapping("/model6BoardData")
+    public JsonResp getModel6Data() throws Exception {
+        List<Teams> teams = TeamRuntime.getTeams();
+        List<Model60RuntimeData.ModelData> runtimeData = Model60RuntimeData.getRuntimeData();
+
+        // 计算环节总分
+//        List<List<Model60RuntimeData.ModelData>> runtimeData60 = Model60RuntimeData.getTotalData();
+//
+//        List<Model7RankData> memeryData = new ArrayList<>();
+//        for (List<Model60RuntimeData.ModelData> modelDataList : runtimeData60) {
+//            for (Model60RuntimeData.ModelData modelData : modelDataList) {
+//                Model7RankData rankData = new Model7RankData();
+//                if (modelData.getAnswer().equals(modelData.getUserSelect())) {
+//                    rankData.setScore(modelData.getScore());
+//                } else {
+//                    Integer descScore = modelData.getDescScore();
+//                    if (descScore != null) {
+//                        rankData.setScore(-descScore);
+//                    } else {
+//                        rankData.setScore(-controlPane.getCurrentStage().getDesValue());
+//                    }
+//                }
+//
+//                if (countType) {
+//                    rankData.setSecond(modelData.getSecond());
+//                } else {
+//                    rankData.setSecond(totalSecond - modelData.getSecond());
+//                }
+//                rankData.setTeam(modelData.getTeamName());
+//                memeryData.add(rankData);
+//            }
+//        }
+//
+//        Map<String, List<Model7RankData>> convertMap = memeryData.stream().collect(Collectors.groupingBy(Model7RankData::getTeam));
+//        for (Map.Entry<String, List<Model7RankData>> entry : convertMap.entrySet()) {
+//            Model7RankData rankData = new Model7RankData();
+//            List<Model7RankData> itemList = entry.getValue();
+//
+//            int second = 0;
+//            int score = 0;
+//            for (Model7RankData data : itemList) {
+//                second += data.getSecond();
+//                score += data.getScore();
+//                rankData.setTeam(data.getTeam());
+//            }
+//            rankData.setSecond(second);
+//            rankData.setTime(formatTime(second));
+//            rankData.setScore(score);
+//            rankList.add(rankData);
+//        }
+
+
+        Map<String, Model60RuntimeData.ModelData> collect = runtimeData.stream().collect(Collectors.toMap(Model60RuntimeData.ModelData::getTeamName, data -> data));
+        List<Model6RestData> responseData = new ArrayList<>();
+        // 返回所有队伍，如果队伍已回答，那么找出 runtimeData 中对应的数据
+        for (Teams team : teams) {
+            Model6RestData restData = new Model6RestData();
+            restData.setId(team.getId().toString());
+            restData.setFullName(team.getFullName());
+
+            // 找到 runtimeData 中对应的数据
+            Model60RuntimeData.ModelData scoreVal = collect.get(team.getFullName());
+            restData.setAnswer(scoreVal == null? null : scoreVal.getUserSelect());
+            restData.setBuzzStatus(scoreVal == null? 0 : StringUtils.hasText(scoreVal.getUserSelect())? 1:0);
+            restData.setTeamScore(100);
+            responseData.add(restData);
+        }
+        return JsonResp.success(responseData);
     }
 }
