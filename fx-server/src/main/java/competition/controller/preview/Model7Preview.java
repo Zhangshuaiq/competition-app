@@ -690,7 +690,10 @@ public class Model7Preview extends RankPane<Stages> {
     /**
      * 获取题目数据（带缓存）
      */
-    private List<Questions> getQuestionsWithCache() {
+    public List<Questions> getQuestionsWithCache() {
+        if (inner == null) {
+            return new ArrayList<>();
+        }
         if (cachedQuestions == null || cachedQuestions.isEmpty()
                 || !Objects.equals(cachedStageNumber, inner.getSortVal())) {
             cachedQuestions = questionsMapper.selectList(

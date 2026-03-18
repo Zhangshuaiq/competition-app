@@ -8,7 +8,7 @@ import java.util.Map;
 public class GlobalCache {
     
     // 最大团队个数，  小于等于 0 代表未激活
-    public static  int MAX_TEAM_NUMBER  = -10000;
+    public static  int MAX_TEAM_NUMBER  = 0;
     
     // 每次滚动偏移量
     public static final int SCROLL_STEP = 30;

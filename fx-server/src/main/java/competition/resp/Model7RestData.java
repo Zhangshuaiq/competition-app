@@ -6,7 +6,7 @@ import lombok.Data;
 public class Model7RestData {
     private String id;
     private String fullName;
-    private Integer buzzStatus;
-    private String answer;
     private Integer teamScore;
+    private int answeredCount;
+    private int correctRatio;
 }

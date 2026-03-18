@@ -12,9 +12,11 @@ import competition.mapper.*;
 import competition.modal.Model7RankData;
 import competition.resp.JsonResp;
 import competition.resp.Model6RestData;
+import competition.resp.Model7RestData;
 import competition.service.RankingService;
 import competition.util.*;
 import competition.ws.Model60RuntimeData;
+import competition.ws.Model7RuntimeData;
 import org.springframework.core.io.UrlResource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -34,20 +36,20 @@ import java.util.stream.Collectors;
 @RestController
 @RequestMapping("/rest")
 public class RestApi {
-    
+
     // 服务联系方式（微信同号）：陈先生 18008320850
     @Resource
     private TeamsMapper teamsMapper;
-    
+
     @Resource
     private ConfigsMapper configsMapper;
-    
+
     @Resource
     private ScoreStyleMapper scoreStyleMapper;
-    
+
     @Resource
     private ScoreConfigMapper scoreConfigMapper;
-    
+
     @Resource
     private ScoreConfigMapper1 scoreConfigMapper1;
 
@@ -60,13 +62,16 @@ public class RestApi {
     @Resource
     private RankingService rankingService;
 
+    @Resource
+    private ControlPane controlPane;
+
 
     private static final String TEAM_RANK_TITLE = BaseDir.PB_RES_DIR + "团队排名标题.txt";
 
     private static final String MEMBER_RANK_TITLE = BaseDir.PB_RES_DIR + "选手排名标题.txt";
-    
+
     @GetMapping("/teams")
-    public JsonResp teamList(){
+    public JsonResp teamList() {
         // 队伍数量限制
         List<Teams> teams = teamsMapper.selectList(new LambdaQueryWrapper<>());
         teams.sort(Comparator.comparingInt(o -> Integer.parseInt(o.getCode())));
@@ -86,12 +91,12 @@ public class RestApi {
         teams = teams.subList(0, maxTeamNumber);
         return JsonResp.success(teams);
     }
-    
+
     @GetMapping("/heartbeat")
-    public JsonResp heartbeat(){
+    public JsonResp heartbeat() {
         return JsonResp.success();
     }
-    
+
 
     @GetMapping("/video/{filename}")
     public ResponseEntity<org.springframework.core.io.Resource> getVideo(@PathVariable String filename) {
@@ -111,16 +116,15 @@ public class RestApi {
                     .body(null);
         }
     }
-    
+
     @GetMapping("/holderPass")
-    public JsonResp holderPassword(){
+    public JsonResp holderPassword() {
         return JsonResp.success(scoreStyleMapper.selectById(2).getStyles());
     }
 
-    
-    
+
     @GetMapping("/answerPrefix")
-    public JsonResp answerPrefix(){
+    public JsonResp answerPrefix() {
         // 0x000000ff
         // %%0xffffffff
         // %%1
@@ -135,7 +139,7 @@ public class RestApi {
         }
         return JsonResp.success("");
     }
-    
+
 
     @GetMapping("/image/{filename:.+}")
     public ResponseEntity<org.springframework.core.io.Resource> getImage(@PathVariable String filename) {
@@ -151,8 +155,8 @@ public class RestApi {
             return ResponseEntity.badRequest().build();
         }
     }
-    
-    
+
+
     @GetMapping("/scoreConfig")
     public JsonResp scoreConfig() {
         List<ScoreConfig> scoreConfigs = scoreConfigMapper.selectList(new LambdaQueryWrapper<>());
@@ -162,25 +166,24 @@ public class RestApi {
         result.put("total", config1List);
         return JsonResp.success(result);
     }
-    
-    
+
+
     @GetMapping("/score/{teamId}")
-    public JsonResp queryScore(@PathVariable Integer teamId){
+    public JsonResp queryScore(@PathVariable Integer teamId) {
         Teams targetTeam = teamsMapper.selectById(teamId);
         List<Teams> teamWithStatus = TeamRuntime.getTeams();
-            for (Teams teams1 : teamWithStatus) {
-                if (targetTeam.getCode().equals(teams1.getCode())) {
-                    targetTeam.setBuzzStatus(teams1.getBuzzStatus());
-                    break;
-                }
+        for (Teams teams1 : teamWithStatus) {
+            if (targetTeam.getCode().equals(teams1.getCode())) {
+                targetTeam.setBuzzStatus(teams1.getBuzzStatus());
+                break;
             }
+        }
         return JsonResp.success(targetTeam);
     }
 
 
-
     @PostMapping("/saveStatus")
-    public JsonResp saveStatus(@RequestBody Model7Status status){
+    public JsonResp saveStatus(@RequestBody Model7Status status) {
         // 删除旧的
         statusMapper.delete(new LambdaQueryWrapper<Model7Status>()
                 .eq(Model7Status::getTeamId, status.getTeamId())
@@ -200,9 +203,9 @@ public class RestApi {
 
 
     @GetMapping("/contact")
-    public JsonResp contact(){
+    public JsonResp contact() {
         Configs configs = configsMapper.selectById(9);
-        if(configs == null) {
+        if (configs == null) {
             return JsonResp.success("");
         }
         return JsonResp.success(configs.getConfig());
@@ -323,7 +326,9 @@ public class RestApi {
         return JsonResp.success(titleMap);
     }
 
-    /** 前端初始化时拉取 model6 配置 */
+    /**
+     * 前端初始化时拉取 model6 配置
+     */
     @GetMapping("/model6BoardStyle")
     public JsonResp getModel6() throws Exception {
         int CONFIG_ID = 15;
@@ -342,58 +347,66 @@ public class RestApi {
     }
 
 
+    /**
+     * 前端初始化时拉取 model6 配置
+     */
+    @GetMapping("/model7BoardStyle")
+    public JsonResp getModel7() throws Exception {
+        int CONFIG_ID = 15;
+        ObjectMapper objectMapper = new ObjectMapper();
+
+        Configs configs = configsMapper.selectById(CONFIG_ID);
+        if (configs == null || configs.getConfig() == null) {
+            return JsonResp.success();
+        }
+        TypeReference<Map<String, Object>> typeReference = new TypeReference<Map<String, Object>>() {
+        };
+        Map<String, Object> root = objectMapper.readValue(configs.getConfig(), typeReference);
+        @SuppressWarnings("unchecked")
+        Map<String, Object> model6 = (Map<String, Object>) root.get("model7");
+        return JsonResp.success(model6);
+    }
+
+
     @GetMapping("/model6BoardData")
     public JsonResp getModel6Data() throws Exception {
         List<Teams> teams = TeamRuntime.getTeams();
         List<Model60RuntimeData.ModelData> runtimeData = Model60RuntimeData.getRuntimeData();
 
         // 计算环节总分
-//        List<List<Model60RuntimeData.ModelData>> runtimeData60 = Model60RuntimeData.getTotalData();
-//
-//        List<Model7RankData> memeryData = new ArrayList<>();
-//        for (List<Model60RuntimeData.ModelData> modelDataList : runtimeData60) {
-//            for (Model60RuntimeData.ModelData modelData : modelDataList) {
-//                Model7RankData rankData = new Model7RankData();
-//                if (modelData.getAnswer().equals(modelData.getUserSelect())) {
-//                    rankData.setScore(modelData.getScore());
-//                } else {
-//                    Integer descScore = modelData.getDescScore();
-//                    if (descScore != null) {
-//                        rankData.setScore(-descScore);
-//                    } else {
-//                        rankData.setScore(-controlPane.getCurrentStage().getDesValue());
-//                    }
-//                }
-//
-//                if (countType) {
-//                    rankData.setSecond(modelData.getSecond());
-//                } else {
-//                    rankData.setSecond(totalSecond - modelData.getSecond());
-//                }
-//                rankData.setTeam(modelData.getTeamName());
-//                memeryData.add(rankData);
-//            }
-//        }
-//
-//        Map<String, List<Model7RankData>> convertMap = memeryData.stream().collect(Collectors.groupingBy(Model7RankData::getTeam));
-//        for (Map.Entry<String, List<Model7RankData>> entry : convertMap.entrySet()) {
-//            Model7RankData rankData = new Model7RankData();
-//            List<Model7RankData> itemList = entry.getValue();
-//
-//            int second = 0;
-//            int score = 0;
-//            for (Model7RankData data : itemList) {
-//                second += data.getSecond();
-//                score += data.getScore();
-//                rankData.setTeam(data.getTeam());
-//            }
-//            rankData.setSecond(second);
-//            rankData.setTime(formatTime(second));
-//            rankData.setScore(score);
-//            rankList.add(rankData);
-//        }
+        List<List<Model60RuntimeData.ModelData>> runtimeData60 = Model60RuntimeData.getTotalData();
 
+        List<Model7RankData> memeryData = new ArrayList<>();
+        for (List<Model60RuntimeData.ModelData> modelDataList : runtimeData60) {
+            for (Model60RuntimeData.ModelData modelData : modelDataList) {
+                Model7RankData rankData = new Model7RankData();
+                if (modelData.getAnswer().equals(modelData.getUserSelect())) {
+                    rankData.setScore(modelData.getScore());
+                } else {
+                    Integer descScore = modelData.getDescScore();
+                    if (descScore != null) {
+                        rankData.setScore(-descScore);
+                    } else {
+                        rankData.setScore(-controlPane.getCurrentStage().getDesValue());
+                    }
+                }
+                rankData.setTeam(modelData.getTeamName());
+                memeryData.add(rankData);
+            }
+        }
+        Map<String, Integer> totalScoreMap = new HashMap<>();
+        Map<String, List<Model7RankData>> convertMap = memeryData.stream().collect(Collectors.groupingBy(Model7RankData::getTeam));
+        for (Map.Entry<String, List<Model7RankData>> entry : convertMap.entrySet()) {
+            List<Model7RankData> itemList = entry.getValue();
 
+            int score = 0;
+            for (Model7RankData data : itemList) {
+                score += data.getScore();
+            }
+            totalScoreMap.put(entry.getKey(), score);
+        }
+
+        // 返回结果
         Map<String, Model60RuntimeData.ModelData> collect = runtimeData.stream().collect(Collectors.toMap(Model60RuntimeData.ModelData::getTeamName, data -> data));
         List<Model6RestData> responseData = new ArrayList<>();
         // 返回所有队伍，如果队伍已回答，那么找出 runtimeData 中对应的数据
@@ -404,9 +417,70 @@ public class RestApi {
 
             // 找到 runtimeData 中对应的数据
             Model60RuntimeData.ModelData scoreVal = collect.get(team.getFullName());
-            restData.setAnswer(scoreVal == null? null : scoreVal.getUserSelect());
-            restData.setBuzzStatus(scoreVal == null? 0 : StringUtils.hasText(scoreVal.getUserSelect())? 1:0);
-            restData.setTeamScore(100);
+            restData.setAnswer(scoreVal == null ? null : scoreVal.getUserSelect());
+            restData.setBuzzStatus(scoreVal == null ? 0 : StringUtils.hasText(scoreVal.getUserSelect()) ? 1 : 0);
+            restData.setTeamScore(totalScoreMap.getOrDefault(team.getFullName(), 0));
+            responseData.add(restData);
+        }
+        return JsonResp.success(responseData);
+    }
+
+
+    @GetMapping("/model7BoardData")
+    public JsonResp getModel7Data() throws Exception {
+        // 所有题目
+        Model7Preview Model7Preview = JavaFxApplication.getApplicationContext().getBean(Model7Preview.class);
+        List<Questions> totalQuestions = Model7Preview.getQuestionsWithCache();
+
+        List<Teams> teams = TeamRuntime.getTeams();
+        List<List<Model7RuntimeData.ModelData>> runtimeData = Model7RuntimeData.getRuntimeData();
+
+        // 答对的题目数量
+        Map<String, Integer> correcetMap = new HashMap<>();
+        // 答题获得的分数
+        Map<String, Integer> scoreMap = new HashMap<>();
+
+        // 已答数量
+        Map<String, Integer> answerMap = new HashMap<>();
+
+        boolean finish = true;
+        List<Boolean> finished = Model7RuntimeData.getFinished();
+        for (Boolean b : finished) {
+            finish = finish & b;
+        }
+        for (int i = 0; i < runtimeData.size(); i++) {
+            List<Model7RuntimeData.ModelData> questionList = runtimeData.get(i);
+            int score = 0;
+            int correctCount = 0;
+            for (Model7RuntimeData.ModelData data : questionList) {
+                if (data.getUserSelect() != null && data.getUserSelect().equals(data.getAnswer())) {
+                    score += data.getScore();
+                    correctCount++;
+                } else {
+                    score -= controlPane.getCurrentStage().getDesValue();
+                }
+            }
+            // 结束的情况需要额外计算未完成的扣分
+            if (finish) {
+                score = score - ((Model7RuntimeData.totalNumber - questionList.size()) * controlPane.getCurrentStage().getDesValue());
+            }
+
+            String team = Model7RuntimeData.getTeams().get(i).getFullName();
+
+            scoreMap.put(team, score);
+            correcetMap.put(team, correctCount);
+            answerMap.put(team, questionList.size());
+        }
+
+
+        List<Model7RestData> responseData = new ArrayList<>();
+        for (Teams team : teams) {
+            Model7RestData restData = new Model7RestData();
+            restData.setId(team.getId().toString());
+            restData.setFullName(team.getFullName());
+            restData.setTeamScore(scoreMap.getOrDefault(team.getFullName(), 0));
+            restData.setAnsweredCount(answerMap.getOrDefault(team.getFullName(), 0));
+            restData.setCorrectRatio((int)(100.0 * correcetMap.getOrDefault(team.getFullName(), 0) / totalQuestions.size()));
             responseData.add(restData);
         }
         return JsonResp.success(responseData);

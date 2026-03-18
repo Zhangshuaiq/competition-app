@@ -6,8 +6,8 @@ import competition.JavaFxApplication;
 import competition.controller.ControlPane;
 import competition.entity.Questions;
 import competition.entity.Teams;
-import competition.mapper.TeamsMapper;
 import competition.service.ScoreService;
+import competition.service.TeamService;
 import competition.util.NumberUtil;
 import competition.util.TeamRuntime;
 import javafx.application.Platform;
@@ -76,7 +76,7 @@ public class Model61RuntimeData {
         if (!runtimeData.isEmpty()) {
             ControlPane controlPane = JavaFxApplication.getApplicationContext().getBean(ControlPane.class);
             ScoreService scoreService = JavaFxApplication.getApplicationContext().getBean(ScoreService.class);
-            TeamsMapper teamsMapper = JavaFxApplication.getApplicationContext().getBean(TeamsMapper.class);
+            TeamService teamsMapper = JavaFxApplication.getApplicationContext().getBean(TeamService.class);
             for (int i = 0; i < runtimeData.size(); i++) {
                 ModelData data = runtimeData.get(i);
                 for (Teams team : teams) {
@@ -104,7 +104,7 @@ public class Model61RuntimeData {
                                         team.setMemberScore(JSON.toJSONString(jsonObject));
                                         team.getQScores().set(j, -desScore);
                                     }
-                                    teamsMapper.updateById(team);
+                                    teamsMapper.updateTeamAsync(team);
 
                                 }
                             }
@@ -178,7 +178,7 @@ public class Model61RuntimeData {
             List<Teams> teams = TeamRuntime.getTeams();
             ControlPane controlPane = JavaFxApplication.getApplicationContext().getBean(ControlPane.class);
             ScoreService scoreService = JavaFxApplication.getApplicationContext().getBean(ScoreService.class);
-            TeamsMapper teamsMapper = JavaFxApplication.getApplicationContext().getBean(TeamsMapper.class);
+            TeamService teamsMapper = JavaFxApplication.getApplicationContext().getBean(TeamService.class);
             for (Teams team : teams) {
                 if (team.getFullName().equals(data.getTeamName())) {
                     JSONObject jsonObject = JSON.parseObject(team.getMemberScore());
@@ -192,7 +192,7 @@ public class Model61RuntimeData {
                                     Integer x = jsonObject.getIntValue(data.getUserName());
                                     jsonObject.put(data.getUserName(), x + data.getScore());
                                     team.setMemberScore(JSON.toJSONString(jsonObject));
-                                    teamsMapper.updateById(team);
+                                    teamsMapper.updateTeamAsync(team);
                                     // 更新队员当前环节的分数
                                     team.getQScores().set(j, data.getScore());
                                 } else {
