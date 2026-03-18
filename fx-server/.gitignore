@@ -3,3 +3,10 @@ target
 competition_back.db
 /src/main/resources/frontend/
 **/.DS_Store
+/**/*.zip
+/**/*.tar.gz
+/**/*.log
+/**/*.tmp
+/**/*.bak
+/**/*.swp
+/**/*.swo
