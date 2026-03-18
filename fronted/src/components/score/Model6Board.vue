@@ -230,7 +230,7 @@ export default {
   },
 
   mounted() {
-    sessionStorage.setItem("role", "answer");
+    sessionStorage.setItem("role", "score");
     this.loadConfig();
     this.fetchTeams();
     this.startPoll();

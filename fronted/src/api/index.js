@@ -36,3 +36,7 @@ export const memberTitle = () => get('/rest/memberRankTitle')
 export const model6BoardStyle = () => get('/rest/model6BoardStyle')
 
 export const model6BoardData = () => get('/rest/model6BoardData')
+
+export const model7BoardStyle = () => get('/rest/model7BoardStyle')
+
+export const model7BoardData = () => get('/rest/model7BoardData')
