@@ -431,7 +431,9 @@ public class RestApi {
         // 所有题目
         Model7Preview Model7Preview = JavaFxApplication.getApplicationContext().getBean(Model7Preview.class);
         List<Questions> totalQuestions = Model7Preview.getQuestionsWithCache();
-
+        // 补充未答题的分数扣除
+        Map<Integer, String> desMap = totalQuestions.stream().collect(Collectors.toMap(Questions::getQuestionNumber,
+                q -> q.getDescScore() != null ? q.getDescScore() : ""));
         List<Teams> teams = TeamRuntime.getTeams();
         List<List<Model7RuntimeData.ModelData>> runtimeData = Model7RuntimeData.getRuntimeData();
 
@@ -443,33 +445,56 @@ public class RestApi {
         // 已答数量
         Map<String, Integer> answerMap = new HashMap<>();
 
-        boolean finish = true;
+        boolean isFinish = true;
         List<Boolean> finished = Model7RuntimeData.getFinished();
         for (Boolean b : finished) {
-            finish = finish & b;
+            isFinish = isFinish & b;
         }
+
         for (int i = 0; i < runtimeData.size(); i++) {
-            List<Model7RuntimeData.ModelData> questionList = runtimeData.get(i);
+
+            List<Model7RuntimeData.ModelData> modelData = runtimeData.get(i);
+
             int score = 0;
-            int correctCount = 0;
-            for (Model7RuntimeData.ModelData data : questionList) {
-                if (data.getUserSelect() != null && data.getUserSelect().equals(data.getAnswer())) {
-                    score += data.getScore();
-                    correctCount++;
-                } else {
-                    score -= controlPane.getCurrentStage().getDesValue();
+            int correct = 0;
+            if (isFinish) {
+                for (Model7RuntimeData.ModelData data : modelData) {
+                    if (data.getUserSelect() != null && data.getUserSelect().equals(data.getAnswer())) {
+                        score += data.getScore();
+                        correct++;
+                    } else {
+                        score -= data.getDesValue();
+                    }
                 }
-            }
-            // 结束的情况需要额外计算未完成的扣分
-            if (finish) {
-                score = score - ((Model7RuntimeData.totalNumber - questionList.size()) * controlPane.getCurrentStage().getDesValue());
+                List<Integer> answeredQuestion = modelData.stream()
+                        .map(Model7RuntimeData.ModelData::getQuestionNumber).collect(Collectors.toList());
+                Integer unAnsweredValue = 0;
+                for (Map.Entry<Integer, String> entrySet : desMap.entrySet()) {
+                    int num = entrySet.getKey();
+                    String val = entrySet.getValue();
+                    if (!answeredQuestion.contains(num) && NumberUtil.isInt(val)) {
+                        unAnsweredValue += Integer.parseInt(val);
+                    } else if (!answeredQuestion.contains(num)) {
+                        unAnsweredValue += controlPane.getCurrentStage().getDesValue();
+                    }
+                }
+                score = score - unAnsweredValue;
+            } else {
+                for (Model7RuntimeData.ModelData data : modelData) {
+                    if (data.getUserSelect() != null && data.getUserSelect().equals(data.getAnswer())) {
+                        score += data.getScore();
+                        correct++;
+                    } else {
+                        score -= data.getDesValue();
+                    }
+                }
             }
 
             String team = Model7RuntimeData.getTeams().get(i).getFullName();
 
             scoreMap.put(team, score);
-            correcetMap.put(team, correctCount);
-            answerMap.put(team, questionList.size());
+            correcetMap.put(team, correct);
+            answerMap.put(team, modelData.size());
         }
 
 

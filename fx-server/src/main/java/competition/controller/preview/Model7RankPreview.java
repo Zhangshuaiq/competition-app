@@ -1,10 +1,12 @@
 package competition.controller.preview;
 
 import cn.hutool.core.io.FileUtil;
+import competition.JavaFxApplication;
 import competition.controller.ControlPane;
 import competition.controller.board.BoardPane;
 import competition.controller.match.Model7Rank;
 import competition.entity.Configs;
+import competition.entity.Questions;
 import competition.entity.RankStyle;
 import competition.entity.Stages;
 import competition.mapper.ConfigsMapper;
@@ -352,6 +354,8 @@ public class Model7RankPreview extends RankPane {
         } 
         else if (currentStage.getQuestionType() == 7) 
         {
+            Model7Preview Model7Preview = JavaFxApplication.getApplicationContext().getBean(Model7Preview.class);
+            List<Questions> totalQuestions = Model7Preview.getQuestionsWithCache();
             boolean finish = true;
             List<Boolean> finished = Model7RuntimeData.getFinished();
             for (Boolean b : finished) {
@@ -363,24 +367,41 @@ public class Model7RankPreview extends RankPane {
             List<List<Model7RuntimeData.ModelData>> runtimeData = Model7RuntimeData.getRuntimeData();
             List<String> timeData = Model7RuntimeData.getFts();
             List<Integer> seconds = Model7RuntimeData.getSeconds();
+            // 补充未答题的分数扣除
+            Map<Integer, String> desMap = totalQuestions.stream().collect(Collectors.toMap(Questions::getQuestionNumber,
+                    q -> q.getDescScore() != null ? q.getDescScore() : ""));
             for (int i = 0; i < runtimeData.size(); i++) {
                 List<Model7RuntimeData.ModelData> questionList = runtimeData.get(i);
                 int score = 0;
+
+
                 if (finish) {
                     for (Model7RuntimeData.ModelData data : questionList) {
                         if (data.getUserSelect() != null && data.getUserSelect().equals(data.getAnswer())) {
                             score += data.getScore();
                         } else {
-                            score -= controlPane.getCurrentStage().getDesValue();
+                            score -= data.getDesValue();
                         }
                     }
-                    score = score - ((Model7RuntimeData.totalNumber - questionList.size()) * controlPane.getCurrentStage().getDesValue());
+                    List<Integer> answeredQuestion = questionList.stream()
+                            .map(Model7RuntimeData.ModelData::getQuestionNumber).collect(Collectors.toList());
+                    Integer unAnsweredValue = 0;
+                    for (Map.Entry<Integer, String> entrySet : desMap.entrySet()) {
+                        int num = entrySet.getKey();
+                        String val = entrySet.getValue();
+                        if (!answeredQuestion.contains(num) && NumberUtil.isInt(val)) {
+                            unAnsweredValue += Integer.parseInt(val);
+                        } else if (!answeredQuestion.contains(num)) {
+                            unAnsweredValue += controlPane.getCurrentStage().getDesValue();
+                        }
+                    }
+                    score = score - unAnsweredValue;
                 } else {
                     for (Model7RuntimeData.ModelData data : questionList) {
                         if (data.getUserSelect() != null && data.getUserSelect().equals(data.getAnswer())) {
                             score += data.getScore();
                         } else {
-                            score -= controlPane.getCurrentStage().getDesValue();
+                            score -= data.getDesValue();
                         }
                     }
                 }
