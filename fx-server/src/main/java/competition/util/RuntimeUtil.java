@@ -1,6 +1,10 @@
 package competition.util;
 
+import competition.modal.BoardAnswerSelectInfo;
+
+import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.Map;
 
 public class RuntimeUtil {
 
@@ -36,4 +40,7 @@ public class RuntimeUtil {
 
     // 计时状态
     public static volatile boolean isTiming = false;
+
+    public static volatile BoardAnswerSelectInfo boardAnswerMemberInfo = new BoardAnswerSelectInfo();
+
 }

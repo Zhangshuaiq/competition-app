@@ -12,6 +12,7 @@ import competition.dto.BuzzDevice;
 import competition.dto.ScreenDevice;
 import competition.entity.*;
 import competition.mapper.*;
+import competition.modal.BoardAnswerSelectInfo;
 import competition.modal.TeamResult;
 import competition.serial.Command;
 import competition.serial.SerialPortConfig;
@@ -223,6 +224,16 @@ public class ControlPane {
     @FXML
     private HBox titleBar, dragBox;
 
+
+    @FXML
+    private Button boardImageCtrl, boardAnswerConfirm;
+
+    @FXML
+    private ComboBox<String> boardAnswerMember, boardImage;
+
+    @FXML
+    private CheckBox boardAnswerAll;
+
     // 更新客户端展示的数据（与客户端实时交互）
     @Resource
     private WsMessageHandler messageHandler;
@@ -249,6 +260,25 @@ public class ControlPane {
         if (RuntimeUtil.showConnectionStatus) {
             Navigator.connectionBar("/view/board/preview/TeamConnectionBar.fxml", "", "/view/style.css", true);
         }
+    }
+
+    private void confirmSelectBoardInfo(){
+        boolean selectAllTeam = boardAnswerAll.isSelected();
+        int selectedIndex = boardAnswerMember.getSelectionModel().getSelectedIndex();
+        if (selectedIndex < 0) {
+            Information.error("请选择队员");
+            return;
+        }
+        BoardAnswerSelectInfo boardAnswerMemberInfo = new BoardAnswerSelectInfo();
+        if (selectAllTeam) {
+            boardAnswerMemberInfo.setSelectTeams(TeamRuntime.getTeams());
+        } else {
+            // 需要获取当前指定的队伍，从链接状态栏里选择
+            boardAnswerMemberInfo.setSelectTeams(TeamRuntime.getTeams());
+        }
+        boardAnswerMemberInfo.setSelectMemberIndex(selectedIndex);
+
+        RuntimeUtil.boardAnswerMemberInfo = boardAnswerMemberInfo;
     }
 
     @FXML
@@ -470,11 +500,14 @@ public class ControlPane {
     @FXML
     public void initialize() {
 
+        boardAnswerConfirm.setOnMouseClicked((event) -> confirmSelectBoardInfo());
 
         // 加载团队信息
         List<Teams> teams = teamsMapper.selectList(new LambdaQueryWrapper<>());
         // 排序队伍，按照编码排序
         teams.sort(Comparator.comparingInt(o -> Integer.parseInt(o.getCode())));
+
+        int maxTeamCount = 0;
 
         for (Teams team : teams) {
             team.setQScores(new ArrayList<>());
@@ -482,12 +515,26 @@ public class ControlPane {
             team.setStatus(0);
             if (!StringUtils.isEmpty(team.getMembers())) {
                 String[] split = team.getMembers().split(",");
+
+                if (split.length > maxTeamCount) {
+                    maxTeamCount = split.length;
+                }
+
                 for (String s : split) {
                     team.getStatusList().add(0);
                     team.getQScores().add(0);
                 }
             }
         }
+
+        // 设置选手选择框为 x 号选手 【按照显示的每个队伍的选手顺序】
+        List<String> memberList = new ArrayList<>();
+        for (int i = 1; i <= maxTeamCount ; i++) {
+            memberList.add(i + "号选手");
+        }
+
+        boardAnswerMember.setItems(FXCollections.observableList(memberList));
+
         // 若已有分数，则加载旧的分数
         TeamRuntime.setTeams(teams);
         WsTeamMemberWaiter.initData();
@@ -496,8 +543,6 @@ public class ControlPane {
         Model61RuntimeData.setTeams(TeamRuntime.getTeams());
         teamComBox.setItems(
                 FXCollections.observableList(teams.stream().map(x -> x.getShortName()).collect(Collectors.toList())));
-
-
 
         Configs barConfig = configsMapper.selectById(14);
         String barConfigVal = barConfig.getConfig();
@@ -515,7 +560,6 @@ public class ControlPane {
             } else {
                 RuntimeUtil.showScoreBar = false;
             }
-
         }
 
         // 检测实时状态

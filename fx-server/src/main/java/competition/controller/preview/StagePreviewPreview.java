@@ -1,6 +1,7 @@
 package competition.controller.preview;
 
 
+import cn.hutool.core.map.MapUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import competition.controller.ControlPane;
 import competition.controller.board.BoardPane;
@@ -33,6 +34,7 @@ import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
 
 @Component
 public class StagePreviewPreview extends PreviewPane<Integer> {
@@ -145,8 +147,22 @@ public class StagePreviewPreview extends PreviewPane<Integer> {
                             .eq(StagesStyle::getParentId, innerStageID)
                     );
                 }
+
+                // 允许平板选题
+                int stageType = 0;
+                if (innerStageID != null) {
+                    Stages parent = stagesMapper.selectById(innerStageID);
+                    if (parent != null && parent.getBoardAnswer() == 1) {
+                        stageType = parent.getQuestionType();
+                    }
+                }
+
                 stages.sort(comparator);
-                messageHandler.notifyPage("stages", stages);
+                Map<Object, Object> data = MapUtil.builder()
+                        .put("stages", stages)
+                        .put("stageType", stageType)
+                        .build();
+                messageHandler.notifyPage("stages", data);
 
                 String defaultStyle = "550%%300%%350%%80%%false%%0xffffffff%%%%默认.ttf%%28%%false%%false%%false%%false%%居中对齐%%60%%0%%2%%60%%0x000000ff";
                 String[] detailArr = defaultStyle.split(ConfigSpliter.SPLITER);

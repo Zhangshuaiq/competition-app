@@ -2,6 +2,8 @@ package competition.controller.backend;
 
 import javax.annotation.Resource;
 
+import competition.util.IPUtil;
+import javafx.beans.property.SimpleStringProperty;
 import org.springframework.stereotype.Component;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -96,8 +98,12 @@ public class WebPageConfig {
     private static final ObjectMapper objectMapper = new ObjectMapper();
     private static final int CONFIG_ID = 15;
 
+    private SimpleStringProperty ipaddr = new SimpleStringProperty("");
+
     @FXML
     private void initialize() {
+        ipaddr.set(IPUtil.getLocalIpAddress());
+        setAddress();
         this.loadData();
 
         saveBtn.setOnMouseClicked(event -> saveConfig());
@@ -107,6 +113,11 @@ public class WebPageConfig {
         model7PageWebSiteCopyBtn.setOnMouseClicked(e -> copyToClipboard(model7PageWebSite.getText()));
         MemberScorePageWebSiteCopyBtn.setOnMouseClicked(e -> copyToClipboard(MemberScorePageWebSite.getText()));
         TeamScorePageWebSiteCopyBtn.setOnMouseClicked(e -> copyToClipboard(TeamScorePageWebSite.getText()));
+    }
+
+    private void setAddress(){
+        model6PageWebSite.setText("http://" + ipaddr.get() + ":8080/index.html#/model6Board");
+        model7PageWebSite.setText("http://" + ipaddr.get() + ":8080/index.html#/model67oard");
     }
 
     // ==================== 加载数据到控件 ====================
@@ -124,7 +135,7 @@ public class WebPageConfig {
             // ----- Model6 -----
             Map<String, Object> m6 = (Map<String, Object>) root.get("model6");
             if (m6 != null) {
-                setText(model6PageWebSite,         m6, "webSite");
+//                setText(model6PageWebSite,         m6, "webSite");
                 setText(model6PageRow,             m6, "row");
                 setText(model6PageCol,             m6, "col");
                 setText(model6PageX,               m6, "x");
@@ -150,7 +161,7 @@ public class WebPageConfig {
             // ----- Model7 -----
             Map<String, Object> m7 = (Map<String, Object>) root.get("model7");
             if (m7 != null) {
-                setText(model7PageWebSite,                 m7, "webSite");
+//                setText(model7PageWebSite,                 m7, "webSite");
                 setText(model7PageRow,                     m7, "row");
                 setText(model7PageCol,                     m7, "col");
                 setText(model7PageX,                       m7, "x");
@@ -177,15 +188,15 @@ public class WebPageConfig {
             }
 
             // ----- MemberScore / TeamScore -----
-            Map<String, Object> memberScore = (Map<String, Object>) root.get("memberScore");
-            if (memberScore != null) {
-                setText(MemberScorePageWebSite, memberScore, "webSite");
-            }
-
-            Map<String, Object> teamScore = (Map<String, Object>) root.get("teamScore");
-            if (teamScore != null) {
-                setText(TeamScorePageWebSite, teamScore, "webSite");
-            }
+//            Map<String, Object> memberScore = (Map<String, Object>) root.get("memberScore");
+//            if (memberScore != null) {
+//                setText(MemberScorePageWebSite, memberScore, "webSite");
+//            }
+//
+//            Map<String, Object> teamScore = (Map<String, Object>) root.get("teamScore");
+//            if (teamScore != null) {
+//                setText(TeamScorePageWebSite, teamScore, "webSite");
+//            }
 
         } catch (Exception e) {
             e.printStackTrace();

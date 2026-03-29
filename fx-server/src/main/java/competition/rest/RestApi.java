@@ -6,6 +6,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import competition.JavaFxApplication;
 import competition.controller.ControlPane;
+import competition.controller.board.BoardPane;
 import competition.controller.preview.Model7Preview;
 import competition.entity.*;
 import competition.mapper.*;
@@ -17,6 +18,8 @@ import competition.service.RankingService;
 import competition.util.*;
 import competition.ws.Model60RuntimeData;
 import competition.ws.Model7RuntimeData;
+import competition.ws.StageSelectRuntime;
+import javafx.application.Platform;
 import org.springframework.core.io.UrlResource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -509,5 +512,27 @@ public class RestApi {
             responseData.add(restData);
         }
         return JsonResp.success(responseData);
+    }
+
+
+    /**
+     * 接收前端自选环节提交
+     * 参数: { stage: 环节名, team: 队伍, member: 选手 }
+     */
+    @PostMapping("/selectStage")
+    public JsonResp selectStage(@RequestBody StageSelectRuntime.StageSelectData data) {
+        if (!StringUtils.hasText(data.getStage())
+            || !StringUtils.hasText(data.getTeam())
+            || !StringUtils.hasText(data.getMember())) {
+            return JsonResp.error("参数不完整");
+        }
+        StageSelectRuntime.save(data);
+        Platform.runLater(
+                () -> {
+                    BoardPane scoreBoard = controlPane.getScoreBoardPreview();
+                    scoreBoard.reload();
+                }
+        );
+        return JsonResp.success();
     }
 }

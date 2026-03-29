@@ -169,6 +169,7 @@ public class StageConfig {
         dataMap.put(5, "线索题");
         dataMap.put(6, "答题模式");
         dataMap.put(7, "竞技模式");
+        dataMap.put(8, "平板自选");
         timeCountType = new ToggleGroup();
         timeCountType.getToggles().addAll(timeType1, timeType2);
 

@@ -13,6 +13,7 @@ import competition.entity.ScoreConfig1;
 import competition.mapper.ConfigsMapper;
 import competition.mapper.ScoreConfigMapper;
 import competition.mapper.ScoreConfigMapper1;
+import competition.util.IPUtil;
 import competition.util.Information;
 import competition.util.Navigator;
 import competition.util.RuntimeUtil;
@@ -206,29 +207,7 @@ public class PaneConfig {
         scoreWebsite11.textProperty().bindBidirectional(ipaddr);
         memberWebsite.textProperty().bindBidirectional(ipaddr);
         holderWebsite.textProperty().bindBidirectional(ipaddr);
-        
-        try {
-            Enumeration<NetworkInterface> interfaces = NetworkInterface.getNetworkInterfaces();
-            for (NetworkInterface iface : Collections.list(interfaces)) {
-                // 检查接口是否激活，且不是回环接口
-                if (iface.isUp() && !iface.isLoopback()) {
-                    Enumeration<InetAddress> addresses = iface.getInetAddresses();
-                    while (addresses.hasMoreElements()) {
-                        InetAddress addr = addresses.nextElement();
-                        // 确保IPv4地址且非localhost
-                        if (addr.getHostAddress().indexOf(':') == -1 && !addr.isLoopbackAddress()) {
-                            ipaddr.set(addr.getHostAddress());
-                            break;
-                        }
-                    }
-                    if (!StringUtils.isEmpty(ipaddr.get())) {
-                        break;
-                    }
-                }
-            }
-        } catch (SocketException e) {
-            e.printStackTrace();
-        }
+        ipaddr.set(IPUtil.getLocalIpAddress());
         // http://localhost:8080/index.html#/
         try {
             memberQrcode.setImage(generateQRCodeImage("http://" + ipaddr.get() + ":8080/index.html#/"));
