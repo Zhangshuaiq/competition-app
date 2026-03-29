@@ -27,4 +27,7 @@ public class BaseDir {
     
     // 字体文件夹
     public static final String FONT_DIR = System.getProperty("user.dir") + File.separator + "资源" +  File.separator + "字体" +  File.separator;
+
+    public static final String SCREEN_GLOBAL_DIR = System.getProperty("user.dir") + File.separator + "资源" +  File.separator + "全屏图片" +  File.separator;
+
 }

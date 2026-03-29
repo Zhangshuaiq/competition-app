@@ -117,23 +117,6 @@ public class ExtendedScreen {
         extendScreen.close();
     }
 
-    public static void show(Scene scene) {
-        ObservableList<Screen> screens = Screen.getScreens();
-        if (screens.size() < 2) {
-            return ;
-        }
-        Screen extendedScreen = screens.get(1); // 获取第二个屏幕
-        Rectangle2D bounds = extendedScreen.getBounds();
-
-        // 将窗口定位到扩展屏
-        extendScreen.setX(bounds.getMinX());
-        extendScreen.setY(bounds.getMinY());
-        extendScreen.setWidth(bounds.getWidth());
-        extendScreen.setHeight(bounds.getHeight());
-        scene.getStylesheets().add("/view/style.css"); // 应用 CSS
-        extendScreen.setScene(scene);
-        extendScreen.show();
-    }
 
     /**
      * 使用缓存的show方法

@@ -1,5 +1,6 @@
 package competition.controller;
 
+import cn.hutool.core.io.FileUtil;
 import com.alibaba.fastjson2.JSON;
 import com.alibaba.fastjson2.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
@@ -30,10 +31,12 @@ import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Pos;
+import javafx.geometry.Rectangle2D;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -46,10 +49,13 @@ import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
+import javafx.stage.Screen;
 import javafx.stage.Stage;
+import javafx.stage.StageStyle;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 
@@ -241,6 +247,8 @@ public class ControlPane {
     @Resource
     private Model7StatusMapper model7StatusMapper;
 
+    private Stage boardImageStage;
+
     private final Comparator<Stages> comparator = (o1, o2) -> {
         if (o1.getSortVal().length() > o2.getSortVal().length()) {
             return 1;
@@ -279,6 +287,90 @@ public class ControlPane {
         boardAnswerMemberInfo.setSelectMemberIndex(selectedIndex);
 
         RuntimeUtil.boardAnswerMemberInfo = boardAnswerMemberInfo;
+    }
+
+
+    private void confirmSelectBoardImage(){
+
+        String text = boardImageCtrl.getText();
+        if (text.equals("显示")) {
+            String selectedItem = boardImage.getSelectionModel().getSelectedItem();
+            if (StringUtils.isEmpty(selectedItem)) {
+                Information.error("请选择图片");
+                return;
+            }
+            String path = BaseDir.SCREEN_GLOBAL_DIR + selectedItem;
+            if (!FileUtil.exist(path)) {
+                Information.error("选择的图片不存在");
+                return;
+            }
+            // 全屏展示图片
+            Platform.runLater(() -> {
+                try {
+                    Image image = new Image(new File(path).toURI().toString());
+                    // ===== 主屏全屏展示 =====
+                    Rectangle2D primaryBounds = Screen.getPrimary().getBounds();
+                    ImageView primaryImageView = new ImageView(image);
+                    primaryImageView.setFitWidth(primaryBounds.getWidth());
+                    primaryImageView.setFitHeight(primaryBounds.getHeight());
+                    primaryImageView.setPreserveRatio(false);
+
+                    Scene primaryScene = new Scene(new StackPane(primaryImageView),
+                            primaryBounds.getWidth(), primaryBounds.getHeight());
+
+                    if (boardImageStage == null) {
+                        boardImageStage = new Stage();
+                        boardImageStage.initStyle(StageStyle.UNDECORATED);
+                        boardImageStage.setAlwaysOnTop(true);
+                    }
+                    boardImageStage.setX(primaryBounds.getMinX());
+                    boardImageStage.setY(primaryBounds.getMinY());
+                    boardImageStage.setWidth(primaryBounds.getWidth());
+                    boardImageStage.setHeight(primaryBounds.getHeight());
+                    boardImageStage.setScene(primaryScene);
+                    boardImageStage.show();
+
+                    if (ExtendedScreen.hasShow()) {
+                        // ===== 扩展屏全屏展示 =====
+                        ObservableList<Screen> screens = Screen.getScreens();
+                        if (screens.size() > 1) {
+                            Rectangle2D extBounds = screens.get(1).getBounds();
+                            ImageView extImageView = new ImageView(image);
+                            extImageView.setFitWidth(extBounds.getWidth());
+                            extImageView.setFitHeight(extBounds.getHeight());
+                            extImageView.setPreserveRatio(false);
+
+                            Scene extScene = new Scene(new StackPane(extImageView),
+                                    extBounds.getWidth(), extBounds.getHeight());
+                            extScene.getStylesheets().add("/view/style.css");
+                            ExtendedScreen.extendScreen.setX(extBounds.getMinX());
+                            ExtendedScreen.extendScreen.setY(extBounds.getMinY());
+                            ExtendedScreen.extendScreen.setWidth(extBounds.getWidth());
+                            ExtendedScreen.extendScreen.setHeight(extBounds.getHeight());
+                            ExtendedScreen.extendScreen.setScene(extScene);
+                            ExtendedScreen.extendScreen.show();
+                        }
+                    }
+                    boardImageCtrl.setText("关闭");
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    Information.error("图片加载失败：" + e.getMessage());
+                }
+            });
+
+        } else {
+            Platform.runLater(() -> {
+                if (boardImageStage != null) {
+                    boardImageStage.close();
+                    boardImageStage = null;
+                }
+                if (ExtendedScreen.hasShow()) {
+                    ExtendedScreen.close();
+                }
+                boardImageCtrl.setText("显示");
+            });
+
+        }
     }
 
     @FXML
@@ -501,7 +593,10 @@ public class ControlPane {
     public void initialize() {
 
         boardAnswerConfirm.setOnMouseClicked((event) -> confirmSelectBoardInfo());
+        boardImageCtrl.setOnMouseClicked((event) -> confirmSelectBoardImage());
 
+        List<String> fileNames = FileUtil.listFileNames(BaseDir.SCREEN_GLOBAL_DIR);
+        boardImage.setItems(FXCollections.observableList(fileNames));
         // 加载团队信息
         List<Teams> teams = teamsMapper.selectList(new LambdaQueryWrapper<>());
         // 排序队伍，按照编码排序
