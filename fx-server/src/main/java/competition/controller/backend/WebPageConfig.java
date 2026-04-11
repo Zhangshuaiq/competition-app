@@ -117,7 +117,7 @@ public class WebPageConfig {
 
     private void setAddress(){
         model6PageWebSite.setText("http://" + ipaddr.get() + ":8080/index.html#/model6Board");
-        model7PageWebSite.setText("http://" + ipaddr.get() + ":8080/index.html#/model67oard");
+        model7PageWebSite.setText("http://" + ipaddr.get() + ":8080/index.html#/model7Board");
     }
 
     // ==================== 加载数据到控件 ====================
