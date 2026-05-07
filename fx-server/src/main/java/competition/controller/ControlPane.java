@@ -23,6 +23,8 @@ import competition.util.*;
 import competition.ws.Model60RuntimeData;
 import competition.ws.Model61RuntimeData;
 import competition.ws.Model7RuntimeData;
+import competition.ws.QuestionSubmitRuntime;
+import competition.ws.StageSelectRuntime;
 import competition.ws.WsMessageHandler;
 import competition.ws.WsTeamMemberWaiter;
 import javafx.animation.KeyFrame;
@@ -517,7 +519,10 @@ public class ControlPane {
                         && (currentStage != null
                                 && (currentStage.getQuestionType() == 7 || currentStage.getQuestionType() == 6)))
                         || (previewPane instanceof CluePreviewPreview)
-                        || (previewPane instanceof Model7Preview));
+                        || (previewPane instanceof Model7Preview)
+                        || (previewPane instanceof StagePreviewPreview
+                                && currentStage != null
+                                && currentStage.getQuestionType() == 8));
     }
 
     private boolean enterQuestionPage() {
@@ -1402,7 +1407,18 @@ public class ControlPane {
     @FXML
     public void startAnswerQuestion() {
         if (startAnswerBtn.getText().equals("开始答题")) {
-            if (currentStage.getQuestionType() == 7) {
+            if (currentStage.getQuestionType() == 8){
+                // 重置所有队伍状态，清除上一轮提交记录
+                for (Teams team : TeamRuntime.getTeams()) {
+                    team.setStatus(0);
+                    team.setTeamSelect("");
+                }
+                StageSelectRuntime.clear();
+                messageHandler.notifyPage("", null);
+                messageHandler.sendStageSelectReset();
+                startAnswerBtn.setDisable(false);
+                startTiming();
+            } else if (currentStage.getQuestionType() == 7) {
                 Model7RuntimeData.executeStart = true;
                 startAnswerBtn.setDisable(false);
                 Model7RuntimeData.reset();
@@ -1482,6 +1498,8 @@ public class ControlPane {
                 } else {
                     Model60RuntimeData.forceFinish();
                 }
+            } else if (currentStage.getQuestionType() == 8) {
+                messageHandler.sendStageSelectStop();
             }
             startAnswerBtn.setText("开始答题");
             lastQBtn.setDisable(false);
@@ -1511,6 +1529,8 @@ public class ControlPane {
             } else {
                 Model60RuntimeData.forceFinish();
             }
+        } else if (currentStage.getQuestionType() == 8) {
+            messageHandler.sendStageSelectStop();
         }
         startAnswerBtn.setText("开始答题");
         startAnswerBtn.setTextFill(Color.BLACK);
@@ -1705,6 +1725,16 @@ public class ControlPane {
                 } else if (stages.getQuestionType() == 1) {
                     previewPane = Navigator.preview("/view/preview/StageNamePreview.fxml", "", "/view/style.css", true,
                             stages.getId());
+                } else if (stages.getQuestionType() == 8) {
+                    // 平板自选 — 返回选题界面，恢复选题阶段的队伍状态
+                    QuestionSubmitRuntime.clear();
+                    Map<String, StageSelectRuntime.StageSelectData> allSelections = StageSelectRuntime.getAll();
+                    for (Teams team : TeamRuntime.getTeams()) {
+                        team.setTeamSelect("");
+                        team.setStatus(allSelections.containsKey(team.getFullName()) ? 1 : 0);
+                    }
+                    previewPane = Navigator.preview("/view/preview/StageQuestionPreview.fxml", "", "/view/style.css",
+                            true, stages);
                 }
 
             } else if (previewPane instanceof Model7Preview) {
@@ -2384,6 +2414,20 @@ public class ControlPane {
                         GlobalCache.showAnswer = false;
                         previewPane.reload();
                     }
+                } else if (currentStage.getQuestionType() == 8) {
+                    // 平板自选 — 上一题/下一题
+                    QuestionSubmitRuntime.clear();
+                    TeamRuntime.resetStatus();
+                    if (previewPane instanceof QuestionPreviewPreview) {
+                        previewPane.setData(questions);
+                        GlobalCache.showAnswer = false;
+                        previewPane.reload();
+                    } else {
+                        GlobalCache.showAnswer = false;
+                        previewPane = Navigator.preview("/view/preview/QuestionPreview.fxml", "", "/view/style.css",
+                                true, questions);
+                        previewPane.reload();
+                    }
                 } else if (currentStage.getQuestionType() == 5) {
                     if (previewPane instanceof CluePreviewPreview) {
                         previewPane.setData(questions);
@@ -2517,6 +2561,81 @@ public class ControlPane {
                     }
                 }
                 //
+            } else if (questionType == 8) {
+                if (previewPane instanceof QuestionPreviewPreview) {
+                    // 平板自选 — 题目答题阶段
+                    GlobalCache.showAnswer = !GlobalCache.showAnswer;
+                    if (currentStage.getTeamAnswerSingle() == 1) {
+                        // 勾选了团队答案单独页，与 model61 单独页逻辑一致
+                        if (GlobalCache.showAnswer) {
+                            Questions currentQuestion = ((QuestionPreviewPreview) previewPane).getData();
+                            int qScore = currentQuestion.getScore() != null ? currentQuestion.getScore() : currentStage.getScorePerQ();
+                            Map<String, String> allAnswers = QuestionSubmitRuntime.getAll();
+                            TeamResult result = new TeamResult();
+                            result.setCorrectAnswer(currentQuestion.getAnswer());
+                            List<TeamResult.DataItem> items = new ArrayList<>();
+                            for (Teams team : TeamRuntime.getTeams()) {
+                                TeamResult.DataItem item = new TeamResult.DataItem();
+                                item.setTeamName(team.getFullName());
+                                String userSelect = allAnswers.getOrDefault(team.getFullName(), "");
+                                item.setAnswer(userSelect);
+                                if (userSelect.equals(currentQuestion.getAnswer())) {
+                                    item.setScore(qScore);
+                                } else {
+                                    item.setScore(-currentStage.getDesValue());
+                                }
+                                items.add(item);
+                            }
+                            result.setDataItemList(items);
+                            ShowAnswerPreview.setTeamResult(result);
+                            previewPane = Navigator.preview("/view/preview/ShowAnswer.fxml", "", "/view/style.css", true, true);
+                            messageHandler.notifyPage("model61R", result);
+                        } else {
+                            GlobalCache.showAnswer = false;
+                            returnLast();
+                        }
+                    } else {
+                        // 未勾选：通过 sendShowAnswer 在答题页状态栏展示，同时更新队伍提交答案
+                        messageHandler.sendShowAnswer();
+                        Map<String, String> allAnswers = QuestionSubmitRuntime.getAll();
+                        for (Teams team : TeamRuntime.getTeams()) {
+                            if (GlobalCache.showAnswer) {
+                                String submitted = allAnswers.get(team.getFullName());
+                                if (submitted != null) {
+                                    team.setTeamSelect(submitted);
+                                    team.setStatus(2);
+                                }
+                            } else {
+                                team.setTeamSelect("");
+                                if (allAnswers.containsKey(team.getFullName())) {
+                                    team.setStatus(1);
+                                }
+                            }
+                        }
+                        messageHandler.notifyPage("", null);
+                        previewPane.showAnswer();
+                    }
+                } else {
+                    // 平板自选 — 选环节阶段（揭示/隐藏队伍已选环节）
+                    GlobalCache.showAnswer = !GlobalCache.showAnswer;
+                    Map<String, StageSelectRuntime.StageSelectData> allSelections = StageSelectRuntime.getAll();
+                    for (Teams team : TeamRuntime.getTeams()) {
+                        StageSelectRuntime.StageSelectData selected = allSelections.get(team.getFullName());
+                        if (selected != null) {
+                            if (GlobalCache.showAnswer) {
+                                team.setTeamSelect(selected.getStage());
+                                team.setStatus(2);
+                            } else {
+                                team.setTeamSelect("");
+                                team.setStatus(1);
+                            }
+                        }
+                    }
+                    messageHandler.notifyPage("", null);
+                    if (previewPane != null) {
+                        previewPane.showAnswer();
+                    }
+                }
             } else {
                 TeamRuntime.updateS();
                 GlobalCache.showAnswer = !GlobalCache.showAnswer;

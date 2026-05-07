@@ -215,6 +215,45 @@ public class ScoreBoardH implements BoardPane {
             count = addModelPanels(box, team, currentStage, cfgArr, statusFont, statusColor, sb, count);
         }
 
+        // 自选环节：显示选择状态
+        if (currentStage != null && currentStage.getBoardAnswer() == 1) {
+            count++;
+            StackPane stagePane = new StackPane();
+            stagePane.setPrefSize(ScreenAdapter.calculateExX(Integer.parseInt(cfgArr[19])),
+                    ScreenAdapter.calculateExY(Integer.parseInt(cfgArr[20])));
+
+            Text stageText = new Text();
+            stageText.setTextAlignment(TextAlignment.CENTER);
+            stageText.setFill(Color.valueOf(cfgArr[15]));
+            stageText.setFont(font);
+            stageText.setUnderline(Boolean.valueOf(split[5]));
+            stageText.setStrikethrough(Boolean.valueOf(split[2]));
+            if (Boolean.valueOf(split[3])) {
+                stageText.setStroke(stageText.getFill());
+                stageText.setStrokeWidth(1);
+            } else {
+                stageText.setStroke(null);
+            }
+            stageText.getTransforms().clear();
+            if (Boolean.valueOf(split[4])) {
+                stageText.getTransforms().add(new Shear(-0.3, 0));
+            }
+
+            if (team.getStatus() == 2) {
+                stageText.setText(StringUtils.hasText(team.getTeamSelect()) ? team.getTeamSelect() : "已选择");
+                stagePane.setBackground(new Background(new BackgroundFill(Color.valueOf(cfgArr[27]), new CornerRadii(10), Insets.EMPTY)));
+            } else if (team.getStatus() == 1) {
+                stageText.setText("已选择");
+                stagePane.setBackground(new Background(new BackgroundFill(Color.valueOf(cfgArr[26]), new CornerRadii(10), Insets.EMPTY)));
+            } else {
+                stageText.setText("未选择");
+                stagePane.setBackground(new Background(new BackgroundFill(Color.valueOf(cfgArr[25]), new CornerRadii(10), Insets.EMPTY)));
+            }
+
+            stagePane.getChildren().add(stageText);
+            box.getChildren().add(stagePane);
+        }
+
         box.setPrefHeight(ScreenAdapter.calculateExX(Integer.parseInt(cfgArr[20]) * count + count - 1));
         return box;
     }

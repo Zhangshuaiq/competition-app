@@ -373,11 +373,8 @@ public class ScoreBoardVPreview extends PreviewPane implements BoardPane {
                     ScreenAdapter.calculateMainY(Integer.parseInt(cfgArr[20]))
                 );
 
-                StageSelectRuntime.StageSelectData selectData = StageSelectRuntime.get(team.getFullName());
-
                 Text stageText = new Text();
                 stageText.setTextAlignment(TextAlignment.CENTER);
-                // 完全复用队名样式
                 stageText.setFill(Color.valueOf(cfgArr[15]));
                 stageText.setFont(font);
                 stageText.setUnderline(Boolean.valueOf(split[5]));
@@ -393,17 +390,23 @@ public class ScoreBoardVPreview extends PreviewPane implements BoardPane {
                     stageText.getTransforms().add(new Shear(-0.3, 0));
                 }
 
-                if (selectData != null && StringUtils.hasText(selectData.getStage())) {
-                    stageText.setText(selectData.getStage());
-                    // 已选：使用队名背景色
+                if (team.getStatus() == 2) {
+                    // 答案已揭示：显示实际选择的环节名
+                    stageText.setText(StringUtils.hasText(team.getTeamSelect()) ? team.getTeamSelect() : "已选择");
                     stagePane.setBackground(new Background(new BackgroundFill(
-                        Color.valueOf(cfgArr[16]), new CornerRadii(10), Insets.EMPTY
+                        Color.valueOf(cfgArr[27]), new CornerRadii(10), Insets.EMPTY
+                    )));
+                } else if (team.getStatus() == 1) {
+                    // 已提交但未揭示
+                    stageText.setText("已选择");
+                    stagePane.setBackground(new Background(new BackgroundFill(
+                        Color.valueOf(cfgArr[26]), new CornerRadii(10), Insets.EMPTY
                     )));
                 } else {
-                    stageText.setText("等待选择");
-                    // 未选：稍暗背景
+                    // 未提交
+                    stageText.setText("未选择");
                     stagePane.setBackground(new Background(new BackgroundFill(
-                        Color.valueOf(cfgArr[16]).darker(), new CornerRadii(10), Insets.EMPTY
+                        Color.valueOf(cfgArr[25]), new CornerRadii(10), Insets.EMPTY
                     )));
                 }
 

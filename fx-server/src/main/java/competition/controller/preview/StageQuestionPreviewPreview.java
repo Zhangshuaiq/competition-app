@@ -5,6 +5,7 @@ import competition.controller.ControlPane;
 import competition.controller.board.BoardPane;
 import competition.controller.match.StageQuestionPreview;
 import competition.controller.match.StageQuestionPreviewAttr;
+import competition.ws.QuestionSubmitRuntime;
 import competition.entity.Configs;
 import competition.entity.Questions;
 import competition.entity.Stages;
@@ -425,6 +426,14 @@ public class StageQuestionPreviewPreview extends PreviewPane<Stages> {
                         Integer questionType = inner.getQuestionType();
                         if (questionType == 2 || questionType == 1 || questionType == 4) {
                             // 正常自选题
+                            controlPane.setPreviewPane(
+                                    Navigator.preview("/view/preview/QuestionPreview.fxml", "", "/view/style.css", true,
+                                            questions));
+                        } else if (questionType == 8) {
+                            // 平板自选
+                            GlobalCache.showAnswer = false;
+                            QuestionSubmitRuntime.clear();
+                            TeamRuntime.resetStatus();
                             controlPane.setPreviewPane(
                                     Navigator.preview("/view/preview/QuestionPreview.fxml", "", "/view/style.css", true,
                                             questions));

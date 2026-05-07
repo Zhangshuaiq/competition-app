@@ -90,11 +90,13 @@ export default {
       return
     }
     const member = sessionStorage.getItem("member");
+    const selectedStage = sessionStorage.getItem("selectedStage");
 
     sessionStorage.clear()
     this.queryPrefix()
     sessionStorage.setItem("member", member)
     sessionStorage.setItem("user", item)
+    sessionStorage.setItem("selectedStage", selectedStage)
 
     const data = this.$store.state.data
     console.log(data)

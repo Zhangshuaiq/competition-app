@@ -253,6 +253,9 @@ public class TimeBoardPreview extends PreviewPane {
             this.timeValue = format(timeVal);
             messageHandler.sendQuestionTime(timeVal + "", "false");
             messageHandler.sendModel7Time(timeVal + "");
+            if (controlPane.getCurrentStage() != null && controlPane.getCurrentStage().getQuestionType() == 8) {
+                messageHandler.sendStageSelectTime(timeVal + "");
+            }
             for (int i = 0; i < Model7RuntimeData.getSeconds().size(); i++) {
                 Model7RuntimeData.getTimes().set(i, timeValue);
                 if (!Model7RuntimeData.getFinished().get(i)) {
