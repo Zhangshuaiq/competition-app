@@ -3,9 +3,14 @@ package competition.controller.backend;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import competition.controller.ControlPane;
 import competition.entity.Stages;
+import competition.entity.Teams;
 import competition.mapper.StagesMapper;
+import competition.util.GlobalCache;
 import competition.util.ImageResource;
 import competition.util.PreviewStack;
+import competition.util.TeamRuntime;
+import competition.ws.QuestionSubmitRuntime;
+import competition.ws.StageSelectRuntime;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.ObservableList;
@@ -877,6 +882,14 @@ public class StageConfig {
         current.setQdDescValue(Integer.parseInt(buzzDescInput.getText()));
         current.setTeamAnswerSingle(ccType8AnswerShow.isSelected()?1:0);
         current.setBoardAnswer(ccType8Mode.isSelected()?1:0);
+        long dupCount = stagesMapper.selectCount(new LambdaQueryWrapper<Stages>()
+                .eq(Stages::getName, stageName)
+                .ne(Stages::getId, current.getId()));
+        if (dupCount > 0) {
+            Alert alert = new Alert(Alert.AlertType.WARNING, "环节名称「" + stageName + "」已存在，请使用不同的名称", ButtonType.OK);
+            alert.showAndWait();
+            return;
+        }
         stagesMapper.updateById(current);
         updateCurrentStage();
         refreshStageDisplay();
@@ -997,6 +1010,13 @@ public class StageConfig {
             }
         }
 
+        long dupCount = stagesMapper.selectCount(new LambdaQueryWrapper<Stages>()
+                .eq(Stages::getName, stageName));
+        if (dupCount > 0) {
+            Alert alert = new Alert(Alert.AlertType.WARNING, "环节名称「" + stageName + "」已存在，请使用不同的名称", ButtonType.OK);
+            alert.showAndWait();
+            return;
+        }
         stagesMapper.insert(stages);
         refreshStageDisplay();
     }
@@ -1007,6 +1027,14 @@ public class StageConfig {
             controlPane.updateCurrentStage(null);
         }
         PreviewStack.clear();
+        // 清空运行时状态，避免残留到状态栏
+        GlobalCache.showAnswer = false;
+        StageSelectRuntime.clear();
+        QuestionSubmitRuntime.clear();
+        TeamRuntime.resetStatus();
+        for (Teams team : TeamRuntime.getTeams()) {
+            team.setTeamSelect("");
+        }
         controlPane.closeWindow();
     }
 }

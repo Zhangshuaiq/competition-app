@@ -35,7 +35,7 @@
           <!--    音频无需展示      -->
           <!--    视频需要播放      -->
           <!--    文字则正常展示      -->
-          <div v-else-if="questionItem.questionType === '单选题' || questionItem.questionType === '多选题' || questionItem.questionType === '不定项选择题'">
+          <div v-else-if="questionItem.questionType === '单选题' || questionItem.questionType === '多选题' || questionItem.questionType === '不定项选择题' || questionItem.questionType === '案例分析'">
             <div class="question-name">
               <div v-if="questionItem.txbz === '4'">
                 <div v-if="questionItem.showNumber === 1">
@@ -106,7 +106,7 @@
               </div>
             </div>
           </div>
-          <div v-else>
+          <div v-else-if="questionItem.questionType === '填空题' || questionItem.questionType === '简答题' || questionItem.questionType === '判断题' || questionItem.questionType === '问答题'">
             <div class="question-name">
 
               <div v-if="questionItem.txbz === '4'">
@@ -155,6 +155,84 @@
           </div>
 
         </div>
+        <!-- 平板答题：答案选择区 -->
+        <div v-if="canAnswer && questionItem && !showResult" style="margin: 20px 25% 0">
+          <div v-if="questionItem.questionType === '单选题'">
+            <el-row type="flex" justify="center" style="text-align: center">
+              <el-col span="4" class="column-center" v-if="questionItem.choiceA">
+                <div class="answer-item" :class="{ 'blue-background': activeDiv === 'A' }" @click="setActiveDiv('A')">A</div>
+              </el-col>
+              <el-col span="4" class="column-center" v-if="questionItem.choiceB">
+                <div class="answer-item" :class="{ 'blue-background': activeDiv === 'B' }" @click="setActiveDiv('B')">B</div>
+              </el-col>
+              <el-col span="4" class="column-center" v-if="questionItem.choiceC">
+                <div class="answer-item" :class="{ 'blue-background': activeDiv === 'C' }" @click="setActiveDiv('C')">C</div>
+              </el-col>
+              <el-col span="4" class="column-center" v-if="questionItem.choiceD">
+                <div class="answer-item" :class="{ 'blue-background': activeDiv === 'D' }" @click="setActiveDiv('D')">D</div>
+              </el-col>
+              <el-col span="4" class="column-center" v-if="questionItem.choiceE">
+                <div class="answer-item" :class="{ 'blue-background': activeDiv === 'E' }" @click="setActiveDiv('E')">E</div>
+              </el-col>
+              <el-col span="4" class="column-center" v-if="questionItem.choiceF">
+                <div class="answer-item" :class="{ 'blue-background': activeDiv === 'F' }" @click="setActiveDiv('F')">F</div>
+              </el-col>
+            </el-row>
+          </div>
+          <div v-else-if="questionItem.questionType === '判断题'">
+            <el-row type="flex" justify="center" style="text-align: center">
+              <el-col span="4" class="column-center">
+                <div class="answer-item" style="width: 60px" :class="{ 'blue-background': activeDiv === '正确' }" @click="setActiveDiv('正确')">正确</div>
+              </el-col>
+              <el-col span="4" class="column-center">
+                <div class="answer-item" style="width: 60px" :class="{ 'blue-background': activeDiv === '错误' }" @click="setActiveDiv('错误')">错误</div>
+              </el-col>
+            </el-row>
+          </div>
+          <div v-else-if="questionItem.questionType === '多选题' || questionItem.questionType === '不定项选择题' || questionItem.questionType === '案例分析'">
+            <el-row type="flex" justify="center" style="text-align: center">
+              <el-col span="4" class="column-center" v-if="questionItem.choiceA">
+                <div class="multi-answer-item" :class="{ 'blue-background': activeDiv.indexOf('A') >= 0 }" @click="appendActiveDiv('A')">A</div>
+              </el-col>
+              <el-col span="4" class="column-center" v-if="questionItem.choiceB">
+                <div class="multi-answer-item" :class="{ 'blue-background': activeDiv.indexOf('B') >= 0 }" @click="appendActiveDiv('B')">B</div>
+              </el-col>
+              <el-col span="4" class="column-center" v-if="questionItem.choiceC">
+                <div class="multi-answer-item" :class="{ 'blue-background': activeDiv.indexOf('C') >= 0 }" @click="appendActiveDiv('C')">C</div>
+              </el-col>
+              <el-col span="4" class="column-center" v-if="questionItem.choiceD">
+                <div class="multi-answer-item" :class="{ 'blue-background': activeDiv.indexOf('D') >= 0 }" @click="appendActiveDiv('D')">D</div>
+              </el-col>
+              <el-col span="4" class="column-center" v-if="questionItem.choiceE">
+                <div class="multi-answer-item" :class="{ 'blue-background': activeDiv.indexOf('E') >= 0 }" @click="appendActiveDiv('E')">E</div>
+              </el-col>
+              <el-col span="4" class="column-center" v-if="questionItem.choiceF">
+                <div class="multi-answer-item" :class="{ 'blue-background': activeDiv.indexOf('F') >= 0 }" @click="appendActiveDiv('F')">F</div>
+              </el-col>
+            </el-row>
+          </div>
+          <div v-else>
+            <el-row type="flex" justify="center" style="text-align: center">
+              <el-input :disabled="submit || second <= 0" placeholder="请输入答案" type="textarea" rows="3" v-model="activeDiv"></el-input>
+            </el-row>
+          </div>
+        </div>
+
+        <!-- 平板答题：提交按钮 -->
+        <div v-if="canAnswer && questionItem" style="text-align: center; margin-top: 20px">
+          <div v-if="submit">
+            <el-button disabled style="width: 200px; height: 50px; font-size: x-large" type="primary">{{ btnText }}</el-button>
+          </div>
+          <div v-else>
+            <el-button
+              :disabled="second <= 0 || showResult || activeDiv === ''"
+              style="width: 200px; height: 50px; font-size: x-large"
+              type="primary"
+              @click="submitAnswer"
+            >{{ btnText }}</el-button>
+          </div>
+        </div>
+
         <div class="qd-area" :style="qdBoxStyle" @click="startBuzz">
           抢
         </div>
@@ -188,8 +266,8 @@ export default {
       hasBuzzed: false,
       buzzStatus: false,
       isResourceAvailable: false,
-      retryTimer: null, // 用于重试逻辑的计时器
-      retryInterval: 500, // 重试间隔时间，例如5秒
+      retryTimer: null,
+      retryInterval: 500,
       subscription: null,
       questionItem: null,
       teamInfo: '',
@@ -203,7 +281,12 @@ export default {
       answerUrl: '',
       imageUrl: `${baseUrl}/resource/答题背景.jpg?${new Date().getTime()}`,
       defaultImageUrl: `${baseUrl}/resource/默认背景.jpg?${new Date().getTime()}`,
-      prefix: ''
+      prefix: '',
+      activeDiv: '',
+      submit: false,
+      btnText: '提 交',
+      selectedStage: '',
+      canAnswer: false
     }
   },
 
@@ -231,6 +314,7 @@ export default {
         sessionStorage.setItem('hasBuzzed', this.hasBuzzed)
       }
     },
+
   },
 
   computed: {
@@ -246,10 +330,52 @@ export default {
       return {
         visibility: (this.stage.openQd === 1 && !this.hasBuzzed) ? 'visible' : 'hidden',
       }
-    }
+    },
+
   },
   
   methods: {
+
+    sortString(input) {
+      return input.split('').sort().join('');
+    },
+
+    setActiveDiv(val) {
+      if (this.submit || this.second <= 0 || this.showResult) return;
+      this.activeDiv = val;
+    },
+
+    appendActiveDiv(val) {
+      if (this.submit || this.second <= 0 || this.showResult) return;
+      if (this.activeDiv.indexOf(val) >= 0) {
+        this.activeDiv = this.activeDiv.replace(val, '');
+      } else {
+        this.activeDiv = this.activeDiv + val;
+      }
+    },
+
+    submitAnswer() {
+      if (this.submit || this.second <= 0 || this.showResult || this.activeDiv === '') return;
+      if (this.questionItem.questionType === '多选题' || this.questionItem.questionType === '不定项选择题') {
+        this.activeDiv = this.sortString(this.activeDiv);
+      }
+      const submitted = JSON.parse(JSON.stringify(this.questionItem));
+      submitted.teamName = this.teamInfo.fullName;
+      submitted.userSelect = this.activeDiv;
+      submitted.second = this.second;
+      this.questionItem = submitted;
+      this.submit = true;
+      this.btnText = '已提交';
+      this.$websocket.send('/app/question/submit', {
+        data: JSON.stringify(submitted),
+      });
+    },
+
+    resetAnswerState() {
+      this.activeDiv = '';
+      this.submit = false;
+      this.btnText = '提 交';
+    },
 
     startBuzz(){
       const data = {
@@ -317,6 +443,7 @@ export default {
   beforeRouteUpdate(to, from, next) {
     const data = this.$store.state.data
     this.stage = this.$store.state.stage
+    this.canAnswer = this.stage.boardAnswer === 1 && !!this.selectedStage && this.selectedStage === this.stage.name
     this.answerUrl  = ''
     this.isResourceAvailable = false;
     console.log("yyyyyyyyyyyyyyy")
@@ -327,8 +454,9 @@ export default {
     } else if (this.questionItem.resourceType === '视频') {
       this.resourceUrl = `${baseUrl}/resource/${this.questionItem.resource}`
     }
-    this.showResult = false
-    sessionStorage.removeItem('hasBuzzed')
+    this.showResult = false;
+    this.resetAnswerState();
+    sessionStorage.removeItem('hasBuzzed');
     this.hasBuzzed = false;
     next();
   },
@@ -340,7 +468,8 @@ export default {
         this.imageUrl = this.defaultImageUrl;
       }
     });
-    this.prefix = sessionStorage.getItem('prefix')
+    this.prefix = sessionStorage.getItem('prefix');
+    this.selectedStage = sessionStorage.getItem('selectedStage') || '';
     const item = sessionStorage.getItem("user");
     this.member = sessionStorage.getItem('member')
     if (!item) {
@@ -352,6 +481,8 @@ export default {
     this.teamInfo = JSON.parse(item)
     const data = this.$store.state.data
     this.stage = this.$store.state.stage
+    this.canAnswer = this.stage.boardAnswer === 1 && !!this.selectedStage && this.selectedStage === this.stage.name
+    console.log('[canAnswer]', this.canAnswer, { boardAnswer: this.stage.boardAnswer, selectedStage: this.selectedStage, stageName: this.stage.name })
     console.log("xxxxxxxxxxxxxxxxxx")
     console.log(data)
     this.questionItem = data
@@ -400,6 +531,43 @@ export default {
 
 .selection-item {
   padding: 5px ;
+}
+
+.column-center {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.answer-item {
+  height: 60px;
+  width: 60px;
+  line-height: 60px;
+  text-align: center;
+  font-size: large;
+  background-color: white;
+  border: 1px solid black;
+  border-radius: 8px;
+  cursor: pointer;
+  user-select: none;
+}
+
+.multi-answer-item {
+  height: 60px;
+  width: 60px;
+  line-height: 60px;
+  text-align: center;
+  font-size: large;
+  background-color: white;
+  border: 1px solid black;
+  border-radius: 8px;
+  cursor: pointer;
+  user-select: none;
+}
+
+.blue-background {
+  background-color: #4472C4;
+  color: white;
 }
 
 .overlay-img {

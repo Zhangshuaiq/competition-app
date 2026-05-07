@@ -305,6 +305,32 @@ public class WsMessageHandler {
         });
     }
 
+    @MessageMapping("/question/submit")
+    public void submitQuestion(byte[] msg) {
+        String jsonText = new String(msg, StandardCharsets.UTF_8);
+        Map parse = JSON.parseObject(jsonText, Map.class);
+        Map dataMap = JSON.parseObject(parse.get("data").toString(), Map.class);
+        String teamName = dataMap.get("teamName").toString();
+        String userSelect = dataMap.getOrDefault("userSelect", "").toString();
+        QuestionSubmitRuntime.save(teamName, userSelect);
+        for (Teams team : TeamRuntime.getTeams()) {
+            if (team.getFullName().equals(teamName)) {
+                team.setStatus(1);
+                break;
+            }
+        }
+        notifyPage("", null);
+        Platform.runLater(() -> {
+            ControlPane controlPane = getCachedControlPane();
+            if (controlPane != null) {
+                BoardPane scoreBoardPreview = controlPane.getScoreBoardPreview();
+                if (scoreBoardPreview != null) {
+                    scoreBoardPreview.reload();
+                }
+            }
+        });
+    }
+
     @MessageMapping("/model60/submit")
     public void submitModel60(byte[] msg) {
         String jsonText = new String(msg, StandardCharsets.UTF_8);
@@ -366,6 +392,28 @@ public class WsMessageHandler {
         dataMap.put("type", "time");
         dataMap.put("data", time);
         messagingTemplate.convertAndSend(QUESTION_GROUP_TOPIC, JSON.toJSONString(dataMap));
+    }
+
+    // 平板自选模式时间同步
+    public void sendStageSelectTime(String time) {
+        Map<String, String> dataMap = new HashMap<>();
+        dataMap.put("type", "time");
+        dataMap.put("data", time);
+        messagingTemplate.convertAndSend("/topic/stageSelect", JSON.toJSONString(dataMap));
+    }
+
+    // 平板自选模式结束信号
+    public void sendStageSelectStop() {
+        Map<String, String> dataMap = new HashMap<>();
+        dataMap.put("type", "stop");
+        messagingTemplate.convertAndSend("/topic/stageSelect", JSON.toJSONString(dataMap));
+    }
+
+    // 平板自选模式重置信号（新一轮开始，清除客户端已提交状态）
+    public void sendStageSelectReset() {
+        Map<String, String> dataMap = new HashMap<>();
+        dataMap.put("type", "reset");
+        messagingTemplate.convertAndSend("/topic/stageSelect", JSON.toJSONString(dataMap));
     }
 
     public void sendShowAnswer() {

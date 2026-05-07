@@ -345,6 +345,11 @@ public class StageNamePreviewPreview extends PreviewPane<Integer> {
                                 Navigator.preview("/view/preview/Model7Preview.fxml", "", "/view/style.css", true, stages)
                         );
                         //messageHandler.notifyEnterWait("model7");
+                    } else if (stages.getQuestionType() == 8) {
+                        // 平板自选
+                        controlPane.setPreviewPane(
+                                Navigator.preview("/view/preview/StageQuestionPreview.fxml", "", "/view/style.css", true, stages)
+                        );
                     }
                 } else {
                     // 展示子环节

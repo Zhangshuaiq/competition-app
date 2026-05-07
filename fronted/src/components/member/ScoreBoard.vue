@@ -51,11 +51,17 @@
                   <div
                       v-else
                       class="board-item"
-                      :style="{ backgroundColor: statusColor[item.status] }"
+                      :style="{ backgroundColor: stageSelectBgColor(item.status) }"
                   >
-                    <div v-if="item.status === 2 || item.status === 3">
+                    <template v-if="isStageMode">
+                      {{ stageSelectText(item) }}
+                    </template>
+                    <template v-else-if="isQuestionMode">
+                      {{ questionSelectText(item) }}
+                    </template>
+                    <template v-else-if="item.status === 2 || item.status === 3">
                       {{ item.teamSelect }}
-                    </div>
+                    </template>
                   </div>
                 </el-col>
               </el-row>
@@ -117,8 +123,46 @@ export default {
     } else if (route.includes('model60')) {
       this.showStatus = true;
       this.showMember = false;
+    } else if (route.includes('stages')) {
+      this.showStatus = true;
+      this.showMember = false;
+    } else if (route.includes('question')) {
+      const stage = this.$store.state.stage;
+      if (stage && stage.boardAnswer === 1) {
+        this.showStatus = true;
+        this.showMember = false;
+      }
     }
-  }
+  },
+  methods: {
+    stageSelectText(item) {
+      if (item.status === 2) return item.teamSelect || '已选择';
+      if (item.status === 1) return '已选择';
+      return '未选择';
+    },
+    stageSelectBgColor(status) {
+      if (!this.isStageMode && !this.isQuestionMode) return this.statusColor[status] || '#FFFFFF00';
+      if (status === 2) return '#00B050';
+      if (status === 1) return '#0070C0';
+      return '#888888';
+    },
+    questionSelectText(item) {
+      if (item.status === 2) return item.teamSelect || '已提交';
+      if (item.status === 1) return '已提交';
+      return '未提交';
+    },
+  },
+  computed: {
+    isStageMode() {
+      const route = this.$store.state.currentRoute;
+      return route && route.includes('stages');
+    },
+    isQuestionMode() {
+      const route = this.$store.state.currentRoute;
+      const stage = this.$store.state.stage;
+      return route && route.includes('question') && stage && stage.boardAnswer === 1;
+    },
+  },
 };
 </script>
 

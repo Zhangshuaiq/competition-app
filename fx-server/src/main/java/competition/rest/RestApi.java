@@ -19,6 +19,7 @@ import competition.util.*;
 import competition.ws.Model60RuntimeData;
 import competition.ws.Model7RuntimeData;
 import competition.ws.StageSelectRuntime;
+import competition.ws.WsMessageHandler;
 import javafx.application.Platform;
 import org.springframework.core.io.UrlResource;
 import org.springframework.http.HttpHeaders;
@@ -67,6 +68,9 @@ public class RestApi {
 
     @Resource
     private ControlPane controlPane;
+
+    @Resource
+    private WsMessageHandler messageHandler;
 
 
     private static final String TEAM_RANK_TITLE = BaseDir.PB_RES_DIR + "团队排名标题.txt";
@@ -527,6 +531,14 @@ public class RestApi {
             return JsonResp.error("参数不完整");
         }
         StageSelectRuntime.save(data);
+        // 将提交队伍的状态置为 1（已选择，但不揭示实际内容）
+        for (Teams team : TeamRuntime.getTeams()) {
+            if (team.getFullName().equals(data.getTeam())) {
+                team.setStatus(1);
+                break;
+            }
+        }
+        messageHandler.notifyPage("", null);
         Platform.runLater(
                 () -> {
                     BoardPane scoreBoard = controlPane.getScoreBoardPreview();
