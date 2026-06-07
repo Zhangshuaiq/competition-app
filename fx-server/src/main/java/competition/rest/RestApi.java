@@ -148,6 +148,21 @@ public class RestApi {
     }
 
 
+    @GetMapping("/screenImage/{filename:.+}")
+    public ResponseEntity<org.springframework.core.io.Resource> getScreenImage(@PathVariable String filename) {
+        try {
+            Path path = Paths.get(BaseDir.SCREEN_GLOBAL_DIR).resolve(filename);
+            org.springframework.core.io.Resource resource = new UrlResource(path.toUri());
+            if (resource.exists() || resource.isReadable()) {
+                return ResponseEntity.ok().body(resource);
+            } else {
+                return ResponseEntity.notFound().build();
+            }
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().build();
+        }
+    }
+
     @GetMapping("/image/{filename:.+}")
     public ResponseEntity<org.springframework.core.io.Resource> getImage(@PathVariable String filename) {
         try {

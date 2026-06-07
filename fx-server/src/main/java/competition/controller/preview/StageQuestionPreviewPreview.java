@@ -6,9 +6,11 @@ import competition.controller.board.BoardPane;
 import competition.controller.match.StageQuestionPreview;
 import competition.controller.match.StageQuestionPreviewAttr;
 import competition.ws.QuestionSubmitRuntime;
+import competition.ws.StageSelectRuntime;
 import competition.entity.Configs;
 import competition.entity.Questions;
 import competition.entity.Stages;
+import competition.entity.Teams;
 import competition.mapper.ConfigsMapper;
 import competition.mapper.QuestionsMapper;
 import competition.util.*;
@@ -434,6 +436,13 @@ public class StageQuestionPreviewPreview extends PreviewPane<Stages> {
                             GlobalCache.showAnswer = false;
                             QuestionSubmitRuntime.clear();
                             TeamRuntime.resetStatus();
+                            Map<String, StageSelectRuntime.StageSelectData> allSelections = StageSelectRuntime.getAll();
+                            for (Teams team : TeamRuntime.getTeams()) {
+                                StageSelectRuntime.StageSelectData sel = allSelections.get(team.getFullName());
+                                if (sel != null) {
+                                    team.setTeamSelect(sel.getStage());
+                                }
+                            }
                             controlPane.setPreviewPane(
                                     Navigator.preview("/view/preview/QuestionPreview.fxml", "", "/view/style.css", true,
                                             questions));

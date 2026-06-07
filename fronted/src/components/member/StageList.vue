@@ -21,6 +21,7 @@ text-shadow: -1px -1px 0 white, 1px -1px 0 white, -1px 1px 0 white, 1px 1px 0 wh
           style="text-align: center"
           v-for="item in stages"
           :key="item.id"
+          :style="{ visibility: item.greySelected ? 'hidden' : 'visible' }"
         >
           <div
             class="stage-item"

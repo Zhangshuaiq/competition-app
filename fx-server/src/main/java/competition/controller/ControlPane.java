@@ -306,24 +306,21 @@ public class ControlPane {
                 Information.error("选择的图片不存在");
                 return;
             }
-            // 全屏展示图片
             Platform.runLater(() -> {
                 try {
                     Image image = new Image(new File(path).toURI().toString());
-                    // ===== 主屏全屏展示 =====
+
+                    // 主屏展示图片（不设 alwaysOnTop，控制面板自身是 alwaysOnTop 不会被遮住）
                     Rectangle2D primaryBounds = Screen.getPrimary().getBounds();
                     ImageView primaryImageView = new ImageView(image);
                     primaryImageView.setFitWidth(primaryBounds.getWidth());
                     primaryImageView.setFitHeight(primaryBounds.getHeight());
                     primaryImageView.setPreserveRatio(false);
-
                     Scene primaryScene = new Scene(new StackPane(primaryImageView),
                             primaryBounds.getWidth(), primaryBounds.getHeight());
-
                     if (boardImageStage == null) {
                         boardImageStage = new Stage();
                         boardImageStage.initStyle(StageStyle.UNDECORATED);
-                        boardImageStage.setAlwaysOnTop(true);
                     }
                     boardImageStage.setX(primaryBounds.getMinX());
                     boardImageStage.setY(primaryBounds.getMinY());
@@ -332,8 +329,8 @@ public class ControlPane {
                     boardImageStage.setScene(primaryScene);
                     boardImageStage.show();
 
+                    // 扩展屏展示图片
                     if (ExtendedScreen.hasShow()) {
-                        // ===== 扩展屏全屏展示 =====
                         ObservableList<Screen> screens = Screen.getScreens();
                         if (screens.size() > 1) {
                             Rectangle2D extBounds = screens.get(1).getBounds();
@@ -341,7 +338,6 @@ public class ControlPane {
                             extImageView.setFitWidth(extBounds.getWidth());
                             extImageView.setFitHeight(extBounds.getHeight());
                             extImageView.setPreserveRatio(false);
-
                             Scene extScene = new Scene(new StackPane(extImageView),
                                     extBounds.getWidth(), extBounds.getHeight());
                             extScene.getStylesheets().add("/view/style.css");
@@ -353,6 +349,9 @@ public class ControlPane {
                             ExtendedScreen.extendScreen.show();
                         }
                     }
+
+                    // 同步图片到 Vue 界面
+                    messageHandler.sendBoardImage(selectedItem);
                     boardImageCtrl.setText("关闭");
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -362,17 +361,21 @@ public class ControlPane {
 
         } else {
             Platform.runLater(() -> {
+                // 关闭主屏图片
                 if (boardImageStage != null) {
                     boardImageStage.close();
                     boardImageStage = null;
                 }
-                if (ExtendedScreen.hasShow()) {
-                    ExtendedScreen.close();
+                // 扩展屏恢复上一界面（reload 而非 close，不关闭整个扩展屏）
+                if (ExtendedScreen.hasShow() && previewPane != null) {
+                    previewPane.reload();
                 }
+                // 通知 Vue 关闭图片
+                messageHandler.sendBoardImage("");
                 boardImageCtrl.setText("显示");
             });
-
         }
+
     }
 
     @FXML
@@ -517,7 +520,8 @@ public class ControlPane {
         return previewPane != null &&
                 ((previewPane instanceof QuestionPreviewPreview
                         && (currentStage != null
-                                && (currentStage.getQuestionType() == 7 || currentStage.getQuestionType() == 6)))
+                                && (currentStage.getQuestionType() == 7 || currentStage.getQuestionType() == 6
+                                        || currentStage.getQuestionType() == 8)))
                         || (previewPane instanceof CluePreviewPreview)
                         || (previewPane instanceof Model7Preview)
                         || (previewPane instanceof StagePreviewPreview
@@ -572,6 +576,12 @@ public class ControlPane {
                 backBtn.setDisable(true);
             } else {
                 backBtn.setDisable(false);
+            }
+
+            // 答题界面 type 8：计时由开始答题按钮控制，禁用计时按钮
+            if (previewPane instanceof QuestionPreviewPreview
+                    && currentStage != null && currentStage.getQuestionType() == 8) {
+                timingBtn.setDisable(true);
             }
 
             // 检测计时状态
@@ -1408,16 +1418,22 @@ public class ControlPane {
     public void startAnswerQuestion() {
         if (startAnswerBtn.getText().equals("开始答题")) {
             if (currentStage.getQuestionType() == 8){
-                // 重置所有队伍状态，清除上一轮提交记录
-                for (Teams team : TeamRuntime.getTeams()) {
-                    team.setStatus(0);
-                    team.setTeamSelect("");
+                if (previewPane instanceof QuestionPreviewPreview) {
+                    // 答题阶段：仅开始计时，不重置选题数据
+                    startAnswerBtn.setDisable(false);
+                    startTiming();
+                } else {
+                    // 选环节阶段：重置所有队伍状态，清除上一轮提交记录
+                    for (Teams team : TeamRuntime.getTeams()) {
+                        team.setStatus(0);
+                        team.setTeamSelect("");
+                    }
+                    StageSelectRuntime.clear();
+                    messageHandler.notifyPage("", null);
+                    messageHandler.sendStageSelectReset();
+                    startAnswerBtn.setDisable(false);
+                    startTiming();
                 }
-                StageSelectRuntime.clear();
-                messageHandler.notifyPage("", null);
-                messageHandler.sendStageSelectReset();
-                startAnswerBtn.setDisable(false);
-                startTiming();
             } else if (currentStage.getQuestionType() == 7) {
                 Model7RuntimeData.executeStart = true;
                 startAnswerBtn.setDisable(false);
@@ -2418,6 +2434,13 @@ public class ControlPane {
                     // 平板自选 — 上一题/下一题
                     QuestionSubmitRuntime.clear();
                     TeamRuntime.resetStatus();
+                    Map<String, StageSelectRuntime.StageSelectData> allSelections = StageSelectRuntime.getAll();
+                    for (Teams team : TeamRuntime.getTeams()) {
+                        StageSelectRuntime.StageSelectData sel = allSelections.get(team.getFullName());
+                        if (sel != null) {
+                            team.setTeamSelect(sel.getStage());
+                        }
+                    }
                     if (previewPane instanceof QuestionPreviewPreview) {
                         previewPane.setData(questions);
                         GlobalCache.showAnswer = false;
@@ -2522,6 +2545,11 @@ public class ControlPane {
                     TeamRuntime.getTeams().get(i).setTeamSelect(selectList.get(i));
                 }
 
+                // 刷新 Java 分数板，展示揭示后的答案
+                if (scoreBoardPreview != null) {
+                    scoreBoardPreview.reload();
+                }
+
                 messageHandler.notifyPage("", null);
                 if (previewPane != null) {
                     previewPane.showAnswer();
@@ -2597,13 +2625,21 @@ public class ControlPane {
                     } else {
                         // 未勾选：通过 sendShowAnswer 在答题页状态栏展示，同时更新队伍提交答案
                         messageHandler.sendShowAnswer();
+                        Questions currentQuestion = ((QuestionPreviewPreview) previewPane).getData();
+                        String correctAnswer = currentQuestion != null ? currentQuestion.getAnswer() : null;
                         Map<String, String> allAnswers = QuestionSubmitRuntime.getAll();
                         for (Teams team : TeamRuntime.getTeams()) {
                             if (GlobalCache.showAnswer) {
                                 String submitted = allAnswers.get(team.getFullName());
                                 if (submitted != null) {
                                     team.setTeamSelect(submitted);
-                                    team.setStatus(2);
+                                    String s = submitted.replace(" ", " ");
+                                    String a = correctAnswer != null ? correctAnswer.replace(" ", " ") : null;
+                                    if (a != null && s.equals(a)) {
+                                        team.setStatus(2);  // 答对 → 绿色
+                                    } else {
+                                        team.setStatus(3);  // 答错 → 红色
+                                    }
                                 }
                             } else {
                                 team.setTeamSelect("");
@@ -2625,6 +2661,7 @@ public class ControlPane {
                             if (GlobalCache.showAnswer) {
                                 team.setTeamSelect(selected.getStage());
                                 team.setStatus(2);
+                                StageSelectRuntime.markRevealed(team.getFullName());
                             } else {
                                 team.setTeamSelect("");
                                 team.setStatus(1);

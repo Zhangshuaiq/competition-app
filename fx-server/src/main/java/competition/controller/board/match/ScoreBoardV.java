@@ -15,15 +15,11 @@ import competition.mapper.ScoreStyleMapper;
 import competition.util.*;
 import competition.ws.Model60RuntimeData;
 import competition.ws.Model61RuntimeData;
-import javafx.collections.ObservableList;
-import javafx.event.EventHandler;
+import competition.ws.QuestionSubmitRuntime;
+import competition.ws.StageSelectRuntime;
 import javafx.fxml.FXML;
 import javafx.geometry.Insets;
-import javafx.geometry.Pos;
 import javafx.scene.Node;
-import javafx.scene.control.Label;
-import javafx.scene.input.MouseButton;
-import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.text.*;
@@ -33,9 +29,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
 import javax.annotation.Resource;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -97,9 +90,6 @@ public class ScoreBoardV implements BoardPane {
         right.setPrefWidth(ScreenAdapter.calculateExX(100));
         right.setSpacing(ScreenAdapter.calculateExY(rowSpan));
 
-//        CheckBox selectAll = new CheckBox("全选");
-//        selectAll.setPrefWidth(100);
-//        selectAll.setFont(Font.font(24));
         container.getChildren().addAll(left, right);
         List<Teams> teams = TeamRuntime.getTeams();
         for (int i = 0; i < teams.size(); i++) {
@@ -375,6 +365,8 @@ public class ScoreBoardV implements BoardPane {
 
             // 自选环节：显示选择状态
             if (currentStage != null && currentStage.getBoardAnswer() == 1) {
+                boolean isAnswerPhase = controlPane.getPreviewPane() instanceof QuestionPreviewPreview
+                        && currentStage.getQuestionType() == 8;
                 count++;
                 StackPane stagePane = new StackPane();
                 stagePane.setPrefSize(ScreenAdapter.calculateExX(Integer.parseInt(cfgArr[19])),
@@ -397,19 +389,70 @@ public class ScoreBoardV implements BoardPane {
                     stageText.getTransforms().add(new Shear(-0.3, 0));
                 }
 
-                if (team.getStatus() == 2) {
-                    stageText.setText(StringUtils.hasText(team.getTeamSelect()) ? team.getTeamSelect() : "已选择");
+                if (isAnswerPhase) {
+                    StageSelectRuntime.StageSelectData selData = StageSelectRuntime.getAll().get(team.getFullName());
+                    String stageName = selData != null ? selData.getStage()
+                            : (StringUtils.hasText(team.getTeamSelect()) ? team.getTeamSelect() : "未选择");
+                    stageText.setText(stageName);
                     stagePane.setBackground(new Background(new BackgroundFill(Color.valueOf(cfgArr[27]), new CornerRadii(10), Insets.EMPTY)));
-                } else if (team.getStatus() == 1) {
-                    stageText.setText("已选择");
-                    stagePane.setBackground(new Background(new BackgroundFill(Color.valueOf(cfgArr[26]), new CornerRadii(10), Insets.EMPTY)));
                 } else {
-                    stageText.setText("未选择");
-                    stagePane.setBackground(new Background(new BackgroundFill(Color.valueOf(cfgArr[25]), new CornerRadii(10), Insets.EMPTY)));
+                    StageSelectRuntime.StageSelectData sel8 = currentStage.getQuestionType() == 8
+                            ? StageSelectRuntime.getAll().get(team.getFullName()) : null;
+                    if (team.getStatus() == 2) {
+                        String display = sel8 != null ? sel8.getStage()
+                                : (StringUtils.hasText(team.getTeamSelect()) ? team.getTeamSelect() : "已选择");
+                        stageText.setText(display);
+                        stagePane.setBackground(new Background(new BackgroundFill(Color.valueOf(cfgArr[27]), new CornerRadii(10), Insets.EMPTY)));
+                    } else if (team.getStatus() == 1) {
+                        if (sel8 != null && StageSelectRuntime.isRevealed(team.getFullName())) {
+                            stageText.setText(sel8.getStage());
+                            stagePane.setBackground(new Background(new BackgroundFill(Color.valueOf(cfgArr[27]), new CornerRadii(10), Insets.EMPTY)));
+                        } else {
+                            stageText.setText("已提交");
+                            stagePane.setBackground(new Background(new BackgroundFill(Color.valueOf(cfgArr[26]), new CornerRadii(10), Insets.EMPTY)));
+                        }
+                    } else {
+                        stageText.setText(StringUtils.hasText(team.getTeamSelect()) ? team.getTeamSelect() : "未选择");
+                        stagePane.setBackground(new Background(new BackgroundFill(Color.valueOf(cfgArr[25]), new CornerRadii(10), Insets.EMPTY)));
+                    }
                 }
 
                 stagePane.getChildren().add(stageText);
                 box.getChildren().add(stagePane);
+
+                // 答题阶段额外显示答题状态行
+                if (isAnswerPhase) {
+                    count++;
+                    StackPane answerPane = new StackPane();
+                    answerPane.setPrefSize(ScreenAdapter.calculateExX(Integer.parseInt(cfgArr[19])),
+                            ScreenAdapter.calculateExY(Integer.parseInt(cfgArr[20])));
+                    Text answerText = new Text();
+                    answerText.setTextAlignment(TextAlignment.CENTER);
+                    answerText.setFill(statusColor);
+                    answerText.setFont(statusFont);
+                    if (sb) {
+                        answerText.setStroke(answerText.getFill());
+                        answerText.setStrokeWidth(1);
+                    } else {
+                        answerText.setStroke(null);
+                    }
+                    String submitted = QuestionSubmitRuntime.getAll().get(team.getFullName());
+                    if (team.getStatus() == 2) {
+                        answerText.setText(StringUtils.hasText(submitted) ? submitted : "");
+                        answerPane.setBackground(new Background(new BackgroundFill(Color.valueOf(cfgArr[27]), new CornerRadii(10), Insets.EMPTY)));
+                    } else if (team.getStatus() == 3) {
+                        answerText.setText(StringUtils.hasText(submitted) ? submitted : "未提交");
+                        answerPane.setBackground(new Background(new BackgroundFill(Color.valueOf(cfgArr[28]), new CornerRadii(10), Insets.EMPTY)));
+                    } else if (team.getStatus() == 1) {
+                        answerText.setText("已提交");
+                        answerPane.setBackground(new Background(new BackgroundFill(Color.valueOf(cfgArr[26]), new CornerRadii(10), Insets.EMPTY)));
+                    } else {
+                        answerText.setText("未提交");
+                        answerPane.setBackground(new Background(new BackgroundFill(Color.valueOf(cfgArr[25]), new CornerRadii(10), Insets.EMPTY)));
+                    }
+                    answerPane.getChildren().add(answerText);
+                    box.getChildren().add(answerPane);
+                }
             }
 
             box.setPrefHeight(Integer.parseInt(cfgArr[20]) * count + count * rowSpan);

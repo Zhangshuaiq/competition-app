@@ -1,0 +1,301 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Microsoft YaHei', Arial, sans-serif;
+    background: url('背景.jpg') no-repeat center center fixed;
+    background-size: cover;
+    width: 1920px;
+    height: 1080px;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+}
+
+.container {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.grid-container {
+    display: grid;
+    gap: 20px; /* 统一的列距和行距 */
+    margin: 0 auto;
+    justify-content: center;
+    align-items: center;
+    place-items: center; /* 确保网格内容居中 */
+}
+
+.score-card {
+    width: 280px; /* 固定宽度 */
+    height: 200px; /* 固定高度 */
+    background: rgba(255, 255, 255, 0.95);
+    border-radius: 10px;
+    padding: 15px;
+    box-shadow: 0 6px 20px rgba(0,0,0,0.25);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    backdrop-filter: blur(5px);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    margin: 0 auto; /* 确保每个网格在单元格内居中 */
+}
+
+.score-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 15px 40px rgba(0,0,0,0.3);
+}
+
+.team-name {
+    font-size: 1.1rem;
+    font-weight: bold;
+    color: #333;
+    margin-bottom: 10px;
+    text-align: left;
+}
+
+.score {
+    font-size: 2.8rem;
+    font-weight: bold;
+    color: #667eea;
+    text-align: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-grow: 1;
+    margin: 0;
+}
+
+.stats-container {
+    display: flex;
+    justify-content: space-between;
+    margin-top: auto;
+}
+
+.accuracy {
+    font-size: 1rem;
+    color: #666;
+    text-align: left;
+}
+
+.answered-count {
+    font-size: 1rem;
+    color: #666;
+    text-align: right;
+}
+
+/* 全屏加分动画效果 - 不改变网格大小 */
+@keyframes fullScreenHighlight {
+    0% {
+        box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        z-index: 1;
+        border: 1px solid transparent;
+    }
+    20% {
+        box-shadow: 0 0 60px rgba(76, 175, 80, 0.9);
+        z-index: 1;
+        border: 3px solid #4CAF50;
+        background: rgba(76, 175, 80, 0.1);
+    }
+    60% {
+        box-shadow: 0 0 80px rgba(76, 175, 80, 1);
+        z-index: 1;
+        border: 3px solid #4CAF50;
+        background: rgba(76, 175, 80, 0.05);
+    }
+    100% {
+        box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        z-index: 1;
+        border: 1px solid transparent;
+        background: rgba(255, 255, 255, 0.95);
+    }
+}
+
+.full-screen-highlight {
+    animation: fullScreenHighlight 1.5s ease-in-out;
+    position: relative;
+}
+
+/* 分数放大动画 */
+@keyframes scorePulse {
+    0% {
+        transform: scale(1);
+        color: #667eea;
+        text-shadow: none;
+    }
+    25% {
+        transform: scale(1.8);
+        color: #4CAF50;
+        text-shadow: 0 0 30px rgba(76, 175, 80, 0.9);
+    }
+    50% {
+        transform: scale(2);
+        color: #FFD700;
+        text-shadow: 0 0 50px rgba(255, 215, 0, 0.8);
+    }
+    75% {
+        transform: scale(1.8);
+        color: #4CAF50;
+        text-shadow: 0 0 30px rgba(76, 175, 80, 0.9);
+    }
+    100% {
+        transform: scale(1);
+        color: #667eea;
+        text-shadow: none;
+    }
+}
+
+.score-pulse {
+    animation: scorePulse 1.5s ease-in-out;
+}
+
+/* 加分数字弹出效果 */
+@keyframes plusNumber {
+    0% {
+        opacity: 0;
+        transform: translateY(0) scale(0.5);
+    }
+    50% {
+        opacity: 1;
+        transform: translateY(-50px) scale(1.2);
+    }
+    100% {
+        opacity: 0;
+        transform: translateY(-100px) scale(1.5);
+    }
+}
+
+.plus-number {
+    position: absolute;
+    font-size: 2.5rem;
+    font-weight: bold;
+    color: #4CAF50;
+    text-shadow: 0 0 20px rgba(76, 175, 80, 0.8);
+    animation: plusNumber 1.5s ease-out;
+    pointer-events: none;
+    z-index: 2000;
+}
+
+/* 减分动画效果 */
+@keyframes minusScreenHighlight {
+    0% {
+        transform: scale(1);
+        box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        z-index: 1;
+    }
+    20% {
+        transform: scale(1.1);
+        box-shadow: 0 0 80px rgba(244, 67, 54, 0.8);
+        z-index: 1000;
+        border: 3px solid #F44336;
+    }
+    60% {
+        transform: scale(1.05);
+        box-shadow: 0 0 100px rgba(244, 67, 54, 1);
+        z-index: 1000;
+        border: 3px solid #F44336;
+    }
+    100% {
+        transform: scale(1);
+        box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        z-index: 1;
+    }
+}
+
+.minus-screen-highlight {
+    animation: minusScreenHighlight 1.5s ease-in-out;
+    position: relative;
+}
+
+/* 减分数字动画 */
+@keyframes minusNumber {
+    0% {
+        opacity: 0;
+        transform: translateY(0) scale(0.5);
+    }
+    50% {
+        opacity: 1;
+        transform: translateY(-50px) scale(1.2);
+    }
+    100% {
+        opacity: 0;
+        transform: translateY(-100px) scale(1.5);
+    }
+}
+
+.minus-number {
+    position: absolute;
+    font-size: 2.5rem;
+    font-weight: bold;
+    color: #F44336;
+    text-shadow: 0 0 20px rgba(244, 67, 54, 0.8);
+    animation: minusNumber 1.5s ease-out;
+    pointer-events: none;
+    z-index: 2000;
+}
+
+/* 减分分数动画 */
+@keyframes scorePulseMinus {
+    0% {
+        transform: scale(1);
+        color: #667eea;
+        text-shadow: none;
+    }
+    25% {
+        transform: scale(1.6);
+        color: #F44336;
+        text-shadow: 0 0 30px rgba(244, 67, 54, 0.9);
+    }
+    50% {
+        transform: scale(1.8);
+        color: #FF5722;
+        text-shadow: 0 0 50px rgba(255, 87, 34, 0.8);
+    }
+    75% {
+        transform: scale(1.6);
+        color: #F44336;
+        text-shadow: 0 0 30px rgba(244, 67, 54, 0.9);
+    }
+    100% {
+        transform: scale(1);
+        color: #667eea;
+        text-shadow: none;
+    }
+}
+
+.score-pulse-minus {
+    animation: scorePulseMinus 1.5s ease-in-out;
+}
+
+/* 倒计时容器样式 */
+.countdown-container {
+    position: absolute;
+    top: 30px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 1000;
+    text-align: center;
+}
+
+.countdown {
+    font-size: 7rem;
+    font-weight: 900;
+    color: #FFFFFF;
+    text-shadow: none;
+    font-family: 'Microsoft YaHei', Arial, sans-serif;
+    letter-spacing: 6px;
+    background: transparent;
+    padding: 0;
+    border: none;
+    box-shadow: none;
+}
+
+/* 移除响应式设计，固定1920x1080布局 */

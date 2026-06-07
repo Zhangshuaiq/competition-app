@@ -71,11 +71,17 @@ public class WsMessageHandler {
     // 界面跳转主题
     public static final String PAGE_TOPIC = "/topic/page";
 
+    // 全屏图片展示主题
+    public static final String BOARD_IMAGE_TOPIC = "/topic/boardImage";
+
     @Resource
     private TeamsMapper mapper;
 
     @Resource
     private SimpMessagingTemplate messagingTemplate;
+
+    // 当前全屏图片状态，随 page topic 下发保证 Vue 同步
+    private volatile String currentBoardImageUrl = "";
 
     // 优化相关的字段
     private final Object dataLock = new Object(); // 数据同步锁
@@ -359,6 +365,7 @@ public class WsMessageHandler {
         dataMap.put("teams", TeamRuntime.getTeams());
         dataMap.put("stage", stages);
         dataMap.put("barStatus", RuntimeUtil.showBarStatus);
+        dataMap.put("boardImageUrl", currentBoardImageUrl);
         messagingTemplate.convertAndSend(PAGE_TOPIC, JSON.toJSONString(dataMap));
     }
 
@@ -371,6 +378,7 @@ public class WsMessageHandler {
         dataMap.put("barStatus", RuntimeUtil.showBarStatus);
         dataMap.put("teams", TeamRuntime.getTeams());
         dataMap.put("stage", controlPane != null ? controlPane.getCurrentStage() : null);
+        dataMap.put("boardImageUrl", currentBoardImageUrl);
         log.info(controlPane != null && controlPane.getCurrentStage() != null ? controlPane.getCurrentStage().getName()
                 : null);
         messagingTemplate.convertAndSend(PAGE_TOPIC, JSON.toJSONString(dataMap));
@@ -464,6 +472,16 @@ public class WsMessageHandler {
         Map<String, String> data = new HashMap<>();
         data.put("event", "wait");
         messagingTemplate.convertAndSend(ENTER_WAIT_TOPIC, JSON.toJSONString(data));
+    }
+
+    // 全屏图片展示/关闭通知 Vue，imageUrl 为空串表示关闭
+    public void sendBoardImage(String imageUrl) {
+        currentBoardImageUrl = imageUrl != null ? imageUrl : "";
+        Map<String, String> data = new HashMap<>();
+        data.put("url", currentBoardImageUrl);
+        messagingTemplate.convertAndSend(BOARD_IMAGE_TOPIC, JSON.toJSONString(data));
+        // 通过 page topic 同步状态（确保 Vue 端即使 boardImage 订阅未就绪也能收到）
+        notifyPage("", null);
     }
 
     /**

@@ -11,6 +11,9 @@ public class StageSelectRuntime {
     // key: teamCode, value: 选择数据
     private static final Map<String, StageSelectData> selectDataMap = new ConcurrentHashMap<>();
 
+    // 已揭示子环节选择的队伍（揭示后 status 被答题阶段覆盖也不受影响）
+    private static final java.util.Set<String> revealedSet = java.util.Collections.newSetFromMap(new ConcurrentHashMap<>());
+
     public static void save(StageSelectData data) {
         selectDataMap.put(data.getTeam(), data);
     }
@@ -23,8 +26,17 @@ public class StageSelectRuntime {
         return selectDataMap;
     }
 
+    public static void markRevealed(String team) {
+        revealedSet.add(team);
+    }
+
+    public static boolean isRevealed(String team) {
+        return revealedSet.contains(team);
+    }
+
     public static void clear() {
         selectDataMap.clear();
+        revealedSet.clear();
     }
 
     public static class StageSelectData {

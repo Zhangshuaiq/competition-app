@@ -18,7 +18,7 @@
           </el-row>
 
           <!-- 第二层：固定高度，内容切换显示 -->
-          <div class="fixed-layer-container">
+          <div class="fixed-layer-container" :style="isType8QuestionMode ? { height: '65px' } : {}">
             <!-- 抢答时间 -->
             <div
                 class="fixed-layer-content"
@@ -35,7 +35,7 @@
             </div>
 
             <!-- 状态展示 -->
-            <div class="fixed-layer-content" v-show="!buzzStatus && showStatus">
+            <div class="fixed-layer-content" v-show="!buzzStatus && showStatus" :style="isType8QuestionMode ? { height: 'auto' } : {}">
               <el-row>
                 <el-col span="22">
                   <div v-if="showMember" class="member-status-row">
@@ -48,6 +48,14 @@
                       {{ idx + 1 }}
                     </div>
                   </div>
+                  <template v-else-if="isType8QuestionMode">
+                    <div class="board-item" style="background-color: #0070C0; margin-bottom: 5px;">
+                      {{ stageNameForTeam(item) }}
+                    </div>
+                    <div class="board-item" :style="{ backgroundColor: questionStatusBgColor(item.status) }">
+                      {{ questionAnswerText(item) }}
+                    </div>
+                  </template>
                   <div
                       v-else
                       class="board-item"
@@ -85,7 +93,8 @@ export default {
       showMember: false,
       statusColor: ['#FFFFFF00', '#0070C0', '#00B050', '#FF0000'],
       buzzStatusColor: ['#FFFFFF00', '#00B050', '#FF0000'],
-      questionItem: sessionStorage.getItem('questionItem') || {}
+      questionItem: sessionStorage.getItem('questionItem') || {},
+      stageNameCache: {}
     };
   },
   beforeRouteUpdate(to, from, next) {
@@ -94,8 +103,9 @@ export default {
     next();
   },
   watch: {
-    '$store.state.teams': function (newStatus) {
-      this.teamList = newStatus;
+    '$store.state.teams': function (newTeams) {
+      this.teamList = newTeams;
+      this.updateStageNameCache(newTeams);
       this.questionItem = JSON.parse(sessionStorage.getItem('questionItem'));
     },
     '$store.state.buzzStatus': function (newStatus) {
@@ -114,7 +124,8 @@ export default {
   mounted() {
     const data = this.$store.state.teams;
     this.teamList = data;
-     this.buzzStatus = this.$store.state.buzzStatus;
+    this.updateStageNameCache(data);
+    this.buzzStatus = this.$store.state.buzzStatus;
     this.barStatus = this.$store.state.barStatus;
     const route = this.$store.state.currentRoute;
     if (route.includes('model61')) {
@@ -148,8 +159,30 @@ export default {
     },
     questionSelectText(item) {
       if (item.status === 2) return item.teamSelect || '已提交';
+      return item.teamSelect || '未提交';
+    },
+    questionStatusBgColor(status) {
+      if (status === 2) return '#00B050';
+      if (status === 1) return '#0070C0';
+      return '#888888';
+    },
+    questionAnswerText(item) {
+      if (item.status === 2) return item.teamSelect || '';
       if (item.status === 1) return '已提交';
       return '未提交';
+    },
+    stageNameForTeam(item) {
+      return this.stageNameCache[item.id] || item.teamSelect || '未选择';
+    },
+    updateStageNameCache(teams) {
+      if (!teams) return;
+      teams.forEach(team => {
+        if (team.status !== 2 && team.teamSelect) {
+          this.$set(this.stageNameCache, team.id, team.teamSelect);
+        } else if (team.status === 0 && !team.teamSelect) {
+          this.$delete(this.stageNameCache, team.id);
+        }
+      });
     },
   },
   computed: {
@@ -161,6 +194,10 @@ export default {
       const route = this.$store.state.currentRoute;
       const stage = this.$store.state.stage;
       return route && route.includes('question') && stage && stage.boardAnswer === 1;
+    },
+    isType8QuestionMode() {
+      const stage = this.$store.state.stage;
+      return this.isQuestionMode && stage && stage.questionType === 8;
     },
   },
 };

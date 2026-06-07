@@ -15,6 +15,7 @@ import competition.mapper.ScoreStyleMapper;
 import competition.util.*;
 import competition.ws.Model60RuntimeData;
 import competition.ws.Model61RuntimeData;
+import competition.ws.QuestionSubmitRuntime;
 import competition.ws.StageSelectRuntime;
 import javafx.collections.ObservableList;
 import javafx.event.EventHandler;
@@ -249,54 +250,129 @@ public class ScoreBoardHPreview extends PreviewPane implements BoardPane {
 
         // 自选环节：显示已选子环节（样式与队名行完全一致）
         if (currentStage != null && currentStage.getBoardAnswer() == 1) {
-            count++;
-            StackPane stagePane = new StackPane();
-            stagePane.setMaxHeight(Double.MAX_VALUE);
-            VBox.setVgrow(stagePane, Priority.NEVER);
-            stagePane.setPrefSize(
-                ScreenAdapter.calculateMainX(Integer.parseInt(cfgArr[19])),
-                ScreenAdapter.calculateMainY(Integer.parseInt(cfgArr[20]))
-            );
+            boolean isType8AnswerPhase = controlPane.getPreviewPane() instanceof QuestionPreviewPreview
+                    && currentStage.getQuestionType() == 8;
+            boolean isType6AnswerPhase = controlPane.getPreviewPane() instanceof QuestionPreviewPreview
+                    && currentStage.getQuestionType() == 6 && Objects.equals(0, currentStage.getM6());
 
-            Text stageText = new Text();
-            stageText.setTextAlignment(TextAlignment.CENTER);
-            stageText.setFill(Color.valueOf(cfgArr[15]));
-            stageText.setFont(font);
-            stageText.setUnderline(Boolean.valueOf(split[5]));
-            stageText.setStrikethrough(Boolean.valueOf(split[2]));
-            if (Boolean.valueOf(split[3])) {
-                stageText.setStroke(stageText.getFill());
-                stageText.setStrokeWidth(1);
-            } else {
-                stageText.setStroke(null);
-            }
-            stageText.getTransforms().clear();
-            if (Boolean.valueOf(split[4])) {
-                stageText.getTransforms().add(new Shear(-0.3, 0));
+            // 子环节名行：type 6 答题阶段隐藏
+            if (!isType6AnswerPhase) {
+                count++;
+                StackPane stagePane = new StackPane();
+                stagePane.setMaxHeight(Double.MAX_VALUE);
+                VBox.setVgrow(stagePane, Priority.NEVER);
+                stagePane.setPrefSize(
+                    ScreenAdapter.calculateMainX(Integer.parseInt(cfgArr[19])),
+                    ScreenAdapter.calculateMainY(Integer.parseInt(cfgArr[20]))
+                );
+                Text stageText = new Text();
+                stageText.setTextAlignment(TextAlignment.CENTER);
+                stageText.setFill(Color.valueOf(cfgArr[15]));
+                stageText.setFont(font);
+                stageText.setUnderline(Boolean.valueOf(split[5]));
+                stageText.setStrikethrough(Boolean.valueOf(split[2]));
+                if (Boolean.valueOf(split[3])) {
+                    stageText.setStroke(stageText.getFill());
+                    stageText.setStrokeWidth(1);
+                } else {
+                    stageText.setStroke(null);
+                }
+                stageText.getTransforms().clear();
+                if (Boolean.valueOf(split[4])) {
+                    stageText.getTransforms().add(new Shear(-0.3, 0));
+                }
+                if (isType8AnswerPhase) {
+                    StageSelectRuntime.StageSelectData selData = StageSelectRuntime.getAll().get(team.getFullName());
+                    String stageName = selData != null ? selData.getStage()
+                            : (StringUtils.hasText(team.getTeamSelect()) ? team.getTeamSelect() : "未选择");
+                    stageText.setText(stageName);
+                    stagePane.setBackground(new Background(new BackgroundFill(
+                        Color.valueOf(cfgArr[27]), new CornerRadii(10), Insets.EMPTY
+                    )));
+                } else {
+                    StageSelectRuntime.StageSelectData sel8 = currentStage.getQuestionType() == 8
+                            ? StageSelectRuntime.getAll().get(team.getFullName()) : null;
+                    if (team.getStatus() == 2) {
+                        String display = sel8 != null ? sel8.getStage()
+                                : (StringUtils.hasText(team.getTeamSelect()) ? team.getTeamSelect() : "已选择");
+                        stageText.setText(display);
+                        stagePane.setBackground(new Background(new BackgroundFill(
+                            Color.valueOf(cfgArr[27]), new CornerRadii(10), Insets.EMPTY
+                        )));
+                    } else if (team.getStatus() == 1) {
+                        if (sel8 != null && StageSelectRuntime.isRevealed(team.getFullName())) {
+                            stageText.setText(sel8.getStage());
+                            stagePane.setBackground(new Background(new BackgroundFill(
+                                Color.valueOf(cfgArr[27]), new CornerRadii(10), Insets.EMPTY
+                            )));
+                        } else {
+                            stageText.setText("已提交");
+                            stagePane.setBackground(new Background(new BackgroundFill(
+                                Color.valueOf(cfgArr[26]), new CornerRadii(10), Insets.EMPTY
+                            )));
+                        }
+                    } else {
+                        stageText.setText(StringUtils.hasText(team.getTeamSelect()) ? team.getTeamSelect() : "未选择");
+                        stagePane.setBackground(new Background(new BackgroundFill(
+                            Color.valueOf(cfgArr[25]), new CornerRadii(10), Insets.EMPTY
+                        )));
+                    }
+                }
+                stagePane.getChildren().add(stageText);
+                box.getChildren().add(stagePane);
             }
 
-            if (team.getStatus() == 2) {
-                // 答案已揭示：显示实际选择的环节名
-                stageText.setText(StringUtils.hasText(team.getTeamSelect()) ? team.getTeamSelect() : "已选择");
-                stagePane.setBackground(new Background(new BackgroundFill(
-                    Color.valueOf(cfgArr[27]), new CornerRadii(10), Insets.EMPTY
-                )));
-            } else if (team.getStatus() == 1) {
-                // 已提交但未揭示
-                stageText.setText("已选择");
-                stagePane.setBackground(new Background(new BackgroundFill(
-                    Color.valueOf(cfgArr[26]), new CornerRadii(10), Insets.EMPTY
-                )));
-            } else {
-                // 未提交
-                stageText.setText("未选择");
-                stagePane.setBackground(new Background(new BackgroundFill(
-                    Color.valueOf(cfgArr[25]), new CornerRadii(10), Insets.EMPTY
-                )));
+            // 答题状态行：type 8 或 type 6 答题阶段展示
+            if (isType8AnswerPhase || isType6AnswerPhase) {
+                count++;
+                StackPane answerPane = new StackPane();
+                answerPane.setMaxHeight(Double.MAX_VALUE);
+                VBox.setVgrow(answerPane, Priority.NEVER);
+                answerPane.setPrefSize(
+                    ScreenAdapter.calculateMainX(Integer.parseInt(cfgArr[19])),
+                    ScreenAdapter.calculateMainY(Integer.parseInt(cfgArr[20]))
+                );
+                Text answerText = new Text();
+                answerText.setTextAlignment(TextAlignment.CENTER);
+                answerText.setFill(statusColor);
+                answerText.setFont(statusFont);
+                if (sb) {
+                    answerText.setStroke(answerText.getFill());
+                    answerText.setStrokeWidth(1);
+                } else {
+                    answerText.setStroke(null);
+                }
+                if (isType8AnswerPhase) {
+                    String submitted = QuestionSubmitRuntime.getAll().get(team.getFullName());
+                    if (team.getStatus() == 2) {
+                        answerText.setText(StringUtils.hasText(submitted) ? submitted : "");
+                        answerPane.setBackground(new Background(new BackgroundFill(Color.valueOf(cfgArr[27]), new CornerRadii(10), Insets.EMPTY)));
+                    } else if (team.getStatus() == 3) {
+                        answerText.setText(StringUtils.hasText(submitted) ? submitted : "未提交");
+                        answerPane.setBackground(new Background(new BackgroundFill(Color.valueOf(cfgArr[28]), new CornerRadii(10), Insets.EMPTY)));
+                    } else if (team.getStatus() == 1) {
+                        answerText.setText("已提交");
+                        answerPane.setBackground(new Background(new BackgroundFill(Color.valueOf(cfgArr[26]), new CornerRadii(10), Insets.EMPTY)));
+                    } else {
+                        answerText.setText("未提交");
+                        answerPane.setBackground(new Background(new BackgroundFill(Color.valueOf(cfgArr[25]), new CornerRadii(10), Insets.EMPTY)));
+                    }
+                } else {
+                    // type 6：揭示后 teamSelect 为提交答案，status 2 正确 / status 3 错误或零分
+                    if (team.getStatus() == 2) {
+                        answerText.setText(StringUtils.hasText(team.getTeamSelect()) ? team.getTeamSelect() : "");
+                        answerPane.setBackground(new Background(new BackgroundFill(Color.valueOf(cfgArr[27]), new CornerRadii(10), Insets.EMPTY)));
+                    } else if (team.getStatus() == 1) {
+                        answerText.setText("已提交");
+                        answerPane.setBackground(new Background(new BackgroundFill(Color.valueOf(cfgArr[26]), new CornerRadii(10), Insets.EMPTY)));
+                    } else {
+                        answerText.setText(StringUtils.hasText(team.getTeamSelect()) ? team.getTeamSelect() : "未提交");
+                        answerPane.setBackground(new Background(new BackgroundFill(Color.valueOf(cfgArr[25]), new CornerRadii(10), Insets.EMPTY)));
+                    }
+                }
+                answerPane.getChildren().add(answerText);
+                box.getChildren().add(answerPane);
             }
-
-            stagePane.getChildren().add(stageText);
-            box.getChildren().add(stagePane);
         }
 
         // 设置点击事件
@@ -388,7 +464,7 @@ public class ScoreBoardHPreview extends PreviewPane implements BoardPane {
         Integer questionType = currentStage.getQuestionType();
 
         if (questionType == 6 && controlPane.getPreviewPane() instanceof QuestionPreviewPreview) {
-            if (m6 == 0) {
+            if (m6 == 0 && !Objects.equals(1, currentStage.getBoardAnswer())) {
                 count = addModel60Panel(box, team, currentStage, cfgArr, statusFont, statusColor, sb, count);
             } else if (m6 == 1) {
                 count = addModel61Panel(box, team, currentStage, cfgArr, statusFont, statusColor, sb, count);
@@ -429,11 +505,13 @@ public class ScoreBoardHPreview extends PreviewPane implements BoardPane {
         if (team.getStatus() == 1) {
             stackPane2.setBackground(new Background(new BackgroundFill(Color.valueOf(cfgArr[26]),
                 new CornerRadii(10), Insets.EMPTY)));
+            userSelect.setText("\u5DF2\u63D0\u4EA4");
         } else {
             if (userData == null || StringUtils.isEmpty(userData.getUserSelect())) {
                 if (team.getStatus() == 3) {
                     stackPane2.setBackground(new Background(new BackgroundFill(Color.valueOf(cfgArr[28]),
                         new CornerRadii(10), Insets.EMPTY)));
+                    userSelect.setText("\u672A\u63D0\u4EA4");
                 } else {
                     stackPane2.setBackground(new Background(new BackgroundFill(Color.valueOf(cfgArr[25]),
                         new CornerRadii(10), Insets.EMPTY)));
@@ -453,7 +531,7 @@ public class ScoreBoardHPreview extends PreviewPane implements BoardPane {
 
         if (!(Objects.equals(1, currentStage.getAnswerSingle())
             && controlPane.getPreviewPane() instanceof ShowAnswerPreview)) {
-            if (Objects.equals(1, currentStage.getAnswerSingle())) {
+            if (Objects.equals(1, currentStage.getAnswerSingle()) && team.getStatus() != 1) {
                 userSelect.setText("");
             }
             stackPane2.getChildren().add(userSelect);

@@ -1,5 +1,6 @@
 <!-- 答题模式网页版 -->
 <template>
+  <div class="page-wrapper" :style="pageWrapperStyle">
   <div id="container-box" :style="containerBoxStyle">
     <div
         v-for="(team, index) in displayList"
@@ -16,15 +17,15 @@
       <!-- 答题内容 -->
       <div class="answer-content" :style="answerContentStyle(team.buzzStatus)">
         <template v-if="team.buzzStatus === 0"></template>
-        <template v-else-if="team.buzzStatus === 1">已提交</template>
+        <template v-else-if="team.buzzStatus === 1">
+          <template v-if="cfg.scoreShow">{{ team.teamScore }}</template>
+          <template v-else>已提交</template>
+        </template>
         <template v-else>{{ team.answer }}</template>
       </div>
 
-      <!-- 分数（scoreShow 控制） -->
-      <div v-if="cfg.scoreShow" class="team-score" :style="teamScoreStyle">
-        {{ team.teamScore }}
-      </div>
     </div>
+  </div>
   </div>
 </template>
 
@@ -57,6 +58,9 @@ export default {
         webSite: "",
       },
 
+      imageUrl:        `${baseUrl}/resource/答题面板背景.jpg?${new Date().getTime()}`,
+      defaultImageUrl: `${baseUrl}/resource/默认背景.jpg?${new Date().getTime()}`,
+
       pollTimer: null,
     };
   },
@@ -64,6 +68,17 @@ export default {
   computed: {
     displayList() {
       return this.teamList.slice(0, this.cfg.row * this.cfg.col);
+    },
+
+    pageWrapperStyle() {
+      return {
+        width:           "100vw",
+        height:          "100vh",
+        backgroundImage: `url(${this.imageUrl})`,
+        backgroundSize:  "100vw 100vh",
+        position:        "relative",
+        overflow:        "hidden",
+      };
     },
 
     containerBoxStyle() {
@@ -143,16 +158,18 @@ export default {
     answerContentStyle(buzzStatus) {
       const isWait = buzzStatus === 0;
       return {
-        position:   "absolute",
-        top:        "50%",
-        left:       0,
-        transform:  "translateY(-50%)",
-        width:      "100%",
-        textAlign:  "center",
-        zIndex:     10,
-        fontSize:   (isWait ? this.cfg.teamFontsize : this.cfg.answerFontsize) + "px",
-        fontWeight: this.cfg.answerFontWidth,
-        color:      isWait ? this.cfg.waitColor : this.cfg.answerColor,
+        position:       "absolute",
+        top:            0,
+        left:           0,
+        width:          "100%",
+        height:         "100%",
+        display:        "flex",
+        alignItems:     "center",
+        justifyContent: "center",
+        zIndex:         10,
+        fontSize:       (isWait ? this.cfg.teamFontsize : this.cfg.answerFontsize) + "px",
+        fontWeight:     this.cfg.answerFontWidth,
+        color:          isWait ? this.cfg.waitColor : this.cfg.answerColor,
       };
     },
 
@@ -172,6 +189,13 @@ export default {
         case 3:  return `${baseUrl}/resource/错误背景.jpg`;
         default: return `${baseUrl}/resource/等待背景.jpg`;
       }
+    },
+
+    checkImageUrl(url, callback) {
+      const img = new Image();
+      img.onload  = () => callback(true);
+      img.onerror = () => callback(false);
+      img.src = url;
     },
 
     // ===== 配置加载 =====
@@ -231,6 +255,11 @@ export default {
 
   mounted() {
     sessionStorage.setItem("role", "score");
+    this.checkImageUrl(this.imageUrl, (isValid) => {
+      if (!isValid) {
+        this.imageUrl = this.defaultImageUrl;
+      }
+    });
     this.loadConfig();
     this.fetchTeams();
     this.startPoll();

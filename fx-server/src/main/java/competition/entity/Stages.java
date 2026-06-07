@@ -1,6 +1,7 @@
 package competition.entity;
 
 import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
@@ -78,6 +79,10 @@ public class Stages {
 
     // 团队答案单独展示
     private Integer teamAnswerSingle;
+
+    // 非 DB 字段：是否已被选中（用于前端同步"选后变灰"状态）
+    @TableField(exist = false)
+    private boolean greySelected = false;
 
     public void setQdDescValue(Integer qdDescValue) {
         this.qdDescValue = qdDescValue;

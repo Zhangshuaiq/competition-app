@@ -149,15 +149,25 @@ public class StagePreviewPreview extends PreviewPane<Integer> {
                 }
 
                 // 允许平板选题
-                int stageType = 0;
+                int stageType;
                 if (innerStageID != null) {
                     Stages parent = stagesMapper.selectById(innerStageID);
                     if (parent != null && parent.getBoardAnswer() == 1) {
                         stageType = parent.getQuestionType();
+                    } else {
+                        stageType = 0;
                     }
+                } else {
+                    stageType = 0;
                 }
 
                 stages.sort(comparator);
+                for (Stages stage : stages) {
+                    if (stage.getSelectGrey() != null && stage.getSelectGrey() == 1
+                            && GlobalCache.isRecord(stage.getId())) {
+                        stage.setGreySelected(true);
+                    }
+                }
                 Map<Object, Object> data = MapUtil.builder()
                         .put("stages", stages)
                         .put("stageType", stageType)
@@ -210,6 +220,7 @@ public class StagePreviewPreview extends PreviewPane<Integer> {
                         if (stage.getSelectGrey() == 1) {
                             if (GlobalCache.isRecord(stage.getId())) {
                                 stageNamePane.setVisible(false);
+                                box.setMouseTransparent(true);
                             } else {
                                 stageNamePane.setVisible(true);
                             }
@@ -291,6 +302,10 @@ public class StagePreviewPreview extends PreviewPane<Integer> {
                             if (event.getButton() != MouseButton.PRIMARY) {
                                 return;
                             }
+                            // type=8 计时中禁止跳转，防止误触导致计时失控
+                            if (stageType == 8 && RuntimeUtil.isTiming) {
+                                return;
+                            }
 
                             // 内屏
                             controlPane.setCurrentStage(stage);
@@ -299,7 +314,7 @@ public class StagePreviewPreview extends PreviewPane<Integer> {
                             );
                             GlobalCache.recordStage(stage.getId());
                             // 更新控制面板的分数和时间
-                           
+
                         }
                     });
                     int cols = 1;

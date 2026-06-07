@@ -4,26 +4,27 @@ import baseUrl from "@/config";
 const axiosInstance = axios.create({
     baseURL: baseUrl
 });
-// axiosInstance.interceptors.request.use((config) => {
-//     let token =  window.sessionStorage.getItem('token')
-//     if (token) {
-//         config.headers.token = window.sessionStorage.getItem('token')
-//     }
-//     return config;
-// });
+
+// 标记后台是否曾经断开过
+let backendWasDown = false;
 
 axiosInstance.interceptors.response.use(
     response => {
+        // 后台从断开恢复：清空旧状态并跳回登录页
+        if (backendWasDown) {
+            backendWasDown = false;
+            sessionStorage.clear();
+            window.location.href = '/';
+            return;
+        }
         if (response && response.data) {
-            console.log(response)
-            let data = response.data;
-            return data;
+            return response.data;
         }
         return response;
     },
     error => {
-        console.log(error)
-        sessionStorage.clear()
+        backendWasDown = true;
+        return Promise.reject(error);
     }
 );
 
