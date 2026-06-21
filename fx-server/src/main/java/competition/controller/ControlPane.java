@@ -77,6 +77,9 @@ public class ControlPane {
     private double xOffset = 0;
     private double yOffset = 0;
 
+    // type=8 当前题目是否已执行过加减分，防止反复揭示时重复计分
+    private boolean type8ScoreApplied = false;
+
     private VideoPlayer videoPlayer;
 
     // 倒计时提示音控制, 默认 5 秒
@@ -1744,6 +1747,7 @@ public class ControlPane {
                 } else if (stages.getQuestionType() == 8) {
                     // 平板自选 — 返回选题界面，恢复选题阶段的队伍状态
                     QuestionSubmitRuntime.clear();
+                    type8ScoreApplied = false;
                     Map<String, StageSelectRuntime.StageSelectData> allSelections = StageSelectRuntime.getAll();
                     for (Teams team : TeamRuntime.getTeams()) {
                         team.setTeamSelect("");
@@ -1994,6 +1998,13 @@ public class ControlPane {
     }
 
     public void setCurrentStage(Stages stage) {
+        // 切换环节时清除上一环节残留数据，防止答题结果串台
+        QuestionSubmitRuntime.clear();
+        TeamRuntime.resetStatus();
+        StageSelectRuntime.clear();
+        for (Teams team : TeamRuntime.getTeams()) {
+            team.setTeamSelect("");
+        }
         currentStage = stage;
         timeSecondText.setText(currentStage.getDescTime().toString());
         scoreInput.setText(currentStage.getScorePerQ() + "");
@@ -2250,6 +2261,13 @@ public class ControlPane {
         if (controlStage != null) {
             controlStage = stagesMapper.selectById(controlStage.getId());
             currentStage = controlStage;
+            // 清除上一环节残留数据，防止答题结果串台
+            QuestionSubmitRuntime.clear();
+            TeamRuntime.resetStatus();
+            StageSelectRuntime.clear();
+            for (Teams team : TeamRuntime.getTeams()) {
+                team.setTeamSelect("");
+            }
             // 展示环节名称
             previewPane = Navigator.preview("/view/preview/StageNamePreview.fxml", "", "/view/style.css", true,
                     controlStage.getId());
@@ -2433,13 +2451,19 @@ public class ControlPane {
                 } else if (currentStage.getQuestionType() == 8) {
                     // 平板自选 — 上一题/下一题
                     QuestionSubmitRuntime.clear();
+                    type8ScoreApplied = false;
                     TeamRuntime.resetStatus();
                     Map<String, StageSelectRuntime.StageSelectData> allSelections = StageSelectRuntime.getAll();
                     for (Teams team : TeamRuntime.getTeams()) {
+                        team.setTeamSelect("");
                         StageSelectRuntime.StageSelectData sel = allSelections.get(team.getFullName());
                         if (sel != null) {
                             team.setTeamSelect(sel.getStage());
                         }
+                    }
+                    if (scoreBoardPreview != null) {
+                        scoreBoardPreview.getSelected().clear();
+                        scoreBoardPreview.reload();
                     }
                     if (previewPane instanceof QuestionPreviewPreview) {
                         previewPane.setData(questions);
@@ -2627,6 +2651,9 @@ public class ControlPane {
                         messageHandler.sendShowAnswer();
                         Questions currentQuestion = ((QuestionPreviewPreview) previewPane).getData();
                         String correctAnswer = currentQuestion != null ? currentQuestion.getAnswer() : null;
+                        int qScore = currentQuestion != null && currentQuestion.getScore() != null
+                                ? currentQuestion.getScore() : currentStage.getScorePerQ();
+                        int desScore = currentStage.getDesValue();
                         Map<String, String> allAnswers = QuestionSubmitRuntime.getAll();
                         for (Teams team : TeamRuntime.getTeams()) {
                             if (GlobalCache.showAnswer) {
@@ -2637,8 +2664,18 @@ public class ControlPane {
                                     String a = correctAnswer != null ? correctAnswer.replace(" ", " ") : null;
                                     if (a != null && s.equals(a)) {
                                         team.setStatus(2);  // 答对 → 绿色
+                                        if (!type8ScoreApplied && currentStage.getCountTotal() == 1) {
+                                            team.setNewScore(team.getTeamScore() + qScore);
+                                            scoreService.addScore(null, team, currentStage.getName(), null, null,
+                                                    qScore, Objects.toString(team.getNewScore()), submitted);
+                                        }
                                     } else {
                                         team.setStatus(3);  // 答错 → 红色
+                                        if (!type8ScoreApplied && currentStage.getCountTotal() == 1) {
+                                            team.setNewScore(team.getTeamScore() - desScore);
+                                            scoreService.addScore(null, team, currentStage.getName(), null, null,
+                                                    -desScore, Objects.toString(team.getNewScore()), submitted);
+                                        }
                                     }
                                 }
                             } else {
@@ -2647,6 +2684,10 @@ public class ControlPane {
                                     team.setStatus(1);
                                 }
                             }
+                        }
+                        if (GlobalCache.showAnswer && !type8ScoreApplied) {
+                            type8ScoreApplied = true;
+                            TeamRuntime.updateScore();
                         }
                         messageHandler.notifyPage("", null);
                         previewPane.showAnswer();
@@ -2719,6 +2760,18 @@ public class ControlPane {
             return;
         }
         RuntimeUtil.showBuzzBar = false;
+        if (currentStage != null && currentStage.getQuestionType() == 8) {
+            QuestionSubmitRuntime.clear();
+            TeamRuntime.resetStatus();
+            Map<String, StageSelectRuntime.StageSelectData> preSelections = StageSelectRuntime.getAll();
+            for (Teams team : TeamRuntime.getTeams()) {
+                team.setTeamSelect("");
+                StageSelectRuntime.StageSelectData sel = preSelections.get(team.getFullName());
+                if (sel != null) {
+                    team.setTeamSelect(sel.getStage());
+                }
+            }
+        }
         // 关闭抢答结果的弹窗
         buzzReset();
         closeBuzzResultWindow();
@@ -2750,6 +2803,18 @@ public class ControlPane {
                 return;
             }
             RuntimeUtil.showBuzzBar = false;
+            if (currentStage != null && currentStage.getQuestionType() == 8) {
+                QuestionSubmitRuntime.clear();
+                TeamRuntime.resetStatus();
+                Map<String, StageSelectRuntime.StageSelectData> preSelections = StageSelectRuntime.getAll();
+                for (Teams team : TeamRuntime.getTeams()) {
+                    team.setTeamSelect("");
+                    StageSelectRuntime.StageSelectData sel = preSelections.get(team.getFullName());
+                    if (sel != null) {
+                        team.setTeamSelect(sel.getStage());
+                    }
+                }
+            }
             buzzReset();
             closeBuzzResultWindow();
             messageHandler.notifyPage("", null);

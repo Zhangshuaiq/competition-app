@@ -9,6 +9,7 @@ import competition.entity.Configs;
 import competition.entity.Questions;
 import competition.entity.RankStyle;
 import competition.entity.Stages;
+import competition.entity.Teams;
 import competition.mapper.ConfigsMapper;
 import competition.mapper.RankStyleMapper;
 import competition.modal.Model7RankData;
@@ -405,8 +406,18 @@ public class Model7RankPreview extends RankPane {
                         }
                     }
                 }
-                String team = Model7RuntimeData.getTeams().get(i).getFullName();
-                
+                List<Teams> m7Teams = Model7RuntimeData.getTeams();
+                if (i >= m7Teams.size()) {
+                    List<Teams> fallbackTeams = TeamRuntime.getTeams();
+                    if (i >= fallbackTeams.size()) {
+                        continue;
+                    }
+                    m7Teams = fallbackTeams;
+                }
+                String team = m7Teams.get(i).getFullName();
+                if (i >= timeData.size()) {
+                    continue;
+                }
                 String time = timeData.get(i);
 
                 Model7RankData rankData = new Model7RankData();

@@ -396,18 +396,16 @@ public class ScoreBoardVPreview extends PreviewPane implements BoardPane {
                     if (Boolean.valueOf(split[4])) {
                         stageText.getTransforms().add(new Shear(-0.3, 0));
                     }
-                    if (isType8AnswerPhase) {
-                        StageSelectRuntime.StageSelectData selData = StageSelectRuntime.getAll().get(team.getFullName());
-                        String stageName = selData != null ? selData.getStage()
-                                : (StringUtils.hasText(team.getTeamSelect()) ? team.getTeamSelect() : "未选择");
-                        stageText.setText(stageName);
-                        stagePane.setBackground(new Background(new BackgroundFill(
-                            Color.valueOf(cfgArr[27]), new CornerRadii(10), Insets.EMPTY
-                        )));
-                    } else {
+                    {
                         StageSelectRuntime.StageSelectData sel8 = currentStage.getQuestionType() == 8
                                 ? StageSelectRuntime.getAll().get(team.getFullName()) : null;
-                        if (team.getStatus() == 2) {
+                        if (sel8 != null && StageSelectRuntime.isRevealed(team.getFullName())) {
+                            // 已公布子环节：颜色冻结为绿色，不随后续 status 变化
+                            stageText.setText(sel8.getStage());
+                            stagePane.setBackground(new Background(new BackgroundFill(
+                                Color.valueOf(cfgArr[27]), new CornerRadii(10), Insets.EMPTY
+                            )));
+                        } else if (team.getStatus() == 2) {
                             String display = sel8 != null ? sel8.getStage()
                                     : (StringUtils.hasText(team.getTeamSelect()) ? team.getTeamSelect() : "已选择");
                             stageText.setText(display);
@@ -415,17 +413,10 @@ public class ScoreBoardVPreview extends PreviewPane implements BoardPane {
                                 Color.valueOf(cfgArr[27]), new CornerRadii(10), Insets.EMPTY
                             )));
                         } else if (team.getStatus() == 1) {
-                            if (sel8 != null && StageSelectRuntime.isRevealed(team.getFullName())) {
-                                stageText.setText(sel8.getStage());
-                                stagePane.setBackground(new Background(new BackgroundFill(
-                                    Color.valueOf(cfgArr[27]), new CornerRadii(10), Insets.EMPTY
-                                )));
-                            } else {
-                                stageText.setText("已提交");
-                                stagePane.setBackground(new Background(new BackgroundFill(
-                                    Color.valueOf(cfgArr[26]), new CornerRadii(10), Insets.EMPTY
-                                )));
-                            }
+                            stageText.setText("已提交");
+                            stagePane.setBackground(new Background(new BackgroundFill(
+                                Color.valueOf(cfgArr[26]), new CornerRadii(10), Insets.EMPTY
+                            )));
                         } else {
                             stageText.setText(StringUtils.hasText(team.getTeamSelect()) ? team.getTeamSelect() : "未选择");
                             stagePane.setBackground(new Background(new BackgroundFill(
