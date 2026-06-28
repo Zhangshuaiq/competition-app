@@ -895,13 +895,14 @@ public class Model7Preview extends RankPane<Stages> {
             List<Integer> answeredQuestion = modelData.stream().map(Model7RuntimeData.ModelData::getQuestionNumber)
                     .collect(Collectors.toList());
             Integer unAnsweredValue = 0;
+            Stages currentStageForDes = controlPane.getCurrentStage();
             for (Entry<Integer, String> entrySet : desMap.entrySet()) {
                 int num = entrySet.getKey();
                 String val = entrySet.getValue();
                 if (!answeredQuestion.contains(num) && NumberUtil.isInt(val)) {
                     unAnsweredValue += Integer.parseInt(val);
-                } else if (!answeredQuestion.contains(num)) {
-                    unAnsweredValue += controlPane.getCurrentStage().getDesValue();
+                } else if (!answeredQuestion.contains(num) && currentStageForDes != null) {
+                    unAnsweredValue += currentStageForDes.getDesValue();
                 }
             }
             if (Model7RuntimeData.getFinished().get(i)) {

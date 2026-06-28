@@ -450,21 +450,33 @@ public class RestApi {
 
     @GetMapping("/model7BoardData")
     public JsonResp getModel7Data() throws Exception {
-        // 所有题目
+        List<Teams> teams = TeamRuntime.getTeams();
+        competition.entity.Stages currentStage = controlPane.getCurrentStage();
+
+        // 非竞技答题环节：返回上一次竞技模式结束时持久化的计算结果
+        if (currentStage == null || currentStage.getQuestionType() != 7) {
+            List<Model7RestData> cachedData = new ArrayList<>();
+            for (Teams team : teams) {
+                Model7RestData restData = new Model7RestData();
+                restData.setId(team.getId().toString());
+                restData.setFullName(team.getFullName());
+                restData.setTeamScore(Model7RuntimeData.getCachedScoreMap().getOrDefault(team.getFullName(), 0));
+                restData.setAnsweredCount(Model7RuntimeData.getCachedAnswerMap().getOrDefault(team.getFullName(), 0));
+                restData.setCorrectRatio(Model7RuntimeData.getCachedCorrectMap().getOrDefault(team.getFullName(), 0));
+                cachedData.add(restData);
+            }
+            return JsonResp.success(cachedData);
+        }
+
+        // 当前为竞技答题环节：实时计算
         Model7Preview Model7Preview = JavaFxApplication.getApplicationContext().getBean(Model7Preview.class);
         List<Questions> totalQuestions = Model7Preview.getQuestionsWithCache();
-        // 补充未答题的分数扣除
         Map<Integer, String> desMap = totalQuestions.stream().collect(Collectors.toMap(Questions::getQuestionNumber,
                 q -> q.getDescScore() != null ? q.getDescScore() : ""));
-        List<Teams> teams = TeamRuntime.getTeams();
         List<List<Model7RuntimeData.ModelData>> runtimeData = Model7RuntimeData.getRuntimeData();
 
-        // 答对的题目数量
         Map<String, Integer> correcetMap = new HashMap<>();
-        // 答题获得的分数
         Map<String, Integer> scoreMap = new HashMap<>();
-
-        // 已答数量
         Map<String, Integer> answerMap = new HashMap<>();
 
         boolean isFinish = true;
@@ -474,9 +486,7 @@ public class RestApi {
         }
 
         for (int i = 0; i < runtimeData.size(); i++) {
-
             List<Model7RuntimeData.ModelData> modelData = runtimeData.get(i);
-
             int score = 0;
             int correct = 0;
             if (isFinish) {
@@ -497,7 +507,7 @@ public class RestApi {
                     if (!answeredQuestion.contains(num) && NumberUtil.isInt(val)) {
                         unAnsweredValue += Integer.parseInt(val);
                     } else if (!answeredQuestion.contains(num)) {
-                        unAnsweredValue += controlPane.getCurrentStage().getDesValue();
+                        unAnsweredValue += currentStage.getDesValue();
                     }
                 }
                 score = score - unAnsweredValue;
@@ -511,14 +521,14 @@ public class RestApi {
                     }
                 }
             }
-
             String team = Model7RuntimeData.getTeams().get(i).getFullName();
-
             scoreMap.put(team, score);
             correcetMap.put(team, correct);
             answerMap.put(team, modelData.size());
         }
 
+        // 实时计算完成后持久化，切换环节后仍可读取
+        Model7RuntimeData.persistComputed(scoreMap, answerMap, correcetMap);
 
         List<Model7RestData> responseData = new ArrayList<>();
         for (Teams team : teams) {

@@ -1837,6 +1837,12 @@ public class ControlPane {
             }
 
         } finally {
+            if (currentStage == null || currentStage.getQuestionType() != 8) {
+                StageSelectRuntime.clear();
+            }
+            for (Teams team : TeamRuntime.getTeams()) {
+                team.setTeamSelect("");
+            }
             RuntimeUtil.addLast = true;
         }
         GlobalCache.showAnswer = false;
@@ -2001,7 +2007,9 @@ public class ControlPane {
         // 切换环节时清除上一环节残留数据，防止答题结果串台
         QuestionSubmitRuntime.clear();
         TeamRuntime.resetStatus();
-        StageSelectRuntime.clear();
+        if (stage.getQuestionType() != 8) {
+            StageSelectRuntime.clear();
+        }
         for (Teams team : TeamRuntime.getTeams()) {
             team.setTeamSelect("");
         }
@@ -2940,14 +2948,20 @@ public class ControlPane {
         if (!StringUtils.isEmpty(config)) {
             String[] split = config.split(ConfigSpliter.SPLITER);
             String boardLayout = split[14];
-            if (boardLayout.equals("1")) {
-                scoreBoardPreview = (BoardPane) Navigator.scoreWithPos("/view/board/preview/ScoreBoardH.fxml", "",
-                        "/view/style.css", true);
-            } else if (boardLayout.equals("2")) {
-                scoreBoardPreview = (BoardPane) Navigator.scoreWithPos("/view/board/preview/ScoreBoardV.fxml", "",
+            if (scoreBoardPreview != null) {
+                scoreBoardPreview.reload();
+            } else {
+                if (boardLayout.equals("1")) {
+                    scoreBoardPreview = (BoardPane) Navigator.scoreWithPos("/view/board/preview/ScoreBoardH.fxml", "",
                         "/view/style.css", true);
 
+                } else if (boardLayout.equals("2")) {
+                    scoreBoardPreview = (BoardPane) Navigator.scoreWithPos("/view/board/preview/ScoreBoardV.fxml", "",
+                        "/view/style.css", true);
+
+                }
             }
+
         }
     }
 

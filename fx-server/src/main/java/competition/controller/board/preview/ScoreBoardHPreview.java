@@ -248,72 +248,65 @@ public class ScoreBoardHPreview extends PreviewPane implements BoardPane {
             count = addModelPanels(box, team, currentStage, cfgArr, statusFont, statusColor, sb, count);
         }
 
-        // 自选环节：显示已选子环节（样式与队名行完全一致）
-        if (currentStage != null && currentStage.getBoardAnswer() == 1) {
-            boolean isType8AnswerPhase = controlPane.getPreviewPane() instanceof QuestionPreviewPreview
-                    && currentStage.getQuestionType() == 8;
-            boolean isType6AnswerPhase = controlPane.getPreviewPane() instanceof QuestionPreviewPreview
-                    && currentStage.getQuestionType() == 6 && Objects.equals(0, currentStage.getM6());
-
-            // 子环节名行：type 6 答题阶段隐藏
-            if (!isType6AnswerPhase) {
-                count++;
-                StackPane stagePane = new StackPane();
-                stagePane.setMaxHeight(Double.MAX_VALUE);
-                VBox.setVgrow(stagePane, Priority.NEVER);
-                stagePane.setPrefSize(
-                    ScreenAdapter.calculateMainX(Integer.parseInt(cfgArr[19])),
-                    ScreenAdapter.calculateMainY(Integer.parseInt(cfgArr[20]))
-                );
-                Text stageText = new Text();
-                stageText.setTextAlignment(TextAlignment.CENTER);
-                stageText.setFill(Color.valueOf(cfgArr[15]));
-                stageText.setFont(font);
-                stageText.setUnderline(Boolean.valueOf(split[5]));
-                stageText.setStrikethrough(Boolean.valueOf(split[2]));
-                if (Boolean.valueOf(split[3])) {
-                    stageText.setStroke(stageText.getFill());
-                    stageText.setStrokeWidth(1);
-                } else {
-                    stageText.setStroke(null);
-                }
-                stageText.getTransforms().clear();
-                if (Boolean.valueOf(split[4])) {
-                    stageText.getTransforms().add(new Shear(-0.3, 0));
-                }
-                {
-                    StageSelectRuntime.StageSelectData sel8 = currentStage.getQuestionType() == 8
-                            ? StageSelectRuntime.getAll().get(team.getFullName()) : null;
-                    if (sel8 != null && StageSelectRuntime.isRevealed(team.getFullName())) {
-                        // 已公布子环节：颜色冻结为绿色，不随后续 status 变化
-                        stageText.setText(sel8.getStage());
-                        stagePane.setBackground(new Background(new BackgroundFill(
-                            Color.valueOf(cfgArr[27]), new CornerRadii(10), Insets.EMPTY
-                        )));
-                    } else if (team.getStatus() == 2) {
-                        String display = sel8 != null ? sel8.getStage()
-                                : (StringUtils.hasText(team.getTeamSelect()) ? team.getTeamSelect() : "已选择");
-                        stageText.setText(display);
-                        stagePane.setBackground(new Background(new BackgroundFill(
-                            Color.valueOf(cfgArr[27]), new CornerRadii(10), Insets.EMPTY
-                        )));
-                    } else if (team.getStatus() == 1) {
-                        stageText.setText("已提交");
-                        stagePane.setBackground(new Background(new BackgroundFill(
-                            Color.valueOf(cfgArr[26]), new CornerRadii(10), Insets.EMPTY
-                        )));
-                    } else {
-                        stageText.setText(StringUtils.hasText(team.getTeamSelect()) ? team.getTeamSelect() : "未选择");
-                        stagePane.setBackground(new Background(new BackgroundFill(
-                            Color.valueOf(cfgArr[25]), new CornerRadii(10), Insets.EMPTY
-                        )));
-                    }
-                }
-                stagePane.getChildren().add(stageText);
-                box.getChildren().add(stagePane);
+        // 第三行：子环节名行，仅当 questionType == 8 时始终展示
+        if (currentStage != null && currentStage.getQuestionType() == 8) {
+            count++;
+            StackPane stagePane = new StackPane();
+            stagePane.setMaxHeight(Double.MAX_VALUE);
+            VBox.setVgrow(stagePane, Priority.NEVER);
+            stagePane.setPrefSize(
+                ScreenAdapter.calculateMainX(Integer.parseInt(cfgArr[19])),
+                ScreenAdapter.calculateMainY(Integer.parseInt(cfgArr[20]))
+            );
+            Text stageText = new Text();
+            stageText.setTextAlignment(TextAlignment.CENTER);
+            stageText.setFill(Color.valueOf(cfgArr[15]));
+            stageText.setFont(font);
+            stageText.setUnderline(Boolean.valueOf(split[5]));
+            stageText.setStrikethrough(Boolean.valueOf(split[2]));
+            if (Boolean.valueOf(split[3])) {
+                stageText.setStroke(stageText.getFill());
+                stageText.setStrokeWidth(1);
+            } else {
+                stageText.setStroke(null);
             }
+            stageText.getTransforms().clear();
+            if (Boolean.valueOf(split[4])) {
+                stageText.getTransforms().add(new Shear(-0.3, 0));
+            }
+            StageSelectRuntime.StageSelectData sel8 = StageSelectRuntime.getAll().get(team.getFullName());
+            if (sel8 != null && StageSelectRuntime.isRevealed(team.getFullName())) {
+                stageText.setText(sel8.getStage());
+                stagePane.setBackground(new Background(new BackgroundFill(
+                    Color.valueOf(cfgArr[27]), new CornerRadii(10), Insets.EMPTY
+                )));
+            } else if (team.getStatus() == 2) {
+                String display = sel8 != null ? sel8.getStage()
+                        : (StringUtils.hasText(team.getTeamSelect()) ? team.getTeamSelect() : "已选择");
+                stageText.setText(display);
+                stagePane.setBackground(new Background(new BackgroundFill(
+                    Color.valueOf(cfgArr[27]), new CornerRadii(10), Insets.EMPTY
+                )));
+            } else if (team.getStatus() == 1) {
+                stageText.setText("已提交");
+                stagePane.setBackground(new Background(new BackgroundFill(
+                    Color.valueOf(cfgArr[26]), new CornerRadii(10), Insets.EMPTY
+                )));
+            } else {
+                stageText.setText(StringUtils.hasText(team.getTeamSelect()) ? team.getTeamSelect() : "未选择");
+                stagePane.setBackground(new Background(new BackgroundFill(
+                    Color.valueOf(cfgArr[25]), new CornerRadii(10), Insets.EMPTY
+                )));
+            }
+            stagePane.getChildren().add(stageText);
+            box.getChildren().add(stagePane);
+        }
 
-            // 答题状态行：type 8 或 type 6 答题阶段展示
+        // 答案展示行：type8 为第四行，type6 为第三行，仅在答题界面（QuestionPreviewPreview）展示
+        if (currentStage != null && currentStage.getBoardAnswer() == 1
+                && controlPane.getPreviewPane() instanceof QuestionPreviewPreview) {
+            boolean isType8AnswerPhase = currentStage.getQuestionType() == 8;
+            boolean isType6AnswerPhase = currentStage.getQuestionType() == 6 && Objects.equals(0, currentStage.getM6());
             if (isType8AnswerPhase || isType6AnswerPhase) {
                 count++;
                 StackPane answerPane = new StackPane();
@@ -571,12 +564,14 @@ public class ScoreBoardHPreview extends PreviewPane implements BoardPane {
                     l.setStroke(null);
                 }
 
-                if (team.getStatusList().get(i) == 1) {
+                List<Integer> statusList = team.getStatusList();
+                int memberStatus_i = (statusList != null && i < statusList.size()) ? statusList.get(i) : 0;
+                if (memberStatus_i == 1) {
                     stackPane2.setBackground(new Background(new BackgroundFill(Color.valueOf(cfgArr[26]),
                         new CornerRadii(10), Insets.EMPTY)));
                 } else {
                     if (modelData == null || StringUtils.isEmpty(modelData.getUserSelect())) {
-                        if (team.getStatusList().get(i) == 3) {
+                        if (memberStatus_i == 3) {
                             stackPane2.setBackground(new Background(new BackgroundFill(Color.valueOf(cfgArr[28]),
                                 new CornerRadii(10), Insets.EMPTY)));
                         } else {

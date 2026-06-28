@@ -867,7 +867,12 @@ public class StageConfig {
         current.setSelectGrey(greySelect?1:0);
         current.setTimeCType(Integer.parseInt(countData.toString()));
         current.setShow(showSelect?1:0);
-        current.setQuestionType(Integer.parseInt(ccData.toString()));
+        // 子环节强制继承顶层父环节的 questionType，顶层环节可自由设置并向下传播
+        Integer newQuestionType = Integer.parseInt(ccData.toString());
+        if (current.getParentId() != null) {
+            newQuestionType = findRootQuestionType(current);
+        }
+        current.setQuestionType(newQuestionType);
         current.setpAType(paTypeValue);
         current.setM6(model6Check.isSelected()? 1: 0);
         current.setRuleType(value);
@@ -891,6 +896,7 @@ public class StageConfig {
             return;
         }
         stagesMapper.updateById(current);
+        syncDescendantsQuestionType(current.getId(), current.getQuestionType());
         updateCurrentStage();
         refreshStageDisplay();
 //        PreviewPane previewPane = controlPane.getPreviewPane();
@@ -1017,8 +1023,36 @@ public class StageConfig {
             alert.showAndWait();
             return;
         }
+        // 子环节必须继承顶层父环节的 questionType
+        if (stages.getParentId() != null) {
+            Stages parent = stagesMapper.selectById(stages.getParentId());
+            if (parent != null) {
+                stages.setQuestionType(findRootQuestionType(parent));
+            }
+        }
         stagesMapper.insert(stages);
         refreshStageDisplay();
+    }
+
+    private Integer findRootQuestionType(Stages stage) {
+        Stages cur = stage;
+        while (cur.getParentId() != null) {
+            Stages parent = stagesMapper.selectById(cur.getParentId());
+            if (parent == null) break;
+            cur = parent;
+        }
+        return cur.getQuestionType();
+    }
+
+    private void syncDescendantsQuestionType(Integer parentId, Integer questionType) {
+        List<Stages> children = stagesMapper.selectList(
+            new LambdaQueryWrapper<Stages>().eq(Stages::getParentId, parentId)
+        );
+        for (Stages child : children) {
+            child.setQuestionType(questionType);
+            stagesMapper.updateById(child);
+            syncDescendantsQuestionType(child.getId(), questionType);
+        }
     }
 
     private void updateCurrentStage(){

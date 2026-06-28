@@ -361,11 +361,12 @@ public class TeamConfig {
             }
         }
         TeamRuntime.setTeams(teams);
+        // 同步 Model7RuntimeData 的队伍列表，确保 runtimeData 索引与 TeamRuntime 一致
+        Model7RuntimeData.setTeams(teams);
         BoardPane scoreBoardPreview = controlPane.getScoreBoardPreview();
         if (scoreBoardPreview != null) {
             scoreBoardPreview.reload();
         }
-        Model7RuntimeData.reset();
         Model60RuntimeData.reset();
         Model61RuntimeData.reset();
         scoreMapper.delete(new LambdaQueryWrapper<>());
@@ -407,6 +408,8 @@ public class TeamConfig {
             }
         }
         TeamRuntime.setTeams(teams);
+        // 同步 Model7RuntimeData 的队伍列表，确保 runtimeData 索引与 TeamRuntime 一致
+        Model7RuntimeData.setTeams(teams);
         BoardPane scoreBoardPreview = controlPane.getScoreBoardPreview();
         if (scoreBoardPreview != null) {
             scoreBoardPreview.reload();

@@ -433,6 +433,24 @@ public class Model7RuntimeData {
         return runtimeData;
     }
 
+    // 竞技模式结束后持久化的计算结果，切换环节后仍可读取
+    private static final Map<String, Integer> cachedScoreMap = new java.util.concurrent.ConcurrentHashMap<>();
+    private static final Map<String, Integer> cachedAnswerMap = new java.util.concurrent.ConcurrentHashMap<>();
+    private static final Map<String, Integer> cachedCorrectMap = new java.util.concurrent.ConcurrentHashMap<>();
+
+    public static void persistComputed(Map<String, Integer> scores, Map<String, Integer> answers, Map<String, Integer> corrects) {
+        cachedScoreMap.clear();
+        cachedScoreMap.putAll(scores);
+        cachedAnswerMap.clear();
+        cachedAnswerMap.putAll(answers);
+        cachedCorrectMap.clear();
+        cachedCorrectMap.putAll(corrects);
+    }
+
+    public static Map<String, Integer> getCachedScoreMap() { return cachedScoreMap; }
+    public static Map<String, Integer> getCachedAnswerMap() { return cachedAnswerMap; }
+    public static Map<String, Integer> getCachedCorrectMap() { return cachedCorrectMap; }
+
     @Data
     public static class ModelData {
         // 队伍信息
