@@ -75,6 +75,17 @@ public class Teams {
     private String teamSelect;
 
     @ExcelIgnore
+    // 平板自选环节时选中的子环节名称
+    @TableField(exist = false)
+    private String stageSelect;
+
+    @ExcelIgnore
+    // 平板自选环节时子环节选择状态 0=未选 1=已选 2=已揭晓
+    @TableField(exist = false)
+    private int stageSelectStatus = 0;
+
+
+    @ExcelIgnore
     // 新的分数，用于在展示答案时更新最新的分数
     @TableField(exist = false)
     private int newScore = 0;

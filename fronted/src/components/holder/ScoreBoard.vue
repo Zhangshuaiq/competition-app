@@ -123,7 +123,7 @@ export default {
     } else if (route === 'model60') {
       this.showStatus = true;
       this.showMember = false;
-    }
+    } 
   }
 };
 </script>

@@ -1430,6 +1430,8 @@ public class ControlPane {
                     for (Teams team : TeamRuntime.getTeams()) {
                         team.setStatus(0);
                         team.setTeamSelect("");
+                        team.setStageSelect("");
+                        team.setStageSelectStatus(0);
                     }
                     StageSelectRuntime.clear();
                     messageHandler.notifyPage("", null);
@@ -2272,9 +2274,32 @@ public class ControlPane {
             // 清除上一环节残留数据，防止答题结果串台
             QuestionSubmitRuntime.clear();
             TeamRuntime.resetStatus();
-            StageSelectRuntime.clear();
-            for (Teams team : TeamRuntime.getTeams()) {
-                team.setTeamSelect("");
+            // 判断是否重进同一个 type8 环节：是则恢复选择数据，否则清零
+            boolean sameType8Stage = controlStage.getQuestionType() == 8
+                    && controlStage.getId().equals(StageSelectRuntime.getOwnerStageId())
+                    && !StageSelectRuntime.getAll().isEmpty();
+            if (sameType8Stage) {
+                // 重进同一环节：从 StageSelectRuntime 恢复每个队伍的选择状态
+                java.util.Map<String, StageSelectRuntime.StageSelectData> saved = StageSelectRuntime.getAll();
+                for (Teams team : TeamRuntime.getTeams()) {
+                    team.setTeamSelect("");
+                    StageSelectRuntime.StageSelectData sel = saved.get(team.getFullName());
+                    if (sel != null) {
+                        team.setStageSelect(sel.getStage());
+                        team.setStageSelectStatus(StageSelectRuntime.isRevealed(team.getFullName()) ? 2 : 1);
+                        team.setStatus(StageSelectRuntime.isRevealed(team.getFullName()) ? 2 : 1);
+                    } else {
+                        team.setStageSelect("");
+                        team.setStageSelectStatus(0);
+                    }
+                }
+            } else {
+                StageSelectRuntime.clear();
+                for (Teams team : TeamRuntime.getTeams()) {
+                    team.setTeamSelect("");
+                    team.setStageSelect("");
+                    team.setStageSelectStatus(0);
+                }
             }
             // 展示环节名称
             previewPane = Navigator.preview("/view/preview/StageNamePreview.fxml", "", "/view/style.css", true,
@@ -2710,10 +2735,12 @@ public class ControlPane {
                             if (GlobalCache.showAnswer) {
                                 team.setTeamSelect(selected.getStage());
                                 team.setStatus(2);
+                                team.setStageSelectStatus(2);
                                 StageSelectRuntime.markRevealed(team.getFullName());
                             } else {
                                 team.setTeamSelect("");
                                 team.setStatus(1);
+                                team.setStageSelectStatus(1);
                             }
                         }
                     }

@@ -15,12 +15,14 @@
       </div>
 
       <!-- 答题内容 -->
-      <div class="answer-content" :style="answerContentStyle(team.buzzStatus)">
-        <template v-if="team.buzzStatus === 0"></template>
-        <template v-else-if="team.buzzStatus === 1">
-          <template v-if="cfg.scoreShow">{{ team.teamScore }}</template>
-          <template v-else>已提交</template>
-        </template>
+      <div class="answer-content" :style="answerContentStyle(team)">
+        <!-- 非答题模式 或 作答中未提交：展示当前总分 -->
+        <template v-if="team.buzzStatus === 0 && (team.phase === 1 || team.phase === 3)">{{ team.teamScore }}</template>
+        <!-- 等待状态(phase=2) 或 答案公布未作答(phase=4, buzzStatus=0)：不展示内容 -->
+        <template v-else-if="team.buzzStatus === 0"></template>
+        <!-- 已提交 -->
+        <template v-else-if="team.buzzStatus === 1">已提交</template>
+        <!-- 答案公布：展示队伍提交的答案文字 -->
         <template v-else>{{ team.answer }}</template>
       </div>
 
@@ -155,8 +157,9 @@ export default {
       };
     },
 
-    answerContentStyle(buzzStatus) {
-      const isWait = buzzStatus === 0;
+    answerContentStyle(team) {
+      // 使用小字体+teamColor展示分数（phase1/3 未提交）；大字体+answerColor展示已提交/答案
+      const showScore = team.buzzStatus === 0 && (team.phase === 1 || team.phase === 3);
       return {
         position:       "absolute",
         top:            0,
@@ -167,9 +170,9 @@ export default {
         alignItems:     "center",
         justifyContent: "center",
         zIndex:         10,
-        fontSize:       (isWait ? this.cfg.teamFontsize : this.cfg.answerFontsize) + "px",
+        fontSize:       (showScore ? this.cfg.teamFontsize : this.cfg.answerFontsize) + "px",
         fontWeight:     this.cfg.answerFontWidth,
-        color:          isWait ? this.cfg.waitColor : this.cfg.answerColor,
+        color:          showScore ? this.cfg.teamColor : this.cfg.answerColor,
       };
     },
 

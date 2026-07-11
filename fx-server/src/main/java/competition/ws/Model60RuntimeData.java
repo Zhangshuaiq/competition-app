@@ -78,7 +78,7 @@ public class Model60RuntimeData {
             datum.setRemark(data.getRemark());
             datum.setScore(data.getScore());
             if (StringUtils.isEmpty(data.getDescScore()) || !NumberUtil.isInt(data.getDescScore())) {
-
+                datum.setDescScore(null); // null 表示使用环节配置的扣分值
             } else {
                 datum.setDescScore(Integer.parseInt(data.getDescScore()));
             }

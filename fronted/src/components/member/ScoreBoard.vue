@@ -18,7 +18,7 @@
           </el-row>
 
           <!-- 第二层：固定高度，内容切换显示 -->
-          <div class="fixed-layer-container" :style="isType8QuestionMode ? { height: '65px' } : {}">
+          <div class="fixed-layer-container" :style="isType8AnswerMode ? { height: '65px' } : {}">
             <!-- 抢答时间 -->
             <div
                 class="fixed-layer-content"
@@ -35,9 +35,10 @@
             </div>
 
             <!-- 状态展示 -->
-            <div class="fixed-layer-content" v-show="!buzzStatus && showStatus" :style="isType8QuestionMode ? { height: 'auto' } : {}">
+            <div class="fixed-layer-content" v-show="!buzzStatus && showStatus" :style="isType8AnswerMode ? { height: 'auto' } : {}">
               <el-row>
                 <el-col span="22">
+                  <!-- model61：成员状态格 -->
                   <div v-if="showMember" class="member-status-row">
                     <div
                         v-for="(st, idx) in item.statusList"
@@ -48,28 +49,31 @@
                       {{ idx + 1 }}
                     </div>
                   </div>
-                  <template v-else-if="isType8QuestionMode">
-                    <div class="board-item" style="background-color: #0070C0; margin-bottom: 5px;">
+
+                  <!-- type8 答题界面：子环节名 + 答案状态（含"未提交"）
+                       对应后端：boardAnswer=1 && previewPane instanceof QuestionPreviewPreview && questionType=8 -->
+                  <template v-else-if="isType8AnswerMode">
+                    <div class="board-item" :style="{ backgroundColor: type8StageBgColor(item), marginBottom: '5px' }">
                       {{ stageNameForTeam(item) }}
                     </div>
                     <div class="board-item" :style="{ backgroundColor: questionStatusBgColor(item.status) }">
-                      {{ questionAnswerText(item) }}
+                      {{ questionAnswerText(item) }} 
                     </div>
                   </template>
-                  <div
-                      v-else
-                      class="board-item"
-                      :style="{ backgroundColor: stageSelectBgColor(item.status) }"
-                  >
-                    <template v-if="isStageMode">
-                      {{ stageSelectText(item) }}
-                    </template>
-                    <template v-else-if="isQuestionMode">
-                      {{ questionSelectText(item) }}
-                    </template>
-                    <template v-else-if="item.status === 2 || item.status === 3">
-                      {{ item.teamSelect }}
-                    </template>
+
+                  <!-- type8 选题界面（stages 路由）：只展示子环节选择状态，无"未提交"
+                       对应后端：questionType=8 时始终展示的子环节名行 -->
+                  <div v-else-if="isType8StageMode"
+                       class="board-item"
+                       :style="{ backgroundColor: type8StageBgColor(item) }">
+                    {{ stageNameForTeam(item) }}
+                  </div>
+
+                  <!-- model60 / 非type8 question 路由：答题提交状态 -->
+                  <div v-else-if="isQuestionMode || isModel60Mode"
+                       class="board-item"
+                       :style="{ backgroundColor: stageSelectBgColor(item.status) }">
+                    {{ questionSelectText(item) }}
                   </div>
                 </el-col>
               </el-row>
@@ -89,8 +93,6 @@ export default {
       barStatus: true,
       buzzStatus: false,
       teamList: [],
-      showStatus: false,
-      showMember: false,
       statusColor: ['#FFFFFF00', '#0070C0', '#00B050', '#FF0000'],
       buzzStatusColor: ['#FFFFFF00', '#00B050', '#FF0000'],
       questionItem: sessionStorage.getItem('questionItem') || {},
@@ -124,26 +126,14 @@ export default {
   mounted() {
     const data = this.$store.state.teams;
     this.teamList = data;
+    const saved = sessionStorage.getItem('stageNameCache');
+    if (saved) {
+      try { this.stageNameCache = JSON.parse(saved); } catch (e) {
+      console.error('Failed to parse stageNameCache from sessionStorage:', e);}
+    }
     this.updateStageNameCache(data);
     this.buzzStatus = this.$store.state.buzzStatus;
     this.barStatus = this.$store.state.barStatus;
-    const route = this.$store.state.currentRoute;
-    if (route.includes('model61')) {
-      this.showStatus = true;
-      this.showMember = true;
-    } else if (route.includes('model60')) {
-      this.showStatus = true;
-      this.showMember = false;
-    } else if (route.includes('stages')) {
-      this.showStatus = true;
-      this.showMember = false;
-    } else if (route.includes('question')) {
-      const stage = this.$store.state.stage;
-      if (stage && stage.boardAnswer === 1) {
-        this.showStatus = true;
-        this.showMember = false;
-      }
-    }
   },
   methods: {
     stageSelectText(item) {
@@ -152,52 +142,107 @@ export default {
       return '未选择';
     },
     stageSelectBgColor(status) {
-      if (!this.isStageMode && !this.isQuestionMode) return this.statusColor[status] || '#FFFFFF00';
+      console.log('stageSelectBgColor', status);
+      if (!this.isStageMode && !this.isQuestionMode) return this.statusColor[status] || '#0070C0';
       if (status === 2) return '#00B050';
       if (status === 1) return '#0070C0';
-      return '#888888';
+      return '#0070C0';
     },
+    // 对齐后端 addModel60Panel 逻辑
     questionSelectText(item) {
-      if (item.status === 2) return item.teamSelect || '已提交';
-      return item.teamSelect || '未提交';
+      if (item.status === 1) return '已提交';                        // 已提交，等待揭晓
+      if (item.status === 3) return item.teamSelect || '未提交';     // 强制结束且未提交
+      if (item.status === 2) return item.teamSelect || '';           // 揭晓后显示答案
+      return '';                                                     // status 0：答题中，空
     },
     questionStatusBgColor(status) {
       if (status === 2) return '#00B050';
+      if (status === 3) return '#FF0000';
       if (status === 1) return '#0070C0';
       return '#888888';
     },
     questionAnswerText(item) {
       if (item.status === 2) return item.teamSelect || '';
+      if (item.status === 3) return item.teamSelect || '已提交';
       if (item.status === 1) return '已提交';
       return '未提交';
     },
+    type8StageBgColor(item) {
+      if (item.stageSelectStatus === 2) return '#00B050';  // 已揭晓：绿
+      if (item.stageSelectStatus === 1) return '#0070C0';  // 已选择：蓝
+      return '#888888';                                     // 未选择：灰
+    },
     stageNameForTeam(item) {
-      return this.stageNameCache[item.id] || item.teamSelect || '未选择';
+      if (this.stageNameCache[item.id]) return this.stageNameCache[item.id];
+      if (item.stageSelectStatus === 1) return '已选择';
+      return '未选择';
     },
     updateStageNameCache(teams) {
       if (!teams) return;
       teams.forEach(team => {
-        if (team.status !== 2 && team.teamSelect) {
-          this.$set(this.stageNameCache, team.id, team.teamSelect);
-        } else if (team.status === 0 && !team.teamSelect) {
+        if (team.stageSelect && team.stageSelectStatus === 2) {
+          // 管理员点击"显示答案"揭晓时：stageSelectStatus=2，stageSelect 有子环节名 → 写入缓存
+          this.$set(this.stageNameCache, team.id, team.stageSelect);
+        } else if (team.stageSelectStatus === 0 && !team.stageSelect) {
+          // enterStage 重置时清除缓存
           this.$delete(this.stageNameCache, team.id);
         }
+        // stageSelectStatus=1/3 或其他状态：不动 cache，保持已揭晓的子环节名
       });
+      sessionStorage.setItem('stageNameCache', JSON.stringify(this.stageNameCache));
     },
   },
   computed: {
-    isStageMode() {
-      const route = this.$store.state.currentRoute;
-      return route && route.includes('stages');
+    // 使用 this.$route.name 替代 store 里的 currentRoute，避免持久化脏数据
+    _route() { return this.$route.name || ''; },
+    _stage() { return this.$store.state.stage; },
+
+    // model61 路由：个人答题模式，展示成员状态格
+    showMember() { return this._route.includes('model61'); },
+
+    // model60 路由：团队答题模式
+    isModel60Mode() { return this._route.includes('model60'); },
+
+    // stages 路由：环节列表（选题界面）
+    isStageMode() { return this._route.includes('stages'); },
+
+    // stages / stageName 路由 + questionType=8：type8 自选环节，展示子环节选择状态
+    // stageName 是主屏显示环节名称时的路由，stages 是平板选题列表路由
+    isType8StageMode() {
+      const inStageRoute = this._route.includes('stages') || this._route.includes('stageName') || this._route.includes('stageQuestion');
+      if (!inStageRoute) return false;
+      if (this._stage && this._stage.questionType === 8) return true;
+      if (Object.keys(this.stageNameCache).length > 0) return true;
+      // 选环节阶段（未揭晓时 cache 为空）：有队伍有 stageSelectStatus 说明当前在 type8 上下文
+      return !!(this.teamList && this.teamList.some(t => t.stageSelectStatus > 0));
     },
+
+    // question 路由 + boardAnswer=1：进入了答题界面
+    // 对应后端 previewPane instanceof QuestionPreviewPreview
+    // 注意排除 stageQuestion（选题列表路由），避免误触发答题模式
     isQuestionMode() {
-      const route = this.$store.state.currentRoute;
-      const stage = this.$store.state.stage;
-      return route && route.includes('question') && stage && stage.boardAnswer === 1;
+      return !!(this._route.includes('question') && !this._route.includes('stageQuestion') && this._stage && this._stage.boardAnswer === 1);
     },
-    isType8QuestionMode() {
-      const stage = this.$store.state.stage;
-      return this.isQuestionMode && stage && stage.questionType === 8;
+
+    // question 路由 + boardAnswer=1 + questionType=8：type8 答题界面
+    // 对应后端：boardAnswer=1 && QuestionPreviewPreview && questionType=8
+    // 此状态下才会出现"未提交"
+    isType8AnswerMode() {
+      const res =  this.isQuestionMode && !!(this._stage && this._stage.questionType === 8);
+      console.log('isQuestionMode:', this.isQuestionMode);
+       console.log('_stage:', this._stage);
+        console.log('questionType:', this._stage.questionType);
+      return res;
+    },
+
+    // 状态行整体是否显示，对齐后端 ScoreBoardHPreview 的条件：
+    // 仅在 model60/61、type8选题、question答题界面时展示
+    showStatus() {
+      console.log('showStatus:', this.isType8StageMode)
+      return this.showMember
+          || this.isModel60Mode
+          || this.isType8StageMode
+          || this.isQuestionMode;
     },
   },
 };

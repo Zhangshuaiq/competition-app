@@ -390,7 +390,7 @@ public class Model7RuntimeData {
                         // 回答一部分
                         List<Integer> total = questionList.stream().map(Questions::getQuestionNumber).collect(Collectors.toList());
                         List<Integer> answered = modelData.stream().map(ModelData::getQuestionNumber).collect(Collectors.toList());
-                        Map<Integer,String> collect = questionList.stream().collect(Collectors.toMap(Questions::getQuestionNumber, Questions::getDescScore));
+                        Map<Integer,String> collect = questionList.stream().collect(Collectors.toMap(Questions::getQuestionNumber, q -> q.getDescScore() != null ? q.getDescScore() : ""));
                         total.removeAll(answered);
                         for (Integer integer : total) {
                             if (NumberUtil.isInt(collect.get(integer))) {

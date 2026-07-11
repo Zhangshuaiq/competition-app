@@ -88,13 +88,15 @@ public class Model61RuntimeData {
                                 if (split[j].equals(data.getUserName())) {
                                     String memberScore = team.getMemberScore();
                                     JSONObject jsonObject = JSON.parseObject(memberScore);
-                                    if (data.getAnswer().equals(data.getUserSelect())) {
+                                    if (data.getAnswer() != null && data.getAnswer().equals(data.getUserSelect())) {
                                         // 更新队员获取的总分数
                                         jsonObject.put(data.getUserName(),
                                                 jsonObject.getIntValue(data.getUserName()) + data.getScore());
                                         team.setMemberScore(JSON.toJSONString(jsonObject));
                                         // 更新队员当前环节的分数
-                                        team.getQScores().set(j, data.getScore());
+                                        if (team.getQScores() != null && j < team.getQScores().size()) {
+                                            team.getQScores().set(j, data.getScore());
+                                        }
                                     } else {
                                         int desScore = Objects.isNull(data.getDescScore())
                                                 ? controlPane.getCurrentStage().getDesValue()
@@ -102,7 +104,9 @@ public class Model61RuntimeData {
                                         jsonObject.put(data.getUserName(),
                                                 jsonObject.getIntValue(data.getUserName()) - desScore);
                                         team.setMemberScore(JSON.toJSONString(jsonObject));
-                                        team.getQScores().set(j, -desScore);
+                                        if (team.getQScores() != null && j < team.getQScores().size()) {
+                                            team.getQScores().set(j, -desScore);
+                                        }
                                     }
                                     teamsMapper.updateTeamAsync(team);
 
@@ -111,7 +115,8 @@ public class Model61RuntimeData {
                         }
 
                         if (controlPane.getCurrentStage().getCountTotal() == 1) {
-                            int scores = team.getQScores().stream().mapToInt(x -> x).sum();
+                            int scores = team.getQScores() != null
+                                    ? team.getQScores().stream().mapToInt(x -> x).sum() : 0;
                             team.setNewScore(team.getTeamScore() + scores);
 
                             scoreService.addScore(data.getUserName(), team, controlPane.getCurrentStage().getName(),
@@ -157,6 +162,7 @@ public class Model61RuntimeData {
             datum.setRemark(data.getRemark());
             datum.setScore(data.getScore());
             if (StringUtils.isEmpty(data.getDescScore()) || !NumberUtil.isInt(data.getDescScore())) {
+                datum.setDescScore(null); // null 表示使用环节配置的扣分值
             } else {
                 datum.setDescScore(Integer.parseInt(data.getDescScore()));
             }

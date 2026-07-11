@@ -17,6 +17,7 @@ import competition.resp.Model7RestData;
 import competition.service.RankingService;
 import competition.util.*;
 import competition.ws.Model60RuntimeData;
+import competition.ws.Model61RuntimeData;
 import competition.ws.Model7RuntimeData;
 import competition.ws.StageSelectRuntime;
 import competition.ws.WsMessageHandler;
@@ -394,54 +395,64 @@ public class RestApi {
     public JsonResp getModel6Data() throws Exception {
         List<Teams> teams = TeamRuntime.getTeams();
         List<Model60RuntimeData.ModelData> runtimeData = Model60RuntimeData.getRuntimeData();
+        competition.entity.Stages currentStage = controlPane.getCurrentStage();
 
-        // 计算环节总分
-        List<List<Model60RuntimeData.ModelData>> runtimeData60 = Model60RuntimeData.getTotalData();
-
-        List<Model7RankData> memeryData = new ArrayList<>();
-        for (List<Model60RuntimeData.ModelData> modelDataList : runtimeData60) {
-            for (Model60RuntimeData.ModelData modelData : modelDataList) {
-                Model7RankData rankData = new Model7RankData();
-                if (modelData.getAnswer().equals(modelData.getUserSelect())) {
-                    rankData.setScore(modelData.getScore());
-                } else {
-                    Integer descScore = modelData.getDescScore();
-                    if (descScore != null) {
-                        rankData.setScore(-descScore);
-                    } else {
-                        rankData.setScore(-controlPane.getCurrentStage().getDesValue());
-                    }
-                }
-                rankData.setTeam(modelData.getTeamName());
-                memeryData.add(rankData);
+        // 判断当前展示阶段
+        // phase 1: 非答题模式，展示队伍名+当前总分
+        // phase 2: 进入答题模式但题目未加载，等待状态
+        // phase 3: 题目已加载，作答进行中
+        // phase 4: 答案已公布
+        int phase;
+        if (currentStage == null || currentStage.getQuestionType() != 6) {
+            phase = 1;
+        } else if (GlobalCache.showAnswer) {
+            phase = 4;
+        } else {
+            boolean questionLoaded;
+            if (Objects.equals(1, currentStage.getM6())) {
+                List<Model61RuntimeData.ModelData> m61 = Model61RuntimeData.getRuntimeData();
+                questionLoaded = !m61.isEmpty() && m61.stream().anyMatch(d -> StringUtils.hasText(d.getAnswer()));
+            } else {
+                questionLoaded = !runtimeData.isEmpty() && runtimeData.stream().anyMatch(d -> StringUtils.hasText(d.getAnswer()));
             }
-        }
-        Map<String, Integer> totalScoreMap = new HashMap<>();
-        Map<String, List<Model7RankData>> convertMap = memeryData.stream().collect(Collectors.groupingBy(Model7RankData::getTeam));
-        for (Map.Entry<String, List<Model7RankData>> entry : convertMap.entrySet()) {
-            List<Model7RankData> itemList = entry.getValue();
-
-            int score = 0;
-            for (Model7RankData data : itemList) {
-                score += data.getScore();
-            }
-            totalScoreMap.put(entry.getKey(), score);
+            phase = questionLoaded ? 3 : 2;
         }
 
-        // 返回结果
-        Map<String, Model60RuntimeData.ModelData> collect = runtimeData.stream().collect(Collectors.toMap(Model60RuntimeData.ModelData::getTeamName, data -> data));
+        Map<String, Model60RuntimeData.ModelData> collect = runtimeData.stream()
+                .collect(Collectors.toMap(Model60RuntimeData.ModelData::getTeamName, d -> d));
+
         List<Model6RestData> responseData = new ArrayList<>();
-        // 返回所有队伍，如果队伍已回答，那么找出 runtimeData 中对应的数据
         for (Teams team : teams) {
             Model6RestData restData = new Model6RestData();
             restData.setId(team.getId().toString());
             restData.setFullName(team.getFullName());
+            restData.setTeamScore(team.getTeamScore());
+            restData.setPhase(phase);
 
-            // 找到 runtimeData 中对应的数据
             Model60RuntimeData.ModelData scoreVal = collect.get(team.getFullName());
-            restData.setAnswer(scoreVal == null ? null : scoreVal.getUserSelect());
-            restData.setBuzzStatus(scoreVal == null ? 0 : StringUtils.hasText(scoreVal.getUserSelect()) ? 1 : 0);
-            restData.setTeamScore(totalScoreMap.getOrDefault(team.getFullName(), 0));
+
+            if (phase == 4) {
+                // 答案公布：按正确/错误设置 buzzStatus，展示队伍提交的答案
+                if (scoreVal == null || !StringUtils.hasText(scoreVal.getUserSelect())) {
+                    restData.setBuzzStatus(0);
+                    restData.setAnswer(null);
+                } else if (scoreVal.getUserSelect().equals(scoreVal.getAnswer())) {
+                    restData.setBuzzStatus(2);
+                    restData.setAnswer(scoreVal.getUserSelect());
+                } else {
+                    restData.setBuzzStatus(3);
+                    restData.setAnswer(scoreVal.getUserSelect());
+                }
+            } else if (phase == 3) {
+                // 作答中：已提交的队伍 buzzStatus=1，未提交 buzzStatus=0
+                restData.setBuzzStatus(scoreVal == null ? 0 : StringUtils.hasText(scoreVal.getUserSelect()) ? 1 : 0);
+                restData.setAnswer(null);
+            } else {
+                // phase 1/2：全部 buzzStatus=0
+                restData.setBuzzStatus(0);
+                restData.setAnswer(null);
+            }
+
             responseData.add(restData);
         }
         return JsonResp.success(responseData);
@@ -556,10 +567,16 @@ public class RestApi {
             return JsonResp.error("参数不完整");
         }
         StageSelectRuntime.save(data);
-        // 将提交队伍的状态置为 1（已选择，但不揭示实际内容）
+        // 记录本批选择所属的环节 ID，供重进时判断是否恢复
+        if (controlPane.getCurrentStage() != null) {
+            StageSelectRuntime.setOwnerStageId(controlPane.getCurrentStage().getId());
+        }
+        // 将提交队伍的状态置为 1，stageSelect 记录选中的子环节名（与答题用的 teamSelect 分离）
         for (Teams team : TeamRuntime.getTeams()) {
             if (team.getFullName().equals(data.getTeam())) {
                 team.setStatus(1);
+                team.setStageSelect(data.getStage());
+                team.setStageSelectStatus(1);
                 break;
             }
         }

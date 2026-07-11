@@ -92,11 +92,13 @@ export default {
     const member = sessionStorage.getItem("member");
     const selectedStage = sessionStorage.getItem("selectedStage");
 
+    const stageNameCache = sessionStorage.getItem('stageNameCache');
     sessionStorage.clear()
     this.queryPrefix()
     sessionStorage.setItem("member", member)
     sessionStorage.setItem("user", item)
     sessionStorage.setItem("selectedStage", selectedStage)
+    if (stageNameCache) sessionStorage.setItem('stageNameCache', stageNameCache);
 
     const data = this.$store.state.data
     console.log(data)

@@ -106,7 +106,7 @@ export default {
     this.contactInfo()
     const teamInfo = JSON.parse(item)
     this.team = teamInfo
-    this.$websocket.send('/app/enter', {team: teamInfo.fullName + "-" + sessionStorage.getItem("member")})
+    this.$websocket.send('/app/enter', {team: teamInfo.shortName + "-" + sessionStorage.getItem("member")})
   },
 }
 </script>

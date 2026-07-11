@@ -14,6 +14,12 @@ public class StageSelectRuntime {
     // 已揭示子环节选择的队伍（揭示后 status 被答题阶段覆盖也不受影响）
     private static final java.util.Set<String> revealedSet = java.util.Collections.newSetFromMap(new ConcurrentHashMap<>());
 
+    // 当前选择数据所属的 type8 环节 ID，用于重进时判断是否恢复
+    private static volatile Integer ownerStageId = null;
+
+    public static void setOwnerStageId(Integer stageId) { ownerStageId = stageId; }
+    public static Integer getOwnerStageId() { return ownerStageId; }
+
     public static void save(StageSelectData data) {
         selectDataMap.put(data.getTeam(), data);
     }
@@ -37,6 +43,7 @@ public class StageSelectRuntime {
     public static void clear() {
         selectDataMap.clear();
         revealedSet.clear();
+        ownerStageId = null;
     }
 
     public static class StageSelectData {
