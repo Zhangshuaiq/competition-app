@@ -8,17 +8,16 @@
         class="score-item"
         :style="scoreItemStyle(team, index)"
     >
-      <!-- 队伍名称 -->
+      <!-- 队伍名称区：只受"团队设置"控制，永远不随作答状态变色（透明，显示页面背景） -->
       <div class="team-name" :style="teamNameStyle">
         {{ team.fullName }}
-        <div style="width: 100%; height: 1px; background-color: black"></div>
       </div>
 
-      <!-- 答题内容 -->
+      <!-- 答案/内容区：唯一随状态变色的区域，字体/颜色统一用"答案设置" -->
       <div class="answer-content" :style="answerContentStyle(team)">
-        <!-- 非答题模式 或 作答中未提交：展示当前总分 -->
-        <template v-if="team.buzzStatus === 0 && (team.phase === 1 || team.phase === 3)">{{ team.teamScore }}</template>
-        <!-- 等待状态(phase=2) 或 答案公布未作答(phase=4, buzzStatus=0)：不展示内容 -->
+        <!-- 非答题模式(phase1)：展示队伍总分 -->
+        <template v-if="team.phase === 1">{{ team.teamScore }}</template>
+        <!-- 进入答题后未提交、等待、公布未作答：答案区不显示内容 -->
         <template v-else-if="team.buzzStatus === 0"></template>
         <!-- 已提交 -->
         <template v-else-if="team.buzzStatus === 1">已提交</template>
@@ -96,34 +95,28 @@ export default {
     },
 
     teamNameStyle() {
+      // 队名区：占格子上部(28%)，用普通格底色(backColor)，只受"团队设置"控制，不随作答状态变色
       return {
-        position:     "absolute",
-        top:          "8px",
-        left:         0,
-        width:        "100%",
-        textAlign:    "center",
-        fontSize:     this.cfg.teamFontsize + "px",
-        fontWeight:   this.cfg.teamFontWidth,
-        color:        this.cfg.teamColor,
-        zIndex:       10,
-        whiteSpace:   "nowrap",
-        overflow:     "hidden",
-        textOverflow: "ellipsis",
-        padding:      "0 4px",
-        boxSizing:    "border-box",
-      };
-    },
-
-    teamScoreStyle() {
-      return {
-        position:  "absolute",
-        bottom:    "6px",
-        left:      0,
-        width:     "100%",
-        textAlign: "center",
-        fontSize:  this.cfg.teamFontsize + "px",
-        color:     this.cfg.teamColor,
-        zIndex:    10,
+        position:      "absolute",
+        top:           0,
+        left:          0,
+        width:         "100%",
+        height:        "28%",
+        display:       "flex",
+        alignItems:    "center",
+        justifyContent:"center",
+        textAlign:     "center",
+        fontSize:      this.cfg.teamFontsize + "px",
+        fontWeight:    this.cfg.teamFontWidth,
+        color:         this.cfg.teamColor,
+        backgroundColor: this.cfg.backColor,
+        borderBottom:  "1px solid rgba(0, 0, 0, 0.25)",
+        zIndex:        10,
+        whiteSpace:    "nowrap",
+        overflow:      "hidden",
+        textOverflow:  "ellipsis",
+        padding:       "0 4px",
+        boxSizing:     "border-box",
       };
     },
   },
@@ -142,6 +135,8 @@ export default {
     },
 
     scoreItemStyle(team, index) {
+      // 整格：仅保留装饰性状态背景图（铺满整格不动），不再在整格上染状态纯色，
+      // 状态纯色只染下方"答案区"，队名区保持透明。
       return {
         position:        "absolute",
         left:            this.cellLeft(index) + "px",
@@ -149,30 +144,33 @@ export default {
         width:           this.cfg.borderW + "px",   // 格子宽
         height:          this.cfg.borderL + "px",   // 格子高
         overflow:        "hidden",
-        backgroundColor: this.getStatusBgColor(team.buzzStatus),
         backgroundImage: `url(${this.getMediaUrl(team.buzzStatus)})`,
         backgroundSize:  "100% 100%",
         boxSizing:       "border-box",
-        transition:      "background-color 0.3s ease",
+        borderRadius:    "6px",
+        boxShadow:       "0 2px 6px rgba(0, 0, 0, 0.25)",
       };
     },
 
     answerContentStyle(team) {
-      // 使用小字体+teamColor展示分数（phase1/3 未提交）；大字体+answerColor展示已提交/答案
-      const showScore = team.buzzStatus === 0 && (team.phase === 1 || team.phase === 3);
+      // 答案区：占格子下半部，是唯一随状态变色的区域。
+      // 字体/颜色统一用"答案设置"（answerColor/answerFontsize），与团队设置解耦。
+      // phase1 展示总分时同样使用答案设置，仅背景保持普通格底色。
       return {
-        position:       "absolute",
-        top:            0,
-        left:           0,
-        width:          "100%",
-        height:         "100%",
-        display:        "flex",
-        alignItems:     "center",
-        justifyContent: "center",
-        zIndex:         10,
-        fontSize:       (showScore ? this.cfg.teamFontsize : this.cfg.answerFontsize) + "px",
-        fontWeight:     this.cfg.answerFontWidth,
-        color:          showScore ? this.cfg.teamColor : this.cfg.answerColor,
+        position:        "absolute",
+        top:             "28%",
+        left:            0,
+        width:           "100%",
+        height:          "72%",
+        display:         "flex",
+        alignItems:      "center",
+        justifyContent:  "center",
+        zIndex:          10,
+        fontSize:        this.cfg.answerFontsize + "px",
+        fontWeight:      this.cfg.answerFontWidth,
+        color:           this.cfg.answerColor,
+        backgroundColor: this.getStatusBgColor(team.buzzStatus),
+        transition:      "background-color 0.3s ease",
       };
     },
 
@@ -268,7 +266,7 @@ export default {
     this.startPoll();
   },
 
-  beforeDestroy() {
+  beforeUnmount() {
     this.stopPoll();
   },
 };
@@ -280,7 +278,7 @@ html, body { overflow: hidden; height: 100%; }
 
 .score-item { position: absolute; }
 
-.team-name, .answer-content, .team-score {
+.team-name, .answer-content {
   position: absolute;
   z-index: 10;
 }

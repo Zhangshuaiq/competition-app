@@ -73,7 +73,7 @@
                   <Font size="10.0" />
                </font>
             </Button>
-            <Button layoutX="14.0" layoutY="71.0" mnemonicParsing="false" onMouseClicked="#showQuestion" prefHeight="25.0" prefWidth="80.0" text="试题显示">
+            <Button layoutX="14.0" layoutY="71.0" mnemonicParsing="false" onMouseClicked="#showQuestion" prefHeight="25.0" prefWidth="56.0" text="试题显示">
                <font>
                   <Font size="10.0" />
                </font>
@@ -83,17 +83,22 @@
                   <Font size="10.0" />
                </font>
             </Button>
-            <Button fx:id="nextQBtn" layoutX="246.0" layoutY="71.0" mnemonicParsing="false" onMouseClicked="#nextQuestion" prefHeight="25.0" prefWidth="80.0" text="下一题">
+            <Button fx:id="nextQBtn" layoutX="238.0" layoutY="71.0" mnemonicParsing="false" onMouseClicked="#nextQuestion" prefHeight="25.0" prefWidth="88.0" text="下一题">
                <font>
                   <Font size="10.0" />
                </font>
             </Button>
-            <Button layoutX="176.0" layoutY="71.0" mnemonicParsing="false" onMouseClicked="#showAnswer" prefHeight="26.0" prefWidth="60.0" text="答案显示">
+            <Button layoutX="114.0" layoutY="71.0" mnemonicParsing="false" onMouseClicked="#showAnswer" prefHeight="26.0" prefWidth="56.0" text="答案显示">
                <font>
                   <Font size="10.0" />
                </font>
             </Button>
-            <Button fx:id="backBtn" layoutX="106.0" layoutY="71.0" mnemonicParsing="false" onMouseClicked="#backLast" prefHeight="25.0" prefWidth="60.0" text="返回">
+            <Button layoutX="172.0" layoutY="71.0" mnemonicParsing="false" onMouseClicked="#resetStageSelect" prefHeight="26.0" prefWidth="64.0" text="复位选择">
+               <font>
+                  <Font size="10.0" />
+               </font>
+            </Button>
+            <Button fx:id="backBtn" layoutX="72.0" layoutY="71.0" mnemonicParsing="false" onMouseClicked="#backLast" prefHeight="25.0" prefWidth="40.0" text="返回">
                <font>
                   <Font size="10.0" />
                </font>

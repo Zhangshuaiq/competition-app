@@ -1,5 +1,4 @@
-import Vue from 'vue';
-import Router from 'vue-router';
+import { createRouter, createWebHashHistory } from 'vue-router';
 
 import SContestantIndex from '../components/score/ContestantIndex.vue';
 
@@ -51,10 +50,8 @@ import AllMemberRank from '@/components/score/MemberRank.vue';
 import Model6Board from "@/components/score/Model6Board.vue";
 import Model7Board from "@/components/score/Model7Board.vue";
 
-Vue.use(Router);
-
-export default new Router({
-    mode: 'hash', // 使用HTML5 History模式
+export default createRouter({
+    history: createWebHashHistory(),
     routes: [
          // 选手路由
         {

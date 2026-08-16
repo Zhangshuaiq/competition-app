@@ -1426,16 +1426,8 @@ public class ControlPane {
                     startAnswerBtn.setDisable(false);
                     startTiming();
                 } else {
-                    // 选环节阶段：重置所有队伍状态，清除上一轮提交记录
-                    for (Teams team : TeamRuntime.getTeams()) {
-                        team.setStatus(0);
-                        team.setTeamSelect("");
-                        team.setStageSelect("");
-                        team.setStageSelectStatus(0);
-                    }
-                    StageSelectRuntime.clear();
-                    messageHandler.notifyPage("", null);
-                    messageHandler.sendStageSelectReset();
+                    // 选环节阶段：仅开始计时。选择/揭晓状态一律持久保留，
+                    // 只有点击"复位选择"按钮(resetStageSelect)才清空，避免跳转/再次开始时丢失状态。
                     startAnswerBtn.setDisable(false);
                     startTiming();
                 }
@@ -2355,6 +2347,8 @@ public class ControlPane {
                     currentStage);
             updateScoreBoard();
         } else if (currentStage.getQuestionType() == (6)) {
+            // 切换题目时重置揭示状态，避免直接选题号显示新题时答案被直接显示（与 type3 分支保持一致）
+            GlobalCache.showAnswer = false;
             Integer m6 = currentStage.getM6();
             String tihao = questionCombox.getValue();
             Questions questions;
@@ -2655,21 +2649,52 @@ public class ControlPane {
                         if (GlobalCache.showAnswer) {
                             Questions currentQuestion = ((QuestionPreviewPreview) previewPane).getData();
                             int qScore = currentQuestion.getScore() != null ? currentQuestion.getScore() : currentStage.getScorePerQ();
+                            int desScore = currentStage.getDesValue();
                             Map<String, String> allAnswers = QuestionSubmitRuntime.getAll();
                             TeamResult result = new TeamResult();
                             result.setCorrectAnswer(currentQuestion.getAnswer());
                             List<TeamResult.DataItem> items = new ArrayList<>();
+                            // 是否真正落分（避免重复扣分，且仅在计入总分时）
+                            boolean applyScore = !type8ScoreApplied && currentStage.getCountTotal() == 1;
                             for (Teams team : TeamRuntime.getTeams()) {
                                 TeamResult.DataItem item = new TeamResult.DataItem();
                                 item.setTeamName(team.getFullName());
-                                String userSelect = allAnswers.getOrDefault(team.getFullName(), "");
+                                String submitted = allAnswers.get(team.getFullName());
+                                String userSelect = submitted != null ? submitted : "";
                                 item.setAnswer(userSelect);
-                                if (userSelect.equals(currentQuestion.getAnswer())) {
+                                if (submitted != null && userSelect.equals(currentQuestion.getAnswer())) {
+                                    // 答对 → 加分
                                     item.setScore(qScore);
+                                    if (applyScore) {
+                                        team.setNewScore(team.getTeamScore() + qScore);
+                                        scoreService.addScore(null, team, currentStage.getName(), null, null,
+                                                qScore, Objects.toString(team.getNewScore()), userSelect);
+                                    }
+                                } else if (submitted != null) {
+                                    // 答错 → 扣分
+                                    item.setScore(-desScore);
+                                    if (applyScore) {
+                                        team.setNewScore(team.getTeamScore() - desScore);
+                                        scoreService.addScore(null, team, currentStage.getName(), null, null,
+                                                -desScore, Objects.toString(team.getNewScore()), userSelect);
+                                    }
+                                } else if (StageSelectRuntime.get(team.getFullName()) != null) {
+                                    // 选了该环节但未提交 → 视为未答，扣分
+                                    item.setScore(-desScore);
+                                    if (applyScore) {
+                                        team.setNewScore(team.getTeamScore() - desScore);
+                                        scoreService.addScore(null, team, currentStage.getName(), null, null,
+                                                -desScore, Objects.toString(team.getNewScore()), "");
+                                    }
                                 } else {
-                                    item.setScore(-currentStage.getDesValue());
+                                    // 未参与本轮自选 → 不计分
+                                    item.setScore(0);
                                 }
                                 items.add(item);
+                            }
+                            if (applyScore) {
+                                type8ScoreApplied = true;
+                                TeamRuntime.updateScore();
                             }
                             result.setDataItemList(items);
                             ShowAnswerPreview.setTeamResult(result);
@@ -2710,6 +2735,15 @@ public class ControlPane {
                                                     -desScore, Objects.toString(team.getNewScore()), submitted);
                                         }
                                     }
+                                } else if (StageSelectRuntime.get(team.getFullName()) != null) {
+                                    // 选择了该环节但未提交答案 → 视为未答，按环节扣分值扣分（与"答错"一致）
+                                    team.setStatus(3);
+                                    team.setTeamSelect("未提交");
+                                    if (!type8ScoreApplied && currentStage.getCountTotal() == 1) {
+                                        team.setNewScore(team.getTeamScore() - desScore);
+                                        scoreService.addScore(null, team, currentStage.getName(), null, null,
+                                                -desScore, Objects.toString(team.getNewScore()), "");
+                                    }
                                 }
                             } else {
                                 team.setTeamSelect("");
@@ -2734,11 +2768,13 @@ public class ControlPane {
                         if (selected != null) {
                             if (GlobalCache.showAnswer) {
                                 team.setTeamSelect(selected.getStage());
+                                team.setStageSelect(selected.getStage()); // 确保揭晓态 stageSelect 有名字，前端按 stageSelect 渲染
                                 team.setStatus(2);
                                 team.setStageSelectStatus(2);
                                 StageSelectRuntime.markRevealed(team.getFullName());
                             } else {
                                 team.setTeamSelect("");
+                                team.setStageSelect(selected.getStage()); // 隐藏时仅回到"已选择"，名字保留供再次揭晓
                                 team.setStatus(1);
                                 team.setStageSelectStatus(1);
                             }
@@ -2777,6 +2813,25 @@ public class ControlPane {
             scoreBoardPreview.reload();
         }
 
+    }
+
+    // 复位平板自选的选择/揭晓状态：唯一的显式清空入口。
+    // 点击后所有队伍回到"未选择"，并通知平板可重新选择。
+    @FXML
+    public void resetStageSelect() {
+        StageSelectRuntime.clear();
+        for (Teams team : TeamRuntime.getTeams()) {
+            team.setStatus(0);
+            team.setTeamSelect("");
+            team.setStageSelect("");
+            team.setStageSelectStatus(0);
+        }
+        GlobalCache.showAnswer = false;
+        messageHandler.notifyPage("", null);
+        messageHandler.sendStageSelectReset();
+        if (scoreBoardPreview != null) {
+            scoreBoardPreview.reload();
+        }
     }
 
     private void closeBuzzResultWindow() {

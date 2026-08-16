@@ -2,10 +2,10 @@
   <div id="container-box" :style="containerBoxStyle">
     <div style="height: 110px; line-height: 110px">
       <el-row>
-        <el-col span="12">
+        <el-col :span="12">
           <img :src="iconUrl" style="margin: 10px 0 0 10px">
         </el-col>
-        <el-col span="12">
+        <el-col :span="12">
           <div style="text-align: right; line-height: 100px; height: 100px; margin-right: 20px; font-size: x-large ">
             {{team.shortName}} | {{member}}
           </div>

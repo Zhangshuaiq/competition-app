@@ -11,13 +11,13 @@
       </div>
       <div class="member-answer" style="margin-top: 20px">
         <el-row >
-          <el-col span="12" v-for="(item, index) in resultData.dataItemList" :key="index">
+          <el-col :span="12" v-for="(item, index) in resultData.dataItemList" :key="index">
             <div style="margin: 10px 0">
-              <el-row type="flex" justify="right">
-                <el-col span="20" :offset="index % 2 ==0?0:2">
+              <el-row justify="right">
+                <el-col :span="20" :offset="index % 2 ==0?0:2">
                   <div v-if="item.member" class="answer-info">
                     <el-row>
-                      <el-col span="6">
+                      <el-col :span="6">
                         <div style="width: 100%; /* 根据需要调整宽度 */
                             height: 60px;
                             white-space: nowrap;
@@ -27,13 +27,13 @@
                           {{item.teamName}}
                         </div>
                       </el-col>
-                      <el-col span="6">{{item.member}}</el-col>
-                      <el-col span="12"> 回答 ：&nbsp;{{item.answer}}</el-col>
+                      <el-col :span="6">{{item.member}}</el-col>
+                      <el-col :span="12"> 回答 ：&nbsp;{{item.answer}}</el-col>
                     </el-row>
 
                   </div>
                   <div v-else class="answer-info">
-                    <el-col span="6">
+                    <el-col :span="6">
                       <div style="width: 100%; /* 根据需要调整宽度 */
                             height: 60px;
                             white-space: nowrap;
@@ -43,10 +43,10 @@
                         {{item.teamName}}
                       </div>
                     </el-col>
-                    <el-col span="18"> 回答 ：&nbsp;{{item.answer}}</el-col>
+                    <el-col :span="18"> 回答 ：&nbsp;{{item.answer}}</el-col>
                   </div>
                 </el-col>
-                <el-col span="2">
+                <el-col :span="2">
                   <div class="score-info" v-if="item.answer ===resultData.correctAnswer" style="background-color: green; width: 100%">+{{item.score}}</div>
                   <div class="score-info" style="width: 100%" v-else>{{item.score}}</div>
                 </el-col>

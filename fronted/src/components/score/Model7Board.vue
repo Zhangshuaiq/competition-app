@@ -103,7 +103,7 @@ export default {
           if (prev !== undefined && prev !== team.teamScore) {
             this.triggerAnim(team, team.teamScore - prev);
           }
-          this.$set(this.prevScores, k, team.teamScore);
+          this.prevScores[k] = team.teamScore;
         });
       },
       deep: true,
@@ -172,19 +172,19 @@ export default {
     triggerAnim(team, diff) {
       const k = this.getTeamKey(team);
       // 先清空，nextTick 后重设，确保 CSS 动画从头播放
-      this.$set(this.animState, k, null);
+      this.animState[k] = null;
       this.$nextTick(() => {
         this.animKeyCounter++;
         const animKey = this.animKeyCounter;
-        this.$set(this.animState, k, {
+        this.animState[k] = {
           type: diff > 0 ? "plus" : "minus",
           diff,
           key:  animKey,
-        });
+        };
         setTimeout(() => {
           const cur = this.animState[k];
           if (cur && cur.key === animKey) {
-            this.$set(this.animState, k, null);
+            this.animState[k] = null;
           }
         }, 1600);
       });
@@ -290,7 +290,7 @@ export default {
     this.startPoll();
   },
 
-  beforeDestroy() {
+  beforeUnmount() {
     this.stopPoll();
   },
 };

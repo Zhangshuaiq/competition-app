@@ -4,12 +4,12 @@
     <div id="container">
       <div id="login-panel">
         <el-row>
-          <div style="height: 50px">
-            <el-col span="16">
+          <div style="height: 50px; display: flex; align-items: center; width: 100%">
+            <el-col :span="16">
               <el-input  class="custom-input" style="height: 50px" v-model="form.password" placeholder="请输入密码" autocomplete="off"
-                         @keyup.enter.native="validPassword"></el-input>
+                         @keyup.enter="validPassword"></el-input>
             </el-col>
-            <el-col span="8" align="right">
+            <el-col :span="8" align="right">
               <el-button style="color: #00b050; font-size: 20px; height: 50px" @click="validPassword"> 提交 </el-button>
             </el-col>
           </div>
@@ -181,7 +181,10 @@ export default {
   height: 60px;
 }
 
-.custom-input >>> .el-input__inner {
+.custom-input :deep(.el-input__wrapper) {
+  height: 50px; /* Element Plus 输入框外壳控制高度 */
+}
+.custom-input :deep(.el-input__inner) {
   height: 50px; /* 自定义高度 */
   line-height: 50px; /* 调整文字垂直居中 */
   font-size: 20px;

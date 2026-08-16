@@ -1,16 +1,16 @@
 <template>
   <div class="scoreboard">
     <el-row>
-      <el-col v-for="(item, index) in teamList" :key="item.id" span="2">
+      <el-col v-for="(item, index) in teamList" :key="item.id" :span="2">
         <div style="margin-bottom: 5px">
           <!-- 第一层：编号 + 分数 -->
           <el-row>
-            <el-col span="10">
+            <el-col :span="10">
               <div class="round-board-item">
                 {{ index + 1 }}
               </div>
             </el-col>
-            <el-col span="12">
+            <el-col :span="12">
               <div class="board-item">
                 {{ item.teamScore }}
               </div>
@@ -26,7 +26,7 @@
                 style="background-color: transparent"
             >
               <el-row>
-                <el-col span="22">
+                <el-col :span="22">
                   <div class="board-item" :style="{ backgroundColor: buzzStatusColor[item.buzzStatus] }">
                     {{ item.buzzTime }}
                   </div>
@@ -38,7 +38,7 @@
             <!-- 显示状态 -->
             <div class="fixed-layer-content" v-show="!buzzStatus && showStatus">
               <el-row>
-                <el-col span="22">
+                <el-col :span="22">
                   <div v-if="showMember" class="member-status-row">
                     <div
                         v-for="(st, idx) in item.statusList"

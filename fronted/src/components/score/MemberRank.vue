@@ -189,7 +189,7 @@ export default {
     this.$el.focus();
   },
 
-  beforeDestroy() {
+  beforeUnmount() {
     if (this.refreshInterval) {
       clearInterval(this.refreshInterval);
     }

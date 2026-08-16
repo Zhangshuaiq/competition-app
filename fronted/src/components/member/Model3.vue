@@ -11,14 +11,14 @@
 
     <div id="questionList">
       <el-row v-for="i in stages.length" :key="i">
-        <el-col span="4">
+        <el-col :span="4">
           <div class="title-item" >
             {{ stages[i - 1].name }}
           </div>
         </el-col>
-        <el-col span="20">
+        <el-col :span="20">
           <el-row>
-            <el-col span="2" v-for="question in questions[i - 1]" :key="question.questionNumber">
+            <el-col :span="2" v-for="question in questions[i - 1]" :key="question.questionNumber">
               <div class="question-item" :style="{ visibility: question.hasAnswer === true  ? 'hidden' : 'visible' }">
                 {{ question.questionNumber }}
               </div>

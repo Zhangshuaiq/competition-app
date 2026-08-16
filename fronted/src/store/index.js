@@ -1,17 +1,14 @@
 // store.js
-import Vue from 'vue';
-import Vuex from 'vuex';
+import { createStore } from 'vuex';
 import createPersistedState from 'vuex-persistedstate';
 
-Vue.use(Vuex);
-
-export default new Vuex.Store({
+export default createStore({
     plugins: [createPersistedState()],
     state: {
         stage: {},
         currentRoute: '',
         data: {},  // 存储更多的数据,
-        teams: {},
+        teams: [],
         buzzStatus: false,
         barStatus: true,
     },

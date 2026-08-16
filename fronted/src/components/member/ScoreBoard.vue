@@ -1,16 +1,16 @@
 <template>
   <div class="scoreboard" v-if="barStatus">
     <el-row>
-      <el-col v-for="(item, index) in teamList" :key="item.id" :value="index" span="2">
+      <el-col v-for="(item, index) in teamList" :key="item.id" :value="index" :span="2">
         <div style="margin-bottom: 5px">
           <!-- 第一层：编号 + 分数 -->
           <el-row>
-            <el-col span="10">
+            <el-col :span="10">
               <div class="round-board-item">
                 {{ item.code }}
               </div>
             </el-col>
-            <el-col span="12">
+            <el-col :span="12">
               <div class="board-item">
                 {{ item.teamScore }}
               </div>
@@ -26,7 +26,7 @@
                 style="background-color: transparent"
             >
               <el-row>
-                <el-col span="22">
+                <el-col :span="22">
                   <div class="board-item" :style="{ backgroundColor: buzzStatusColor[item.buzzStatus] }">
                     {{ item.buzzTime }}
                   </div>
@@ -37,7 +37,7 @@
             <!-- 状态展示 -->
             <div class="fixed-layer-content" v-show="!buzzStatus && showStatus" :style="isType8AnswerMode ? { height: 'auto' } : {}">
               <el-row>
-                <el-col span="22">
+                <el-col :span="22">
                   <!-- model61：成员状态格 -->
                   <div v-if="showMember" class="member-status-row">
                     <div
@@ -90,52 +90,39 @@ export default {
   name: "ScoreBoard",
   data() {
     return {
-      barStatus: true,
+      barStatus: false,
       buzzStatus: false,
-      teamList: [],
       statusColor: ['#FFFFFF00', '#0070C0', '#00B050', '#FF0000'],
       buzzStatusColor: ['#FFFFFF00', '#00B050', '#FF0000'],
-      questionItem: sessionStorage.getItem('questionItem') || {},
-      stageNameCache: {}
+      questionItem: sessionStorage.getItem('questionItem') || {}
     };
   },
-  beforeRouteUpdate(to, from, next) {
-    const data = this.$store.state.teams;
-    this.teamList = data;
-    next();
-  },
-  watch: {
-    '$store.state.teams': function (newTeams) {
-      this.teamList = newTeams;
-      this.updateStageNameCache(newTeams);
-      this.questionItem = JSON.parse(sessionStorage.getItem('questionItem'));
-    },
-    '$store.state.buzzStatus': function (newStatus) {
-      sessionStorage.setItem('buzzStatus', newStatus);
-      this.buzzStatus = newStatus;
-    },
-    '$store.state.barStatus': function (newStatus) {
-      sessionStorage.setItem('barStatus', newStatus);
-      this.barStatus = newStatus;
-    },
-    questionItem(newVal, oldVal) {
-      console.log(oldVal)
-      console.log('Session questionItem changed:', newVal);
-    }
-  },
   mounted() {
-    const data = this.$store.state.teams;
-    this.teamList = data;
-    const saved = sessionStorage.getItem('stageNameCache');
-    if (saved) {
-      try { this.stageNameCache = JSON.parse(saved); } catch (e) {
-      console.error('Failed to parse stageNameCache from sessionStorage:', e);}
+    this.syncFromStore(this.$store.state);
+    // 直接订阅 Vuex mutation，任何 setTeamsData/setBarStatus/setBuzzStatus 都会
+    // 立刻同步本地状态并强制重渲染，绕开 watcher/computed 未触发的问题
+    this._unsub = this.$store.subscribe((mutation, state) => {
+      this.syncFromStore(state);
+      this.$forceUpdate();
+    });
+  },
+  beforeUnmount() {
+    if (this._unsub) {
+      this._unsub();
+      this._unsub = null;
     }
-    this.updateStageNameCache(data);
-    this.buzzStatus = this.$store.state.buzzStatus;
-    this.barStatus = this.$store.state.barStatus;
   },
   methods: {
+    // 从 store 同步本地展示状态（teams 由 computed teamList 直接读取，这里只处理副作用）
+    syncFromStore(state) {
+      this.barStatus = state.barStatus;
+      this.buzzStatus = state.buzzStatus;
+      if (this.buzzStatus !== undefined) {
+        sessionStorage.setItem('buzzStatus', this.buzzStatus);
+      }
+      const qi = sessionStorage.getItem('questionItem');
+      this.questionItem = qi ? JSON.parse(qi) : {};
+    },
     stageSelectText(item) {
       if (item.status === 2) return item.teamSelect || '已选择';
       if (item.status === 1) return '已选择';
@@ -173,26 +160,15 @@ export default {
       return '#888888';                                     // 未选择：灰
     },
     stageNameForTeam(item) {
-      if (this.stageNameCache[item.id]) return this.stageNameCache[item.id];
+      // 纯按后端状态渲染：已揭晓(2)显示子环节名，已选择(1)显示"已选择"，否则"未选择"
+      if (item.stageSelectStatus === 2) return item.stageSelect || '已选择';
       if (item.stageSelectStatus === 1) return '已选择';
       return '未选择';
     },
-    updateStageNameCache(teams) {
-      if (!teams) return;
-      teams.forEach(team => {
-        if (team.stageSelect && team.stageSelectStatus === 2) {
-          // 管理员点击"显示答案"揭晓时：stageSelectStatus=2，stageSelect 有子环节名 → 写入缓存
-          this.$set(this.stageNameCache, team.id, team.stageSelect);
-        } else if (team.stageSelectStatus === 0 && !team.stageSelect) {
-          // enterStage 重置时清除缓存
-          this.$delete(this.stageNameCache, team.id);
-        }
-        // stageSelectStatus=1/3 或其他状态：不动 cache，保持已揭晓的子环节名
-      });
-      sessionStorage.setItem('stageNameCache', JSON.stringify(this.stageNameCache));
-    },
   },
   computed: {
+    // 直接读 store，teams 更新后界面实时刷新（避免本地拷贝导致的不同步）
+    teamList() { return this.$store.state.teams || []; },
     // 使用 this.$route.name 替代 store 里的 currentRoute，避免持久化脏数据
     _route() { return this.$route.name || ''; },
     _stage() { return this.$store.state.stage; },
@@ -212,8 +188,7 @@ export default {
       const inStageRoute = this._route.includes('stages') || this._route.includes('stageName') || this._route.includes('stageQuestion');
       if (!inStageRoute) return false;
       if (this._stage && this._stage.questionType === 8) return true;
-      if (Object.keys(this.stageNameCache).length > 0) return true;
-      // 选环节阶段（未揭晓时 cache 为空）：有队伍有 stageSelectStatus 说明当前在 type8 上下文
+      // 有队伍有 stageSelectStatus 说明当前在 type8 上下文
       return !!(this.teamList && this.teamList.some(t => t.stageSelectStatus > 0));
     },
 
@@ -228,17 +203,12 @@ export default {
     // 对应后端：boardAnswer=1 && QuestionPreviewPreview && questionType=8
     // 此状态下才会出现"未提交"
     isType8AnswerMode() {
-      const res =  this.isQuestionMode && !!(this._stage && this._stage.questionType === 8);
-      console.log('isQuestionMode:', this.isQuestionMode);
-       console.log('_stage:', this._stage);
-        console.log('questionType:', this._stage.questionType);
-      return res;
+      return this.isQuestionMode && !!(this._stage && this._stage.questionType === 8);
     },
 
     // 状态行整体是否显示，对齐后端 ScoreBoardHPreview 的条件：
     // 仅在 model60/61、type8选题、question答题界面时展示
     showStatus() {
-      console.log('showStatus:', this.isType8StageMode)
       return this.showMember
           || this.isModel60Mode
           || this.isType8StageMode

@@ -97,6 +97,12 @@ public class Model60RuntimeData {
             ModelData modelData = first.get();
             int i = runtimeData.indexOf(modelData);
             runtimeData.set(i, data);
+            // 分值/罚分/答案是题目的权威属性（来自数据库，setRuntimeData(Questions) 已做空值→null 转换），
+            // 平板只提供作答选项 userSelect。用原始 modelData 补回这些字段，避免平板回传的默认值
+            // （descScore 默认 0，非 null）覆盖后导致"数据库没分值时答错不扣分"。
+            data.setDescScore(modelData.getDescScore());
+            data.setScore(modelData.getScore());
+            data.setAnswer(modelData.getAnswer());
             // 团队加分,同步到界面
             ControlPane controlPane = JavaFxApplication.getApplicationContext().getBean(ControlPane.class);
             ScoreService scoreService = JavaFxApplication.getApplicationContext().getBean(ScoreService.class);

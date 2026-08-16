@@ -1,6 +1,6 @@
 // timerPlugin.js
 export default {
-    install(Vue, options) {
+    install(app, options) {
         // 定时器ID
         let timerId = null;
 
@@ -34,7 +34,7 @@ export default {
         };
 
         // 将方法暴露给所有Vue实例
-        Vue.prototype.$timer = {
+        app.config.globalProperties.$timer = {
             hasStoped: hasStoped,
             start: startTimer,
             stop: stopTimer,

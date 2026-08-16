@@ -14,15 +14,17 @@
     </div>
 
 
-    <el-dialog title="登陆验证" :visible.sync="dialogFormVisible" :close-on-click-modal="false" :show-close="false">
+    <el-dialog title="登陆验证" v-model="dialogFormVisible" :close-on-click-modal="false" :show-close="false">
       <el-form :model="form">
-        <el-form-item label="请输入密码" label-width="120">
-          <el-input v-model="form.password" autocomplete="off" @keyup.enter.native="validPassword"></el-input>
+        <el-form-item label="请输入密码" label-width="120px">
+          <el-input v-model="form.password" autocomplete="off" @keyup.enter="validPassword"></el-input>
         </el-form-item>
       </el-form>
-      <div slot="footer" class="dialog-footer">
-        <el-button type="primary" @click="validPassword">确 定</el-button>
-      </div>
+      <template #footer>
+        <div class="dialog-footer">
+          <el-button type="primary" @click="validPassword">确 定</el-button>
+        </div>
+      </template>
     </el-dialog>
   </div>
 </template>

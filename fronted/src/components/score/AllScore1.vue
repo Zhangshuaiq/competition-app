@@ -219,7 +219,7 @@ export default {
     }, 1000)
   },
 
-  beforeDestroy(){
+  beforeUnmount(){
     if (this.timer) {
       clearInterval(this.timer)
     }

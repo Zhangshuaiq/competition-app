@@ -2,7 +2,7 @@ import SockJS from 'sockjs-client';
 import Stomp from 'webstomp-client';
 
 export default {
-    install(Vue, options) {
+    install(app, options) {
         let stompClient = null;
         let sockJSConnection = null;
         let connected = false;
@@ -665,6 +665,6 @@ export default {
             }
         });
 
-        Vue.prototype.$websocket = websocketPlugin;
+        app.config.globalProperties.$websocket = websocketPlugin;
     }
 };

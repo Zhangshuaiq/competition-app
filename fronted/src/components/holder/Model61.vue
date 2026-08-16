@@ -6,11 +6,11 @@
     <div style="margin-top: 10px; padding-left: 100px; font-size: 28px; color: #4d8af5; font-weight: bold;
 text-shadow: -1px -1px 0 white, 1px -1px 0 white, -1px 1px 0 white, 1px 1px 0 white, -2px -2px 0 white, 2px -2px 0 white, -2px 2px 0 white, 2px 2px 0 white;" >
       <el-row>
-<!--        <el-col span="4"> 组号: {{ teamInfo.shortName }}</el-col>-->
-<!--        <el-col span="4"> 组名: {{ teamInfo.fullName }}</el-col>-->
-<!--        <el-col span="4"> 选手: {{ member }}</el-col>-->
-        <el-col span="7"> 环节: {{ stage.name}}</el-col>
-        <el-col span="5">
+<!--        <el-col :span="4"> 组号: {{ teamInfo.shortName }}</el-col>-->
+<!--        <el-col :span="4"> 组名: {{ teamInfo.fullName }}</el-col>-->
+<!--        <el-col :span="4"> 选手: {{ member }}</el-col>-->
+        <el-col :span="7"> 环节: {{ stage.name}}</el-col>
+        <el-col :span="5">
           <div v-if="second >= 0" style="color: red">
             时间: {{second}} 秒
           </div>

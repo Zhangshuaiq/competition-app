@@ -37,9 +37,29 @@ export default {
     forceRefreshComponent() {
       // 通过改变 key 强制重新渲染组件
       this.routerKey += 1;
+    },
+
+    /**
+     * 检查WebSocket配置是否正确
+     */
+    checkWebSocketConfig() {
+      console.log('应用已挂载');
+      if (!this.$websocket) {
+        console.error('❌ WebSocket插件未正确安装');
+        return;
+      }
+
+      console.log('✅ WebSocket插件已安装');
+      console.log('连接状态:', this.$websocket.isConnected());
+
+      const status = this.$websocket.getConnectionStatus();
+      if (status) {
+        console.log('详细状态:', status);
+      }
     }
   },
   mounted() {
+    this.checkWebSocketConfig();
     this.$websocket.connect(() => {
       this.$websocket.subscribe('/topic/boardImage', (message) => {
         if (message.url) {
@@ -64,6 +84,10 @@ export default {
         if (role === 'score') {
           return;
         }
+        // 先更新所有 store 数据，再导航，确保组件 mounted 时能读到正确值
+        this.$store.commit('setTeamsData', message.teams);
+        this.$store.commit('setBuzzStatus', message.buzzStatus);
+        this.$store.commit('setBarStatus', message.barStatus);
         if (targetRouteName !== '') {
           if (targetRouteName === 'hmodel7' && role && role === 'holder') {
             this.$store.commit('setStage', message.stage);
@@ -82,9 +106,6 @@ export default {
             }
           }
         }
-        this.$store.commit('setTeamsData', message.teams);
-        this.$store.commit('setBuzzStatus', message.buzzStatus);
-        this.$store.commit('setBarStatus', message.barStatus);
       });
     });
   }

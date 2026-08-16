@@ -5,7 +5,7 @@
     </div>
     <div class="stageList">
       <el-row>
-        <el-col span="12" style="text-align: center" v-for="item in stages" :key="item.id">
+        <el-col :span="12" style="text-align: center" v-for="item in stages" :key="item.id">
           <div class="stage-item">
             {{ item.name }}
           </div>

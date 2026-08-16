@@ -5,7 +5,7 @@
     </div>
     <div class="stageName">
       <el-row>
-        <el-col span="24" style="text-align: center">
+        <el-col :span="24" style="text-align: center">
           <div class="stage-item">
             {{ stage.name }}
           </div>
@@ -32,11 +32,10 @@ export default {
 
   watch: {
     additionalData: {
-      handler(newData, oldData) {
+      handler(newData) {
         console.log('Stage data changed:', newData);
         if (newData) {
           this.stage = newData;
-          this.onStageChange(newData, oldData);
         }
       },
       deep: true, // 深度监听对象属性变化

@@ -6,15 +6,15 @@
     <div style="margin-top: 10px; padding-left: 100px; font-weight: bold; font-size: 28px; color: #4d8af5;
       text-shadow: -1px -1px 0 white, 1px -1px 0 white, -1px 1px 0 white, 1px 1px 0 white, -2px -2px 0 white, 2px -2px 0 white, -2px 2px 0 white, 2px 2px 0 white;" >
       <el-row>
-        <el-col span="7"> 环节: {{ stage.name}}</el-col>
+        <el-col :span="7"> 环节: {{ stage.name}}</el-col>
         <el-col :span="5">
           <div style="color: red; ">
             <span v-if="second >= 0">时间: {{second}} 秒</span>
             <span v-else style="opacity: 0;">占位文本</span>
           </div>
         </el-col>
-        <el-col span="6"> 团队: {{ teamInfo.shortName }}</el-col>
-        <el-col span="6"> 队员: {{ member }}</el-col>
+        <el-col :span="6"> 团队: {{ teamInfo.shortName }}</el-col>
+        <el-col :span="6"> 队员: {{ member }}</el-col>
       </el-row>
     </div>
     <div id="container">
@@ -158,61 +158,61 @@
         <!-- 平板答题：答案选择区 -->
         <div v-if="canAnswer && questionItem && !showResult" style="margin: 20px 25% 0">
           <div v-if="questionItem.questionType === '单选题'">
-            <el-row type="flex" justify="center" style="text-align: center">
-              <el-col span="4" class="column-center" v-if="questionItem.choiceA">
+            <el-row justify="center" style="text-align: center">
+              <el-col :span="4" class="column-center" v-if="questionItem.choiceA">
                 <div class="answer-item" :class="{ 'blue-background': activeDiv === 'A' }" @click="setActiveDiv('A')">A</div>
               </el-col>
-              <el-col span="4" class="column-center" v-if="questionItem.choiceB">
+              <el-col :span="4" class="column-center" v-if="questionItem.choiceB">
                 <div class="answer-item" :class="{ 'blue-background': activeDiv === 'B' }" @click="setActiveDiv('B')">B</div>
               </el-col>
-              <el-col span="4" class="column-center" v-if="questionItem.choiceC">
+              <el-col :span="4" class="column-center" v-if="questionItem.choiceC">
                 <div class="answer-item" :class="{ 'blue-background': activeDiv === 'C' }" @click="setActiveDiv('C')">C</div>
               </el-col>
-              <el-col span="4" class="column-center" v-if="questionItem.choiceD">
+              <el-col :span="4" class="column-center" v-if="questionItem.choiceD">
                 <div class="answer-item" :class="{ 'blue-background': activeDiv === 'D' }" @click="setActiveDiv('D')">D</div>
               </el-col>
-              <el-col span="4" class="column-center" v-if="questionItem.choiceE">
+              <el-col :span="4" class="column-center" v-if="questionItem.choiceE">
                 <div class="answer-item" :class="{ 'blue-background': activeDiv === 'E' }" @click="setActiveDiv('E')">E</div>
               </el-col>
-              <el-col span="4" class="column-center" v-if="questionItem.choiceF">
+              <el-col :span="4" class="column-center" v-if="questionItem.choiceF">
                 <div class="answer-item" :class="{ 'blue-background': activeDiv === 'F' }" @click="setActiveDiv('F')">F</div>
               </el-col>
             </el-row>
           </div>
           <div v-else-if="questionItem.questionType === '判断题'">
-            <el-row type="flex" justify="center" style="text-align: center">
-              <el-col span="4" class="column-center">
+            <el-row justify="center" style="text-align: center">
+              <el-col :span="4" class="column-center">
                 <div class="answer-item" style="width: 60px" :class="{ 'blue-background': activeDiv === '正确' }" @click="setActiveDiv('正确')">正确</div>
               </el-col>
-              <el-col span="4" class="column-center">
+              <el-col :span="4" class="column-center">
                 <div class="answer-item" style="width: 60px" :class="{ 'blue-background': activeDiv === '错误' }" @click="setActiveDiv('错误')">错误</div>
               </el-col>
             </el-row>
           </div>
           <div v-else-if="questionItem.questionType === '多选题' || questionItem.questionType === '不定项选择题' || questionItem.questionType === '案例分析'">
-            <el-row type="flex" justify="center" style="text-align: center">
-              <el-col span="4" class="column-center" v-if="questionItem.choiceA">
+            <el-row justify="center" style="text-align: center">
+              <el-col :span="4" class="column-center" v-if="questionItem.choiceA">
                 <div class="multi-answer-item" :class="{ 'blue-background': activeDiv.indexOf('A') >= 0 }" @click="appendActiveDiv('A')">A</div>
               </el-col>
-              <el-col span="4" class="column-center" v-if="questionItem.choiceB">
+              <el-col :span="4" class="column-center" v-if="questionItem.choiceB">
                 <div class="multi-answer-item" :class="{ 'blue-background': activeDiv.indexOf('B') >= 0 }" @click="appendActiveDiv('B')">B</div>
               </el-col>
-              <el-col span="4" class="column-center" v-if="questionItem.choiceC">
+              <el-col :span="4" class="column-center" v-if="questionItem.choiceC">
                 <div class="multi-answer-item" :class="{ 'blue-background': activeDiv.indexOf('C') >= 0 }" @click="appendActiveDiv('C')">C</div>
               </el-col>
-              <el-col span="4" class="column-center" v-if="questionItem.choiceD">
+              <el-col :span="4" class="column-center" v-if="questionItem.choiceD">
                 <div class="multi-answer-item" :class="{ 'blue-background': activeDiv.indexOf('D') >= 0 }" @click="appendActiveDiv('D')">D</div>
               </el-col>
-              <el-col span="4" class="column-center" v-if="questionItem.choiceE">
+              <el-col :span="4" class="column-center" v-if="questionItem.choiceE">
                 <div class="multi-answer-item" :class="{ 'blue-background': activeDiv.indexOf('E') >= 0 }" @click="appendActiveDiv('E')">E</div>
               </el-col>
-              <el-col span="4" class="column-center" v-if="questionItem.choiceF">
+              <el-col :span="4" class="column-center" v-if="questionItem.choiceF">
                 <div class="multi-answer-item" :class="{ 'blue-background': activeDiv.indexOf('F') >= 0 }" @click="appendActiveDiv('F')">F</div>
               </el-col>
             </el-row>
           </div>
           <div v-else>
-            <el-row type="flex" justify="center" style="text-align: center">
+            <el-row justify="center" style="text-align: center">
               <el-input :disabled="submit || second <= 0" placeholder="请输入答案" type="textarea" rows="3" v-model="activeDiv"></el-input>
             </el-row>
           </div>
