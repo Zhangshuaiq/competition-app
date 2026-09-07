@@ -148,14 +148,14 @@ public class QuestionPreviewPreview extends PreviewPane<Questions> {
                     if (currentQuestionImage != null) {
                         currentQuestionImage = null;
                     }
-                    currentQuestionImage = new Image(new FileInputStream(file), width, height, false, true);
+                    currentQuestionImage = new Image(file.toURI().toString(), width, height, false, true);
                     imageView.setImage(currentQuestionImage);
                 }
             } else {
                 throw new RuntimeException();
             }
 
-        } catch (FileNotFoundException e) {
+        } catch (RuntimeException e) {
             e.printStackTrace();
             imageView.setImage(null);
         }
@@ -170,7 +170,11 @@ public class QuestionPreviewPreview extends PreviewPane<Questions> {
             if (currentBackgroundImage != null) {
                 currentBackgroundImage = null;
             }
-            currentBackgroundImage = new Image(new FileInputStream(imagePath));
+            File file = new File(imagePath);
+            if (!file.exists()) {
+                throw new FileNotFoundException(imagePath);
+            }
+            currentBackgroundImage = new Image(file.toURI().toString());
             region.setBackground(new Background(new BackgroundImage(
                     currentBackgroundImage, BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT,
                     BackgroundPosition.DEFAULT, new BackgroundSize(width, height, false, false, false, false))));

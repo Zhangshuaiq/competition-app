@@ -339,6 +339,21 @@ public class RollPreviewPreview extends PreviewPane<Stages> {
     }
 
     @Override
+    public void destroy() {
+        if (timer != null) {
+            timer.stop();
+            timer = null;
+        }
+        GlobalCache.isRolling = false;
+        if (backPane != null) {
+            backPane.setOnMouseClicked(null);
+        }
+        if (container != null) {
+            container.setOnMouseClicked(null);
+        }
+    }
+
+    @Override
     public Stages getData() {
         return inner;
     }

@@ -58,16 +58,18 @@ public class FontMap {
 
         Font font = null;
         if (Objects.equals(group, CUSTOM_FONT_GROUP)) {
-            try {
-                font = Font.loadFont(new FileInputStream(new File(FontMap.getFont(name))), size);
+            try (FileInputStream input = new FileInputStream(new File(FontMap.getFont(name)))) {
+                font = Font.loadFont(input, size);
                 fontCache.put(key, font);
             } catch (FileNotFoundException e) {
-                try {
-                    font =  Font.loadFont(new FileInputStream(new File(FontMap.defaultFont())), size);
+                try (FileInputStream input = new FileInputStream(new File(FontMap.defaultFont()))) {
+                    font = Font.loadFont(input, size);
                     fontCache.put(key, font);
-                } catch (FileNotFoundException ex) {
+                } catch (Exception ex) {
                     font = Font.font(size);
                 }
+            } catch (Exception e) {
+                font = Font.font(size);
             }
         } else {
             try {

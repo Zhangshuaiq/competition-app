@@ -23,12 +23,13 @@ import java.io.File;
 public class VideoPlayer {
 
     private MediaPlayer mediaPlayer;
+    private MediaView mediaView;
 
     public void start(Stage primaryStage, String path) {
         // 创建 Media 对象
         Media media = new Media(new File(path).toURI().toString());  // 替换为视频文件的路径
         mediaPlayer = new MediaPlayer(media);
-        MediaView mediaView = new MediaView(mediaPlayer);
+        mediaView = new MediaView(mediaPlayer);
         mediaPlayer.setVolume(10);
         // 自适应窗体大小
         mediaView.setPreserveRatio(true);
@@ -93,9 +94,18 @@ public class VideoPlayer {
     }
     
     public void stop(){
-        mediaPlayer.stop();
+        if (mediaView != null) {
+            mediaView.fitWidthProperty().unbind();
+            mediaView.fitHeightProperty().unbind();
+            mediaView.setMediaPlayer(null);
+            mediaView = null;
+        }
+        if (mediaPlayer != null) {
+            mediaPlayer.stop();
+            mediaPlayer.dispose();
+            mediaPlayer = null;
+        }
         GlobalCache.videoPlay = false;
     }
 }
-
 

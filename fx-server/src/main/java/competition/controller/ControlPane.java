@@ -681,11 +681,7 @@ public class ControlPane {
         closeLabel.getStyleClass().add("label-hover");
         scrollPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
         scrollPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
-        try {
-            iconImg.setImage(new Image(new FileInputStream(BaseDir.SUCAI_DIR + "图标.jpg")));
-        } catch (FileNotFoundException e) {
-            throw new RuntimeException(e);
-        }
+        iconImg.setImage(new Image(new File(BaseDir.SUCAI_DIR + "图标.jpg").toURI().toString()));
 
         dragBox.setOnMousePressed((MouseEvent event) -> {
             // 记录鼠标按下时的坐标
@@ -933,32 +929,24 @@ public class ControlPane {
         }
 
         // 初始化图片资源
-        try {
-            playBtn.setImage(new Image(new FileInputStream(new File(ImageResource.播放()))));
-            button.setOnMouseClicked(new EventHandler<MouseEvent>() {
+        playBtn.setImage(new Image(new File(ImageResource.播放()).toURI().toString()));
+        button.setOnMouseClicked(new EventHandler<MouseEvent>() {
                 @SneakyThrows
                 @Override
                 public void handle(MouseEvent event) {
                     if (videoPlayer != null) {
                         if (GlobalCache.videoPlay) {
-                            try {
-                                playBtn.setImage(new Image(new FileInputStream(new File(ImageResource.播放()))));
-                                videoPlayer.pause();
-                                GlobalCache.videoPlay = false;
-                            } catch (FileNotFoundException e) {
-                                e.printStackTrace();
-                            }
+                            playBtn.setImage(new Image(new File(ImageResource.播放()).toURI().toString()));
+                            videoPlayer.pause();
+                            GlobalCache.videoPlay = false;
                         } else {
-                            playBtn.setImage(new Image(new FileInputStream(new File(ImageResource.暂停()))));
+                            playBtn.setImage(new Image(new File(ImageResource.暂停()).toURI().toString()));
                             videoPlayer.play();
                             GlobalCache.videoPlay = true;
                         }
                     }
                 }
-            });
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        }
+        });
 
         if (ExtendedScreen.hasShow()) {
             secondScreenBtn.setText("扩展  开");
@@ -1653,11 +1641,7 @@ public class ControlPane {
                 videoPlayer = new VideoPlayer();
                 videoPlayer.start(ExtendedScreen.videoStage, path);
                 GlobalCache.videoPlay = true;
-                try {
-                    playBtn.setImage(new Image(new FileInputStream(new File(ImageResource.暂停()))));
-                } catch (FileNotFoundException e) {
-                    e.printStackTrace();
-                }
+                playBtn.setImage(new Image(new File(ImageResource.暂停()).toURI().toString()));
             } else {
                 if (videoPlayer != null) {
                     videoPlayer.stop();
@@ -1665,11 +1649,7 @@ public class ControlPane {
                     GlobalCache.videoPlay = false;
                     videoPlayer = null;
                 }
-                try {
-                    playBtn.setImage(new Image(new FileInputStream(new File(ImageResource.播放()))));
-                } catch (FileNotFoundException e) {
-                    e.printStackTrace();
-                }
+                playBtn.setImage(new Image(new File(ImageResource.播放()).toURI().toString()));
             }
         } else if (questions.getResourceType().equals("音频")) {
             String path = BaseDir.TIKU_RES_DIR + questions.getResource();

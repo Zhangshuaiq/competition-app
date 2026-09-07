@@ -62,7 +62,7 @@ public class JavaFxApplication extends Application {
             model7StatusMapper.delete(new LambdaQueryWrapper<>());
 
             messageHandler.notifyPage("wait", null);
-            System.exit(0);
+            Platform.exit();
         });
         stage.setScene(scene);
         stage.setResizable(false);
@@ -75,8 +75,12 @@ public class JavaFxApplication extends Application {
 
     @Override
     public void stop() throws Exception {
-        applicationContext.close();
-        Platform.exit();
+        MusicPlayer.dispose();
+        ExtendedScreen.clearCache();
+        Navigator.clearCache();
+        if (applicationContext != null) {
+            applicationContext.close();
+        }
     }
 
     public static ConfigurableApplicationContext getApplicationContext() {

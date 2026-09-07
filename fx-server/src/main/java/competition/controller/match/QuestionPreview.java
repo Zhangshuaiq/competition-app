@@ -94,7 +94,7 @@ public class QuestionPreview implements ReloadPane<Questions>{
                     currentAnswerImage = null;
                 }
                 if (file.exists()) {
-                    currentAnswerImage = new Image(new FileInputStream(new File(imagePath)), width, height, false, true);
+                    currentAnswerImage = new Image(file.toURI().toString(), width, height, false, true);
                     imageQ.setImage(currentAnswerImage);
                 } else {
                     throw new RuntimeException();
@@ -104,14 +104,14 @@ public class QuestionPreview implements ReloadPane<Questions>{
                     currentQuestionImage = null;
                 }
                 if (file.exists()) {
-                    currentQuestionImage = new Image(new FileInputStream(new File(imagePath)), width, height, false, true);
+                    currentQuestionImage = new Image(file.toURI().toString(), width, height, false, true);
                     imageQ.setImage(currentQuestionImage);
                 } else {
                     throw new RuntimeException();
                 }
 
             }
-        } catch (FileNotFoundException e) {
+        } catch (RuntimeException e) {
             e.printStackTrace();
             imageQ.setImage(null);
         }
@@ -125,7 +125,11 @@ public class QuestionPreview implements ReloadPane<Questions>{
             if (currentBackgroundImage != null) {
                 currentBackgroundImage = null;
             }
-            currentBackgroundImage = new Image(new FileInputStream(imagePath));
+            File file = new File(imagePath);
+            if (!file.exists()) {
+                throw new FileNotFoundException(imagePath);
+            }
+            currentBackgroundImage = new Image(file.toURI().toString());
             region.setBackground(new Background(new BackgroundImage(
                     currentBackgroundImage, BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT,
                     BackgroundPosition.DEFAULT, new BackgroundSize(width, height, false, false, false, false)

@@ -1,7 +1,4 @@
-// 新增内存存储类 - 放到合适的包下
 package competition.ws;
-
-import lombok.Data;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;

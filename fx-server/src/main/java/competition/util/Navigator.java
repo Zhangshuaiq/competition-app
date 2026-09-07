@@ -87,6 +87,12 @@ public class Navigator {
         connectionStage.initStyle(StageStyle.TRANSPARENT);
 
         backendStage.setOnCloseRequest(event -> GlobalCache.backendOpen = false);
+        previewStage.setOnHidden(event -> {
+            GlobalCache.showTeamRank = false;
+            GlobalCache.showMemberRank = false;
+            GlobalCache.showModel7Rank = false;
+            GlobalCache.showBuzzRank = false;
+        });
         activeStage.setAlwaysOnTop(true);
         backendStage.setResizable(false);
         activeStage.setTitle("软件激活");
@@ -150,16 +156,6 @@ public class Navigator {
 
             previewStage.setScene(previewScene);
             previewStage.show();
-            previewStage.sceneProperty().addListener(new ChangeListener<Scene>() {
-                @Override
-                public void changed(ObservableValue<? extends Scene> observable, Scene oldValue, Scene newValue) {
-                    // 关闭
-                    GlobalCache.showTeamRank = false;
-                    GlobalCache.showMemberRank = false;
-                    GlobalCache.showModel7Rank = false;
-                    GlobalCache.showBuzzRank = false;
-                }
-            });
             return previewPane;
         } catch (IOException e) {
             e.printStackTrace();
@@ -244,6 +240,15 @@ public class Navigator {
 
     public static void clearAttrCache(){
         attrCache.clear();
+    }
+
+    public static void clearCache() {
+        cachedPreviews.values().forEach(PreviewPane::destroy);
+        cachedPreviews.clear();
+        cachedLoadRoot.clear();
+        cachedScenes.clear();
+        attrCache.clear();
+        previewScene = null;
     }
 
     public static Object buzzResult(String fxml, String title, String cssFile, boolean hiddenControl){

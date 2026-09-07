@@ -10,6 +10,8 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.Queue;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 
 @Slf4j
 public class MusicPlayer {
@@ -61,13 +63,19 @@ public class MusicPlayer {
         }
         try {
             Media media = new Media(new File(path).toURI().toString());
-            mediaPlayer = new MediaPlayer(media);
-            mediaPlayer.play();
-            mediaPlayer.setOnEndOfMedia(() -> {
-                if (callback != null) {
-                    callback.run();
+            MediaPlayer player = new MediaPlayer(media);
+            mediaPlayer = player;
+            player.setOnEndOfMedia(() -> {
+                try {
+                    if (callback != null) {
+                        callback.run();
+                    }
+                } finally {
+                    disposePlayer(player);
                 }
             });
+            player.setOnError(() -> disposePlayer(player));
+            player.play();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -83,28 +91,22 @@ public class MusicPlayer {
         final double[] duration = {-1};
 
         // 使用 CountDownLatch 等待异步加载完成
-        final Object lock = new Object();
+        CountDownLatch ready = new CountDownLatch(1);
 
         // 设置回调，在 MediaPlayer 准备就绪时获取时长
         mediaPlayer.setOnReady(() -> {
-            synchronized (lock) {
-                // 获取时长（秒）
-                duration[0] = mediaPlayer.getMedia().getDuration().toSeconds();
-                // 通知等待线程
-                lock.notify();
-            }
+            duration[0] = mediaPlayer.getMedia().getDuration().toSeconds();
+            ready.countDown();
         });
+        mediaPlayer.setOnError(ready::countDown);
 
-        synchronized (lock) {
-            try {
-                lock.wait(); // 等待回调完成
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
+        try {
+            ready.await(10, TimeUnit.SECONDS);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        } finally {
+            mediaPlayer.dispose();
         }
-
-        // 释放资源
-        mediaPlayer.dispose();
 
         return duration[0];
     }
@@ -119,12 +121,11 @@ public class MusicPlayer {
         }
         try {
             Media media = new Media(new File(path).toURI().toString());
-            mediaPlayer1 = new MediaPlayer(media);
-            mediaPlayer1.play();
-            mediaPlayer1.setOnEndOfMedia(() -> {
-                mediaPlayer1.stop();
-                mediaPlayer1.seek(Duration.ZERO);
-            });
+            MediaPlayer player = new MediaPlayer(media);
+            mediaPlayer1 = player;
+            player.setOnEndOfMedia(() -> disposePlayer(player));
+            player.setOnError(() -> disposePlayer(player));
+            player.play();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -142,12 +143,11 @@ public class MusicPlayer {
         }
         try {
             Media media = new Media(new File(path).toURI().toString());
-            mediaPlayer = new MediaPlayer(media);
-            mediaPlayer.play();
-            mediaPlayer.setOnEndOfMedia(() -> {
-                mediaPlayer.stop();
-                mediaPlayer.seek(Duration.ZERO);
-            });
+            MediaPlayer player = new MediaPlayer(media);
+            mediaPlayer = player;
+            player.setOnEndOfMedia(() -> disposePlayer(player));
+            player.setOnError(() -> disposePlayer(player));
+            player.play();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -180,18 +180,21 @@ public class MusicPlayer {
 
         try {
             Media media = new Media(new File(nextPath).toURI().toString());
-            mediaPlayer = new MediaPlayer(media);
+            MediaPlayer player = new MediaPlayer(media);
+            mediaPlayer = player;
 
-            mediaPlayer.setOnEndOfMedia(() -> {
+            player.setOnEndOfMedia(() -> {
+                disposePlayer(player);
                 playNext(); // 播放下一个文件
             });
 
-            mediaPlayer.setOnError(() -> {
+            player.setOnError(() -> {
                 log.error("Error occurred while playing: {}", nextPath);
+                disposePlayer(player);
                 playNext(); // 播放下一个文件
             });
 
-            mediaPlayer.play();
+            player.play();
         } catch (Exception e) {
             e.printStackTrace();
             playNext(); // 播放下一个文件
@@ -200,5 +203,27 @@ public class MusicPlayer {
 
     public synchronized static void clearQueue(){
         mediaQueue.clear();
+    }
+
+    public static void dispose() {
+        clearQueue();
+        disposePlayer(mediaPlayer);
+        disposePlayer(mediaPlayer1);
+    }
+
+    private static void disposePlayer(MediaPlayer player) {
+        if (player == null) {
+            return;
+        }
+        player.setOnEndOfMedia(null);
+        player.setOnError(null);
+        player.stop();
+        player.dispose();
+        if (mediaPlayer == player) {
+            mediaPlayer = null;
+        }
+        if (mediaPlayer1 == player) {
+            mediaPlayer1 = null;
+        }
     }
 }
