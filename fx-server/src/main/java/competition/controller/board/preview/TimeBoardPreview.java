@@ -95,7 +95,7 @@ public class TimeBoardPreview extends PreviewPane {
         messageHandler = JavaFxApplication.getApplicationContext().getBean(WsMessageHandler.class);
         Configs configs = configsMapper.selectById(1);
         String config = configs.getConfig();
-        String[] split = config.split(ConfigSpliter.SPLITER);
+        String[] split = ConfigSpliter.split(config);
         Navigator.timeBoardStage.setX(ScreenAdapter.calculateMainX(Double.parseDouble(split[29])));
         Navigator.timeBoardStage.setY(ScreenAdapter.calculateMainY(Double.parseDouble(split[30])));
 

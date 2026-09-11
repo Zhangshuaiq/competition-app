@@ -94,11 +94,11 @@ public class StageNamePreview implements ReloadPane<Integer>{
         final Configs stageConfig = configsMapper.selectById(2);
         final String style = stages.getStyle();
         final String config = stageConfig.getConfig();
-        final String[] huanjieArr = config.split(ConfigSpliter.SPLITER);
-        String[] detailArr = "750%%400%%400%%150%%false%%0xffffffff%%%%默认.ttf%%40%%false%%false%%false%%false%%居中对齐%%0".split(ConfigSpliter.SPLITER);
+        final String[] huanjieArr = ConfigSpliter.split(config);
+        String[] detailArr = ConfigSpliter.split("750%%400%%400%%150%%false%%0xffffffff%%%%默认.ttf%%40%%false%%false%%false%%false%%居中对齐%%0");
         if (StringUtils.isEmpty(style)) {
         } else {
-            detailArr = style.split(ConfigSpliter.SPLITER);
+            detailArr = ConfigSpliter.split(style);
         }
 
         box.setLayoutX(ScreenAdapter.calculateExX(Integer.parseInt(detailArr[0])));

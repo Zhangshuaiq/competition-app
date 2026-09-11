@@ -29,6 +29,17 @@ public class StageSelectRuntime {
         return selectDataMap;
     }
 
+    /**
+     * 判断队伍是否选择了当前正在答题的子环节。
+     */
+    public static boolean isSelectedForStage(String team, String stageName) {
+        StageSelectData selection = get(team);
+        return selection != null
+                && selection.getStage() != null
+                && stageName != null
+                && selection.getStage().trim().equals(stageName.trim());
+    }
+
     public static void markRevealed(String team) {
         revealedSet.add(team);
     }

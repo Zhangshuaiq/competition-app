@@ -433,7 +433,7 @@ public class Model7 implements ReloadPane<Stages> {
         cachedBkColor = Color.BLACK;
 
         if (!StringUtils.isEmpty(titleStyle)) {
-            String[] split = titleStyle.split(ConfigSpliter.SPLITER);
+            String[] split = ConfigSpliter.split(titleStyle);
             cachedCol = Integer.parseInt(split[0]);
             cachedX = ScreenAdapter.calculateExX(Integer.parseInt(split[5]));
             cachedY = ScreenAdapter.calculateExY(Integer.parseInt(split[6]));
@@ -494,7 +494,7 @@ public class Model7 implements ReloadPane<Stages> {
             Configs configs = configsMapper.selectById(1);
             String cfgVal = configs.getConfig();
             if (!StringUtils.isEmpty(cfgVal)) {
-                String[] split = cfgVal.split(ConfigSpliter.SPLITER);
+                String[] split = ConfigSpliter.split(cfgVal);
                 if (split.length > 10) {
                     cachedTx = split[9];     // 题型
                     cachedTxbz = split[10];  // 题型标注

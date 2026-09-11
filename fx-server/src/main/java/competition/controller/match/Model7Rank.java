@@ -89,7 +89,7 @@ public class Model7Rank implements ReloadPane<List<Model7RankData>>{
 
         Configs configs = configsMapper.selectById(8);
         String config = configs.getConfig();
-        String[] cfgArr = config.split(ConfigSpliter.SPLITER);
+        String[] cfgArr = ConfigSpliter.split(config);
 
 
         double x = ScreenAdapter.calculateExX(Integer.parseInt(cfgArr[9]));
@@ -104,7 +104,7 @@ public class Model7Rank implements ReloadPane<List<Model7RankData>>{
 
         double size = ScreenAdapter.calculateExX(competitionLab.getFont().getSize());
         if (!StringUtils.isEmpty(rankConfig)) {
-            String[] split = rankConfig.split(ConfigSpliter.SPLITER);
+            String[] split = ConfigSpliter.split(rankConfig);
             x = ScreenAdapter.calculateExX(Integer.parseInt(split[0]));
             y = ScreenAdapter.calculateExY(Integer.parseInt(split[1]));
             width = ScreenAdapter.calculateExX(Integer.parseInt(split[2]));
@@ -119,7 +119,7 @@ public class Model7Rank implements ReloadPane<List<Model7RankData>>{
         }
 
         if (!StringUtils.isEmpty(headConfig)) {
-            String[] split = headConfig.split(ConfigSpliter.SPLITER);
+            String[] split = ConfigSpliter.split(headConfig);
             titleBox.setLayoutX(ScreenAdapter.calculateExX(Integer.parseInt(split[0])));
             titleBox.setLayoutY(ScreenAdapter.calculateExY(Integer.parseInt(split[1])));
             titleBox.setPrefWidth(ScreenAdapter.calculateExX(Integer.parseInt(split[2])));

@@ -148,7 +148,7 @@ public class BuzzRankPreview extends RankPane{
 
         Configs configs = configsMapper.selectById(6);
         String config = configs.getConfig();
-        String[] cfgArr = config.split(ConfigSpliter.SPLITER);
+        String[] cfgArr = ConfigSpliter.split(config);
 
 
         double x = ScreenAdapter.calculateMainX(Integer.parseInt(cfgArr[8]));
@@ -163,7 +163,7 @@ public class BuzzRankPreview extends RankPane{
         double size = ScreenAdapter.calculateMainX(competitionLab.getFont().getSize());
         boolean rankBold = false;
         if (!StringUtils.isEmpty(rankConfig)) {
-            String[] split = rankConfig.split(ConfigSpliter.SPLITER);
+            String[] split = ConfigSpliter.split(rankConfig);
             x = ScreenAdapter.calculateMainX(Integer.parseInt(split[0]));
             y = ScreenAdapter.calculateMainY(Integer.parseInt(split[1]));
             width = ScreenAdapter.calculateMainX(Integer.parseInt(split[2]));
@@ -178,7 +178,7 @@ public class BuzzRankPreview extends RankPane{
         }
 
         if (!StringUtils.isEmpty(headConfig)) {
-            String[] split = headConfig.split(ConfigSpliter.SPLITER);
+            String[] split = ConfigSpliter.split(headConfig);
             titleBox.setLayoutX(ScreenAdapter.calculateMainX(Integer.parseInt(split[0])));
             titleBox.setLayoutY(ScreenAdapter.calculateMainY(Integer.parseInt(split[1])));
             titleBox.setPrefWidth(ScreenAdapter.calculateMainX(Integer.parseInt(split[2])));

@@ -5,6 +5,7 @@ import com.alibaba.fastjson2.JSONObject;
 import competition.entity.Teams;
 import competition.rest.RankingItem;
 import competition.util.TeamRuntime;
+import competition.util.TeamMemberCodec;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -26,7 +27,7 @@ public class RankingService {
         List<List<RankingItem>> memberData =  TeamRuntime.getTeams().stream()
                 .map(team -> {
                     String members = team.getMembers();
-                    String [] memberArr = members.split(",");
+                    String [] memberArr = TeamMemberCodec.split(members);
                     JSONObject jsonObject = JSON.parseObject(team.getMemberScore());
                     List<RankingItem> items = new ArrayList<>();
                     for (String s : memberArr) {

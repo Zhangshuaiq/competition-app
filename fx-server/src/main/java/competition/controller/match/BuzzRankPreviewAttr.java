@@ -115,7 +115,7 @@ public class BuzzRankPreviewAttr {
             hfSelector.setSelectedValue(font.getName());
             hfBold.setSelected(false);
         } else {
-            String[] split = headConfig.split(ConfigSpliter.SPLITER);
+            String[] split = ConfigSpliter.split(headConfig);
             xInput.setText(split[0]);
             yInput.setText(split[1]);
             widthInput.setText(split[2]);
@@ -138,7 +138,7 @@ public class BuzzRankPreviewAttr {
             Font font = hfsInput.getFont();
             Configs configs = configsMapper.selectById(6);
             String config = configs.getConfig();
-            String[] split = config.split(ConfigSpliter.SPLITER);
+            String[] split = ConfigSpliter.split(config);
             rxInput.setText(split[9]);
             ryInput.setText(split[10]);
             rwidthInput.setText(split[11]);
@@ -149,7 +149,7 @@ public class BuzzRankPreviewAttr {
             rowInput.setText("8");
             rfsBold.setSelected(false);
         } else {
-            String[] split = rankConfig.split(ConfigSpliter.SPLITER);
+            String[] split = ConfigSpliter.split(rankConfig);
             rxInput.setText(split[0]);
             ryInput.setText(split[1]);
             rwidthInput.setText(split[2]);

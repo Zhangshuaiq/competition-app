@@ -23,7 +23,8 @@ public class TeamRuntime {
     }
 
     public static Map<String, List<String>> getTeamMemberMapping(){
-        return teams.stream().collect(Collectors.toMap(Teams::getShortName, x -> Stream.of(x.getMembers().split(",")).collect(Collectors.toList())));
+        return teams.stream().collect(Collectors.toMap(Teams::getShortName,
+                x -> TeamMemberCodec.decode(x.getMembers())));
     }
 
 

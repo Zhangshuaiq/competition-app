@@ -93,11 +93,6 @@
                   <Font size="10.0" />
                </font>
             </Button>
-            <Button layoutX="172.0" layoutY="71.0" mnemonicParsing="false" onMouseClicked="#resetStageSelect" prefHeight="26.0" prefWidth="64.0" text="复位选择">
-               <font>
-                  <Font size="10.0" />
-               </font>
-            </Button>
             <Button fx:id="backBtn" layoutX="72.0" layoutY="71.0" mnemonicParsing="false" onMouseClicked="#backLast" prefHeight="25.0" prefWidth="40.0" text="返回">
                <font>
                   <Font size="10.0" />
@@ -230,17 +225,22 @@
                   <Font size="10.0" />
                </font>
             </Button>
-            <Button layoutX="26.0" layoutY="124.0" mnemonicParsing="false" onMouseClicked="#model7Rank" prefHeight="25.0" prefWidth="80.0" text="竞技排名">
+            <Button layoutX="8.0" layoutY="124.0" mnemonicParsing="false" onMouseClicked="#resetStageSelect" prefHeight="25.0" prefWidth="75.0" text="复位选择">
                <font>
                   <Font size="10.0" />
                </font>
             </Button>
-            <Button layoutX="153.0" layoutY="124.0" mnemonicParsing="false" onMouseClicked="#memberRank" prefHeight="25.0" prefWidth="80.0" text="选手排名">
+            <Button layoutX="88.0" layoutY="124.0" mnemonicParsing="false" onMouseClicked="#model7Rank" prefHeight="25.0" prefWidth="75.0" text="竞技排名">
                <font>
                   <Font size="10.0" />
                </font>
             </Button>
-            <Button layoutX="250.0" layoutY="124.0" mnemonicParsing="false" onMouseClicked="#teamRank" prefHeight="25.0" prefWidth="80.0" text="团队排名">
+            <Button layoutX="168.0" layoutY="124.0" mnemonicParsing="false" onMouseClicked="#memberRank" prefHeight="25.0" prefWidth="75.0" text="选手排名">
+               <font>
+                  <Font size="10.0" />
+               </font>
+            </Button>
+            <Button layoutX="248.0" layoutY="124.0" mnemonicParsing="false" onMouseClicked="#teamRank" prefHeight="25.0" prefWidth="75.0" text="团队排名">
                <font>
                   <Font size="10.0" />
                </font>

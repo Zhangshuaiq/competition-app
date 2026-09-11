@@ -141,7 +141,7 @@ public class RestApi {
         // %%200%%200%%1550%%200%%2%%2%%0xffffffff%%true%%3%%1%%0xffffffff%%0x334db3ff%%200%%5%%100%%40%%0xffffffff%%0xcc3333ff%%0xcc3333ff%%100%%0x664db3ff%%0xb3b3b3ff%%0x4d804dff%%0x990000ff%%1600%%80%%20%%0xe6e6e6ff
         Configs configs = configsMapper.selectById(1);
         String config = configs.getConfig();
-        String[] split = config.split(ConfigSpliter.SPLITER);
+        String[] split = ConfigSpliter.split(config);
         if (split.length > 4) {
             return JsonResp.success(split[4]);
         }
@@ -588,5 +588,14 @@ public class RestApi {
                 }
         );
         return JsonResp.success();
+    }
+
+    /**
+     * 查询服务端保存的自选结果。服务端是最终状态来源，避免平板切页或重连后
+     * sessionStorage 与控制端的“复位选择”状态不一致。
+     */
+    @GetMapping("/stageSelection")
+    public JsonResp stageSelection(@RequestParam String team) {
+        return JsonResp.success(StageSelectRuntime.get(team));
     }
 }

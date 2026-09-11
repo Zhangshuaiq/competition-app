@@ -92,7 +92,7 @@ public class StageQuestionPreview implements ReloadPane<Stages> {
         Configs stageConfig = configsMapper.selectById(2);
         String config = configs.getConfig();
         String stageConfigAttr = stageConfig.getConfig();
-        String[] stageConfigAttrSplit = stageConfigAttr.split(ConfigSpliter.SPLITER);
+        String[] stageConfigAttrSplit = ConfigSpliter.split(stageConfigAttr);
         List<Questions> questionList;
 
         if (inner.getRandomSort() == 1) {
@@ -121,15 +121,15 @@ public class StageQuestionPreview implements ReloadPane<Stages> {
 
         if (!StringUtils.isEmpty(config)) {
 
-            cfgArr = config.split(ConfigSpliter.SPLITER);
+            cfgArr = ConfigSpliter.split(config);
 
             // 标题名称
 
         }
 
-        String[] styleArr = questionStyle.split(ConfigSpliter.DIFFER);
+        String[] styleArr = ConfigSpliter.splitSections(questionStyle);
         if (!StringUtils.isEmpty(inner.getQuestionStyle()) && !inner.getQuestionStyle().equals(ConfigSpliter.EMPTY)) {
-            String[] arrs = inner.getQuestionStyle().split(ConfigSpliter.DIFFER);
+            String[] arrs = ConfigSpliter.splitSections(inner.getQuestionStyle());
             if (!StringUtils.isEmpty(arrs[0]) && !arrs[0].equals(ConfigSpliter.EMPTY)) {
                 styleArr[0] = arrs[0];
             }
@@ -156,7 +156,7 @@ public class StageQuestionPreview implements ReloadPane<Stages> {
 
 
         if (styleArr.length > 1 && !ConfigSpliter.EMPTY.equals(styleArr[0])) {
-            String[] detailArr = styleArr[0].split(ConfigSpliter.SPLITER);
+            String[] detailArr = ConfigSpliter.split(styleArr[0]);
             title.setLayoutX(ScreenAdapter.calculateExX(Integer.parseInt(detailArr[0])));
             title.setLayoutY(ScreenAdapter.calculateExY(Integer.parseInt(detailArr[1])));
             title.setPrefWidth(ScreenAdapter.calculateExX(Integer.parseInt(detailArr[2])));
@@ -214,7 +214,7 @@ public class StageQuestionPreview implements ReloadPane<Stages> {
 
         int col = 1;
         if (styleArr.length > 1 && !ConfigSpliter.EMPTY.equals(styleArr[1])) {
-            String[] detailArr = styleArr[1].split(ConfigSpliter.SPLITER);
+            String[] detailArr = ConfigSpliter.split(styleArr[1]);
             if (detailArr.length >= 16) {
                 col = Integer.parseInt(detailArr[15]);
             }
@@ -251,7 +251,7 @@ public class StageQuestionPreview implements ReloadPane<Stages> {
                 item.setVisible(true);
             }
             if (styleArr.length > 1 && !ConfigSpliter.EMPTY.equals(styleArr[1])) {
-                String[] detailArr = styleArr[1].split(ConfigSpliter.SPLITER);
+                String[] detailArr = ConfigSpliter.split(styleArr[1]);
 
                 layout.setLayoutX(ScreenAdapter.calculateExX(Integer.parseInt(detailArr[0])));
                 layout.setLayoutY(ScreenAdapter.calculateExY(Integer.parseInt(detailArr[1])));

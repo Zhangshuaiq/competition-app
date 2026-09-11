@@ -20,7 +20,7 @@
         <div id="member-pane" :style="{ visibility: isVisible ? 'visible' : 'hidden' }">
           <div v-if="isVisible">
             <el-row :gutter="20">
-              <el-col v-for="(member, index) in this.teamItem.members.split(',')" :key="index" :span="8">
+              <el-col v-for="(member, index) in memberList" :key="index" :span="8">
                 <div class="name-tag" @click="doLogin(member)">{{ member }}</div>
               </el-col>
             </el-row>
@@ -56,6 +56,24 @@ export default {
   },
 
   computed: {
+    memberList() {
+      const value = this.teamItem && this.teamItem.members
+      if (!value) {
+        return []
+      }
+      const trimmed = value.trim()
+      if (trimmed.startsWith('[') && trimmed.endsWith(']')) {
+        try {
+          const members = JSON.parse(trimmed)
+          if (Array.isArray(members)) {
+            return members
+          }
+        } catch (e) {
+          // Keep compatibility with legacy text that only looks like JSON.
+        }
+      }
+      return value.split(',')
+    },
     containerBoxStyle() {
       return {
         backgroundImage: `url(${this.imageUrl})`,

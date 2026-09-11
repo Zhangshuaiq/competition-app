@@ -358,7 +358,7 @@ public class ExtendedScreen {
             Rectangle2D bounds = extendedScreen.getVisualBounds();
             String config = configs.getConfig();
             if (!StringUtils.isEmpty(config)) {
-                String[] split = config.split(ConfigSpliter.SPLITER);
+                String[] split = ConfigSpliter.split(config);
                 stage.setX(bounds.getMinX() + Double.parseDouble(split[29]));
                 stage.setY(bounds.getMinY() + Double.parseDouble(split[30]));
             }
@@ -427,7 +427,7 @@ public class ExtendedScreen {
             Rectangle2D bounds = extendedScreen.getVisualBounds();
             String config = configs.getConfig();
             if (!StringUtils.isEmpty(config)) {
-                String[] split = config.split(ConfigSpliter.SPLITER);
+                String[] split = ConfigSpliter.split(config);
                 stage.setX(bounds.getMinX() + Double.parseDouble(split[17]));
                 stage.setY(bounds.getMinY() + Double.parseDouble(split[18]));
             }

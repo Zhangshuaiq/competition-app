@@ -53,7 +53,7 @@ text-shadow: -1px -1px 0 white, 1px -1px 0 white, -1px 1px 0 white, 1px 1px 0 wh
 <script>
 import ScoreBoard from "@/components/member/ScoreBoard.vue";
 import baseUrl from "@/config";
-import { answerPrefix, selectStage } from "@/api";
+import { answerPrefix, queryStageSelection, selectStage } from "@/api";
 
 export default {
   name: "StageList",
@@ -177,13 +177,25 @@ export default {
     this.stages = data.stages;
     this.stageType = data.stageType;
 
-    if (selectedStage && this.stages) {
-      const found = this.stages.find((s) => s.name === selectedStage);
+    // 以服务端保存的选择为准：普通跳转继续显示，控制端复位后可靠清除。
+    queryStageSelection(JSON.parse(item).fullName).then((res) => {
+      const serverSelection = res.data;
+      const stageName = serverSelection && serverSelection.stage;
+      const found = stageName && this.stages
+        ? this.stages.find((s) => s.name === stageName)
+        : null;
       if (found) {
         this.submitted = true;
         this.selectedStageId = found.id;
+        sessionStorage.setItem('selectedStage', stageName);
+      } else {
+        this.submitted = false;
+        this.selectedStageId = null;
+        sessionStorage.removeItem('selectedStage');
       }
-    }
+    }).catch((err) => {
+      console.error('查询自选结果失败', err);
+    });
 
     this.subscribeStageSelect();
   },

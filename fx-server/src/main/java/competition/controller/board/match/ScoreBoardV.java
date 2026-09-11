@@ -63,13 +63,13 @@ public class ScoreBoardV implements BoardPane {
 
     private void show() {
         ScoreStyle scoreStyle = scoreStyleMapper.selectById(1);
-        String[] split = scoreStyle.getStyles().split(ConfigSpliter.SPLITER);
+        String[] split = ConfigSpliter.split(scoreStyle.getStyles());
         double rowSpan = 10;
         if (split.length > 7) {
             rowSpan = Double.parseDouble(split[7]);
         }
         ScoreStyle scoreStyle1 = scoreStyleMapper.selectById(3);
-        String[] ssplit = scoreStyle1.getStyles().split(ConfigSpliter.SPLITER);
+        String[] ssplit = ConfigSpliter.split(scoreStyle1.getStyles());
 
         Font font = FontMap.load(split[0], ScreenAdapter.calculateExX(Integer.parseInt(split[1])));
         Font sfont = FontMap.load(ssplit[0], ScreenAdapter.calculateExX(Integer.parseInt(ssplit[1])));
@@ -78,7 +78,7 @@ public class ScoreBoardV implements BoardPane {
         right = new VBox();
         Configs configs = configsMapper.selectById(1);
         String config = configs.getConfig();
-        String[] cfgArr = config.split(ConfigSpliter.SPLITER);
+        String[] cfgArr = ConfigSpliter.split(config);
 
 
         container.getChildren().clear();
@@ -310,7 +310,7 @@ public class ScoreBoardV implements BoardPane {
                         memberStatus.setPrefWidth(Integer.parseInt(cfgArr[19]));
                         String members = team.getMembers();
                         if (!StringUtils.isEmpty(members)) {
-                            String[] ms = members.split(",");
+                            String[] ms = TeamMemberCodec.split(members);
                             double w = Integer.parseInt(cfgArr[19]) * 1.0 / ms.length;
                             for (int x = 0; x < ms.length; x++) {
                                 Model61RuntimeData.ModelData modelData = dataMap.get(team.getFullName() + "-" + ms[x]);

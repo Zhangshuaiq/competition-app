@@ -101,7 +101,7 @@ public class StageRulePreview implements ReloadPane<Stages>{
         String titleRuleStyle = innerStage.getTitleRuleStyle();
         String[] trsArr = {};
         if (!StringUtils.isEmpty(titleRuleStyle)) {
-            trsArr = titleRuleStyle.split(ConfigSpliter.SPLITER);
+            trsArr = ConfigSpliter.split(titleRuleStyle);
         }
 
         Text title = new Text(innerStage.getName());
@@ -184,7 +184,7 @@ public class StageRulePreview implements ReloadPane<Stages>{
         StackPane textPane = new StackPane();
         textPane.getChildren().add(text);
 
-        String[] cfgArr = config.split(ConfigSpliter.SPLITER);
+        String[] cfgArr = ConfigSpliter.split(config);
 
         textPane.setLayoutX(ScreenAdapter.calculateExX(Integer.parseInt(cfgArr[1])));
         textPane.setLayoutY(ScreenAdapter.calculateExY(Integer.parseInt(cfgArr[2])));
@@ -200,7 +200,7 @@ public class StageRulePreview implements ReloadPane<Stages>{
         text.setWrappingWidth(ScreenAdapter.calculateExX(Integer.parseInt(cfgArr[3])));
         if (StringUtils.isEmpty(details)) {
         } else {
-            cfgArr = details.split(ConfigSpliter.SPLITER);
+            cfgArr = ConfigSpliter.split(details);
             text.setX(ScreenAdapter.calculateExX(Integer.parseInt(cfgArr[0])));
             text.setY(ScreenAdapter.calculateExY(Integer.parseInt(cfgArr[1])));
             text.prefWidth(ScreenAdapter.calculateExX(Integer.parseInt(cfgArr[2])));

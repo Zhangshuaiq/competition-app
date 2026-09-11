@@ -76,7 +76,7 @@ public class ShowAnswer implements ReloadPane<TeamResult> {
         double width = ScreenAdapter.calculateExX(500);
         double height = ScreenAdapter.calculateExY(50);
         if (!StringUtils.isEmpty(answerStyle.getStyle1())) {
-            String[] split = answerStyle.getStyle1().split(ConfigSpliter.SPLITER);
+            String[] split = ConfigSpliter.split(answerStyle.getStyle1());
             col = Integer.parseInt(split[0]);
             rowSpace = ScreenAdapter.calculateExY(Integer.parseInt(split[2]));
             colSpace = ScreenAdapter.calculateExX(Integer.parseInt(split[1]));
@@ -97,7 +97,7 @@ public class ShowAnswer implements ReloadPane<TeamResult> {
         String f1Path = "";
 
         if (!StringUtils.isEmpty(answerStyle.getStyle2())) {
-            String[] split = answerStyle.getStyle2().split(ConfigSpliter.SPLITER);
+            String[] split = ConfigSpliter.split(answerStyle.getStyle2());
             f1Font = (split[0]);
             f1Color = (Color.valueOf(split[1]));
             f1l = (split[2]);
@@ -122,7 +122,7 @@ public class ShowAnswer implements ReloadPane<TeamResult> {
         String f2Path = "";
 
         if (!StringUtils.isEmpty(answerStyle.getStyle3())) {
-            String[] split = answerStyle.getStyle3().split(ConfigSpliter.SPLITER);
+            String[] split = ConfigSpliter.split(answerStyle.getStyle3());
             f2Font = (split[0]);
             f2Color = (Color.valueOf(split[1]));
             f2l = (split[2]);
@@ -147,7 +147,7 @@ public class ShowAnswer implements ReloadPane<TeamResult> {
         String f3Path = "";
 
         if (!StringUtils.isEmpty(answerStyle.getStyle4())) {
-            String[] split = answerStyle.getStyle4().split(ConfigSpliter.SPLITER);
+            String[] split = ConfigSpliter.split(answerStyle.getStyle4());
             f3Font = (split[0]);
             f3Color = (Color.valueOf(split[1]));
             f3l = (split[2]);
@@ -174,7 +174,7 @@ public class ShowAnswer implements ReloadPane<TeamResult> {
 
 
         if (!StringUtils.isEmpty(answerStyle.getStyle5())) {
-            String[] split = answerStyle.getStyle5().split(ConfigSpliter.SPLITER);
+            String[] split = ConfigSpliter.split(answerStyle.getStyle5());
             f4Font = (split[0]);
             f4Color = (Color.valueOf(split[1]));
             f4l = (split[2]);
@@ -199,7 +199,7 @@ public class ShowAnswer implements ReloadPane<TeamResult> {
         String f5Path = "";
 
         if (!StringUtils.isEmpty(answerStyle.getStyle6())) {
-            String[] split = answerStyle.getStyle6().split(ConfigSpliter.SPLITER);
+            String[] split = ConfigSpliter.split(answerStyle.getStyle6());
             f5Font = (split[0]);
             f5Color = (Color.valueOf(split[1]));
             f5l = (split[2]);

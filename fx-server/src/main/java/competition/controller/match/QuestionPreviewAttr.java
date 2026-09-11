@@ -282,7 +282,7 @@ public class QuestionPreviewAttr {
 
 
         // 解析 excel 的样式
-        String[] split = style1.split(ConfigSpliter.SPLITER);
+        String[] split = ConfigSpliter.split(style1);
         stageXInput.setText(split[0]);
         stageYInput.setText(split[1]);
         stageWidthInput.setText(split[2]);
@@ -307,7 +307,7 @@ public class QuestionPreviewAttr {
         nameText.setText("");
         String config = configs.getConfig();
         if (!StringUtils.isEmpty(config)) {
-            String[] cfgArr = config.split(ConfigSpliter.SPLITER);
+            String[] cfgArr = ConfigSpliter.split(config);
             // 默认的字体
             nameFontSelector.setSelectedValue(FontMap.defaultFontName());
             nameFontSize.setText(12 + "");
@@ -350,7 +350,7 @@ public class QuestionPreviewAttr {
                 }
             }
 
-            String[] split = style1.split(ConfigSpliter.SPLITER);
+            String[] split = ConfigSpliter.split(style1);
             nameXInput.setText(split[0]);
             nameYInput.setText(split[1]);
             nameWidthInput.setText(split[2]);
@@ -492,7 +492,7 @@ public class QuestionPreviewAttr {
         Configs configs = configsMapper.selectById(1);
         String config = configs.getConfig();
         if (!StringUtils.isEmpty(config)) {
-            String[] cfgArr = config.split(ConfigSpliter.SPLITER);
+            String[] cfgArr = ConfigSpliter.split(config);
             // x y w h
             cfgArr[5] = nameXInput.getText();
             cfgArr[6] = nameYInput.getText();
@@ -539,7 +539,7 @@ public class QuestionPreviewAttr {
         Configs configs = configsMapper.selectById(1);
         String config = configs.getConfig();
         if (!StringUtils.isEmpty(config)) {
-            String[] cfgArr = config.split(ConfigSpliter.SPLITER);
+            String[] cfgArr = ConfigSpliter.split(config);
             // x y w h
             cfgArr[5] = nameXInput.getText();
             cfgArr[6] = nameYInput.getText();
@@ -614,7 +614,7 @@ public class QuestionPreviewAttr {
         Configs configs = configsMapper.selectById(1);
         String config = configs.getConfig();
         if (!StringUtils.isEmpty(config)) {
-            String[] cfgArr = config.split(ConfigSpliter.SPLITER);
+            String[] cfgArr = ConfigSpliter.split(config);
             // x y w h
             cfgArr[5] = nameXInput.getText();
             cfgArr[6] = nameYInput.getText();
@@ -709,7 +709,7 @@ public class QuestionPreviewAttr {
     private void showAnswerConfig(Configs configs) {
         String config = configs.getConfig();
         if (!StringUtils.isEmpty(config)) {
-            String[] cfgArr = config.split(ConfigSpliter.SPLITER);
+            String[] cfgArr = ConfigSpliter.split(config);
             // 默认的字体
             answerFontSelector.setSelectedValue(FontMap.defaultFontName());
             answerFontSize.setText(12 + "");
@@ -742,7 +742,7 @@ public class QuestionPreviewAttr {
                 }
             }
 
-            String[] split = style1.split(ConfigSpliter.SPLITER);
+            String[] split = ConfigSpliter.split(style1);
             answerXInput.setText(split[0]);
             answerYInput.setText(split[1]);
             answerWidthInput.setText(split[2]);

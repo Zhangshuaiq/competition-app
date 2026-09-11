@@ -89,7 +89,7 @@ public class Model7Attr {
             bkColor.setValue(Color.BLACK);
             scoreSortBox.setSelected(false);
         } else {
-            String[] split = titleStyle.split(ConfigSpliter.SPLITER);
+            String[] split = ConfigSpliter.split(titleStyle);
             colInput.setText(split[0]);
             srInput.setText(split[1]);
             scInput.setText(split[2]);

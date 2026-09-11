@@ -203,7 +203,7 @@ public class QuestionPreview implements ReloadPane<Questions>{
         Configs configs = configsMapper.selectById(1);
         String cfgVal = configs.getConfig();
         if (!StringUtils.isEmpty(cfgVal)) {
-            String[] split = cfgVal.split(ConfigSpliter.SPLITER);
+            String[] split = ConfigSpliter.split(cfgVal);
 
             // 题干颜色
             tiganLabel.setFill(Color.valueOf(split[0]));
@@ -429,7 +429,7 @@ public class QuestionPreview implements ReloadPane<Questions>{
 
             // 应用样式1
             {
-                String[] split1 = style1.split(ConfigSpliter.SPLITER);
+                String[] split1 = ConfigSpliter.split(style1);
                 tiganBox.setLayoutX(ScreenAdapter.calculateExX(Integer.parseInt(split1[0])));
                 tiganBox.setLayoutY(ScreenAdapter.calculateExY(Integer.parseInt(split1[1])));
                 tiganBox.setPrefWidth(ScreenAdapter.calculateExX(Integer.parseInt(split1[2])));
@@ -508,7 +508,7 @@ public class QuestionPreview implements ReloadPane<Questions>{
 
             // 应用样式2
             {
-                String[] split1 = style2.split(ConfigSpliter.SPLITER);
+                String[] split1 = ConfigSpliter.split(style2);
 
                 backPane.setLayoutX(ScreenAdapter.calculateExX(Integer.parseInt(split1[0])));
                 backPane.setLayoutY(ScreenAdapter.calculateExY(Integer.parseInt(split1[1])));
@@ -568,7 +568,7 @@ public class QuestionPreview implements ReloadPane<Questions>{
 
                 stageLabel.setFill(Color.valueOf(split[11]));
                 if (!StringUtils.isEmpty(style3)) {
-                    String[] split1 = style3.split(ConfigSpliter.SPLITER);
+                    String[] split1 = ConfigSpliter.split(style3);
 
                     stagePane.setLayoutX(ScreenAdapter.calculateExX(Integer.parseInt(split1[0])));
                     stagePane.setLayoutY(ScreenAdapter.calculateExY(Integer.parseInt(split1[1])));

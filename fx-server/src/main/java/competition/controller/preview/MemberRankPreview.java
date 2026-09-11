@@ -148,7 +148,7 @@ public class MemberRankPreview extends RankPane {
 
         Configs configs = configsMapper.selectById(7);
         String config = configs.getConfig();
-        String[] cfgArr = config.split(ConfigSpliter.SPLITER);
+        String[] cfgArr = ConfigSpliter.split(config);
 
         int x = Integer.parseInt(cfgArr[9]);
         int y = Integer.parseInt(cfgArr[10]);
@@ -161,7 +161,7 @@ public class MemberRankPreview extends RankPane {
         Font font = FontMap.load(FontMap.defaultFontName(), 12);
         boolean rankBold = false;
         if (!StringUtils.isEmpty(rankConfig)) {
-            String[] split = rankConfig.split(ConfigSpliter.SPLITER);
+            String[] split = ConfigSpliter.split(rankConfig);
             x = Integer.parseInt(split[0]);
             y = Integer.parseInt(split[1]);
             width = Integer.parseInt(split[2]);
@@ -176,7 +176,7 @@ public class MemberRankPreview extends RankPane {
         }
 
         if (!StringUtils.isEmpty(headConfig)) {
-            String[] split = headConfig.split(ConfigSpliter.SPLITER);
+            String[] split = ConfigSpliter.split(headConfig);
             titleBox.setLayoutX(ScreenAdapter.calculateMainX(Integer.parseInt(split[0])));
             titleBox.setLayoutY(ScreenAdapter.calculateMainY(Integer.parseInt(split[1])));
             titleBox.setPrefWidth(ScreenAdapter.calculateMainX(Integer.parseInt(split[2])));
@@ -232,7 +232,7 @@ public class MemberRankPreview extends RankPane {
             String members = item.getMembers();
             String memberScore = item.getMemberScore();
             JSONObject jsonObject = JSON.parseObject(memberScore);
-            String[] mArr = members.split(",");
+            String[] mArr = TeamMemberCodec.split(members);
             for (int j = 0; j < mArr.length; j++) {
                 TeamMemberRankData rankData = new TeamMemberRankData();
                 rankData.setScore(Long.valueOf(jsonObject.getInteger(mArr[j])));

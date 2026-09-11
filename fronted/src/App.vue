@@ -69,6 +69,13 @@ export default {
         }
       });
 
+      // 全局监听复位，保证平板不在自选页面时也能清除本地选择。
+      this.$websocket.subscribe('/topic/stageSelect', (message) => {
+        if (message.type === 'reset') {
+          sessionStorage.removeItem('selectedStage');
+        }
+      });
+
       this.$websocket.subscribe('/topic/page', (message) => {
         console.log(message.route);
         // 同步全屏图片状态

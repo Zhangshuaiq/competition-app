@@ -448,7 +448,7 @@ public class Model3Attr {
 
 
         if (!StringUtils.isEmpty(config)) {
-            String[] split = config.split(ConfigSpliter.SPLITER);
+            String[] split = ConfigSpliter.split(config);
             if (split.length > 0) {
                 String[] cfgArr = split;
                 numberXInput.setText(cfgArr[0]);
@@ -500,10 +500,10 @@ public class Model3Attr {
         headTextAlignSelector.setValue("居中对齐");
 
         if (!StringUtils.isEmpty(style)) {
-            String[] split = style.split(ConfigSpliter.DIFFER);
+            String[] split = ConfigSpliter.splitSections(style);
             if (split.length > 0 && !ConfigSpliter.EMPTY.equals(split[0])) {
                 String headCfg = split[0];
-                String[] cfgArr = headCfg.split(ConfigSpliter.SPLITER);
+                String[] cfgArr = ConfigSpliter.split(headCfg);
                 headXInput.setText(cfgArr[0]);
                 headYInput.setText(cfgArr[1]);
                 headWidthInput.setText(cfgArr[2]);
@@ -540,10 +540,10 @@ public class Model3Attr {
         nameTextAlignSelector.setValue("居中对齐");
 
         if (!StringUtils.isEmpty(style)) {
-            String[] split = style.split(ConfigSpliter.DIFFER);
+            String[] split = ConfigSpliter.splitSections(style);
             if (split.length > 0 && !ConfigSpliter.EMPTY.equals(split[0])) {
                 String nameCfg = split[0];
-                String[] cfgArr = nameCfg.split(ConfigSpliter.SPLITER);
+                String[] cfgArr = ConfigSpliter.split(nameCfg);
                 nameXInput.setText(cfgArr[0]);
                 nameYInput.setText(cfgArr[1]);
                 nameWidthInput.setText(cfgArr[2]);

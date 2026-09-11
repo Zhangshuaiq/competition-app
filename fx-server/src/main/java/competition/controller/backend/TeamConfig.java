@@ -18,6 +18,7 @@ import competition.ws.Model7RuntimeData;
 import competition.ws.WsTeamMemberWaiter;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.beans.property.SimpleStringProperty;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.geometry.Pos;
@@ -31,7 +32,6 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.logging.log4j.util.Strings;
 import org.apache.poi.ss.formula.functions.Mode;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
@@ -88,7 +88,8 @@ public class TeamConfig {
         codeCol.setCellValueFactory(new PropertyValueFactory<>("code"));
         shortNameCol.setCellValueFactory(new PropertyValueFactory<>("shortName"));
         fullNameCol.setCellValueFactory(new PropertyValueFactory<>("fullName"));
-        memberCol.setCellValueFactory(new PropertyValueFactory<>("members"));
+        memberCol.setCellValueFactory(cell -> new SimpleStringProperty(
+                TeamMemberCodec.encodeLegacy(TeamMemberCodec.decode(cell.getValue().getMembers()))));
         passwordCol.setCellValueFactory(new PropertyValueFactory<>("password"));
         showTeam();
     }
@@ -179,7 +180,7 @@ public class TeamConfig {
             memberMap.put(node.getText(), 0);
         }
 
-        final String memberVal = Strings.join(members, ',');
+        final String memberVal = TeamMemberCodec.encodeJson(members);
         final String memberScore = JSON.toJSONString(memberMap);
 
         Teams teams = new Teams();
@@ -204,7 +205,7 @@ public class TeamConfig {
         shortNameInput.setText(selectedItem.getShortName());
         fullNameInput.setText(selectedItem.getFullName());
         passwordInput.setText(selectedItem.getPassword());
-        final String[] split = selectedItem.getMembers().split(",");
+        final String[] split = TeamMemberCodec.split(selectedItem.getMembers());
         memberBox.getChildren().removeIf(x -> x instanceof HBox);
         for (String m : split) {
             if (!StringUtils.isEmpty(m)) {
@@ -238,7 +239,7 @@ public class TeamConfig {
             members.add(node.getText());
         }
 
-        final String memberVal = Strings.join(members, ',');
+        final String memberVal = TeamMemberCodec.encodeJson(members);
         final String memberScore = JSON.toJSONString(jsonObject);
 
         Teams teams = new Teams();
@@ -303,7 +304,8 @@ public class TeamConfig {
                     return;
                 }
 
-                String[] memberArr = members.split(",");
+                String[] memberArr = TeamMemberCodec.split(members);
+                teams.setMembers(TeamMemberCodec.encodeJson(Arrays.asList(memberArr)));
                 Map<String, Integer> memberScore = new HashMap<>();
                 for (String s : memberArr) {
                     memberScore.put(s, 0);
@@ -334,7 +336,7 @@ public class TeamConfig {
             team.setTeamScore(Integer.parseInt(text));
             Map memberMap = JSON.parseObject(team.getMemberScore(), Map.class);
             String members = team.getMembers();
-            String[] memArr = members.split(",");
+            String[] memArr = TeamMemberCodec.split(members);
             // 其余选手归零， 第一个设置分数
             for (int i = 1; i < memArr.length; i++) {
                 memberMap.put(memArr[i], 0);
@@ -353,7 +355,7 @@ public class TeamConfig {
             team.setStatusList(new ArrayList<>());
             team.setStatus(0);
             if (!StringUtils.isEmpty(team.getMembers())) {
-                String[] split = team.getMembers().split(",");
+                String[] split = TeamMemberCodec.split(team.getMembers());
                 for (String s : split) {
                     team.getStatusList().add(0);
                     team.getQScores().add(0);
@@ -382,7 +384,7 @@ public class TeamConfig {
         List<Teams> teams = teamsMapper.selectList(new LambdaQueryWrapper<>());
         for (Teams team : teams) {
             String members = team.getMembers();
-            String[] memArr = members.split(",");
+            String[] memArr = TeamMemberCodec.split(members);
             Map<String, Integer> memberMap = new HashMap<>();
             for (String m : memArr) {
                 memberMap.put(m, Integer.parseInt(text));
@@ -400,7 +402,7 @@ public class TeamConfig {
             team.setStatusList(new ArrayList<>());
             team.setStatus(0);
             if (!StringUtils.isEmpty(team.getMembers())) {
-                String[] split = team.getMembers().split(",");
+                String[] split = TeamMemberCodec.split(team.getMembers());
                 for (String s : split) {
                     team.getStatusList().add(0);
                     team.getQScores().add(0);

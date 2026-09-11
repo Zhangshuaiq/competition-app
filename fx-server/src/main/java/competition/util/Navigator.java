@@ -405,7 +405,7 @@ public class Navigator {
             controller.initPage();
             Stage stage = timeBoardStage;
             if (!StringUtils.isEmpty(config)) {
-                String[] split = config.get().split(ConfigSpliter.SPLITER);
+                String[] split = ConfigSpliter.split(config.get());
                 stage.setX(ScreenAdapter.calculateMainX(Double.parseDouble(split[29])));
                 stage.setY(ScreenAdapter.calculateMainY(Double.parseDouble(split[30])));
             }
@@ -438,7 +438,7 @@ public class Navigator {
             load.setOnMouseReleased(event -> {
                 configs.set(configsMapper.selectById(1));
                 config.set(configs.get().getConfig());
-                String[] split = config.get().split(ConfigSpliter.SPLITER);
+                String[] split = ConfigSpliter.split(config.get());
                 split[29] = (int)stage.getX() + "";
                 split[30] = (int)stage.getY() + "";
                 configs.get().setConfig(String.join(ConfigSpliter.SPLITER, split));
@@ -524,7 +524,7 @@ public class Navigator {
             controller.initPage();
             Stage stage = scoreBoardStage;
             if (!StringUtils.isEmpty(config)) {
-                String[] split = config.get().split(ConfigSpliter.SPLITER);
+                String[] split = ConfigSpliter.split(config.get());
                 stage.setX(ScreenAdapter.calculateMainX(Double.parseDouble(split[17])));
                 stage.setY(ScreenAdapter.calculateMainY(Double.parseDouble(split[18])));
             }
@@ -556,7 +556,7 @@ public class Navigator {
             load.setOnMouseReleased(event -> {
                 configs.set(configsMapper.selectById(1));
                 config.set(configs.get().getConfig());
-                String[] split = config.get().split(ConfigSpliter.SPLITER);
+                String[] split = ConfigSpliter.split(config.get());
                 split[17] = (int)stage.getX() + "";
                 split[18] = (int)stage.getY() + "";
                 configs.get().setConfig(String.join(ConfigSpliter.SPLITER, split));

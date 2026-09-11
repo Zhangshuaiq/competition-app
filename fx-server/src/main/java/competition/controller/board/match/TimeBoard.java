@@ -73,7 +73,7 @@ public class TimeBoard implements ReloadPane {
         this.timeValue = timeTxt;
         Configs configs = configsMapper.selectById(1);
         String config = configs.getConfig();
-        String[] split = config.split(ConfigSpliter.SPLITER);
+        String[] split = ConfigSpliter.split(config);
 
         // 先设置文本内容
         timeLabel.setText(timeValue);
@@ -144,7 +144,7 @@ public class TimeBoard implements ReloadPane {
     public void reload() {
         Configs configs = configsMapper.selectById(1);
         String config = configs.getConfig();
-        String[] split = config.split(ConfigSpliter.SPLITER);
+        String[] split = ConfigSpliter.split(config);
 
         // 先设置文本内容
         timeLabel.setText(timeValue);

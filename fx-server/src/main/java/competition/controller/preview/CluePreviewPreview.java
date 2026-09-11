@@ -186,7 +186,7 @@ public class CluePreviewPreview extends PreviewPane<Questions>{
         Configs configs = configsMapper.selectById(1);
         String cfgVal = configs.getConfig();
         if (!StringUtils.isEmpty(cfgVal)) {
-            String[] split = cfgVal.split(ConfigSpliter.SPLITER);
+            String[] split = ConfigSpliter.split(cfgVal);
 
             // 题干颜色
             tiganLabel.setFill(Color.valueOf(split[0]));
@@ -341,7 +341,7 @@ public class CluePreviewPreview extends PreviewPane<Questions>{
 
             {
 
-                String[] split1 = style1.split(ConfigSpliter.SPLITER);
+                String[] split1 = ConfigSpliter.split(style1);
                 tiganBox.setLayoutX(ScreenAdapter.calculateMainX(Integer.parseInt(split1[0])));
                 tiganBox.setLayoutY(ScreenAdapter.calculateMainY(Integer.parseInt(split1[1])));
                 tiganBox.setPrefWidth(ScreenAdapter.calculateMainX(Integer.parseInt(split1[2])));
@@ -423,7 +423,7 @@ public class CluePreviewPreview extends PreviewPane<Questions>{
 
             {
 
-                String[] split1 = style2.split(ConfigSpliter.SPLITER);
+                String[] split1 = ConfigSpliter.split(style2);
 
                 backPane.setLayoutX(ScreenAdapter.calculateMainX(Integer.parseInt(split1[0])));
                 backPane.setLayoutY(ScreenAdapter.calculateMainY(Integer.parseInt(split1[1])));
@@ -481,7 +481,7 @@ public class CluePreviewPreview extends PreviewPane<Questions>{
                 }
                 stageLabel.setFill(Color.valueOf(split[11]));
                 if (!StringUtils.isEmpty(style3)) {
-                    String[] split1 = style3.split(ConfigSpliter.SPLITER);
+                    String[] split1 = ConfigSpliter.split(style3);
 
                     stagePane.setLayoutX(ScreenAdapter.calculateMainX(Integer.parseInt(split1[0])));
                     stagePane.setLayoutY(ScreenAdapter.calculateMainY(Integer.parseInt(split1[1])));

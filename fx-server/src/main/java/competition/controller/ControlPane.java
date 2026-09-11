@@ -389,7 +389,7 @@ public class ControlPane {
             selectedIndex = teamComBox.getSelectionModel().getSelectedIndex();
             String members = TeamRuntime.getTeams().get(selectedIndex).getMembers();
             if (!StringUtils.isEmpty(members)) {
-                memberComBox.setItems(FXCollections.observableList(Arrays.asList(members.split(","))));
+                memberComBox.setItems(FXCollections.observableList(TeamMemberCodec.decode(members)));
             } else {
                 memberComBox.setItems(FXCollections.emptyObservableList());
             }
@@ -399,7 +399,7 @@ public class ControlPane {
             teamComBox.getSelectionModel().selectPrevious();
             String members = TeamRuntime.getTeams().get(selectedIndex - 1).getMembers();
             if (!StringUtils.isEmpty(members)) {
-                memberComBox.setItems(FXCollections.observableList(Arrays.asList(members.split(","))));
+                memberComBox.setItems(FXCollections.observableList(TeamMemberCodec.decode(members)));
             } else {
                 memberComBox.setItems(FXCollections.emptyObservableList());
             }
@@ -429,7 +429,7 @@ public class ControlPane {
             selectedIndex = 0;
             String members = TeamRuntime.getTeams().get(selectedIndex).getMembers();
             if (!StringUtils.isEmpty(members)) {
-                memberComBox.setItems(FXCollections.observableList(Arrays.asList(members.split(","))));
+                memberComBox.setItems(FXCollections.observableList(TeamMemberCodec.decode(members)));
             } else {
                 memberComBox.setItems(FXCollections.emptyObservableList());
             }
@@ -439,7 +439,7 @@ public class ControlPane {
             teamComBox.getSelectionModel().selectNext();
             String members = TeamRuntime.getTeams().get(selectedIndex + 1).getMembers();
             if (!StringUtils.isEmpty(members)) {
-                memberComBox.setItems(FXCollections.observableList(Arrays.asList(members.split(","))));
+                memberComBox.setItems(FXCollections.observableList(TeamMemberCodec.decode(members)));
             } else {
                 memberComBox.setItems(FXCollections.emptyObservableList());
             }
@@ -627,7 +627,7 @@ public class ControlPane {
             team.setStatusList(new ArrayList<>());
             team.setStatus(0);
             if (!StringUtils.isEmpty(team.getMembers())) {
-                String[] split = team.getMembers().split(",");
+                String[] split = TeamMemberCodec.split(team.getMembers());
 
                 if (split.length > maxTeamCount) {
                     maxTeamCount = split.length;
@@ -667,7 +667,7 @@ public class ControlPane {
             styles = scoreStyle.getStyles();
         }
         if (!StringUtils.isEmpty(styles)) {
-            String[] split = styles.split(ConfigSpliter.SPLITER);
+            String[] split = ConfigSpliter.split(styles);
             if (split.length >= 9) {
                 RuntimeUtil.showScoreBar = Boolean.parseBoolean(split[8]);
             } else {
@@ -966,7 +966,7 @@ public class ControlPane {
                 }
                 String members = TeamRuntime.getTeams().get(selectedIndex).getMembers();
                 if (!StringUtils.isEmpty(members)) {
-                    memberComBox.setItems(FXCollections.observableList(Arrays.asList(members.split(","))));
+                    memberComBox.setItems(FXCollections.observableList(TeamMemberCodec.decode(members)));
                 } else {
                     memberComBox.setItems(FXCollections.emptyObservableList());
                 }
@@ -1433,7 +1433,7 @@ public class ControlPane {
                 String cfgVal = configs.getConfig();
                 String txbz = "4";
                 if (!StringUtils.isEmpty(cfgVal)) {
-                    String[] split = cfgVal.split(ConfigSpliter.SPLITER);
+                    String[] split = ConfigSpliter.split(cfgVal);
                     txbz = split[10];
                 }
 
@@ -1811,9 +1811,6 @@ public class ControlPane {
             }
 
         } finally {
-            if (currentStage == null || currentStage.getQuestionType() != 8) {
-                StageSelectRuntime.clear();
-            }
             for (Teams team : TeamRuntime.getTeams()) {
                 team.setTeamSelect("");
             }
@@ -1981,9 +1978,6 @@ public class ControlPane {
         // 切换环节时清除上一环节残留数据，防止答题结果串台
         QuestionSubmitRuntime.clear();
         TeamRuntime.resetStatus();
-        if (stage.getQuestionType() != 8) {
-            StageSelectRuntime.clear();
-        }
         for (Teams team : TeamRuntime.getTeams()) {
             team.setTeamSelect("");
         }
@@ -2246,12 +2240,10 @@ public class ControlPane {
             // 清除上一环节残留数据，防止答题结果串台
             QuestionSubmitRuntime.clear();
             TeamRuntime.resetStatus();
-            // 判断是否重进同一个 type8 环节：是则恢复选择数据，否则清零
-            boolean sameType8Stage = controlStage.getQuestionType() == 8
-                    && controlStage.getId().equals(StageSelectRuntime.getOwnerStageId())
+            // 自选结果只允许通过“复位选择”按钮清除，页面和环节跳转时始终恢复。
+            boolean hasStageSelections = controlStage.getQuestionType() == 8
                     && !StageSelectRuntime.getAll().isEmpty();
-            if (sameType8Stage) {
-                // 重进同一环节：从 StageSelectRuntime 恢复每个队伍的选择状态
+            if (hasStageSelections) {
                 java.util.Map<String, StageSelectRuntime.StageSelectData> saved = StageSelectRuntime.getAll();
                 for (Teams team : TeamRuntime.getTeams()) {
                     team.setTeamSelect("");
@@ -2266,7 +2258,6 @@ public class ControlPane {
                     }
                 }
             } else {
-                StageSelectRuntime.clear();
                 for (Teams team : TeamRuntime.getTeams()) {
                     team.setTeamSelect("");
                     team.setStageSelect("");
@@ -2639,10 +2630,16 @@ public class ControlPane {
                             for (Teams team : TeamRuntime.getTeams()) {
                                 TeamResult.DataItem item = new TeamResult.DataItem();
                                 item.setTeamName(team.getFullName());
+                                boolean participates = StageSelectRuntime.isSelectedForStage(
+                                        team.getFullName(), currentStage.getName());
                                 String submitted = allAnswers.get(team.getFullName());
                                 String userSelect = submitted != null ? submitted : "";
                                 item.setAnswer(userSelect);
-                                if (submitted != null && userSelect.equals(currentQuestion.getAnswer())) {
+                                if (!participates) {
+                                    // 未选择当前子环节：无论是否收到提交都不加、不减。
+                                    item.setAnswer("");
+                                    item.setScore(0);
+                                } else if (submitted != null && userSelect.equals(currentQuestion.getAnswer())) {
                                     // 答对 → 加分
                                     item.setScore(qScore);
                                     if (applyScore) {
@@ -2658,17 +2655,14 @@ public class ControlPane {
                                         scoreService.addScore(null, team, currentStage.getName(), null, null,
                                                 -desScore, Objects.toString(team.getNewScore()), userSelect);
                                     }
-                                } else if (StageSelectRuntime.get(team.getFullName()) != null) {
-                                    // 选了该环节但未提交 → 视为未答，扣分
+                                } else {
+                                    // 选择了当前子环节但未提交 → 视为未答，扣分
                                     item.setScore(-desScore);
                                     if (applyScore) {
                                         team.setNewScore(team.getTeamScore() - desScore);
                                         scoreService.addScore(null, team, currentStage.getName(), null, null,
                                                 -desScore, Objects.toString(team.getNewScore()), "");
                                     }
-                                } else {
-                                    // 未参与本轮自选 → 不计分
-                                    item.setScore(0);
                                 }
                                 items.add(item);
                             }
@@ -2694,7 +2688,14 @@ public class ControlPane {
                         int desScore = currentStage.getDesValue();
                         Map<String, String> allAnswers = QuestionSubmitRuntime.getAll();
                         for (Teams team : TeamRuntime.getTeams()) {
+                            boolean participates = StageSelectRuntime.isSelectedForStage(
+                                    team.getFullName(), currentStage.getName());
                             if (GlobalCache.showAnswer) {
+                                if (!participates) {
+                                    team.setStatus(0);
+                                    team.setTeamSelect("");
+                                    continue;
+                                }
                                 String submitted = allAnswers.get(team.getFullName());
                                 if (submitted != null) {
                                     team.setTeamSelect(submitted);
@@ -2715,8 +2716,8 @@ public class ControlPane {
                                                     -desScore, Objects.toString(team.getNewScore()), submitted);
                                         }
                                     }
-                                } else if (StageSelectRuntime.get(team.getFullName()) != null) {
-                                    // 选择了该环节但未提交答案 → 视为未答，按环节扣分值扣分（与"答错"一致）
+                                } else {
+                                    // 选择了当前子环节但未提交答案 → 按环节扣分值扣分
                                     team.setStatus(3);
                                     team.setTeamSelect("未提交");
                                     if (!type8ScoreApplied && currentStage.getCountTotal() == 1) {
@@ -2727,8 +2728,10 @@ public class ControlPane {
                                 }
                             } else {
                                 team.setTeamSelect("");
-                                if (allAnswers.containsKey(team.getFullName())) {
+                                if (participates && allAnswers.containsKey(team.getFullName())) {
                                     team.setStatus(1);
+                                } else if (!participates) {
+                                    team.setStatus(0);
                                 }
                             }
                         }
@@ -2981,7 +2984,7 @@ public class ControlPane {
         String config = configs.getConfig();
 
         if (!StringUtils.isEmpty(config)) {
-            String[] split = config.split(ConfigSpliter.SPLITER);
+            String[] split = ConfigSpliter.split(config);
             String boardLayout = split[14];
             if (boardLayout.equals("1")) {
                 if (scoreBoardPreview == null) {
@@ -3008,7 +3011,7 @@ public class ControlPane {
         Configs configs = configsMapper.selectById(1);
         String config = configs.getConfig();
         if (!StringUtils.isEmpty(config)) {
-            String[] split = config.split(ConfigSpliter.SPLITER);
+            String[] split = ConfigSpliter.split(config);
             String boardLayout = split[14];
             if (scoreBoardPreview != null) {
                 scoreBoardPreview.reload();

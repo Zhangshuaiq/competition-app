@@ -73,7 +73,7 @@ public class ScorePreviewAttr {
         if (scoreStyle != null) {
             String styles = scoreStyle.getStyles();
             if (!StringUtils.isEmpty(styles)) {
-                String[] split = styles.split(ConfigSpliter.SPLITER);
+                String[] split = ConfigSpliter.split(styles);
                 fontSelector.setSelectedValue((split[0]));
                 fontSize.setText((split[1]));
                 deleteChoice.setSelected(Boolean.valueOf(split[2]));
@@ -102,7 +102,7 @@ public class ScorePreviewAttr {
         if (sscoreStyle != null) {
             String styles = sscoreStyle.getStyles();
             if (!StringUtils.isEmpty(styles)) {
-                String[] split = styles.split(ConfigSpliter.SPLITER);
+                String[] split = ConfigSpliter.split(styles);
                 sfontSelector.setSelectedValue((split[0]));
                 sfontSize.setText((split[1]));
                 sdeleteChoice.setSelected(Boolean.valueOf(split[2]));

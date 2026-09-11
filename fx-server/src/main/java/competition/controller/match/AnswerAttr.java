@@ -309,7 +309,7 @@ public class AnswerAttr {
             //                + yInput.getText() + ConfigSpliter.SPLITER
             //                + widthInput.getText() + ConfigSpliter.SPLITER
             //                + heightInput.getText() ;
-            String[] split = answerStyle.getStyle1().split(ConfigSpliter.SPLITER);
+            String[] split = ConfigSpliter.split(answerStyle.getStyle1());
             colInput.setText(split[0]);
             rowsInput.setText(split[1]);
             colsInput.setText(split[2]);
@@ -332,7 +332,7 @@ public class AnswerAttr {
             //                + f1BackColor.getValue() + ConfigSpliter.SPLITER
             //                + f1Path.getText() 
             //                ;
-            String[] split = answerStyle.getStyle2().split(ConfigSpliter.SPLITER);
+            String[] split = ConfigSpliter.split(answerStyle.getStyle2());
             f1Selector.setSelectedValue(split[0]);
             f1Color.setValue(Color.valueOf(split[1]));
             l1Selector.setValue(split[2]);
@@ -349,7 +349,7 @@ public class AnswerAttr {
         }
 
         if (!StringUtils.isEmpty(answerStyle.getStyle3())) {
-            String[] split = answerStyle.getStyle3().split(ConfigSpliter.SPLITER);
+            String[] split = ConfigSpliter.split(answerStyle.getStyle3());
             f2Selector.setSelectedValue(split[0]);
             f2Color.setValue(Color.valueOf(split[1]));
             l2Selector.setValue(split[2]);
@@ -366,7 +366,7 @@ public class AnswerAttr {
         }
 
         if (!StringUtils.isEmpty(answerStyle.getStyle4())) {
-            String[] split = answerStyle.getStyle4().split(ConfigSpliter.SPLITER);
+            String[] split = ConfigSpliter.split(answerStyle.getStyle4());
             f3Selector.setSelectedValue(split[0]);
             f3Color.setValue(Color.valueOf(split[1]));
             l3Selector.setValue(split[2]);
@@ -384,7 +384,7 @@ public class AnswerAttr {
 
 
         if (!StringUtils.isEmpty(answerStyle.getStyle5())) {
-            String[] split = answerStyle.getStyle5().split(ConfigSpliter.SPLITER);
+            String[] split = ConfigSpliter.split(answerStyle.getStyle5());
             f4Selector.setSelectedValue(split[0]);
             f4Color.setValue(Color.valueOf(split[1]));
             l4Selector.setValue(split[2]);
@@ -402,7 +402,7 @@ public class AnswerAttr {
 
 
         if (!StringUtils.isEmpty(answerStyle.getStyle6())) {
-            String[] split = answerStyle.getStyle6().split(ConfigSpliter.SPLITER);
+            String[] split = ConfigSpliter.split(answerStyle.getStyle6());
             f5Selector.setSelectedValue(split[0]);
             f5Color.setValue(Color.valueOf(split[1]));
             l5Selector.setValue(split[2]);

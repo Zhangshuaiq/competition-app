@@ -417,7 +417,7 @@ public class Model7Preview extends RankPane<Stages> {
         String cfgVal = configs.getConfig();
         String txbz = "4";
         if (!StringUtils.isEmpty(cfgVal)) {
-            String[] split = cfgVal.split(ConfigSpliter.SPLITER);
+            String[] split = ConfigSpliter.split(cfgVal);
             txbz = split[10];
         }
         // 获取题目数据并缓存
@@ -525,7 +525,7 @@ public class Model7Preview extends RankPane<Stages> {
         cachedQFColor = Color.BLACK;
         cachedBkColor = Color.BLACK;
         if (!StringUtils.isEmpty(titleStyle)) {
-            String[] split = titleStyle.split(ConfigSpliter.SPLITER);
+            String[] split = ConfigSpliter.split(titleStyle);
             cachedCol = Integer.parseInt(split[0]);
             cachedX = ScreenAdapter.calculateMainX(Integer.parseInt(split[5]));
             cachedY = ScreenAdapter.calculateMainY(Integer.parseInt(split[6]));
@@ -586,7 +586,7 @@ public class Model7Preview extends RankPane<Stages> {
             Configs configs = configsMapper.selectById(1);
             String cfgVal = configs.getConfig();
             if (!StringUtils.isEmpty(cfgVal)) {
-                String[] split = cfgVal.split(ConfigSpliter.SPLITER);
+                String[] split = ConfigSpliter.split(cfgVal);
                 if (split.length > 10) {
                     cachedTx = split[9]; // 题型
                     cachedTxbz = split[10]; // 题型标注

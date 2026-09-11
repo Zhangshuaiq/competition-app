@@ -1063,7 +1063,6 @@ public class StageConfig {
         PreviewStack.clear();
         // 清空运行时状态，避免残留到状态栏
         GlobalCache.showAnswer = false;
-        StageSelectRuntime.clear();
         QuestionSubmitRuntime.clear();
         TeamRuntime.resetStatus();
         for (Teams team : TeamRuntime.getTeams()) {

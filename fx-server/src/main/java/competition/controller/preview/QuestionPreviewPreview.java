@@ -319,7 +319,7 @@ public class QuestionPreviewPreview extends PreviewPane<Questions> {
         }
 
         String cfgVal = configs.getConfig();
-        String[] split = cfgVal.split(ConfigSpliter.SPLITER);
+        String[] split = ConfigSpliter.split(cfgVal);
 
         // 应用基本样式
         applyBasicStyles(split);
@@ -727,7 +727,7 @@ public class QuestionPreviewPreview extends PreviewPane<Questions> {
      * 应用样式1（题干样式）- 优先级最高，覆盖基础设置
      */
     private void applyStyle1(String style1) {
-        String[] split1 = style1.split(ConfigSpliter.SPLITER);
+        String[] split1 = ConfigSpliter.split(style1);
         if (split1.length < 15)
             return;
 
@@ -862,7 +862,7 @@ public class QuestionPreviewPreview extends PreviewPane<Questions> {
      * 应用样式2（答案样式）- 优先级最高，覆盖基础答案设置
      */
     private void applyStyle2(String style2) {
-        String[] split1 = style2.split(ConfigSpliter.SPLITER);
+        String[] split1 = ConfigSpliter.split(style2);
         if (split1.length < 15)
             return;
 
@@ -890,7 +890,7 @@ public class QuestionPreviewPreview extends PreviewPane<Questions> {
         if (StringUtils.isEmpty(style3))
             return;
 
-        String[] split1 = style3.split(ConfigSpliter.SPLITER);
+        String[] split1 = ConfigSpliter.split(style3);
         if (split1.length < 14)
             return;
 

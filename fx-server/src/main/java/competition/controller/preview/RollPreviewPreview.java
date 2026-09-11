@@ -140,13 +140,13 @@ public class RollPreviewPreview extends PreviewPane<Stages> {
         Configs stageConfig = configsMapper.selectById(2);
         String config = configs.getConfig();
         String stageConfigAttr = stageConfig.getConfig();
-        String[] stageConfigAttrSplit = stageConfigAttr.split(ConfigSpliter.SPLITER);
+        String[] stageConfigAttrSplit = ConfigSpliter.split(stageConfigAttr);
         String questionStyle = "560%%240%%800%%100%%false%%0xffffffff%%%%默认.ttf%%40%%false%%false%%false%%false%%居中对齐%%0###920%%400%%80%%80%%false%%0xffffffff%%%%默认.ttf%%36%%false%%true%%false%%false%%居中对齐%%0%%1";
         if (!StringUtils.isEmpty(inner.getQuestionStyle())) {
             questionStyle = inner.getQuestionStyle();
         }
 
-        String[] styleArr = questionStyle.split(ConfigSpliter.DIFFER);
+        String[] styleArr = ConfigSpliter.splitSections(questionStyle);
 
         // 标题名称
         stageName.setText(inner.getName());
@@ -164,7 +164,7 @@ public class RollPreviewPreview extends PreviewPane<Stages> {
         stageName.prefHeight(ScreenAdapter.calculateMainY(ConfigSpliter.DEFAULT_H));
 
         if (styleArr.length > 1 && !ConfigSpliter.EMPTY.equals(styleArr[0])) {
-            String[] detailArr = styleArr[0].split(ConfigSpliter.SPLITER);
+            String[] detailArr = ConfigSpliter.split(styleArr[0]);
             title.setLayoutX(ScreenAdapter.calculateMainX(Integer.parseInt(detailArr[0])));
             title.setLayoutY(ScreenAdapter.calculateMainY(Integer.parseInt(detailArr[1])));
             title.setPrefWidth(ScreenAdapter.calculateMainX(Integer.parseInt(detailArr[2])));
@@ -222,10 +222,10 @@ public class RollPreviewPreview extends PreviewPane<Stages> {
 
         // 以后台配置为准
 
-        String[] cfgArr = config.split(ConfigSpliter.SPLITER);
+        String[] cfgArr = ConfigSpliter.split(config);
 
         if (styleArr.length > 1 && !ConfigSpliter.EMPTY.equals(styleArr[1])) {
-            String[] detailArr = styleArr[1].split(ConfigSpliter.SPLITER);
+            String[] detailArr = ConfigSpliter.split(styleArr[1]);
             if (detailArr.length >= 16) {
             }
         }
@@ -234,7 +234,7 @@ public class RollPreviewPreview extends PreviewPane<Stages> {
                 ScreenAdapter.calculateMainY(Integer.parseInt(cfgArr[6])));
 
         if (styleArr.length > 1 && !ConfigSpliter.EMPTY.equals(styleArr[1])) {
-            String[] detailArr = styleArr[1].split(ConfigSpliter.SPLITER);
+            String[] detailArr = ConfigSpliter.split(styleArr[1]);
 
             backPane.setPrefSize(ScreenAdapter.calculateMainX(Integer.parseInt(detailArr[2])),
                     ScreenAdapter.calculateMainY(Integer.parseInt(detailArr[3])));

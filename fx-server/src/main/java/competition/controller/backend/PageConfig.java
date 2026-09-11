@@ -448,7 +448,7 @@ public class PageConfig {
         ztzh.setText((int) defaultFont.getSize() + "");
         ztys.setValue(Color.WHITE);
         if (!StringUtils.isEmpty(config)) {
-            final String[] split = config.split(ConfigSpliter.SPLITER);
+            final String[] split = ConfigSpliter.split(config);
             tg.setValue(Color.valueOf(split[0]));
             da.setValue(Color.valueOf(split[1]));
             mrzh.setText(split[2]);
@@ -562,7 +562,7 @@ public class PageConfig {
         final Configs huanjie = configsMap.get(2);
         final String huanjieVal = huanjie.getConfig();
         if (!StringUtils.isEmpty(huanjieVal)) {
-            final String[] huanjieArr = huanjieVal.split(ConfigSpliter.SPLITER);
+            final String[] huanjieArr = ConfigSpliter.split(huanjieVal);
             hjbh.setValue(Color.valueOf(huanjieArr[0]));
             bhbj.setValue(Color.valueOf(huanjieArr[1]));
             hjmc.setValue(Color.valueOf(huanjieArr[2]));
@@ -579,7 +579,7 @@ public class PageConfig {
         final Configs paiming = configsMap.get(3);
         final String paimingVal = paiming.getConfig();
         if (!StringUtils.isEmpty(paimingVal)) {
-            String[] paimingArr = paimingVal.split(ConfigSpliter.SPLITER);
+            String[] paimingArr = ConfigSpliter.split(paimingVal);
             bhbl.setText(paimingArr[0]);
             tdmcbl.setText(paimingArr[1]);
             fsbl.setText(paimingArr[2]);
@@ -596,7 +596,7 @@ public class PageConfig {
         final Configs xuanti = configsMap.get(4);
         final String xuantiVal = xuanti.getConfig();
         if (!StringUtils.isEmpty(xuantiVal)) {
-            final String[] xuantiArr = xuantiVal.split(ConfigSpliter.SPLITER);
+            final String[] xuantiArr = ConfigSpliter.split(xuantiVal);
             xtzs.setValue(Color.valueOf(xuantiArr[0]));
             xxbj.setValue(Color.valueOf(xuantiArr[1]));
             gdxt.setValue(Color.valueOf(xuantiArr[2]));
@@ -609,7 +609,7 @@ public class PageConfig {
         final Configs guize = configsMap.get(5);
         final String guizeVal = guize.getConfig();
         if (!StringUtils.isEmpty(guizeVal)) {
-            final String[] guizeArr = guizeVal.split(ConfigSpliter.SPLITER);
+            final String[] guizeArr = ConfigSpliter.split(guizeVal);
             gzzs.setValue(Color.valueOf(guizeArr[0]));
             gzx.setText(guizeArr[1]);
             gzy.setText(guizeArr[2]);
@@ -620,7 +620,7 @@ public class PageConfig {
         final Configs qiangda = configsMap.get(6);
         final String qiangdaVal = qiangda.getConfig();
         if (!StringUtils.isEmpty(qiangdaVal)) {
-            final String[] qiangdaArr = qiangdaVal.split(ConfigSpliter.SPLITER);
+            final String[] qiangdaArr = ConfigSpliter.split(qiangdaVal);
             qdbhbl.setText(qiangdaArr[0]);
             qdtdmc.setText(qiangdaArr[1]);
             qdsj.setText(qiangdaArr[2]);
@@ -637,7 +637,7 @@ public class PageConfig {
         final Configs xuanshou = configsMap.get(7);
         final String xuanshouVal = xuanshou.getConfig();
         if (!StringUtils.isEmpty(xuanshouVal)) {
-            final String[] xuanshouArr = xuanshouVal.split(ConfigSpliter.SPLITER);
+            final String[] xuanshouArr = ConfigSpliter.split(xuanshouVal);
             xsbhbl.setText(xuanshouArr[0]);
             xstdmc.setText(xuanshouArr[1]);
             xsxs.setText(xuanshouArr[2]);
@@ -656,7 +656,7 @@ public class PageConfig {
         final Configs jingji = configsMap.get(8);
         final String jingjiVal = jingji.getConfig();
         if (!StringUtils.isEmpty(jingjiVal)) {
-            final String[] jingjiArr = jingjiVal.split(ConfigSpliter.SPLITER);
+            final String[] jingjiArr = ConfigSpliter.split(jingjiVal);
             jjbhbl.setText(jingjiArr[0]);
             jjtdmc.setText(jingjiArr[1]);
             jjfs.setText(jingjiArr[2]);
@@ -1007,13 +1007,13 @@ public class PageConfig {
         List<QuestionStyle>  questionStyleList = ExcelParser.parse(ExcelParser.S_PATH, QuestionStyle.class);
         for (QuestionStyle questionStyle : questionStyleList) {
             String style1 = questionStyle.getStyle1();
-            String[] style1Arr = style1.split(ConfigSpliter.SPLITER);
+            String[] style1Arr = ConfigSpliter.split(style1);
             style1Arr[7] = tgzt.getSelectedValue();
             questionStyle.setStyle1(String.join(ConfigSpliter.SPLITER, style1Arr));
 
             String style2 = questionStyle.getStyle2();
             if (!StringUtils.isEmpty(style2)) {
-                String[] style2Arr = style2.split(ConfigSpliter.SPLITER);
+                String[] style2Arr = ConfigSpliter.split(style2);
                 style2Arr[7] = dazt.getSelectedValue();
                 questionStyle.setStyle2(String.join(ConfigSpliter.SPLITER, style2Arr));
             }

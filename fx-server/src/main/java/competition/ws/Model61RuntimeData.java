@@ -10,6 +10,7 @@ import competition.service.ScoreService;
 import competition.service.TeamService;
 import competition.util.NumberUtil;
 import competition.util.TeamRuntime;
+import competition.util.TeamMemberCodec;
 import javafx.application.Platform;
 import lombok.Data;
 import org.springframework.util.StringUtils;
@@ -52,7 +53,7 @@ public class Model61RuntimeData {
         for (Teams team : teams) {
             String members = team.getMembers();
             if (!StringUtils.isEmpty(members)) {
-                String[] marr = members.split(",");
+                String[] marr = TeamMemberCodec.split(members);
                 for (String m : marr) {
                     ModelData md = new ModelData();
                     md.setTeamName(team.getFullName());
@@ -83,7 +84,7 @@ public class Model61RuntimeData {
                     if (team.getFullName().equals(data.getTeamName())) {
                         String members = team.getMembers();
                         if (!StringUtils.isEmpty(members)) {
-                            String[] split = members.split(",");
+                            String[] split = TeamMemberCodec.split(members);
                             for (int j = 0; j < split.length; j++) {
                                 if (split[j].equals(data.getUserName())) {
                                     String memberScore = team.getMemberScore();
@@ -190,7 +191,7 @@ public class Model61RuntimeData {
                     JSONObject jsonObject = JSON.parseObject(team.getMemberScore());
                     String members = team.getMembers();
                     if (!StringUtils.isEmpty(members)) {
-                        String[] split = members.split(",");
+                        String[] split = TeamMemberCodec.split(members);
                         for (int j = 0; j < split.length; j++) {
                             if (split[j].equals(data.getUserName())) {
                                 if (data.getUserSelect().equals(data.getAnswer())) {

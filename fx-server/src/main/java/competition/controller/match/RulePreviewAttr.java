@@ -97,7 +97,7 @@ public class RulePreviewAttr {
         spaceInput.setText("0");
         final String config = configs.getConfig();
         if (!StringUtils.isEmpty(config)) {
-            final String[] huanjieArr = config.split(ConfigSpliter.SPLITER);
+            final String[] huanjieArr = ConfigSpliter.split(config);
             xInput.setText(huanjieArr[1]);
             yInput.setText(huanjieArr[2]);
             widthInput.setText(huanjieArr[3]);
@@ -115,7 +115,7 @@ public class RulePreviewAttr {
             deleteChoice.setSelected(false);
             spaceInput.setText("0");
         } else {
-            final String[] detailArr = details.split(ConfigSpliter.SPLITER);
+            final String[] detailArr = ConfigSpliter.split(details);
             backgroundChoice.setSelected(Boolean.valueOf(detailArr[4]));
             colorInput.setValue(Color.valueOf(detailArr[5].replace("0x", "#")));
             backgroundPath.setText(detailArr[6]);
@@ -161,7 +161,7 @@ public class RulePreviewAttr {
 
         final Configs configs = configsMapper.selectById(configId);
         final String config = configs.getConfig();
-        final String[] huanjieArr = config.split(ConfigSpliter.SPLITER);
+        final String[] huanjieArr = ConfigSpliter.split(config);
         String huanjieVal = huanjieArr[0] + ConfigSpliter.SPLITER
                 + x + ConfigSpliter.SPLITER
                 + y + ConfigSpliter.SPLITER

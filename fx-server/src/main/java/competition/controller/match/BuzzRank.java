@@ -84,7 +84,7 @@ public class BuzzRank implements ReloadPane< List<TeamMemberRankData> > {
 
         Configs configs = configsMapper.selectById(6);
         String config = configs.getConfig();
-        String[] cfgArr = config.split(ConfigSpliter.SPLITER);
+        String[] cfgArr = ConfigSpliter.split(config);
         
 
         double x = ScreenAdapter.calculateExX(Integer.parseInt(cfgArr[8]));
@@ -99,7 +99,7 @@ public class BuzzRank implements ReloadPane< List<TeamMemberRankData> > {
         double size = ScreenAdapter.calculateExX(competitionLab.getFont().getSize());
         boolean rankBold = false;
         if (!StringUtils.isEmpty(rankConfig)) {
-            String[] split = rankConfig.split(ConfigSpliter.SPLITER);
+            String[] split = ConfigSpliter.split(rankConfig);
             x = ScreenAdapter.calculateExX(Integer.parseInt(split[0]));
             y = ScreenAdapter.calculateExY(Integer.parseInt(split[1]));
             width = ScreenAdapter.calculateExX(Integer.parseInt(split[2]));
@@ -114,7 +114,7 @@ public class BuzzRank implements ReloadPane< List<TeamMemberRankData> > {
         }
 
         if (!StringUtils.isEmpty(headConfig)) {
-            String[] split = headConfig.split(ConfigSpliter.SPLITER);
+            String[] split = ConfigSpliter.split(headConfig);
             titleBox.setLayoutX(ScreenAdapter.calculateMainX(Integer.parseInt(split[0])));
             titleBox.setLayoutY(ScreenAdapter.calculateMainY(Integer.parseInt(split[1])));
             titleBox.setPrefWidth(ScreenAdapter.calculateMainX(Integer.parseInt(split[2])));

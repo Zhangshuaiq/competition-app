@@ -97,7 +97,7 @@ public class StagePreview implements ReloadPane<Integer> {
         final String configVal = configs.getConfig();
 
         if (!StringUtils.isEmpty(configVal)) {
-            final String[] split = configVal.split(ConfigSpliter.SPLITER);
+            final String[] split = ConfigSpliter.split(configVal);
             if (Boolean.valueOf(split[9])) {
                 // 使用图片展示而不是样式
             } else {
@@ -122,9 +122,9 @@ public class StagePreview implements ReloadPane<Integer> {
                 }
                 stages.sort(comparator);
                 String defaultStyle = "550%%300%%350%%80%%false%%0xffffffff%%%%默认.ttf%%28%%false%%false%%false%%false%%居中对齐%%60%%0%%2%%60%%0x000000ff";
-                String[] detailArr = defaultStyle.split(ConfigSpliter.SPLITER);
+                String[] detailArr = ConfigSpliter.split(defaultStyle);
                 if (stagesStyle != null) {
-                    detailArr = stagesStyle.getStyle().split(ConfigSpliter.SPLITER);
+                    detailArr = ConfigSpliter.split(stagesStyle.getStyle());
                 }
                 double x = ScreenAdapter.calculateExX(Integer.parseInt(split[4]));
                 double y = ScreenAdapter.calculateExY(Integer.parseInt(split[5]));

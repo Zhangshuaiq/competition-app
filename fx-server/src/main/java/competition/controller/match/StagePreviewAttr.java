@@ -124,7 +124,7 @@ public class StagePreviewAttr {
         final Configs configs = configsMapper.selectById(configId);
         final String config = configs.getConfig();
         if (!StringUtils.isEmpty(config)) {
-            final String[] huanjieArr = config.split(ConfigSpliter.SPLITER);
+            final String[] huanjieArr = ConfigSpliter.split(config);
             //  hjbh.setValue(Color.valueOf(huanjieArr[0]));
             //            bhbj.setValue(Color.valueOf(huanjieArr[1]));
             //            hjmc.setValue(Color.valueOf(huanjieArr[2]));
@@ -159,7 +159,7 @@ public class StagePreviewAttr {
             );
         }
         String defaultStyle = "550%%300%%350%%80%%false%%0xffffffff%%%%默认.ttf%%28%%false%%false%%false%%false%%居中对齐%%60%%0%%2%%60%%0x000000ff";
-        String[] detailArr = defaultStyle.split(ConfigSpliter.SPLITER);
+        String[] detailArr = ConfigSpliter.split(defaultStyle);
         if (StringUtils.isEmpty(details)) {
 //            GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
 //            // 获取默认字体
@@ -170,7 +170,7 @@ public class StagePreviewAttr {
 //            deleteChoice.setSelected(false);
 //            spaceInput.setText("0");
         } else {
-            detailArr = details.getStyle().split(ConfigSpliter.SPLITER);
+            detailArr = ConfigSpliter.split(details.getStyle());
         }
 
         widthInput.setText(detailArr[2]);
@@ -230,7 +230,7 @@ public class StagePreviewAttr {
 
         final Configs configs = configsMapper.selectById(configId);
         final String config = configs.getConfig();
-        final String[] huanjieArr = config.split(ConfigSpliter.SPLITER);
+        final String[] huanjieArr = ConfigSpliter.split(config);
         String huanjieVal = huanjieArr[0] + ConfigSpliter.SPLITER
                 + huanjieArr[1]  + ConfigSpliter.SPLITER
                 + huanjieArr[2]  + ConfigSpliter.SPLITER

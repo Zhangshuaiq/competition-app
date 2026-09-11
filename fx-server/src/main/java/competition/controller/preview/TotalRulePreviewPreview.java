@@ -89,7 +89,7 @@ public class TotalRulePreviewPreview extends PreviewPane {
         final String ruleContent = String.join("\n", lines);
         Text text = new Text(ruleContent);
         if (StringUtils.isEmpty(details)) {
-            final String[] cfgArr = config.split(ConfigSpliter.SPLITER);
+            final String[] cfgArr = ConfigSpliter.split(config);
             text.setX(ScreenAdapter.calculateMainX(Integer.parseInt(cfgArr[1])));
             text.setY(ScreenAdapter.calculateMainY(Integer.parseInt(cfgArr[2])));
             text.prefWidth(ScreenAdapter.calculateMainX(Integer.parseInt(cfgArr[3])));
@@ -98,7 +98,7 @@ public class TotalRulePreviewPreview extends PreviewPane {
             text.setWrappingWidth(ScreenAdapter.calculateMainX(Integer.parseInt(cfgArr[3])));
             container.getChildren().add(text);
         } else {
-            final String[] cfgArr = details.split(ConfigSpliter.SPLITER);
+            final String[] cfgArr = ConfigSpliter.split(details);
             text.setX(ScreenAdapter.calculateMainX(Integer.parseInt(cfgArr[0])));
             text.setY(ScreenAdapter.calculateMainY(Integer.parseInt(cfgArr[1])));
             text.prefWidth(ScreenAdapter.calculateMainX(Integer.parseInt(cfgArr[2])));

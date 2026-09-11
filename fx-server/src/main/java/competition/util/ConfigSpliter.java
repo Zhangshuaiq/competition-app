@@ -5,9 +5,17 @@ import javafx.stage.Screen;
 
 public class ConfigSpliter {
     
-    public static final String SPLITER = "%%";
+    public static final String SPLITER = DelimitedConfigCodec.FIELD_DELIMITER;
 
-    public static final String DIFFER = "###";
+    public static final String DIFFER = DelimitedConfigCodec.SECTION_DELIMITER;
+
+    public static String[] split(String value) {
+        return DelimitedConfigCodec.splitFields(value);
+    }
+
+    public static String[] splitSections(String value) {
+        return DelimitedConfigCodec.splitSections(value);
+    }
     
     public static final String EMPTY = "EMPTY";
     

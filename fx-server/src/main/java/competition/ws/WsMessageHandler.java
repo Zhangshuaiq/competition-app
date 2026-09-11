@@ -318,6 +318,13 @@ public class WsMessageHandler {
         Map dataMap = JSON.parseObject(parse.get("data").toString(), Map.class);
         String teamName = dataMap.get("teamName").toString();
         String userSelect = dataMap.getOrDefault("userSelect", "").toString();
+        ControlPane currentControlPane = getCachedControlPane();
+        Stages currentStage = currentControlPane != null ? currentControlPane.getCurrentStage() : null;
+        if (currentStage != null && currentStage.getQuestionType() == 8
+                && !StageSelectRuntime.isSelectedForStage(teamName, currentStage.getName())) {
+            log.warn("忽略未选择当前自选环节的答题提交: team={}, stage={}", teamName, currentStage.getName());
+            return;
+        }
         QuestionSubmitRuntime.save(teamName, userSelect);
         for (Teams team : TeamRuntime.getTeams()) {
             if (team.getFullName().equals(teamName)) {

@@ -215,7 +215,7 @@ public class StageQuestionPreviewAttr {
 
         final String config = currentStage.getQuestionStyle();
         if (!StringUtils.isEmpty(config)) {
-            final String[] nameArr = config.split(ConfigSpliter.DIFFER);
+            final String[] nameArr = ConfigSpliter.splitSections(config);
             String detail = x + ConfigSpliter.SPLITER
                     + y + ConfigSpliter.SPLITER
                     + width + ConfigSpliter.SPLITER
@@ -297,7 +297,7 @@ public class StageQuestionPreviewAttr {
 
         final String config = currentStage.getQuestionStyle();
         if (!StringUtils.isEmpty(config)) {
-            final String[] nameArr = config.split(ConfigSpliter.DIFFER);
+            final String[] nameArr = ConfigSpliter.splitSections(config);
             String detail = x + ConfigSpliter.SPLITER
                     + y + ConfigSpliter.SPLITER
                     + width + ConfigSpliter.SPLITER
@@ -326,7 +326,7 @@ public class StageQuestionPreviewAttr {
             Configs xuantiConfig = configsMapper.selectById(4);
             String configVal = xuantiConfig.getConfig();
             if (!StringUtils.isEmpty(configVal)) {
-                String[] cfgArr = configVal.split(ConfigSpliter.SPLITER);
+                String[] cfgArr = ConfigSpliter.split(configVal);
                 cfgArr[3] = x + "";
                 cfgArr[4] = y + "";
                 cfgArr[5] = width + "";
@@ -362,7 +362,7 @@ public class StageQuestionPreviewAttr {
             Configs xuantiConfig = configsMapper.selectById(4);
             String configVal = xuantiConfig.getConfig();
             if (!StringUtils.isEmpty(configVal)) {
-                String[] cfgArr = configVal.split(ConfigSpliter.SPLITER);
+                String[] cfgArr = ConfigSpliter.split(configVal);
                 cfgArr[3] = x + "";
                 cfgArr[4] = y + "";
                 cfgArr[5] = width + "";
@@ -387,10 +387,10 @@ public class StageQuestionPreviewAttr {
             details = "760%%240%%400%%80%%false%%0xffffffff%%%%默认.ttf%%40%%false%%false%%false%%false%%居中对齐%%10###415%%370%%100%%100%%false%%0xffffffff%%%%默认.ttf%%30%%false%%false%%false%%false%%居中对齐%%10%%10";
         }
 
-        String[] split = details.split(ConfigSpliter.DIFFER);
+        String[] split = ConfigSpliter.splitSections(details);
         if (!StringUtils.isEmpty(currentStage.getQuestionStyle())) {
             //details = currentStage.getQuestionStyle();
-            String[] sps = currentStage.getQuestionStyle().split(ConfigSpliter.DIFFER);
+            String[] sps = ConfigSpliter.splitSections(currentStage.getQuestionStyle());
             if (!ConfigSpliter.EMPTY.equals(sps[0])) {
                 split[0] = sps[0];
             }
@@ -401,7 +401,7 @@ public class StageQuestionPreviewAttr {
         }
         String config = configs.getConfig();
         if (!StringUtils.isEmpty(config)) {
-            String[] cfgArr = config.split(ConfigSpliter.SPLITER);
+            String[] cfgArr = ConfigSpliter.split(config);
             numberColorInput.setValue(Color.WHITE);
             numberWidthInput.setText(cfgArr[5]);
             numberHeightInput.setText(cfgArr[6]);
@@ -419,7 +419,7 @@ public class StageQuestionPreviewAttr {
         if (split.length > 1) {
             String numberCfg = split[1];
             if (!ConfigSpliter.EMPTY.equals(numberCfg)) {
-                String[] cfgArr = numberCfg.split(ConfigSpliter.SPLITER);
+                String[] cfgArr = ConfigSpliter.split(numberCfg);
 
                 numberXInput.setText(cfgArr[0]);
                 numberYInput.setText(cfgArr[1]);
@@ -463,10 +463,10 @@ public class StageQuestionPreviewAttr {
         } else {
             details = "760%%240%%400%%80%%false%%0xffffffff%%%%默认.ttf%%40%%false%%false%%false%%false%%居中对齐%%10###415%%370%%100%%100%%false%%0x990000ff%%%%默认.ttf%%30%%false%%false%%false%%false%%居中对齐%%10%%10";
         }
-        String[] split = details.split(ConfigSpliter.DIFFER);
+        String[] split = ConfigSpliter.splitSections(details);
 
         if (!StringUtils.isEmpty(currentStage.getQuestionStyle())) {
-            String[] sps  = currentStage.getQuestionStyle().split(ConfigSpliter.DIFFER);
+            String[] sps  = ConfigSpliter.splitSections(currentStage.getQuestionStyle());
             if (!ConfigSpliter.EMPTY.equals(sps[0])) {
                 split[0] = sps[0];
             }
@@ -478,7 +478,7 @@ public class StageQuestionPreviewAttr {
         
 
         String nameCfg = split[0];
-        String[] cfgArr = nameCfg.split(ConfigSpliter.SPLITER);
+        String[] cfgArr = ConfigSpliter.split(nameCfg);
         nameXInput.setText(cfgArr[0]);
         nameYInput.setText(cfgArr[1]);
         nameWidthInput.setText(cfgArr[2]);
