@@ -8,7 +8,7 @@
 <?import javafx.scene.shape.*?>
 <?import javafx.scene.text.*?>
 
-<AnchorPane fx:id="parentPane" minWidth="-Infinity" prefHeight="806.0" prefWidth="339.0" style="-fx-border-color: black;" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="competition.controller.ControlPane">
+<AnchorPane fx:id="parentPane" minWidth="-Infinity" prefHeight="831.0" prefWidth="339.0" style="-fx-border-color: black;" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="competition.controller.ControlPane">
    <children>
       <HBox fx:id="titleBar" prefHeight="25.0" prefWidth="339.0">
          <children>
@@ -176,7 +176,7 @@
             <Font size="10.0" />
          </font>
       </Label>
-      <AnchorPane layoutY="438.0" prefHeight="179.0" prefWidth="339.0">
+      <AnchorPane layoutY="438.0" prefHeight="204.0" prefWidth="339.0">
          <children>
             <Label layoutX="6.0" layoutY="23.0" text="团队">
                <font>
@@ -268,7 +268,7 @@
                <font>
                   <Font size="6.0" />
                </font></Label>
-            <CheckBox fx:id="boardAnswerAll" layoutX="13.0" layoutY="159.0" mnemonicParsing="false" onMouseClicked="#selectAllTeam" text="全选">
+            <CheckBox fx:id="boardAnswerAll" layoutX="13.0" layoutY="159.0" mnemonicParsing="false" onMouseClicked="#selectAllBoardAnswerTeam" selected="true" text="全选">
                <font>
                   <Font size="10.0" />
                </font>
@@ -285,14 +285,19 @@
                   <Font size="10.0" />
                </font>
             </Button>
+            <CheckBox fx:id="boardAnswerTimeRank" layoutX="13.0" layoutY="181.0" mnemonicParsing="false" text="累计指定队员时间参与同分排名">
+               <font>
+                  <Font size="10.0" />
+               </font>
+            </CheckBox>
          </children>
       </AnchorPane>
-      <Label alignment="CENTER" layoutY="617.0" prefHeight="26.0" prefWidth="339.0" style="-fx-background-color: blue;" text="抢答控制" textFill="WHITE">
+      <Label alignment="CENTER" layoutY="642.0" prefHeight="26.0" prefWidth="339.0" style="-fx-background-color: blue;" text="抢答控制" textFill="WHITE">
          <font>
             <Font size="10.0" />
          </font>
       </Label>
-      <AnchorPane layoutY="643.0" prefHeight="43.0" prefWidth="339.0">
+      <AnchorPane layoutY="668.0" prefHeight="43.0" prefWidth="339.0">
          <children>
             <Button layoutX="49.0" layoutY="6.0" mnemonicParsing="false" onMouseClicked="#buzzRank" prefHeight="25.0" prefWidth="80.0" text="抢答排名">
                <font>
@@ -312,12 +317,12 @@
             <Circle fx:id="hardwareStatus" fill="RED" layoutX="24.0" layoutY="19.0" radius="5.0" stroke="BLACK" strokeType="INSIDE" />
          </children>
       </AnchorPane>
-      <Label alignment="CENTER" layoutY="686.0" prefHeight="26.0" prefWidth="339.0" style="-fx-background-color: blue;" text="其他功能" textFill="WHITE">
+      <Label alignment="CENTER" layoutY="711.0" prefHeight="26.0" prefWidth="339.0" style="-fx-background-color: blue;" text="其他功能" textFill="WHITE">
          <font>
             <Font size="10.0" />
          </font>
       </Label>
-      <AnchorPane layoutY="712.0" prefHeight="95.0" prefWidth="339.0">
+      <AnchorPane layoutY="737.0" prefHeight="95.0" prefWidth="339.0">
          <children>
             <Button layoutX="23.0" layoutY="3.0" mnemonicParsing="false" onAction="#exitApp" prefHeight="25.0" prefWidth="80.0" text="退出程序">
                <font>

@@ -247,8 +247,9 @@ public class StageConfig {
                 if (newValue) {
                     model6Check.setVisible(true);
                     answerShow.setVisible(true);
-                    ccType8Mode.setVisible(false);
-                    ccType8AnswerShow.setVisible(false);
+                    ccType8Mode.setText("自由答题");
+                    ccType8Mode.setVisible(true);
+                    ccType8AnswerShow.setVisible(true);
                 }
             }
         });
@@ -269,6 +270,7 @@ public class StageConfig {
             @Override
             public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
                 if (newValue) {
+                    ccType8Mode.setText("平板作答");
                     ccType8Mode.setVisible(true);
                     ccType8AnswerShow.setVisible(true);
                     model6Check.setVisible(false);
@@ -874,7 +876,8 @@ public class StageConfig {
         }
         current.setQuestionType(newQuestionType);
         current.setpAType(paTypeValue);
-        current.setM6(model6Check.isSelected()? 1: 0);
+        current.setM6(Objects.equals(6, newQuestionType) && ccType8Mode.isSelected()
+                ? 1 : (model6Check.isSelected() ? 1 : 0));
         current.setRuleType(value);
         current.setRuleContent(data);
         current.setrRandomSort(randomSort2Selected?1:0);
@@ -963,7 +966,9 @@ public class StageConfig {
         stages.setpAType(paTypeValue);
         stages.setRuleType(value);
         stages.setRuleContent(data);
-        stages.setM6(model6Check.isSelected()? 1: 0);
+        int selectedQuestionType = Integer.parseInt(ccData.toString());
+        stages.setM6(selectedQuestionType == 6 && ccType8Mode.isSelected()
+                ? 1 : (model6Check.isSelected() ? 1 : 0));
         stages.setrRandomSort(randomSort2Selected?1:0);
         stages.setOpenQd(openQD?1:0);
         stages.setQdDesc(qdDescScore.isSelected()?1:0);

@@ -311,12 +311,18 @@ public class ScoreBoardV implements BoardPane {
                         String members = team.getMembers();
                         if (!StringUtils.isEmpty(members)) {
                             String[] ms = TeamMemberCodec.split(members);
-                            double w = Integer.parseInt(cfgArr[19]) * 1.0 / ms.length;
-                            for (int x = 0; x < ms.length; x++) {
-                                Model61RuntimeData.ModelData modelData = dataMap.get(team.getFullName() + "-" + ms[x]);
+                            boolean freeAnswer = Objects.equals(1, currentStage.getBoardAnswer());
+                            int selectedMember = freeAnswer && RuntimeUtil.boardAnswerMemberInfo != null
+                                    ? RuntimeUtil.boardAnswerMemberInfo.getSelectMemberIndex() : 0;
+                            int displayCount = freeAnswer ? 1 : ms.length;
+                            double w = Integer.parseInt(cfgArr[19]) * 1.0 / displayCount;
+                            for (int x = 0; x < displayCount; x++) {
+                                int memberIndex = freeAnswer ? selectedMember : x;
+                                Model61RuntimeData.ModelData modelData = memberIndex < ms.length
+                                        ? dataMap.get(team.getFullName() + "-" + ms[memberIndex]) : null;
                                 StackPane stackPane2 = new StackPane();
                                 stackPane2.setPrefSize(w, Integer.parseInt(cfgArr[20]));
-                                Text l = new Text((x + 1) + "");
+                                Text l = new Text(freeAnswer ? team.getShortName() : (x + 1) + "");
                                 l.setTextAlignment(TextAlignment.CENTER);
                                 stackPane2.getChildren().add(l);
                                 l.prefHeight(Integer.parseInt(cfgArr[20]));
@@ -329,11 +335,13 @@ public class ScoreBoardV implements BoardPane {
                                 } else {
                                     l.setStroke(null);
                                 }
-                                if (team.getStatusList().get(x) == 1) {
+                                int status = memberIndex < team.getStatusList().size()
+                                        ? team.getStatusList().get(memberIndex) : 0;
+                                if (status == 1) {
                                     stackPane2.setBackground(new Background(new BackgroundFill(Color.valueOf(cfgArr[26]), new CornerRadii(10), Insets.EMPTY)));
                                 } else {
-                                    if (StringUtils.isEmpty(modelData.getUserSelect())) {
-                                        if (team.getStatusList().get(x) == 3) {
+                                    if (modelData == null || StringUtils.isEmpty(modelData.getUserSelect())) {
+                                        if (status == 3) {
                                             // 答题已结束，展示错误的状态
                                             stackPane2.setBackground(new Background(new BackgroundFill(Color.valueOf(cfgArr[28]), new CornerRadii(10), Insets.EMPTY)));
                                         } else {

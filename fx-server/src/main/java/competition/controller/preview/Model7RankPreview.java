@@ -309,6 +309,9 @@ public class Model7RankPreview extends RankPane {
                     return;
                 }
                 List<Model7RankData> memeryData = new ArrayList<>();
+                boolean freeAnswer = Objects.equals(1, currentStage.getBoardAnswer());
+                boolean accumulateTime = freeAnswer && RuntimeUtil.boardAnswerMemberInfo != null
+                        && RuntimeUtil.boardAnswerMemberInfo.isAccumulateMemberTime();
                 for (List<Model61RuntimeData.ModelData> modelDataList : runtimeData61) {
                     for (Model61RuntimeData.ModelData modelData : modelDataList) {
                         Model7RankData rankData = new Model7RankData();
@@ -323,12 +326,17 @@ public class Model7RankPreview extends RankPane {
                             }
                         }
 
-                        if (countType) {
-                            rankData.setSecond(modelData.getSecond());
+                        if (!freeAnswer || accumulateTime) {
+                            if (countType) {
+                                rankData.setSecond(modelData.getSecond());
+                            } else {
+                                rankData.setSecond(totalSecond - modelData.getSecond());
+                            }
                         } else {
-                            rankData.setSecond(totalSecond - modelData.getSecond());
+                            rankData.setSecond(0);
                         }
-                        rankData.setTeam(modelData.getTeamName() + "-" + modelData.getUserName());
+                        rankData.setTeam(freeAnswer ? modelData.getTeamName()
+                                : modelData.getTeamName() + "-" + modelData.getUserName());
                         memeryData.add(rankData);
                     }
                 }
@@ -346,7 +354,7 @@ public class Model7RankPreview extends RankPane {
                         rankData.setTeam(data.getTeam());
                     }
                     rankData.setSecond(second);
-                    rankData.setTime(formatTime(second));
+                    rankData.setTime(freeAnswer && !accumulateTime ? "--" : formatTime(second));
                     rankData.setScore(score);
                     rankList.add(rankData);
                 }

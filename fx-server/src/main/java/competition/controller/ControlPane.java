@@ -243,7 +243,7 @@ public class ControlPane {
     private ComboBox<String> boardAnswerMember, boardImage;
 
     @FXML
-    private CheckBox boardAnswerAll;
+    private CheckBox boardAnswerAll, boardAnswerTimeRank;
 
     // 更新客户端展示的数据（与客户端实时交互）
     @Resource
@@ -284,14 +284,30 @@ public class ControlPane {
         }
         BoardAnswerSelectInfo boardAnswerMemberInfo = new BoardAnswerSelectInfo();
         if (selectAllTeam) {
-            boardAnswerMemberInfo.setSelectTeams(TeamRuntime.getTeams());
+            boardAnswerMemberInfo.setSelectTeams(new ArrayList<>(TeamRuntime.getTeams()));
         } else {
-            // 需要获取当前指定的队伍，从链接状态栏里选择
-            boardAnswerMemberInfo.setSelectTeams(TeamRuntime.getTeams());
+            Set<String> selected = scoreBoardPreview == null
+                    ? Collections.emptySet() : scoreBoardPreview.getSelected();
+            List<Teams> selectedTeams = TeamRuntime.getTeams().stream()
+                    .filter(team -> selected.contains(team.getShortName()))
+                    .collect(Collectors.toList());
+            if (selectedTeams.isEmpty()) {
+                Information.error("请至少选择一个作答团队");
+                return;
+            }
+            boardAnswerMemberInfo.setSelectTeams(selectedTeams);
+        }
+        for (Teams team : boardAnswerMemberInfo.getSelectTeams()) {
+            if (TeamMemberCodec.decode(team.getMembers()).size() <= selectedIndex) {
+                Information.error(team.getShortName() + "没有" + (selectedIndex + 1) + "号选手");
+                return;
+            }
         }
         boardAnswerMemberInfo.setSelectMemberIndex(selectedIndex);
+        boardAnswerMemberInfo.setAccumulateMemberTime(boardAnswerTimeRank.isSelected());
 
         RuntimeUtil.boardAnswerMemberInfo = boardAnswerMemberInfo;
+        Information.info("自由答题范围已确认");
     }
 
 
@@ -647,6 +663,13 @@ public class ControlPane {
         }
 
         boardAnswerMember.setItems(FXCollections.observableList(memberList));
+        boardAnswerMember.getSelectionModel().selectFirst();
+        boardAnswerAll.setSelected(true);
+        BoardAnswerSelectInfo defaultSelection = new BoardAnswerSelectInfo();
+        defaultSelection.setSelectTeams(new ArrayList<>(teams));
+        defaultSelection.setSelectMemberIndex(0);
+        defaultSelection.setAccumulateMemberTime(false);
+        RuntimeUtil.boardAnswerMemberInfo = defaultSelection;
 
         // 若已有分数，则加载旧的分数
         TeamRuntime.setTeams(teams);
@@ -1828,6 +1851,13 @@ public class ControlPane {
         }
     }
 
+    @FXML
+    public void selectAllBoardAnswerTeam() {
+        if (scoreBoardPreview != null) {
+            scoreBoardPreview.selectAll(boardAnswerAll.isSelected());
+        }
+    }
+
     // 竞技排行
     @FXML
     public void model7Rank() {
@@ -2343,7 +2373,7 @@ public class ControlPane {
             }
 
             controlResourceBtn(tihao);
-            if (m6 == 0) {
+            if (m6 == 0 && !Objects.equals(1, currentStage.getBoardAnswer())) {
                 questions.setHasAnswer(true);
 
                 questionsMapper.updateById(questions);
@@ -2363,7 +2393,20 @@ public class ControlPane {
                 questionsMapper.updateById(questions);
                 // 设置当前需要显示的题目
                 // 设置选手信息
-                Model61RuntimeData.setTeams(TeamRuntime.getTeams());
+                TeamRuntime.resetStatus();
+                if (Objects.equals(1, currentStage.getBoardAnswer())) {
+                    BoardAnswerSelectInfo selection = RuntimeUtil.boardAnswerMemberInfo;
+                    List<Teams> selectedTeams = selection == null || CollectionUtils.isEmpty(selection.getSelectTeams())
+                            ? TeamRuntime.getTeams() : selection.getSelectTeams();
+                    int memberIndex = selection == null ? 0 : selection.getSelectMemberIndex();
+                    currentStage.setFreeAnswerTeams(selectedTeams.stream()
+                            .map(Teams::getFullName).collect(Collectors.toList()));
+                    currentStage.setFreeAnswerMemberIndex(memberIndex);
+                    currentStage.setFreeAnswerTimeRank(selection != null && selection.isAccumulateMemberTime());
+                    Model61RuntimeData.setTeams(selectedTeams, memberIndex);
+                } else {
+                    Model61RuntimeData.setTeams(TeamRuntime.getTeams());
+                }
                 previewPane = Navigator.preview("/view/preview/QuestionPreview.fxml", "", "/view/style.css", true,
                         questions);
                 // messageHandler.sendQuestion(questions);
@@ -2517,9 +2560,22 @@ public class ControlPane {
 
             if (!GlobalCache.showAnswer) {
                 // 更新状态
-                TeamRuntime.updateMS();
+                if (Objects.equals(1, currentStage.getBoardAnswer())) {
+                    Model61RuntimeData.updateParticipantStatuses();
+                } else {
+                    TeamRuntime.updateMS();
+                }
                 GlobalCache.showAnswer = true;
                 MusicPlayer.play(MusicResource.SHOW_ANSWER);
+                if (Objects.equals(1, currentStage.getBoardAnswer())
+                        && !Objects.equals(1, currentStage.getTeamAnswerSingle())) {
+                    messageHandler.sendShowAnswer();
+                    if (previewPane != null) {
+                        previewPane.showAnswer();
+                    }
+                    updateScoreBoard();
+                    return;
+                }
                 List<Model61RuntimeData.ModelData> runtimeData = Model61RuntimeData.getRuntimeData();
                 TeamResult result = new TeamResult();
                 String answer = runtimeData.get(0).getAnswer();
@@ -2539,7 +2595,12 @@ public class ControlPane {
                         }
                     }
                     item.setTeamName(runtimeData.get(i).getTeamName());
-                    item.setMember(runtimeData.get(i).getUserName());
+                    if (Objects.equals(1, currentStage.getBoardAnswer())) {
+                        int memberIndex = Objects.requireNonNullElse(currentStage.getFreeAnswerMemberIndex(), 0);
+                        item.setMember("队员" + (memberIndex + 1));
+                    } else {
+                        item.setMember(runtimeData.get(i).getUserName());
+                    }
                     items.add(item);
                 }
 

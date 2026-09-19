@@ -43,21 +43,32 @@ public class Model61RuntimeData {
 
     public static void setTeams(List<Teams> teams) {
 
+        setTeams(teams, null);
+    }
+
+    /**
+     * 自由答题只创建被选团队中指定序号队员的运行时数据。未进入该集合的
+     * 团队无法提交、不会被判未答，也不会参与本题计分和计时。
+     */
+    public static void setTeams(List<Teams> teams, Integer memberIndex) {
+
         // 保存已有的数据，用于计算排名
         // forceFinish();
         if (!runtimeData.isEmpty()) {
             runtimeData.clear();
         }
         // runtimeData.clear();
-        Model61RuntimeData.teams = teams;
-        for (Teams team : teams) {
+        Model61RuntimeData.teams = new ArrayList<>(teams);
+        for (Teams team : Model61RuntimeData.teams) {
             String members = team.getMembers();
             if (!StringUtils.isEmpty(members)) {
                 String[] marr = TeamMemberCodec.split(members);
-                for (String m : marr) {
+                int from = memberIndex == null ? 0 : memberIndex;
+                int to = memberIndex == null ? marr.length : Math.min(marr.length, memberIndex + 1);
+                for (int i = from; i < to; i++) {
                     ModelData md = new ModelData();
                     md.setTeamName(team.getFullName());
-                    md.setUserName(m);
+                    md.setUserName(marr[i]);
                     runtimeData.add(md);
                 }
             }
@@ -80,6 +91,13 @@ public class Model61RuntimeData {
             TeamService teamsMapper = JavaFxApplication.getApplicationContext().getBean(TeamService.class);
             for (int i = 0; i < runtimeData.size(); i++) {
                 ModelData data = runtimeData.get(i);
+                // 已提交的数据已在 setRuntimeData 中完成计分；这里只处理超时未答，
+                // 避免停止答题时对已答选手重复累计分数和流水。
+                if (!StringUtils.isEmpty(data.getUserSelect())) {
+                    continue;
+                }
+                int unansweredScore = -(Objects.isNull(data.getDescScore())
+                        ? controlPane.getCurrentStage().getDesValue() : data.getDescScore());
                 for (Teams team : teams) {
                     if (team.getFullName().equals(data.getTeamName())) {
                         String members = team.getMembers();
@@ -89,25 +107,11 @@ public class Model61RuntimeData {
                                 if (split[j].equals(data.getUserName())) {
                                     String memberScore = team.getMemberScore();
                                     JSONObject jsonObject = JSON.parseObject(memberScore);
-                                    if (data.getAnswer() != null && data.getAnswer().equals(data.getUserSelect())) {
-                                        // 更新队员获取的总分数
-                                        jsonObject.put(data.getUserName(),
-                                                jsonObject.getIntValue(data.getUserName()) + data.getScore());
-                                        team.setMemberScore(JSON.toJSONString(jsonObject));
-                                        // 更新队员当前环节的分数
-                                        if (team.getQScores() != null && j < team.getQScores().size()) {
-                                            team.getQScores().set(j, data.getScore());
-                                        }
-                                    } else {
-                                        int desScore = Objects.isNull(data.getDescScore())
-                                                ? controlPane.getCurrentStage().getDesValue()
-                                                : data.getDescScore();
-                                        jsonObject.put(data.getUserName(),
-                                                jsonObject.getIntValue(data.getUserName()) - desScore);
-                                        team.setMemberScore(JSON.toJSONString(jsonObject));
-                                        if (team.getQScores() != null && j < team.getQScores().size()) {
-                                            team.getQScores().set(j, -desScore);
-                                        }
+                                    jsonObject.put(data.getUserName(),
+                                            jsonObject.getIntValue(data.getUserName()) + unansweredScore);
+                                    team.setMemberScore(JSON.toJSONString(jsonObject));
+                                    if (team.getQScores() != null && j < team.getQScores().size()) {
+                                        team.getQScores().set(j, unansweredScore);
                                     }
                                     teamsMapper.updateTeamAsync(team);
 
@@ -122,7 +126,7 @@ public class Model61RuntimeData {
 
                             scoreService.addScore(data.getUserName(), team, controlPane.getCurrentStage().getName(),
                                     data.getQuestionNumber().toString(),
-                                    data.getSecond().toString(), data.getScore(), Objects.toString(team.getNewScore()),
+                                    data.getSecond().toString(), unansweredScore, Objects.toString(team.getNewScore()),
                                     data.getUserSelect());
                         } else {
                             team.setNewScore(team.getTeamScore());
@@ -203,7 +207,14 @@ public class Model61RuntimeData {
                                     // 更新队员当前环节的分数
                                     team.getQScores().set(j, data.getScore());
                                 } else {
-                                    team.getQScores().set(j, -data.getScore());
+                                    int desScore = Objects.isNull(data.getDescScore())
+                                            ? controlPane.getCurrentStage().getDesValue()
+                                            : data.getDescScore();
+                                    jsonObject.put(data.getUserName(),
+                                            jsonObject.getIntValue(data.getUserName()) - desScore);
+                                    team.setMemberScore(JSON.toJSONString(jsonObject));
+                                    teamsMapper.updateTeamAsync(team);
+                                    team.getQScores().set(j, -desScore);
                                 }
                                 // 设置为已经回答完成
                                 team.getStatusList().set(j, 1);
@@ -250,6 +261,30 @@ public class Model61RuntimeData {
                                     data.getSecond().toString(), 0, Objects.toString(team.getNewScore()),
                                     data.getUserSelect());
                         }
+                    }
+                }
+            }
+        }
+    }
+
+    public static boolean accepts(String teamName, String userName) {
+        return runtimeData.stream().anyMatch(item -> Objects.equals(item.getTeamName(), teamName)
+                && Objects.equals(item.getUserName(), userName));
+    }
+
+    public static void updateParticipantStatuses() {
+        for (ModelData data : runtimeData) {
+            for (Teams team : teams) {
+                if (!Objects.equals(team.getFullName(), data.getTeamName())) {
+                    continue;
+                }
+                String[] members = TeamMemberCodec.split(team.getMembers());
+                for (int i = 0; i < members.length; i++) {
+                    if (Objects.equals(members[i], data.getUserName())
+                            && team.getStatusList() != null && i < team.getStatusList().size()) {
+                        team.getStatusList().set(i,
+                                Objects.equals(data.getAnswer(), data.getUserSelect()) ? 2 : 3);
+                        break;
                     }
                 }
             }

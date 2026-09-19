@@ -26,6 +26,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicLong;
@@ -296,6 +297,14 @@ public class WsMessageHandler {
         Map parse = JSON.parseObject(jsonText, Map.class);
         Model61RuntimeData.ModelData data = JSON.parseObject(parse.get("data").toString(),
                 Model61RuntimeData.ModelData.class);
+        ControlPane currentControlPane = getCachedControlPane();
+        Stages stage = currentControlPane == null ? null : currentControlPane.getCurrentStage();
+        if (stage != null && Objects.equals(1, stage.getBoardAnswer())
+                && !Model61RuntimeData.accepts(data.getTeamName(), data.getUserName())) {
+            log.warn("忽略自由答题中未被指定的提交: team={}, member={}",
+                    data.getTeamName(), data.getUserName());
+            return;
+        }
         Model61RuntimeData.setRuntimeData(data);
 
         notifyPage("", null);

@@ -6,6 +6,8 @@ import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
 
+import java.util.List;
+
 @Data
 @TableName("t_stages")
 public class Stages {
@@ -83,6 +85,16 @@ public class Stages {
     // 非 DB 字段：是否已被选中（用于前端同步"选后变灰"状态）
     @TableField(exist = false)
     private boolean greySelected = false;
+
+    // 自由答题运行时选择，仅随页面消息下发，不写入数据库
+    @TableField(exist = false)
+    private List<String> freeAnswerTeams;
+
+    @TableField(exist = false)
+    private Integer freeAnswerMemberIndex;
+
+    @TableField(exist = false)
+    private Boolean freeAnswerTimeRank;
 
     public void setQdDescValue(Integer qdDescValue) {
         this.qdDescValue = qdDescValue;

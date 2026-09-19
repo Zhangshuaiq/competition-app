@@ -542,17 +542,23 @@ public class ScoreBoardHPreview extends PreviewPane implements BoardPane {
         String members = team.getMembers();
         if (!StringUtils.isEmpty(members)) {
             String[] ms = TeamMemberCodec.split(members);
-            double w = Integer.parseInt(cfgArr[19]) * 1.0 / ms.length;
+            boolean freeAnswer = Objects.equals(1, currentStage.getBoardAnswer());
+            int selectedMember = freeAnswer && RuntimeUtil.boardAnswerMemberInfo != null
+                    ? RuntimeUtil.boardAnswerMemberInfo.getSelectMemberIndex() : 0;
+            int displayCount = freeAnswer ? 1 : ms.length;
+            double w = Integer.parseInt(cfgArr[19]) * 1.0 / displayCount;
 
-            for (int i = 0; i < ms.length; i++) {
-                Model61RuntimeData.ModelData modelData = dataMap.get(team.getFullName() + "-" + ms[i]);
+            for (int i = 0; i < displayCount; i++) {
+                int memberIndex = freeAnswer ? selectedMember : i;
+                Model61RuntimeData.ModelData modelData = memberIndex < ms.length
+                        ? dataMap.get(team.getFullName() + "-" + ms[memberIndex]) : null;
                 StackPane stackPane2 = new StackPane();
                 stackPane2.setMaxHeight(Double.MAX_VALUE);
                 VBox.setVgrow(stackPane2, Priority.NEVER);
                 stackPane2.setPrefSize(ScreenAdapter.calculateMainX(w),
                     ScreenAdapter.calculateMainY(Integer.parseInt(cfgArr[20])));
 
-                Text l = new Text((i + 1) + "");
+                Text l = new Text(freeAnswer ? team.getShortName() : (i + 1) + "");
                 l.setTextAlignment(TextAlignment.CENTER);
                 stackPane2.getChildren().add(l);
                 l.setFont(statusFont);
@@ -566,7 +572,8 @@ public class ScoreBoardHPreview extends PreviewPane implements BoardPane {
                 }
 
                 List<Integer> statusList = team.getStatusList();
-                int memberStatus_i = (statusList != null && i < statusList.size()) ? statusList.get(i) : 0;
+                int memberStatus_i = (statusList != null && memberIndex < statusList.size())
+                        ? statusList.get(memberIndex) : 0;
                 if (memberStatus_i == 1) {
                     stackPane2.setBackground(new Background(new BackgroundFill(Color.valueOf(cfgArr[26]),
                         new CornerRadii(10), Insets.EMPTY)));
