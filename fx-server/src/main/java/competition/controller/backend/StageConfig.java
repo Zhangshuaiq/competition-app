@@ -107,7 +107,7 @@ public class StageConfig {
     ImageView previewImg;
 
     @FXML
-    CheckBox model6Check, answerShow, ccType8Mode, ccType8AnswerShow;
+    CheckBox model6Check, answerShow, freeAnswerMode, ccType8Mode, ccType8AnswerShow;
 
     @Resource
     private ControlPane controlPane;
@@ -180,6 +180,24 @@ public class StageConfig {
 
         ccType = new ToggleGroup();
         ccType.getToggles().addAll(ccType1, ccType2, ccType3, ccType4, ccType5, ccType6, ccType7, ccType8);
+        ccType.selectedToggleProperty().addListener((observable, oldValue, newValue) -> {
+            freeAnswerMode.setVisible(newValue == ccType6);
+            randomSort2.setVisible(newValue == ccType7);
+        });
+        freeAnswerMode.selectedProperty().addListener((observable, oldValue, selected) -> {
+            if (selected) {
+                model6Check.setSelected(false);
+            }
+            if (ccType6.isSelected()) {
+                answerShow.setVisible(!selected);
+                ccType8AnswerShow.setVisible(selected);
+            }
+        });
+        model6Check.selectedProperty().addListener((observable, oldValue, selected) -> {
+            if (selected && ccType6.isSelected()) {
+                freeAnswerMode.setSelected(false);
+            }
+        });
 
         ccType1.selectedProperty().addListener(new ChangeListener<Boolean>() {
             @Override
@@ -246,10 +264,10 @@ public class StageConfig {
             public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
                 if (newValue) {
                     model6Check.setVisible(true);
-                    answerShow.setVisible(true);
-                    ccType8Mode.setText("自由答题");
-                    ccType8Mode.setVisible(true);
-                    ccType8AnswerShow.setVisible(true);
+                    answerShow.setVisible(!freeAnswerMode.isSelected());
+                    ccType8Mode.setVisible(false);
+                    ccType8AnswerShow.setVisible(freeAnswerMode.isSelected());
+                    ccType8AnswerShow.setText("自由答题答案单独展示");
                 }
             }
         });
@@ -270,9 +288,9 @@ public class StageConfig {
             @Override
             public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
                 if (newValue) {
-                    ccType8Mode.setText("平板作答");
                     ccType8Mode.setVisible(true);
                     ccType8AnswerShow.setVisible(true);
+                    ccType8AnswerShow.setText("团队答案单独页");
                     model6Check.setVisible(false);
                     answerShow.setVisible(false);
                 }
@@ -767,7 +785,7 @@ public class StageConfig {
             selectGreySelect.setSelected(current.getSelectGrey() == 1);
             randomSort.setSelected(current.getRandomSort() == 1);
             stageShow.setSelected(current.getShow() == 1);
-            model6Check.setSelected(current.getM6() == 1);
+            model6Check.setSelected(current.getM6() == 1 && current.getBoardAnswer() != 1);
             randomSort2.setSelected(current.getrRandomSort() == 1);
             qdMode.setSelected(current.getOpenQd() == 1);
             qdDescScore.setSelected(current.getQdDesc() == 1);
@@ -777,7 +795,8 @@ public class StageConfig {
             countTotal.setSelected(current.getCountTotal() == 1);
             answerShow.setSelected(current.getAnswerSingle() == 1);
             desValue.setText(current.getDesValue().toString());
-            ccType8Mode.setSelected(current.getBoardAnswer() == 1);
+            freeAnswerMode.setSelected(current.getQuestionType() == 6 && current.getBoardAnswer() == 1);
+            ccType8Mode.setSelected(current.getQuestionType() == 8 && current.getBoardAnswer() == 1);
             ccType8AnswerShow.setSelected(current.getTeamAnswerSingle() == 1);
             for (Toggle toggle : ccType.getToggles()) {
                 if (toggle.getUserData().toString().equals(current.getQuestionType().toString())) {
@@ -876,7 +895,7 @@ public class StageConfig {
         }
         current.setQuestionType(newQuestionType);
         current.setpAType(paTypeValue);
-        current.setM6(Objects.equals(6, newQuestionType) && ccType8Mode.isSelected()
+        current.setM6(Objects.equals(6, newQuestionType) && freeAnswerMode.isSelected()
                 ? 1 : (model6Check.isSelected() ? 1 : 0));
         current.setRuleType(value);
         current.setRuleContent(data);
@@ -889,7 +908,8 @@ public class StageConfig {
         current.setAnswerSingle(answerShow.isSelected()?1: 0);
         current.setQdDescValue(Integer.parseInt(buzzDescInput.getText()));
         current.setTeamAnswerSingle(ccType8AnswerShow.isSelected()?1:0);
-        current.setBoardAnswer(ccType8Mode.isSelected()?1:0);
+        current.setBoardAnswer(Objects.equals(6, newQuestionType) && freeAnswerMode.isSelected()
+                || Objects.equals(8, newQuestionType) && ccType8Mode.isSelected() ? 1 : 0);
         long dupCount = stagesMapper.selectCount(new LambdaQueryWrapper<Stages>()
                 .eq(Stages::getName, stageName)
                 .ne(Stages::getId, current.getId()));
@@ -967,7 +987,7 @@ public class StageConfig {
         stages.setRuleType(value);
         stages.setRuleContent(data);
         int selectedQuestionType = Integer.parseInt(ccData.toString());
-        stages.setM6(selectedQuestionType == 6 && ccType8Mode.isSelected()
+        stages.setM6(selectedQuestionType == 6 && freeAnswerMode.isSelected()
                 ? 1 : (model6Check.isSelected() ? 1 : 0));
         stages.setrRandomSort(randomSort2Selected?1:0);
         stages.setOpenQd(openQD?1:0);
@@ -978,7 +998,8 @@ public class StageConfig {
         stages.setQdDescValue(Integer.parseInt(buzzDescInput.getText()));
         stages.setOrderVal(timeOrder.isSelected()? 1: 0);
         stages.setTeamAnswerSingle(ccType8AnswerShow.isSelected()?1:0);
-        stages.setBoardAnswer(ccType8Mode.isSelected()?1:0);
+        stages.setBoardAnswer(selectedQuestionType == 6 && freeAnswerMode.isSelected()
+                || selectedQuestionType == 8 && ccType8Mode.isSelected() ? 1 : 0);
         if (addLevel == 1) {
             int size = stagesMapper.selectList(new LambdaQueryWrapper<Stages>()
                 .isNull(Stages::getParentId)).size() + 1;

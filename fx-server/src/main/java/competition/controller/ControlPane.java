@@ -2595,12 +2595,7 @@ public class ControlPane {
                         }
                     }
                     item.setTeamName(runtimeData.get(i).getTeamName());
-                    if (Objects.equals(1, currentStage.getBoardAnswer())) {
-                        int memberIndex = Objects.requireNonNullElse(currentStage.getFreeAnswerMemberIndex(), 0);
-                        item.setMember("队员" + (memberIndex + 1));
-                    } else {
-                        item.setMember(runtimeData.get(i).getUserName());
-                    }
+                    item.setMember(runtimeData.get(i).getUserName());
                     items.add(item);
                 }
 
