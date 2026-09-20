@@ -17,6 +17,9 @@ text-shadow: -1px -1px 0 white, 1px -1px 0 white, -1px 1px 0 white, 1px 1px 0 wh
         <el-col :span="6"> 队员: {{ member }}</el-col>
       </el-row>
     </div>
+    <div v-if="!canAnswer" style="margin: 12px; text-align: center; font-size: 24px; color: #999;">
+      本题未指定当前队员作答
+    </div>
     <div id="container">
       <div v-if="rule" style="padding: 100px; text-align: center">
         {{rule}}
@@ -254,7 +257,7 @@ text-shadow: -1px -1px 0 white, 1px -1px 0 white, -1px 1px 0 white, 1px 1px 0 wh
               <el-button disabled style="width: 200px; height: 50px; font-size: x-large" type="primary" @click="submitAnswer"> {{btnText}} </el-button>
             </div>
             <div v-else>
-              <el-button :disabled="second <= 0 || showResult || activeDiv === '' || isBuzz" style="width: 200px; height: 50px; font-size: x-large; z-index: 2" type="primary" @click="submitAnswer"> {{btnText}} </el-button>
+              <el-button :disabled="!canAnswer || second <= 0 || showResult || activeDiv === '' || isBuzz" style="width: 200px; height: 50px; font-size: x-large; z-index: 2" type="primary" @click="submitAnswer"> {{btnText}} </el-button>
             </div>
           </div>
         </div>
@@ -312,6 +315,23 @@ export default {
       return {
         visibility: (this.stage.openQd && this.second >= 0 && this.isBuzz) ? 'visible' : 'hidden',
       }
+    },
+    canAnswer() {
+      if (!this.stage || this.stage.questionType !== 6 || this.stage.boardAnswer !== 1) {
+        return true
+      }
+      const selectedTeams = this.stage.freeAnswerTeams || []
+      if (!this.teamInfo || selectedTeams.indexOf(this.teamInfo.fullName) < 0) {
+        return false
+      }
+      const rawMembers = this.teamInfo.members || ''
+      let members
+      try {
+        members = rawMembers.trim().startsWith('[') ? JSON.parse(rawMembers) : rawMembers.split(',')
+      } catch (e) {
+        members = rawMembers.split(',')
+      }
+      return members[this.stage.freeAnswerMemberIndex || 0] === this.member
     }
   },
   
@@ -336,6 +356,10 @@ export default {
     },
     
     submitAnswer(){
+      if (!this.canAnswer) {
+        this.$message.warning('本题未指定当前队员作答')
+        return
+      }
       // 提交答案到后台
       console.log(this.activeDiv)
       if (this.questionItem.questionType === '多选题' || this.questionItem.questionType === '不定项选择题') {
@@ -416,10 +440,12 @@ export default {
 
 
     setActiveDiv(divNumber) {
+      if (!this.canAnswer) return
       this.activeDiv = divNumber;
     },
 
     appendActiveDiv(divNumber) {
+      if (!this.canAnswer) return
       if (this.activeDiv.indexOf(divNumber) >= 0) {
         this.activeDiv = this.activeDiv.replace(divNumber, "")
       } else {

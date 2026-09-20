@@ -38,8 +38,15 @@
             <div class="fixed-layer-content" v-show="!buzzStatus && showStatus" :style="isType8AnswerMode ? { height: 'auto' } : {}">
               <el-row>
                 <el-col :span="22">
+                  <!-- 自由答题：无论指定几号队员，状态条始终按团队显示 -->
+                  <div v-if="isFreeAnswerMode"
+                       class="board-item"
+                       :style="{ backgroundColor: freeAnswerStatusColor(item) }">
+                    {{ freeAnswerStatusText(item) }}
+                  </div>
+
                   <!-- model61：成员状态格 -->
-                  <div v-if="showMember" class="member-status-row">
+                  <div v-else-if="showMember" class="member-status-row">
                     <div
                         v-for="(st, idx) in item.statusList"
                         :key="idx"
@@ -165,6 +172,21 @@ export default {
       if (item.stageSelectStatus === 1) return '已选择';
       return '未选择';
     },
+    freeAnswerStatus(item) {
+      const selectedTeams = (this._stage && this._stage.freeAnswerTeams) || [];
+      if (selectedTeams.indexOf(item.fullName) < 0) return -1;
+      const index = (this._stage && this._stage.freeAnswerMemberIndex) || 0;
+      return item.statusList && item.statusList[index] !== undefined ? item.statusList[index] : 0;
+    },
+    freeAnswerStatusColor(item) {
+      const status = this.freeAnswerStatus(item);
+      return status < 0 ? '#888888' : this.statusColor[status];
+    },
+    freeAnswerStatusText(item) {
+      const status = this.freeAnswerStatus(item);
+      if (status < 0) return '未参与';
+      return ['', '已提交', '正确', '错误'][status] || '未提交';
+    },
   },
   computed: {
     // 直接读 store，teams 更新后界面实时刷新（避免本地拷贝导致的不同步）
@@ -175,6 +197,11 @@ export default {
 
     // model61 路由：个人答题模式，展示成员状态格
     showMember() { return this._route.includes('model61'); },
+
+    isFreeAnswerMode() {
+      return this.showMember && !!(this._stage
+          && this._stage.questionType === 6 && this._stage.boardAnswer === 1);
+    },
 
     // model60 路由：团队答题模式
     isModel60Mode() { return this._route.includes('model60'); },
