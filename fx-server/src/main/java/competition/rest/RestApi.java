@@ -393,7 +393,6 @@ public class RestApi {
 
     @GetMapping("/model6BoardData")
     public JsonResp getModel6Data() throws Exception {
-        List<Teams> teams = TeamRuntime.getTeams();
         List<Model60RuntimeData.ModelData> runtimeData = Model60RuntimeData.getRuntimeData();
         competition.entity.Stages currentStage = controlPane.getCurrentStage();
 
@@ -403,13 +402,13 @@ public class RestApi {
         // phase 3: 题目已加载，作答进行中
         // phase 4: 答案已公布
         int phase;
-        if (currentStage == null || currentStage.getQuestionType() != 6) {
+        if (currentStage == null || !currentStage.isAnswerMode()) {
             phase = 1;
         } else if (GlobalCache.showAnswer) {
             phase = 4;
         } else {
             boolean questionLoaded;
-            if (Objects.equals(1, currentStage.getM6())) {
+            if (currentStage.isMemberAnswerMode()) {
                 List<Model61RuntimeData.ModelData> m61 = Model61RuntimeData.getRuntimeData();
                 questionLoaded = !m61.isEmpty() && m61.stream().anyMatch(d -> StringUtils.hasText(d.getAnswer()));
             } else {
@@ -418,6 +417,12 @@ public class RestApi {
             phase = questionLoaded ? 3 : 2;
         }
 
+        return JsonResp.success(buildModel6BoardData(currentStage, phase));
+    }
+
+    List<Model6RestData> buildModel6BoardData(competition.entity.Stages currentStage, int phase) {
+        List<Teams> teams = TeamRuntime.getTeams();
+        List<Model60RuntimeData.ModelData> runtimeData = Model60RuntimeData.getRuntimeData();
         Map<String, Model60RuntimeData.ModelData> collect = runtimeData.stream()
                 .collect(Collectors.toMap(Model60RuntimeData.ModelData::getTeamName, d -> d));
 
@@ -430,6 +435,22 @@ public class RestApi {
             restData.setPhase(phase);
 
             Model60RuntimeData.ModelData scoreVal = collect.get(team.getFullName());
+
+            if (currentStage != null && currentStage.isFreeAnswerMode()) {
+                Model61RuntimeData.ModelData participant = Model61RuntimeData.getRuntimeData().stream()
+                        .filter(item -> Objects.equals(item.getTeamName(), team.getFullName()))
+                        .findFirst().orElse(null);
+                boolean submitted = participant != null && StringUtils.hasText(participant.getUserSelect());
+                restData.setBuzzStatus(0);
+                if (phase == 4 && participant != null) {
+                    restData.setBuzzStatus(submitted && Objects.equals(participant.getAnswer(), participant.getUserSelect()) ? 2 : 3);
+                    restData.setAnswer(submitted ? participant.getUserSelect() : null);
+                } else if (phase == 3 && submitted) {
+                    restData.setBuzzStatus(1);
+                }
+                responseData.add(restData);
+                continue;
+            }
 
             if (phase == 4) {
                 // 答案公布：按正确/错误设置 buzzStatus，展示队伍提交的答案
@@ -455,7 +476,7 @@ public class RestApi {
 
             responseData.add(restData);
         }
-        return JsonResp.success(responseData);
+        return responseData;
     }
 
 

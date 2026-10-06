@@ -13,7 +13,7 @@ public class CorsFilters {
             @Override
             public void addCorsMappings(CorsRegistry registry) {
                 registry.addMapping("/**") // 应用于所有的路径
-                        .allowedOrigins("*") // 允许的来源
+                        .allowedOriginPatterns("*") // 与 SockJS 携带凭证的跨域请求兼容
                         .allowedMethods("*") // 允许的方法
                         .allowedHeaders("*"); // 允许的头部
             }

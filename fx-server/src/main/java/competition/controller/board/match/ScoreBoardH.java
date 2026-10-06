@@ -218,7 +218,7 @@ public class ScoreBoardH implements BoardPane {
         }
 
         // 自选环节：显示选择状态
-        if (currentStage != null && currentStage.getBoardAnswer() == 1) {
+        if (currentStage != null && currentStage.getQuestionType() == 8 && currentStage.getBoardAnswer() == 1) {
             boolean isAnswerPhase = controlPane.getPreviewPane() instanceof QuestionPreviewPreview
                     && currentStage.getQuestionType() == 8;
             count++;
@@ -411,13 +411,12 @@ public class ScoreBoardH implements BoardPane {
      */
     private int addModelPanels(VBox box, Teams team, Stages currentStage, String[] cfgArr,
                                Font statusFont, Color statusColor, boolean sb, int count) {
-        Integer m6 = currentStage.getM6();
         Integer questionType = currentStage.getQuestionType();
         
-        if (questionType == 6 && controlPane.getPreviewPane() instanceof QuestionPreviewPreview) {
-            if (m6 == 0) {
+        if (currentStage.isAnswerMode() && controlPane.getPreviewPane() instanceof QuestionPreviewPreview) {
+            if (!currentStage.isMemberAnswerMode()) {
                 count = addModel60Panel(box, team, currentStage, cfgArr, statusFont, statusColor, sb, count);
-            } else if (m6 == 1) {
+            } else if (currentStage.isMemberAnswerMode()) {
                 count = addModel61Panel(box, team, currentStage, cfgArr, statusFont, statusColor, sb, count);
             }
         } else if (questionType == 7) {
@@ -508,9 +507,9 @@ public class ScoreBoardH implements BoardPane {
         String members = team.getMembers();
         if (!StringUtils.isEmpty(members)) {
             String[] ms = TeamMemberCodec.split(members);
-            boolean freeAnswer = Objects.equals(1, currentStage.getBoardAnswer());
-            int selectedMember = freeAnswer && RuntimeUtil.boardAnswerMemberInfo != null
-                    ? RuntimeUtil.boardAnswerMemberInfo.getSelectMemberIndex() : 0;
+            boolean freeAnswer = currentStage.isFreeAnswerMode();
+            int selectedMember = freeAnswer && currentStage.getFreeAnswerMemberIndex() != null
+                    ? currentStage.getFreeAnswerMemberIndex() : 0;
             int displayCount = freeAnswer ? 1 : ms.length;
             double w = Integer.parseInt(cfgArr[19]) * 1.0 / displayCount;
             

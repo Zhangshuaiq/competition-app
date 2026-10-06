@@ -311,8 +311,8 @@ public class Model61RuntimeData {
         // 题目分值
         private Integer score = 0;
 
-        // 答错扣分
-        private Integer descScore = 0;
+        // 未提供题目扣分值时使用环节配置；明确设置 0 则不扣分。
+        private Integer descScore;
 
         // 显示答题结果
         private boolean show;

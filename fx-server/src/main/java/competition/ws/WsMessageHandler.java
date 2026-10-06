@@ -299,7 +299,7 @@ public class WsMessageHandler {
                 Model61RuntimeData.ModelData.class);
         ControlPane currentControlPane = getCachedControlPane();
         Stages stage = currentControlPane == null ? null : currentControlPane.getCurrentStage();
-        if (stage != null && Objects.equals(1, stage.getBoardAnswer())
+        if (stage != null && stage.isFreeAnswerMode()
                 && !Model61RuntimeData.accepts(data.getTeamName(), data.getUserName())) {
             log.warn("忽略自由答题中未被指定的提交: team={}, member={}",
                     data.getTeamName(), data.getUserName());

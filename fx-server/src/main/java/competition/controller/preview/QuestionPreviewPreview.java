@@ -496,9 +496,9 @@ public class QuestionPreviewPreview extends PreviewPane<Questions> {
         inner.setTxbz(txbz);
 
         Stages currentStage = controlPane.getCurrentStage();
-        if (currentStage != null && currentStage.getQuestionType() == 6) {
+        if (currentStage != null && currentStage.isAnswerMode()) {
             log.info("当前题目信息为 {}", inner);
-            if (currentStage.getM6() == 0) {
+            if (!currentStage.isMemberAnswerMode()) {
                 messageHandler.notifyPage("model60", inner);
             } else {
                 messageHandler.notifyPage("model61", inner);

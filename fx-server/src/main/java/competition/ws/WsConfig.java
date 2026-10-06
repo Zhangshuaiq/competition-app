@@ -17,7 +17,7 @@ public class WsConfig implements WebSocketMessageBrokerConfigurer {
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
         // 注册一个STOMP的endpoint，并指定使用SockJS协议
-        registry.addEndpoint("/ws").setAllowedOrigins("*").withSockJS()
+        registry.addEndpoint("/ws").setAllowedOriginPatterns("*").withSockJS()
                 .setStreamBytesLimit(512 * 1024)  // 增加流字节限制
                 .setHttpMessageCacheSize(1000)    // 增加HTTP消息缓存
                 .setDisconnectDelay(30 * 1000);   // 断开延迟30秒

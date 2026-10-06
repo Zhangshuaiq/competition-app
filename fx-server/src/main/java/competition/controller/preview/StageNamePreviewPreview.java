@@ -318,7 +318,7 @@ public class StageNamePreviewPreview extends PreviewPane<Integer> {
                         controlPane.setPreviewPane(
                                 Navigator.preview("/view/preview/StageQuestionPreview.fxml", "", "/view/style.css", true, stages)
                         );
-                    } else if (stages.getQuestionType() == 6){
+                    } else if (stages.isAnswerMode()){
                         // 答题模式
                         controlPane.setPreviewPane(
                                 Navigator.preview("/view/preview/StageQuestionPreview.fxml", "", "/view/style.css", true, stages)
@@ -326,7 +326,7 @@ public class StageNamePreviewPreview extends PreviewPane<Integer> {
 //                        List<Questions> questionList = CurrentQuestions.getQuestionList();
 //                        QuestionPreviewPreview.setCurrent( questionList.get(0));
 //                        controlPane.selectQuestion(questionList.get(0).getQuestionNumber().toString());
-                        if (stages.getM6() == 0) {
+                        if (!stages.isMemberAnswerMode()) {
 //                            Model60Preview.setCurrent(questionList.get(0));
 //                            controlPane.setPreviewPane(
 //                                    Navigator.preview("/view/preview/Model60.fxml", "", "/view/style.css", true, true)

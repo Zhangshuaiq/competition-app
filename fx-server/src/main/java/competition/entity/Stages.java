@@ -5,12 +5,31 @@ import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
+import com.alibaba.fastjson2.annotation.JSONField;
 
 import java.util.List;
+import java.util.Objects;
 
 @Data
 @TableName("t_stages")
 public class Stages {
+    public static final int FREE_ANSWER_TYPE = 9;
+
+    /** 自由答题是独立的出题方式，不依赖个人或平板作答标记。 */
+    @JSONField(serialize = false)
+    public boolean isFreeAnswerMode() {
+        return Objects.equals(FREE_ANSWER_TYPE, questionType);
+    }
+
+    @JSONField(serialize = false)
+    public boolean isAnswerMode() {
+        return Objects.equals(6, questionType) || isFreeAnswerMode();
+    }
+
+    @JSONField(serialize = false)
+    public boolean isMemberAnswerMode() {
+        return isAnswerMode() && (isFreeAnswerMode() || Objects.equals(1, m6));
+    }
     
     @TableId(type = IdType.AUTO)
     private Integer id;

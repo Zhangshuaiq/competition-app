@@ -17,7 +17,6 @@ import javafx.util.Duration;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -70,12 +69,9 @@ public class  TeamConnectionBarPreview {
         int totalItems = 0; // 总元素数量
 
         Map<String, String> seqMap = TeamRuntime.getSeqMap();
-        Map<String, List<String>> teamMemberMapping = TeamRuntime.getTeamMemberMapping();
-        LinkedHashMap<String, List<String>> connectMembers = WsTeamMemberWaiter.getConnectMembers();
 
         for (Map.Entry<String, List<String>> entry : WsTeamMemberWaiter.getConnectTeams().entrySet()) {
             String teamId = entry.getKey();
-            List<String> clientIdList = entry.getValue();
             String seq = seqMap.get(teamId);
             if (StringUtils.isEmpty(seq)) {
                 continue;
@@ -83,10 +79,11 @@ public class  TeamConnectionBarPreview {
 
             // 创建圆圈
             Circle circle = new Circle(CIRCLE_RADIUS);
-            if (clientIdList != null && !clientIdList.isEmpty()
-                && teamMemberMapping.get(teamId).size() == clientIdList.size()
-                && teamMemberMapping.get(teamId).equals(connectMembers.get(teamId))) {
+            WsTeamMemberWaiter.ConnectionStatus status = WsTeamMemberWaiter.getConnectionStatus(teamId);
+            if (status == WsTeamMemberWaiter.ConnectionStatus.ONLINE) {
                 circle.setFill(Color.GREEN);
+            } else if (status == WsTeamMemberWaiter.ConnectionStatus.PARTIAL) {
+                circle.setFill(Color.ORANGE);
             } else {
                 circle.setFill(Color.RED);
             }

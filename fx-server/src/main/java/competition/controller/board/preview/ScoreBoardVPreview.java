@@ -253,10 +253,9 @@ public class ScoreBoardVPreview extends PreviewPane implements BoardPane {
 
             // 面板分数调整（Model60 模式）
             if (currentStage != null) {
-                Integer m6 = currentStage.getM6();
                 Integer questionType = currentStage.getQuestionType();
-                if (questionType == 6 && controlPane.getPreviewPane() instanceof QuestionPreviewPreview) {
-                    if (m6 == 0 && !Objects.equals(1, currentStage.getBoardAnswer())) {
+                if (currentStage.isAnswerMode() && controlPane.getPreviewPane() instanceof QuestionPreviewPreview) {
+                    if (!currentStage.isMemberAnswerMode()) {
                         List<Model60RuntimeData.ModelData> runtimeData = Model60RuntimeData.getRuntimeData();
                         Map<String, Model60RuntimeData.ModelData> answerMap = runtimeData.stream().collect(Collectors.toMap(x -> x.getTeamName(), x -> x));
                         count++;
@@ -303,7 +302,7 @@ public class ScoreBoardVPreview extends PreviewPane implements BoardPane {
                             box.getChildren().add(stackPane2);
                         }
 
-                    } else if (m6 == 1) {
+                    } else if (currentStage.isMemberAnswerMode()) {
                         List<Model61RuntimeData.ModelData> runtimeData = Model61RuntimeData.getRuntimeData();
                         Map<String, Model61RuntimeData.ModelData> dataMap = runtimeData.stream().collect(Collectors.toMap(x -> x.getTeamName() + "-" + x.getUserName(), x -> x));
                         count++;
@@ -314,9 +313,9 @@ public class ScoreBoardVPreview extends PreviewPane implements BoardPane {
                         String members = team.getMembers();
                         if (!StringUtils.isEmpty(members)) {
                             String[] ms = TeamMemberCodec.split(members);
-                            boolean freeAnswer = Objects.equals(1, currentStage.getBoardAnswer());
-                            int selectedMember = freeAnswer && RuntimeUtil.boardAnswerMemberInfo != null
-                                    ? RuntimeUtil.boardAnswerMemberInfo.getSelectMemberIndex() : 0;
+                            boolean freeAnswer = currentStage.isFreeAnswerMode();
+                            int selectedMember = freeAnswer && currentStage.getFreeAnswerMemberIndex() != null
+                                    ? currentStage.getFreeAnswerMemberIndex() : 0;
                             int displayCount = freeAnswer ? 1 : ms.length;
                             double w = Integer.parseInt(cfgArr[19]) * 1.0 / displayCount;
                             for (int x = 0; x < displayCount; x++) {
@@ -372,7 +371,7 @@ public class ScoreBoardVPreview extends PreviewPane implements BoardPane {
             }
 
             // 自选环节：显示已选子环节（样式与队名行完全一致）
-            if (currentStage != null && currentStage.getBoardAnswer() == 1) {
+            if (currentStage != null && currentStage.getQuestionType() == 8 && currentStage.getBoardAnswer() == 1) {
                 boolean isType8AnswerPhase = controlPane.getPreviewPane() instanceof QuestionPreviewPreview
                         && currentStage.getQuestionType() == 8;
                 boolean isType6AnswerPhase = controlPane.getPreviewPane() instanceof QuestionPreviewPreview

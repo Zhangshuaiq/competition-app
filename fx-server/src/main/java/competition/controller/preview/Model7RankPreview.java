@@ -251,9 +251,9 @@ public class Model7RankPreview extends RankPane {
         List<Model7RankData> rankList = new ArrayList<>();
 
         Map<String, Object> mapData = new HashMap<>();
-        if (currentStage.getQuestionType() == 6) {
+        if (currentStage.isAnswerMode()) {
             mapData.put("title", "排行榜");
-            if (currentStage.getM6() == 0) {
+            if (!currentStage.isMemberAnswerMode()) {
 
                 List<List<Model60RuntimeData.ModelData>> runtimeData60 = Model60RuntimeData.getTotalData();
                 if (runtimeData60.isEmpty()) {
@@ -302,16 +302,15 @@ public class Model7RankPreview extends RankPane {
                     rankData.setScore(score);
                     rankList.add(rankData);
                 }
-            } else if (currentStage.getM6() == 1) {
+            } else if (currentStage.isMemberAnswerMode()) {
 
                 List<List<Model61RuntimeData.ModelData>> runtimeData61 = Model61RuntimeData.getTotalData();
                 if (runtimeData61.isEmpty()) {
                     return;
                 }
                 List<Model7RankData> memeryData = new ArrayList<>();
-                boolean freeAnswer = Objects.equals(1, currentStage.getBoardAnswer());
-                boolean accumulateTime = freeAnswer && RuntimeUtil.boardAnswerMemberInfo != null
-                        && RuntimeUtil.boardAnswerMemberInfo.isAccumulateMemberTime();
+                boolean freeAnswer = currentStage.isFreeAnswerMode();
+                boolean accumulateTime = freeAnswer && Boolean.TRUE.equals(currentStage.getFreeAnswerTimeRank());
                 for (List<Model61RuntimeData.ModelData> modelDataList : runtimeData61) {
                     for (Model61RuntimeData.ModelData modelData : modelDataList) {
                         Model7RankData rankData = new Model7RankData();

@@ -370,17 +370,16 @@ public class StageQuestionPreviewPreview extends PreviewPane<Stages> {
 
                         // messageHandler.sendQuestionGroup();
                         // 扩展屏显示题目信息
-                    } else if (inner.getQuestionType() == 6) {
+                    } else if (inner.isAnswerMode()) {
                         // 重置当前的答题状态
                         TeamRuntime.resetStatus();
-                        Integer m6 = inner.getM6();
                         String tihao = questions.getOrder().toString();
                         // Questions questions = CurrentQuestions.getQ(tihao);
                         // if (questions == null) {
                         // Information.error("请选择题号");
                         // return;
                         // }
-                        if (m6 == 0) {
+                        if (!inner.isMemberAnswerMode()) {
                             // 答题模式 -- 团队模式
                             questions.setHasAnswer(true);
                             // CurrentQuestions.recordAnswer(tihao);
@@ -403,7 +402,7 @@ public class StageQuestionPreviewPreview extends PreviewPane<Stages> {
                             questions.setHasAnswer(true);
                             // 设置当前需要显示的题目
                             // 设置选手信息
-                            Model61RuntimeData.setTeams(TeamRuntime.getTeams());
+                            controlPane.prepareMemberAnswerTeams(controlPane.getCurrentStage());
                             controlPane.setPreviewPane(
                                     Navigator.preview("/view/preview/QuestionPreview.fxml", "", "/view/style.css", true,
                                             questions));

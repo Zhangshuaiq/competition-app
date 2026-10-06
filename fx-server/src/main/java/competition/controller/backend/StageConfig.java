@@ -92,7 +92,7 @@ public class StageConfig {
     RadioButton timeType1, timeType2;
 
     @FXML
-    RadioButton ccType1, ccType2, ccType3, ccType4, ccType5, ccType6, ccType7, ccType8;
+    RadioButton ccType1, ccType2, ccType3, ccType4, ccType5, ccType6, ccType7, ccType8, ccType9;
 
     @FXML
     CheckBox randomSort, randomSort2, stageShow;
@@ -107,7 +107,7 @@ public class StageConfig {
     ImageView previewImg;
 
     @FXML
-    CheckBox model6Check, answerShow, freeAnswerMode, ccType8Mode, ccType8AnswerShow;
+    CheckBox model6Check, answerShow, freeAnswerSingle, ccType8Mode, ccType8AnswerShow;
 
     @Resource
     private ControlPane controlPane;
@@ -175,128 +175,20 @@ public class StageConfig {
         dataMap.put(6, "答题模式");
         dataMap.put(7, "竞技模式");
         dataMap.put(8, "平板自选");
+        dataMap.put(Stages.FREE_ANSWER_TYPE, "自由答题");
         timeCountType = new ToggleGroup();
         timeCountType.getToggles().addAll(timeType1, timeType2);
 
         ccType = new ToggleGroup();
-        ccType.getToggles().addAll(ccType1, ccType2, ccType3, ccType4, ccType5, ccType6, ccType7, ccType8);
+        ccType.getToggles().addAll(ccType1, ccType2, ccType3, ccType4, ccType5, ccType6, ccType7, ccType8, ccType9);
         ccType.selectedToggleProperty().addListener((observable, oldValue, newValue) -> {
-            freeAnswerMode.setVisible(newValue == ccType6);
             randomSort2.setVisible(newValue == ccType7);
+            model6Check.setVisible(newValue == ccType6);
+            answerShow.setVisible(newValue == ccType6);
+            ccType8Mode.setVisible(newValue == ccType8);
+            ccType8AnswerShow.setVisible(newValue == ccType8);
+            freeAnswerSingle.setVisible(newValue == ccType9);
         });
-        freeAnswerMode.selectedProperty().addListener((observable, oldValue, selected) -> {
-            if (selected) {
-                model6Check.setSelected(false);
-            }
-            if (ccType6.isSelected()) {
-                answerShow.setVisible(!selected);
-                ccType8AnswerShow.setVisible(selected);
-            }
-        });
-        model6Check.selectedProperty().addListener((observable, oldValue, selected) -> {
-            if (selected && ccType6.isSelected()) {
-                freeAnswerMode.setSelected(false);
-            }
-        });
-
-        ccType1.selectedProperty().addListener(new ChangeListener<Boolean>() {
-            @Override
-            public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
-                if (newValue) {
-                    model6Check.setVisible(false);
-                    answerShow.setVisible(false);
-                    ccType8Mode.setVisible(false);
-                    ccType8AnswerShow.setVisible(false);
-                }
-            }
-        });
-
-        ccType2.selectedProperty().addListener(new ChangeListener<Boolean>() {
-            @Override
-            public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
-                if (newValue) {
-                    model6Check.setVisible(false);
-                    answerShow.setVisible(false);
-                    ccType8Mode.setVisible(false);
-                    ccType8AnswerShow.setVisible(false);
-                }
-            }
-        });
-
-        ccType3.selectedProperty().addListener(new ChangeListener<Boolean>() {
-            @Override
-            public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
-                if (newValue) {
-                    model6Check.setVisible(false);
-                    answerShow.setVisible(false);
-                    ccType8Mode.setVisible(false);
-                    ccType8AnswerShow.setVisible(false);
-                }
-            }
-        });
-
-        ccType4.selectedProperty().addListener(new ChangeListener<Boolean>() {
-            @Override
-            public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
-                if (newValue) {
-                    model6Check.setVisible(false);
-                    answerShow.setVisible(false);
-                    ccType8Mode.setVisible(false);
-                    ccType8AnswerShow.setVisible(false);
-                }
-            }
-        });
-
-        ccType5.selectedProperty().addListener(new ChangeListener<Boolean>() {
-            @Override
-            public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
-                if (newValue) {
-                    model6Check.setVisible(false);
-                    answerShow.setVisible(false);
-                    ccType8Mode.setVisible(false);
-                    ccType8AnswerShow.setVisible(false);
-                }
-            }
-        });
-
-        ccType6.selectedProperty().addListener(new ChangeListener<Boolean>() {
-            @Override
-            public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
-                if (newValue) {
-                    model6Check.setVisible(true);
-                    answerShow.setVisible(!freeAnswerMode.isSelected());
-                    ccType8Mode.setVisible(false);
-                    ccType8AnswerShow.setVisible(freeAnswerMode.isSelected());
-                    ccType8AnswerShow.setText("自由答题答案单独展示");
-                }
-            }
-        });
-
-        ccType7.selectedProperty().addListener(new ChangeListener<Boolean>() {
-            @Override
-            public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
-                if (newValue) {
-                    model6Check.setVisible(false);
-                    answerShow.setVisible(false);
-                    ccType8Mode.setVisible(false);
-                    ccType8AnswerShow.setVisible(false);
-                }
-            }
-        });
-
-        ccType8.selectedProperty().addListener(new ChangeListener<Boolean>() {
-            @Override
-            public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
-                if (newValue) {
-                    ccType8Mode.setVisible(true);
-                    ccType8AnswerShow.setVisible(true);
-                    ccType8AnswerShow.setText("团队答案单独页");
-                    model6Check.setVisible(false);
-                    answerShow.setVisible(false);
-                }
-            }
-        });
-
 
         paChoice.getItems().addAll("直接抢答",
             "标准模式",
@@ -785,7 +677,7 @@ public class StageConfig {
             selectGreySelect.setSelected(current.getSelectGrey() == 1);
             randomSort.setSelected(current.getRandomSort() == 1);
             stageShow.setSelected(current.getShow() == 1);
-            model6Check.setSelected(current.getM6() == 1 && current.getBoardAnswer() != 1);
+            model6Check.setSelected(current.getQuestionType() == 6 && current.getM6() == 1);
             randomSort2.setSelected(current.getrRandomSort() == 1);
             qdMode.setSelected(current.getOpenQd() == 1);
             qdDescScore.setSelected(current.getQdDesc() == 1);
@@ -794,8 +686,8 @@ public class StageConfig {
             timeOrder.setSelected(current.getOrderVal() == 1);
             countTotal.setSelected(current.getCountTotal() == 1);
             answerShow.setSelected(current.getAnswerSingle() == 1);
+            freeAnswerSingle.setSelected(current.getAnswerSingle() == 1);
             desValue.setText(current.getDesValue().toString());
-            freeAnswerMode.setSelected(current.getQuestionType() == 6 && current.getBoardAnswer() == 1);
             ccType8Mode.setSelected(current.getQuestionType() == 8 && current.getBoardAnswer() == 1);
             ccType8AnswerShow.setSelected(current.getTeamAnswerSingle() == 1);
             for (Toggle toggle : ccType.getToggles()) {
@@ -895,8 +787,7 @@ public class StageConfig {
         }
         current.setQuestionType(newQuestionType);
         current.setpAType(paTypeValue);
-        current.setM6(Objects.equals(6, newQuestionType) && freeAnswerMode.isSelected()
-                ? 1 : (model6Check.isSelected() ? 1 : 0));
+        current.setM6(Objects.equals(6, newQuestionType) && model6Check.isSelected() ? 1 : 0);
         current.setRuleType(value);
         current.setRuleContent(data);
         current.setrRandomSort(randomSort2Selected?1:0);
@@ -905,11 +796,12 @@ public class StageConfig {
         current.setOrderVal(timeOrder.isSelected()? 1: 0);
         current.setDesValue(Integer.parseInt(desValue.getText()));
         current.setCountTotal(countTotal.isSelected()? 1: 0);
-        current.setAnswerSingle(answerShow.isSelected()?1: 0);
+        current.setAnswerSingle(Objects.equals(Stages.FREE_ANSWER_TYPE, newQuestionType)
+                ? (freeAnswerSingle.isSelected() ? 1 : 0)
+                : (Objects.equals(6, newQuestionType) && answerShow.isSelected() ? 1 : 0));
         current.setQdDescValue(Integer.parseInt(buzzDescInput.getText()));
-        current.setTeamAnswerSingle(ccType8AnswerShow.isSelected()?1:0);
-        current.setBoardAnswer(Objects.equals(6, newQuestionType) && freeAnswerMode.isSelected()
-                || Objects.equals(8, newQuestionType) && ccType8Mode.isSelected() ? 1 : 0);
+        current.setTeamAnswerSingle(Objects.equals(8, newQuestionType) && ccType8AnswerShow.isSelected() ? 1 : 0);
+        current.setBoardAnswer(Objects.equals(8, newQuestionType) && ccType8Mode.isSelected() ? 1 : 0);
         long dupCount = stagesMapper.selectCount(new LambdaQueryWrapper<Stages>()
                 .eq(Stages::getName, stageName)
                 .ne(Stages::getId, current.getId()));
@@ -987,19 +879,19 @@ public class StageConfig {
         stages.setRuleType(value);
         stages.setRuleContent(data);
         int selectedQuestionType = Integer.parseInt(ccData.toString());
-        stages.setM6(selectedQuestionType == 6 && freeAnswerMode.isSelected()
-                ? 1 : (model6Check.isSelected() ? 1 : 0));
+        stages.setM6(selectedQuestionType == 6 && model6Check.isSelected() ? 1 : 0);
         stages.setrRandomSort(randomSort2Selected?1:0);
         stages.setOpenQd(openQD?1:0);
         stages.setQdDesc(qdDescScore.isSelected()?1:0);
         stages.setDesValue(Integer.parseInt(desValue.getText()));
         stages.setCountTotal(countTotal.isSelected()? 1: 0);
-        stages.setAnswerSingle(answerShow.isSelected()?1: 0);
+        stages.setAnswerSingle(selectedQuestionType == Stages.FREE_ANSWER_TYPE
+                ? (freeAnswerSingle.isSelected() ? 1 : 0)
+                : (selectedQuestionType == 6 && answerShow.isSelected() ? 1 : 0));
         stages.setQdDescValue(Integer.parseInt(buzzDescInput.getText()));
         stages.setOrderVal(timeOrder.isSelected()? 1: 0);
-        stages.setTeamAnswerSingle(ccType8AnswerShow.isSelected()?1:0);
-        stages.setBoardAnswer(selectedQuestionType == 6 && freeAnswerMode.isSelected()
-                || selectedQuestionType == 8 && ccType8Mode.isSelected() ? 1 : 0);
+        stages.setTeamAnswerSingle(selectedQuestionType == 8 && ccType8AnswerShow.isSelected() ? 1 : 0);
+        stages.setBoardAnswer(selectedQuestionType == 8 && ccType8Mode.isSelected() ? 1 : 0);
         if (addLevel == 1) {
             int size = stagesMapper.selectList(new LambdaQueryWrapper<Stages>()
                 .isNull(Stages::getParentId)).size() + 1;
@@ -1056,6 +948,12 @@ public class StageConfig {
                 stages.setQuestionType(findRootQuestionType(parent));
             }
         }
+        if (stages.isFreeAnswerMode()) {
+            stages.setM6(0);
+            stages.setBoardAnswer(0);
+            stages.setTeamAnswerSingle(0);
+            stages.setAnswerSingle(freeAnswerSingle.isSelected() ? 1 : 0);
+        }
         stagesMapper.insert(stages);
         refreshStageDisplay();
     }
@@ -1076,6 +974,11 @@ public class StageConfig {
         );
         for (Stages child : children) {
             child.setQuestionType(questionType);
+            if (child.isFreeAnswerMode()) {
+                child.setM6(0);
+                child.setBoardAnswer(0);
+                child.setTeamAnswerSingle(0);
+            }
             stagesMapper.updateById(child);
             syncDescendantsQuestionType(child.getId(), questionType);
         }

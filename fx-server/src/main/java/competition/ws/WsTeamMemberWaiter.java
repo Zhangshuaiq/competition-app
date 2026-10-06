@@ -1,92 +1,119 @@
 package competition.ws;
 
 import competition.entity.Teams;
+import competition.util.TeamMemberCodec;
 import competition.util.TeamRuntime;
-import org.springframework.util.CollectionUtils;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
+import java.util.Objects;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 public class WsTeamMemberWaiter {
+    // 一个连接只登记一个团队成员；同一成员可有多个真实在线会话。
+    private static final Map<String, MemberConnection> connections = new LinkedHashMap<>();
 
-    // 连接中的队伍
-    private static LinkedHashMap<String, List<String>> connectTeams = new LinkedHashMap<>();
-
-    private static LinkedHashMap<String, List<String>> connectMembers = new LinkedHashMap<>();
-
-    public static void initData() {
-        TeamRuntime.getTeams().forEach(team -> {
-            connectTeams.put(team.getShortName(), new ArrayList<>());
-            connectMembers.put(team.getShortName(), new ArrayList<>());
-        });
+    public enum ConnectionStatus {
+        OFFLINE, PARTIAL, ONLINE
     }
 
-    // 添加连接的队伍，登录时调用
-    public static void addConnectedTeam(String clientId, String member) {
-        List<Teams> teams = TeamRuntime.getTeams();
-        String[] split = member.split("-");
-        String te = split[0];
-        String mem = split[1].trim();
-        teams.stream().filter(team -> te.equals(team.getShortName())).findFirst().ifPresent(team -> {
-            if (!connectTeams.get(team.getShortName()).contains(clientId)) {
-                connectTeams.get(team.getShortName()).add(clientId);
-                connectMembers.get(team.getShortName()).add(mem);
-            } else {
-                if ( !connectMembers.get(team.getShortName()).contains(mem)) {
-                    connectMembers.get(team.getShortName()).add(mem);
-                }
-            }
-        });
+    public static synchronized void initData() {
+        connections.entrySet().removeIf(entry -> !isKnownMember(entry.getValue()));
     }
 
-
-    // 添加重连的队伍，重连时调用
-    public static void addReconnectedTeam(String clientId, String member) {
-        if (CollectionUtils.isEmpty(connectMembers)) {
+    public static synchronized void addConnectedTeam(String clientId, String identity) {
+        if (clientId == null || identity == null) {
             return;
         }
-        List<Teams> teams = TeamRuntime.getTeams();
-        String[] split = member.split("-");
-        String te = split[0];
-        String mem = split[1].trim();
-        Optional<Teams> first = teams.stream().filter(team -> te.equals(team.getShortName())).findFirst();
-        first.ifPresent(team -> {
-            if ( connectMembers.get(team.getShortName()).contains(mem)) {
-                // 防止多个链接进入
-                return;
+        // 按最长团队名前缀匹配，避免团队名或成员名中包含 "-" 时拆错。
+        for (Teams team : teams().stream()
+                .filter(item -> item.getShortName() != null)
+                .sorted(Comparator.comparingInt((Teams item) -> item.getShortName().length()).reversed())
+                .collect(Collectors.toList())) {
+            String prefix = team.getShortName() + "-";
+            if (!identity.startsWith(prefix)) {
+                continue;
             }
-            connectTeams.get(team.getShortName()).add(clientId);
-            connectMembers.get(team.getShortName()).add(mem);
-        });
-    }
-
-    // 添加连接
-    public static void addConnectedClient(String clientId) {
-        connectTeams.put(clientId, new ArrayList<>());
-        connectMembers.put(clientId, new ArrayList<>());
-    }
-
-    // 移除连接的队伍，登出时调用
-    public static void removeConnectedTeam(String clientId) {
-        for (Map.Entry<String, List<String>> entry : connectTeams.entrySet()) {
-            if (entry.getValue().contains(clientId)) {
-                int i = entry.getValue().indexOf(clientId);
-                entry.getValue().remove(clientId);
-                connectMembers.get(entry.getKey()).remove(i);
-                break;
+            MemberConnection connection = new MemberConnection(team.getShortName(), identity.substring(prefix.length()).trim());
+            if (isKnownMember(connection)) {
+                connections.put(clientId, connection);
+                return;
             }
         }
     }
 
-
-    public static LinkedHashMap<String, List<String>> getConnectTeams() {
-        return connectTeams;
+    public static void addReconnectedTeam(String clientId, String identity) {
+        addConnectedTeam(clientId, identity);
     }
 
-    public static LinkedHashMap<String, List<String>> getConnectMembers() {
-        return connectMembers;
+    public static synchronized void removeConnectedTeam(String clientId) {
+        connections.remove(clientId);
+    }
+
+    // 返回快照，避免 WebSocket 线程修改集合时界面遍历失败。
+    public static synchronized LinkedHashMap<String, List<String>> getConnectTeams() {
+        LinkedHashMap<String, List<String>> result = emptyTeamMap();
+        connections.forEach((session, connection) -> {
+            if (result.containsKey(connection.team)) {
+                result.get(connection.team).add(session);
+            }
+        });
+        return result;
+    }
+
+    public static synchronized LinkedHashMap<String, List<String>> getConnectMembers() {
+        LinkedHashMap<String, List<String>> result = emptyTeamMap();
+        connections.values().forEach(connection -> {
+            if (result.containsKey(connection.team)) {
+                result.get(connection.team).add(connection.member);
+            }
+        });
+        return result;
+    }
+
+    public static synchronized ConnectionStatus getConnectionStatus(String teamName) {
+        Set<String> expected = teams().stream()
+                .filter(team -> Objects.equals(team.getShortName(), teamName))
+                .flatMap(team -> TeamMemberCodec.decode(team.getMembers()).stream())
+                .map(String::trim).collect(Collectors.toSet());
+        Set<String> online = connections.values().stream()
+                .filter(connection -> Objects.equals(connection.team, teamName))
+                .map(connection -> connection.member)
+                .filter(expected::contains).collect(Collectors.toSet());
+        if (online.isEmpty()) {
+            return ConnectionStatus.OFFLINE;
+        }
+        return online.containsAll(expected) ? ConnectionStatus.ONLINE : ConnectionStatus.PARTIAL;
+    }
+
+    private static boolean isKnownMember(MemberConnection connection) {
+        return teams().stream().anyMatch(team -> Objects.equals(team.getShortName(), connection.team)
+                && TeamMemberCodec.decode(team.getMembers()).stream()
+                .anyMatch(member -> Objects.equals(member.trim(), connection.member)));
+    }
+
+    private static List<Teams> teams() {
+        return TeamRuntime.getTeams() == null ? Collections.emptyList() : TeamRuntime.getTeams();
+    }
+
+    private static LinkedHashMap<String, List<String>> emptyTeamMap() {
+        LinkedHashMap<String, List<String>> result = new LinkedHashMap<>();
+        teams().forEach(team -> result.put(team.getShortName(), new ArrayList<>()));
+        return result;
+    }
+
+    private static class MemberConnection {
+        private final String team;
+        private final String member;
+
+        private MemberConnection(String team, String member) {
+            this.team = team;
+            this.member = member;
+        }
     }
 }
