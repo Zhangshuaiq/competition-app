@@ -1,6 +1,7 @@
 <template>
   <div id="app">
     <FullscreenButton v-if="showGlobalHeader"/>
+    <ConnectionStatus v-if="showConnectionStatus"/>
     <router-view :key="routerKey"></router-view>
     <div v-if="boardImageUrl" class="board-image-overlay">
       <img :src="boardImageUrl" class="board-image-full"/>
@@ -10,12 +11,14 @@
 
 <script>
 import FullscreenButton from "@/components/FullscreenButton.vue";
+import ConnectionStatus from "@/components/ConnectionStatus.vue";
 import baseUrl from "@/config";
 
 export default {
   name: 'App',
   components: {
     FullscreenButton,
+    ConnectionStatus,
   },
 
   data() {
@@ -26,6 +29,13 @@ export default {
   },
 
   computed: {
+    showConnectionStatus() {
+      // 登录页和主持人、记分屏不展示选手的连接提示。
+      const route = this.$route.name || '';
+      return route !== 'contestant' && !route.startsWith('h')
+          && sessionStorage.getItem('role') !== 'score'
+          && !!sessionStorage.getItem('user');
+    },
     showGlobalHeader() {
       // 排行榜页面隐藏全局组件
       const hidden = ['allRank', 'allScore', 'teamScore', 'scoreLogin', 'allMemberRank']

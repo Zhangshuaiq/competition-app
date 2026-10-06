@@ -93,6 +93,7 @@
 </template>
 
 <script>
+import {isFreeAnswerMode} from "@/utils/stageMode";
 export default {
   name: "ScoreBoard",
   data() {
@@ -200,7 +201,7 @@ export default {
 
     isFreeAnswerMode() {
       return this.showMember && !!(this._stage
-          && this._stage.questionType === 6 && this._stage.boardAnswer === 1);
+          && isFreeAnswerMode(this._stage));
     },
 
     // model60 路由：团队答题模式

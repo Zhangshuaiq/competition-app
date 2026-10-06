@@ -246,7 +246,7 @@ text-shadow: -1px -1px 0 white, 1px -1px 0 white, -1px 1px 0 white, 1px 1px 0 wh
             </div>
             <div v-else>
               <el-row justify="center" style="text-align: center">
-                <el-input :disabled="(second <= 0 || showResult)" placeholder="请输入答案" type="textarea" rows="3" v-model="activeDiv"></el-input>
+                <el-input :disabled="(!canAnswer || second <= 0 || showResult)" placeholder="请输入答案" type="textarea" rows="3" v-model="activeDiv"></el-input>
               </el-row>
             </div>
           </div>
@@ -276,6 +276,7 @@ text-shadow: -1px -1px 0 white, 1px -1px 0 white, -1px 1px 0 white, 1px 1px 0 wh
 import ScoreBoard from "@/components/member/ScoreBoard.vue";
 import baseUrl from "@/config";
 import {buzzQuestion} from "@/api";
+import {isFreeAnswerMode} from "@/utils/stageMode";
 export default {
   name: "Model61M",
   components: {ScoreBoard},
@@ -294,7 +295,6 @@ export default {
       rule: '',
       btnText: "提 交",
       member: '',
-      stage: '',
       submit : false,
       resourceUrl: '',
       imageUrl: `${baseUrl}/resource/答题背景.jpg?${new Date().getTime()}`,
@@ -303,6 +303,7 @@ export default {
   },
 
   computed: {
+    stage() { return this.$store.state.stage || {} },
     containerBoxStyle() {
       return {
         backgroundImage: `url(${this.imageUrl})`,
@@ -317,7 +318,7 @@ export default {
       }
     },
     canAnswer() {
-      if (!this.stage || this.stage.questionType !== 6 || this.stage.boardAnswer !== 1) {
+      if (!isFreeAnswerMode(this.stage)) {
         return true
       }
       const selectedTeams = this.stage.freeAnswerTeams || []
@@ -523,7 +524,6 @@ export default {
     this.loadData();
     
     const data = this.$store.state.data
-    this.stage = this.$store.state.stage
     
     if (this.questionItem == null) {
       this.questionItem = data

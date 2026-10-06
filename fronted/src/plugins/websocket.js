@@ -6,6 +6,8 @@ export default {
         let stompClient = null;
         let sockJSConnection = null;
         let connected = false;
+        let connecting = false;
+        let connectionCallbacks = [];
         let reconnectAttempts = 0;
         let maxReconnectAttempts = 5;
         let reconnectInterval = 2000;
@@ -14,6 +16,8 @@ export default {
         let heartbeatTimer = null;
         let isManualDisconnect = false;
         let connectionCheckTimer = null;
+        let currentConnectionStatus = { status: 'disconnected' };
+        const connectionStatusListeners = new Set();
 
         // 新增：仅用于僵死连接检测的变量
         let subscriptions = new Map(); // 追踪订阅，用于重连时恢复
@@ -25,6 +29,15 @@ export default {
                 successCallback && successCallback();
                 return;
             }
+            if (successCallback) {
+                connectionCallbacks.push(successCallback);
+            }
+            // 页面订阅和登录可能同时等待连接，共用一次握手。
+            if (connecting) {
+                return;
+            }
+            connecting = true;
+            updateConnectionStatus('connecting');
 
             // 清理之前的连接
             if (stompClient) {
@@ -57,6 +70,7 @@ export default {
             stompClient.connect(
                 {teamId: teamId},
                 frame => {
+                    connecting = false;
                     connected = true;
                     reconnectAttempts = 0;
                     reconnectInterval = 2000;
@@ -77,11 +91,14 @@ export default {
                     // 恢复之前的订阅
                     restoreSubscriptions();
 
-                    successCallback && successCallback(frame);
+                    const callbacks = connectionCallbacks;
+                    connectionCallbacks = [];
+                    callbacks.forEach(callback => callback(frame));
                 },
                 error => {
                     console.error('❌ WebSocket连接错误: ' + error);
                     connected = false;
+                    connecting = false;
                     updateConnectionStatus('disconnected');
 
                     if (typeof errorCallback === 'function') {
@@ -139,6 +156,8 @@ export default {
                 ...extra
             };
             localStorage.setItem('websocketStatus', JSON.stringify(statusInfo));
+            currentConnectionStatus = statusInfo;
+            connectionStatusListeners.forEach(listener => listener(statusInfo));
             console.log('连接状态更新:', status);
         };
 
@@ -151,8 +170,10 @@ export default {
             };
 
             connection.onclose = (event) => {
+                if (connection !== sockJSConnection) return;
                 console.log('SockJS连接已关闭:', event.code, event.reason);
                 connected = false;
+                connecting = false;
                 updateConnectionStatus('disconnected', { closeCode: event.code, closeReason: event.reason });
 
                 if (!isManualDisconnect) {
@@ -163,8 +184,10 @@ export default {
             };
 
             connection.onerror = (error) => {
+                if (connection !== sockJSConnection) return;
                 console.error('SockJS连接错误:', error);
                 connected = false;
+                connecting = false;
                 updateConnectionStatus('disconnected', { error: error.toString() });
 
                 if (!isManualDisconnect) {
@@ -486,6 +509,13 @@ export default {
         const websocketPlugin = {
             connect,
 
+            // 使用当前页面的实时状态，不读取其他标签页或上次登录的缓存。
+            onConnectionStatusChange: (listener) => {
+                connectionStatusListeners.add(listener);
+                listener(currentConnectionStatus);
+                return () => connectionStatusListeners.delete(listener);
+            },
+
             send: (destination, body = {}) => {
                 try {
                     if (connected && stompClient && stompClient.connected) {
@@ -653,6 +683,7 @@ export default {
         window.addEventListener('offline', () => {
             console.log('📵 网络已断开');
             connected = false;
+            connecting = false;
             updateConnectionStatus('network-offline');
         });
 
