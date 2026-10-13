@@ -74,6 +74,8 @@ jobs:
           Copy-Item 'target/fx-server-1.0-SNAPSHOT.jar' 'target/jpackage-input/'
           Copy-Item 'competition.db' 'target/jpackage-input/'
           Copy-Item '资源' 'target/jpackage-input/' -Recurse
+          # Keep native jpackage command arguments ASCII on Windows JDK 17.
+          Copy-Item -LiteralPath '资源/素材/图标.ico' -Destination 'target/app.ico'
 
       - name: Package portable application with icon
         run: |
@@ -81,7 +83,7 @@ jobs:
             '--type', 'app-image',
             '--name', 'FxServer',
             '--app-version', '1.0.0',
-            '--icon', '资源/素材/图标.ico',
+            '--icon', 'target/app.ico',
             '--input', 'target/jpackage-input',
             '--main-jar', 'fx-server-1.0-SNAPSHOT.jar',
             '--main-class', 'org.springframework.boot.loader.JarLauncher',
