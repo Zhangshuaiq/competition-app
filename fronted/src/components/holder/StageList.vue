@@ -27,7 +27,6 @@ export default {
     return {
       imageUrl: `${baseUrl}/resource/环节背景.jpg?${new Date().getTime()}`,
       defaultImageUrl: `${baseUrl}/resource/默认背景.jpg?${new Date().getTime()}`,
-      stages: []  
     }
   },
   
@@ -41,6 +40,11 @@ export default {
   },
 
   computed: {
+    stages() {
+      const data = this.$store.state.data;
+      // 当前消息将列表放在 stages 字段中，同时兼容旧版数组消息。
+      return Array.isArray(data) ? data : (data && Array.isArray(data.stages) ? data.stages : []);
+    },
     containerBoxStyle() {
       return {
         backgroundImage: `url(${this.imageUrl})`,
@@ -70,9 +74,6 @@ export default {
         this.imageUrl = this.defaultImageUrl;
       }
     });
-    const data = this.$store.state.data
-    console.log(data)
-    this.stages = data
   },
 }
 </script>
