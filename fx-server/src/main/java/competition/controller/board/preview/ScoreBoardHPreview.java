@@ -274,31 +274,11 @@ public class ScoreBoardHPreview extends PreviewPane implements BoardPane {
             if (Boolean.valueOf(split[4])) {
                 stageText.getTransforms().add(new Shear(-0.3, 0));
             }
-            StageSelectRuntime.StageSelectData sel8 = StageSelectRuntime.getAll().get(team.getFullName());
-            if (team.getStageSelectStatus() == 2) {
-                // 已揭晓：显示子环节名（绿色）
-                String display = sel8 != null && StringUtils.hasText(sel8.getStage()) ? sel8.getStage()
-                        : StringUtils.hasText(team.getTeamSelect()) ? team.getTeamSelect()
-                        : StringUtils.hasText(team.getStageSelect()) ? team.getStageSelect() : "已选择";
-                stageText.setText(display);
-                stagePane.setBackground(new Background(new BackgroundFill(
-                    Color.valueOf(cfgArr[27]), new CornerRadii(10), Insets.EMPTY
-                )));
-            } else if (team.getStageSelectStatus() == 1) {
-                // 已选择，未揭晓（蓝色）：管理面板直接显示实际环节名
-                String display1 = sel8 != null ? sel8.getStage()
-                        : (StringUtils.hasText(team.getStageSelect()) ? team.getStageSelect() : "已选择");
-                stageText.setText(display1);
-                stagePane.setBackground(new Background(new BackgroundFill(
-                    Color.valueOf(cfgArr[26]), new CornerRadii(10), Insets.EMPTY
-                )));
-            } else {
-                // 未选择（灰色）
-                stageText.setText("未选择");
-                stagePane.setBackground(new Background(new BackgroundFill(
-                    Color.valueOf(cfgArr[25]), new CornerRadii(10), Insets.EMPTY
-                )));
-            }
+            stageText.setText(StageSelectRuntime.displaySelection(team.getFullName()));
+            int selectionStatus = StageSelectRuntime.selectionStatus(team.getFullName());
+            stagePane.setBackground(new Background(new BackgroundFill(
+                Color.valueOf(cfgArr[selectionStatus == 2 ? 27 : selectionStatus == 1 ? 26 : 25]),
+                new CornerRadii(10), Insets.EMPTY)));
             stagePane.getChildren().add(stageText);
             box.getChildren().add(stagePane);
         }

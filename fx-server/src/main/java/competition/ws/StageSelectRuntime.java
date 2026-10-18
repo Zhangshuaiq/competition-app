@@ -18,6 +18,7 @@ public class StageSelectRuntime {
     public static Integer getOwnerStageId() { return ownerStageId; }
 
     public static void save(StageSelectData data) {
+        revealedSet.remove(data.getTeam());
         selectDataMap.put(data.getTeam(), data);
     }
 
@@ -46,6 +47,23 @@ public class StageSelectRuntime {
 
     public static boolean isRevealed(String team) {
         return revealedSet.contains(team);
+    }
+
+    /** 具体选择只能由揭晓操作公开，不能从答题状态或 teamSelect 推断。 */
+    public static String displaySelection(String team) {
+        StageSelectData selection = get(team);
+        if (selection == null) {
+            return "未选择";
+        }
+        return isRevealed(team) ? selection.getStage() : "已选择";
+    }
+
+    public static int selectionStatus(String team) {
+        return get(team) == null ? 0 : isRevealed(team) ? 2 : 1;
+    }
+
+    public static void hide(String team) {
+        revealedSet.remove(team);
     }
 
     public static void clear() {

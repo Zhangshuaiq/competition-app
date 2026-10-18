@@ -8,8 +8,19 @@ public class QuestionSubmitRuntime {
     // key: teamFullName, value: 提交的答案
     private static final Map<String, String> submitMap = new ConcurrentHashMap<>();
 
-    public static void save(String teamName, String userSelect) {
+    private static boolean closed;
+
+    public static synchronized boolean save(String teamName, String userSelect) {
+        if (closed) {
+            return false;
+        }
         submitMap.put(teamName, userSelect);
+        return true;
+    }
+
+    public static synchronized Map<String, String> snapshotAndClose() {
+        closed = true;
+        return new java.util.HashMap<>(submitMap);
     }
 
     public static String get(String teamName) {
@@ -17,10 +28,11 @@ public class QuestionSubmitRuntime {
     }
 
     public static Map<String, String> getAll() {
-        return submitMap;
+        return new java.util.HashMap<>(submitMap);
     }
 
-    public static void clear() {
+    public static synchronized void clear() {
+        closed = false;
         submitMap.clear();
     }
 }

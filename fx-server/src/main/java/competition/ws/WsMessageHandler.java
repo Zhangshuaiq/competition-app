@@ -334,7 +334,10 @@ public class WsMessageHandler {
             log.warn("忽略未选择当前自选环节的答题提交: team={}, stage={}", teamName, currentStage.getName());
             return;
         }
-        QuestionSubmitRuntime.save(teamName, userSelect);
+        if (!QuestionSubmitRuntime.save(teamName, userSelect)) {
+            log.warn("忽略已结算题目的迟到提交: team={}", teamName);
+            return;
+        }
         for (Teams team : TeamRuntime.getTeams()) {
             if (team.getFullName().equals(teamName)) {
                 team.setStatus(1);

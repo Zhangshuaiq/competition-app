@@ -19,7 +19,6 @@ import competition.ws.WsTeamMemberWaiter;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.beans.property.SimpleStringProperty;
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.geometry.Pos;
 import javafx.scene.control.Label;
@@ -27,7 +26,6 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
-import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
@@ -106,28 +104,7 @@ public class TeamConfig {
 
     @FXML
     public void addMember() {
-        // prefHeight="38.0" prefWidth="38.0"
-        final int size = memberBox.getChildren().size();
-        Label code = new Label(size + "");
-        code.setPrefWidth(38);
-        code.setPrefHeight(38);
-        code.setAlignment(Pos.CENTER);
-        HBox hBox = new HBox();
-        final TextField textField = new TextField();
-        textField.setPrefWidth(200);
-
-        Label delete = new Label(" X ");
-        delete.setPrefWidth(50);
-        delete.setPrefHeight(30);
-        delete.setAlignment(Pos.CENTER);
-        delete.setOnMouseClicked(new EventHandler<MouseEvent>() {
-            @Override
-            public void handle(MouseEvent event) {
-                memberBox.getChildren().remove(size - 1);
-            }
-        });
-        hBox.getChildren().addAll(code, textField, delete);
-        memberBox.getChildren().add(size - 1, hBox);
+        showMember("");
     }
 
     private void showMember(String member) {
@@ -144,15 +121,24 @@ public class TeamConfig {
         delete.setPrefWidth(50);
         delete.setPrefHeight(30);
         delete.setAlignment(Pos.CENTER);
-        delete.setOnMouseClicked(new EventHandler<MouseEvent>() {
-            @Override
-            public void handle(MouseEvent event) {
-                memberBox.getChildren().remove(size - 1);
-            }
+        delete.setOnMouseClicked(event -> {
+            // 行号会随删除而变化，必须按节点删除，避免误删末尾的新增按钮。
+            memberBox.getChildren().remove(hBox);
+            renumberMembers();
         });
 
         hBox.getChildren().addAll(code, textField, delete);
         memberBox.getChildren().add(size - 1, hBox);
+    }
+
+    private void renumberMembers() {
+        int number = 1;
+        for (javafx.scene.Node node : memberBox.getChildren()) {
+            if (node instanceof HBox) {
+                Label code = (Label) ((HBox) node).getChildren().get(0);
+                code.setText(String.valueOf(number++));
+            }
+        }
     }
 
     @FXML
@@ -229,6 +215,9 @@ public class TeamConfig {
         List<String> members = new ArrayList<>();
 
         JSONObject jsonObject = JSON.parseObject(selectedItem.getMemberScore());
+        if (jsonObject == null) {
+            jsonObject = new JSONObject();
+        }
 
         for (int i = 0; i < memberBox.getChildren().size() - 1; i++) {
             HBox box = (HBox) memberBox.getChildren().get(i);

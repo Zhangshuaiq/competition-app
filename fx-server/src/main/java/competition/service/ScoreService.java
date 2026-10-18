@@ -44,6 +44,20 @@ public class ScoreService {
         hardwareService.updateHardwareDisplayAsync(team, totalScore);
     }
 
+    public void updateStageSelectHardware(Teams team, String totalScore) {
+        try {
+            hardwareService.updateHardwareDisplayAsync(team, totalScore);
+        } catch (Exception e) {
+            log.error("自选题已计分，硬件显示刷新失败: {}", team.getFullName(), e);
+        }
+    }
+
+    // 自选题与团队总分在调用方的同一个事务中保存，失败直接上抛以便重试。
+    public void recordStageSelectScore(Teams team, String stage, String question, int score,
+                                       String totalScore, String answerText) {
+        handleTeamScore(team, stage, question, null, score, totalScore, answerText);
+    }
+
     /**
      * 执行数据库写入操作
      */
