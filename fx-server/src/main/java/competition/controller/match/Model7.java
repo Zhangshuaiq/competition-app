@@ -45,6 +45,7 @@ public class Model7 implements ReloadPane<Stages> {
     private GridPane container;
 
     private String timeValue = "00:00";
+    private long displayedRoundVersion = -1;
 
     @Resource
     private ControlPane controlPane;
@@ -356,7 +357,24 @@ public class Model7 implements ReloadPane<Stages> {
 
     @Override
     public void setData(Stages data) {
+        if (currentStage == null || data == null || !Objects.equals(currentStage.getId(), data.getId())
+                || !Objects.equals(currentStage.getSortVal(), data.getSortVal())) {
+            timeValue = "00:00";
+            cachedQuestions = null;
+            cachedStageNumber = null;
+            lastUpdateTime.set(0);
+        }
         currentStage = data;
+        refreshRoundState();
+    }
+
+    private void refreshRoundState() {
+        long currentRound = Model7RuntimeData.getRoundVersion();
+        if (displayedRoundVersion != currentRound) {
+            timeValue = "00:00";
+            lastUpdateTime.set(0);
+            displayedRoundVersion = currentRound;
+        }
     }
 
     public void stopTiming() {
@@ -810,6 +828,7 @@ public class Model7 implements ReloadPane<Stages> {
 
     @Override
     public void reload() {
+        refreshRoundState();
         // 简单的防抖检查
         if (shouldUpdate()) {
             // 确保UI已初始化
@@ -822,6 +841,7 @@ public class Model7 implements ReloadPane<Stages> {
 
     @Override
     public void reload(int time, String timeTxt) {
+        refreshRoundState();
         this.timeValue = timeTxt;
         // 简单的防抖检查
         if (shouldUpdate()) {

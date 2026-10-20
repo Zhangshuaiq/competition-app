@@ -1,0 +1,95 @@
+{
+  "name": "competition.audit.BackendConfigAuditTest",
+  "tests": "17",
+  "failures": "0",
+  "errors": "0",
+  "skipped": "0",
+  "time": "6.133",
+  "cases": [
+    {
+      "name": "pageDatabaseFailureLeavesEarlierSectionsCommitted",
+      "seconds": "1.538",
+      "result": "passed"
+    },
+    {
+      "name": "gradeClearAndExcelExportOnCopy",
+      "seconds": "1.428",
+      "result": "passed"
+    },
+    {
+      "name": "normalWebSaveOnlyTouches15AndMatchStageStillLoads",
+      "seconds": "0.428",
+      "result": "passed"
+    },
+    {
+      "name": "pageDefaultSaveReportsEmptyFields",
+      "seconds": "0.135",
+      "result": "passed"
+    },
+    {
+      "name": "questionImportInsertFailureErasesPreviousStock",
+      "seconds": "0.314",
+      "result": "passed"
+    },
+    {
+      "name": "enablingShowStageListSavesSuccessfullyButBlanksMatch",
+      "seconds": "0.237",
+      "result": "passed"
+    },
+    {
+      "name": "webNumericGarbageIsPersisted",
+      "seconds": "0.087",
+      "result": "passed"
+    },
+    {
+      "name": "teamNonNumericCodeCommitsBeforeSortFailure",
+      "seconds": "0.215",
+      "result": "passed"
+    },
+    {
+      "name": "stageExistingSelectionNormalUpdate",
+      "seconds": "0.215",
+      "result": "passed"
+    },
+    {
+      "name": "scoreAndTabletDefaultSaveRoundtrip",
+      "seconds": "0.276",
+      "result": "passed"
+    },
+    {
+      "name": "stageDefaultUpdateWithoutSelection",
+      "seconds": "0.113",
+      "result": "passed"
+    },
+    {
+      "name": "stageCoordinateOverflowSavesButBreaksMatchLoad",
+      "seconds": "0.186",
+      "result": "passed"
+    },
+    {
+      "name": "loadAllNineNonHardwareBackendScreens",
+      "seconds": "0.202",
+      "result": "passed"
+    },
+    {
+      "name": "webSaveDoesNotReportDatabaseFailure",
+      "seconds": "0.108",
+      "result": "passed"
+    },
+    {
+      "name": "buzzDefaultSaveRoundtrip",
+      "seconds": "0.103",
+      "result": "passed"
+    },
+    {
+      "name": "pageAnswerPrefixDelimiterCorruptsFieldPositions",
+      "seconds": "0.151",
+      "result": "passed"
+    },
+    {
+      "name": "pageSaveCommitsInvalidCoordinateBeforeRefreshFails",
+      "seconds": "0.165",
+      "result": "passed"
+    }
+  ]
+}

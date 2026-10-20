@@ -49,6 +49,18 @@ public class Model7RuntimeData {
 
     public static int totalNumber = 0;
 
+    // Page instances are reused; each new round invalidates their display/result caches.
+    private static final java.util.concurrent.atomic.AtomicLong roundVersion = new java.util.concurrent.atomic.AtomicLong();
+
+    public static long getRoundVersion() { return roundVersion.get(); }
+
+    private static void clearComputedResults() {
+        cachedScoreMap.clear();
+        cachedAnswerMap.clear();
+        cachedCorrectMap.clear();
+        roundVersion.incrementAndGet();
+    }
+
     // UI更新回调接口
     public interface UIUpdateCallback {
         void onDataUpdated(String teamName, int teamIndex);
@@ -81,6 +93,7 @@ public class Model7RuntimeData {
     }
 
     public static void setTeams(List<Teams> teams) {
+        clearComputedResults();
         runtimeData.clear();
         finished.clear();
         times.clear();
@@ -410,6 +423,7 @@ public class Model7RuntimeData {
     }
 
     public static void reset() {
+        clearComputedResults();
         runtimeData.clear();
         finished.clear();
         times.clear();
@@ -433,7 +447,7 @@ public class Model7RuntimeData {
         return runtimeData;
     }
 
-    // 竞技模式结束后持久化的计算结果，切换环节后仍可读取
+    // 当前一轮的计算结果；离开环节后可读取，开始下一轮时清空
     private static final Map<String, Integer> cachedScoreMap = new java.util.concurrent.ConcurrentHashMap<>();
     private static final Map<String, Integer> cachedAnswerMap = new java.util.concurrent.ConcurrentHashMap<>();
     private static final Map<String, Integer> cachedCorrectMap = new java.util.concurrent.ConcurrentHashMap<>();

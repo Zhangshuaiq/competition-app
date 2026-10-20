@@ -1478,9 +1478,8 @@ public class ControlPane {
                     startTiming();
                 }
             } else if (currentStage.getQuestionType() == 7) {
-                Model7RuntimeData.executeStart = true;
                 startAnswerBtn.setDisable(false);
-                Model7RuntimeData.reset();
+                prepareModel7Round();
                 // 发送试题列表给前端
                 boolean random = currentStage.getrRandomSort() == 1;
                 List<Questions> questions = questionsMapper.selectList(
@@ -1567,6 +1566,17 @@ public class ControlPane {
             startAnswerBtn.setStyle("");
         }
 
+    }
+
+    private void prepareModel7Round() {
+        // A normally completed round may still have reconnect/recovery data in SQLite.
+        model7StatusMapper.delete(new LambdaQueryWrapper<>());
+        Model7RuntimeData.executeStart = true;
+        Model7RuntimeData.reset();
+        // Clear the reused competition view before the first timer tick arrives.
+        if (previewPane instanceof Model7Preview) {
+            previewPane.reload();
+        }
     }
 
     // 由于时间结束导致答题结束

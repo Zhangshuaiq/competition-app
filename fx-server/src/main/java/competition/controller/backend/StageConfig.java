@@ -802,14 +802,6 @@ public class StageConfig {
         current.setQdDescValue(Integer.parseInt(buzzDescInput.getText()));
         current.setTeamAnswerSingle(Objects.equals(8, newQuestionType) && ccType8AnswerShow.isSelected() ? 1 : 0);
         current.setBoardAnswer(Objects.equals(8, newQuestionType) && ccType8Mode.isSelected() ? 1 : 0);
-        long dupCount = stagesMapper.selectCount(new LambdaQueryWrapper<Stages>()
-                .eq(Stages::getName, stageName)
-                .ne(Stages::getId, current.getId()));
-        if (dupCount > 0) {
-            Alert alert = new Alert(Alert.AlertType.WARNING, "环节名称「" + stageName + "」已存在，请使用不同的名称", ButtonType.OK);
-            alert.showAndWait();
-            return;
-        }
         stagesMapper.updateById(current);
         syncDescendantsQuestionType(current.getId(), current.getQuestionType());
         updateCurrentStage();
@@ -934,13 +926,6 @@ public class StageConfig {
             }
         }
 
-        long dupCount = stagesMapper.selectCount(new LambdaQueryWrapper<Stages>()
-                .eq(Stages::getName, stageName));
-        if (dupCount > 0) {
-            Alert alert = new Alert(Alert.AlertType.WARNING, "环节名称「" + stageName + "」已存在，请使用不同的名称", ButtonType.OK);
-            alert.showAndWait();
-            return;
-        }
         // 子环节必须继承顶层父环节的 questionType
         if (stages.getParentId() != null) {
             Stages parent = stagesMapper.selectById(stages.getParentId());

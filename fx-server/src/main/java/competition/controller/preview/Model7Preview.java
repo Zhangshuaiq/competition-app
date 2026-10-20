@@ -74,6 +74,8 @@ public class Model7Preview extends RankPane<Stages> {
     private volatile boolean rankDataNeedsUpdate = true;
     private List<Model7RankData> cachedRankData = new ArrayList<>();
     private final Object rankCalculationLock = new Object();
+    private final java.util.concurrent.atomic.AtomicLong rankRevision = new java.util.concurrent.atomic.AtomicLong();
+    private long displayedRoundVersion = -1;
 
     // Questions查询缓存
     private List<Questions> cachedQuestions;
@@ -393,7 +395,32 @@ public class Model7Preview extends RankPane<Stages> {
 
     @Override
     public void setData(Stages data) {
+        if (inner == null || data == null || !Objects.equals(inner.getId(), data.getId())
+                || !Objects.equals(inner.getSortVal(), data.getSortVal())) {
+            resetDisplayState();
+            cachedQuestions = null;
+            cachedStageNumber = null;
+            questionCache.clear();
+        }
         inner = data;
+        refreshRoundState();
+    }
+
+    private void resetDisplayState() {
+        timeValue = "00:00";
+        rankRevision.incrementAndGet();
+        synchronized (rankCalculationLock) {
+            cachedRankData = new ArrayList<>();
+            rankDataNeedsUpdate = true;
+        }
+    }
+
+    private void refreshRoundState() {
+        long currentRound = Model7RuntimeData.getRoundVersion();
+        if (displayedRoundVersion != currentRound) {
+            resetDisplayState();
+            displayedRoundVersion = currentRound;
+        }
     }
 
     public void stopTiming() {
@@ -708,30 +735,31 @@ public class Model7Preview extends RankPane<Stages> {
      * 异步计算排名数据
      */
     private void calculatePWAsync() {
-        // 标记需要更新
+        final long revision = rankRevision.incrementAndGet();
+        final long round = Model7RuntimeData.getRoundVersion();
         rankDataNeedsUpdate = true;
-
-        // 在后台线程计算
         CompletableFuture.supplyAsync(() -> {
             synchronized (rankCalculationLock) {
-                if (!rankDataNeedsUpdate) {
-                    return cachedRankData; // 如果不需要更新，返回缓存数据
-                }
-
+                if (revision != rankRevision.get() || round != Model7RuntimeData.getRoundVersion()) return null;
                 return calculateRankData();
             }
-        }).thenAcceptAsync(rankData -> {
-            // 更新缓存
-            synchronized (rankCalculationLock) {
-                cachedRankData = rankData;
-                rankDataNeedsUpdate = false;
-            }
+        }).thenAcceptAsync(rankData -> publishRankData(revision, round, rankData), Platform::runLater)
+                .exceptionally(error -> {
+                    if (revision == rankRevision.get() && round == Model7RuntimeData.getRoundVersion())
+                        log.error("竞技排名计算失败", error);
+                    return null;
+                });
+    }
 
-            // 通知前端
-            Map<String, Object> mapData = new HashMap<>();
-            mapData.put("rank", rankData);
-            messageHandler.notifyPage("hmodel7", mapData);
-        }, Platform::runLater);
+    private void publishRankData(long revision, long round, List<Model7RankData> rankData) {
+        if (rankData == null || revision != rankRevision.get() || round != Model7RuntimeData.getRoundVersion()) return;
+        synchronized (rankCalculationLock) {
+            cachedRankData = rankData;
+            rankDataNeedsUpdate = false;
+        }
+        Map<String, Object> mapData = new HashMap<>();
+        mapData.put("rank", rankData);
+        messageHandler.notifyPage("hmodel7", mapData);
     }
 
     /**
@@ -1065,6 +1093,7 @@ public class Model7Preview extends RankPane<Stages> {
 
     @Override
     public void destroy() {
+        rankRevision.incrementAndGet();
         // 清理缓存的组件
         teamPanels.clear();
         container.getChildren().clear();
@@ -1095,6 +1124,7 @@ public class Model7Preview extends RankPane<Stages> {
 
     @Override
     public void reload() {
+        refreshRoundState();
         // 标记排名数据需要更新
         rankDataNeedsUpdate = true;
 
@@ -1114,6 +1144,7 @@ public class Model7Preview extends RankPane<Stages> {
 
     @Override
     public void reload(int time, String timeTxt) {
+        refreshRoundState();
         this.timeValue = timeTxt;
         messageHandler.sendModel7Time(time + "");
 
