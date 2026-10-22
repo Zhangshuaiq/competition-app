@@ -1,34 +1,35 @@
 <template>
-  <div class="ranking-app" :style="backgroundImage ? { backgroundImage: `url(${backgroundImage})` } : {}">
-    <div class="leaderboard">
-      <div class="leaderboard-header">{{title}}</div>
+  <div class="team-ranking-app" :style="boardStyle">
+    <div class="team-leaderboard">
+      <div class="team-leaderboard-header">{{title}}</div>
 
-      <div class="leaderboard-header-row">
-        <span class="header-rank">{{col1}}</span>
-        <span class="header-name">{{col2}}</span>
-        <span class="header-score">{{col3}}</span>
+      <div class="team-leaderboard-header-row" :style="headerStyle">
+        <span class="team-header-rank">{{col1}}</span>
+        <span class="team-header-name">{{col2}}</span>
+        <span class="team-header-score">{{col3}}</span>
       </div>
 
-      <ul class="leaderboard-list">
+      <ul class="team-leaderboard-list">
         <li
             v-for="(item, index) in displayedData"
             :key="item.name"
+            :style="rowStyle(item)"
             :class="[
-            'leaderboard-item',
-            { 'rank-1': item.currentRank === 1 },
-            { 'rank-2': item.currentRank === 2 },
-            { 'rank-3': item.currentRank === 3 },
-            { 'valid-name-length': item.name.length === 9 },
+            'team-leaderboard-item',
+            { 'team-rank-1': item.currentRank === 1 },
+            { 'team-rank-2': item.currentRank === 2 },
+            { 'team-rank-3': item.currentRank === 3 },
+            { 'team-valid-name-length': item.name.length === 9 },
             item.trendClass
           ]"
         >
-          <span class="rank" :id="index">{{ item.currentRank }}</span>
-          <span class="name">{{ item.name }}</span>
-          <span class="score">
+          <span class="team-rank" :id="index">{{ item.currentRank }}</span>
+          <span class="team-name">{{ item.name }}</span>
+          <span class="team-score">
             {{ item.score.toLocaleString() }}
             <i
                 v-if="item.trend !== 'same'"
-                :class="['fas', item.trendIcon, 'trend-icon', item.trend]"
+                :class="['fas', item.trendIcon, 'team-trend-icon', item.trend]"
             ></i>
           </span>
         </li>
@@ -39,17 +40,20 @@
 </template>
 
 <script>
-import {rankList, rankTitle} from "@/api";
+import {rankList, rankTitle, teamRankStyle} from "@/api";
 import baseUrl from "@/config";
 
 export default {
-  name: 'RankingBoard',
+  name: 'TeamRankingBoard',
   data() {
     return {
       title: "排行榜",
       col1: "名次",
       col2: "名称",
       col3: "分数",
+      viewportWidth: window.innerWidth,
+      viewportHeight: window.innerHeight,
+      styleConfig: {},
       rankingData: [],
       refreshInterval: null,
       currentPage: 1,
@@ -59,6 +63,21 @@ export default {
     };
   },
   computed: {
+    boardStyle() {
+      return {
+        backgroundImage: this.backgroundImage ? `url(${this.backgroundImage})` : undefined,
+        '--team-board-scale': Math.min(this.viewportWidth / 1920, this.viewportHeight / 1080),
+        '--team-title-font-size': `${this.styleConfig.titleFontSize || 42}px`,
+        '--team-header-font-size': `${this.styleConfig.headerFontSize || 22}px`,
+        '--team-row-font-size': `${this.styleConfig.rowFontSize || 22}px`
+      };
+    },
+    headerStyle() {
+      return {
+        backgroundColor: this.styleConfig.showRowBackground === false ? 'transparent' : this.styleConfig.headerBackground || '#ffffff',
+        color: this.styleConfig.headerColor || '#000000'
+      };
+    },
     lastRanking() {
       return JSON.parse(localStorage.getItem('lastRanking')) || [];
     },
@@ -75,7 +94,33 @@ export default {
     }
   },
   methods: {
+    updateViewport() {
+      this.viewportWidth = window.innerWidth;
+      this.viewportHeight = window.innerHeight;
+    },
+    rowStyle(item) {
+      const config = this.styleConfig;
+      const colors = config.rowColors || ['#ff0000', '#0000ff', '#ffff00'];
+      const background = (item.currentRank >= 1 && item.currentRank <= 3 ? colors[item.currentRank - 1] : null) || config.rowBackground || '#ffffff';
+      const visible = config.showRowBackground !== false;
+      const hex = background.replace('#', '');
+      const rgb = [0, 2, 4].map(offset => parseInt(hex.slice(offset, offset + 2), 16));
+      const brightness = (rgb[0] * 299 + rgb[1] * 587 + rgb[2] * 114) / 1000;
+      return {
+        backgroundColor: visible ? background : 'transparent',
+        color: visible && brightness < 128 ? '#ffffff' : '#000000'
+      };
+    },
+    async loadStyle() {
+      try {
+        const response = await teamRankStyle();
+        this.styleConfig = response.data || {};
+      } catch (error) {
+        console.error('获取排行榜样式失败:', error);
+      }
+    },
     async generateRanking() {
+      await this.loadStyle();
       try {
         const titleResponse = await rankTitle();
         this.title = titleResponse.data.title;
@@ -179,6 +224,7 @@ export default {
     this.preloadBackgroundImage();
 
     window.addEventListener('keydown', this.handleKeydown);
+    window.addEventListener('resize', this.updateViewport);
 
     this.$el.setAttribute('tabindex', '0');
     this.$el.focus();
@@ -189,24 +235,20 @@ export default {
       clearInterval(this.refreshInterval);
     }
     window.removeEventListener('keydown', this.handleKeydown);
+    window.removeEventListener('resize', this.updateViewport);
   }
 };
 </script>
 
 <style scoped>
-* {
+.team-ranking-app, .team-ranking-app * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
 }
 
-body {
-  margin: 0;
-  padding: 0;
-  overflow: hidden;
-}
 
-.ranking-app {
+.team-ranking-app {
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   background-size: cover;
@@ -215,8 +257,9 @@ body {
   background-attachment: fixed;
   margin: 0;
   padding: 0;
-  width: 1920px;
-  height: 1080px;
+  width: 100vw;
+  height: 100vh;
+  height: 100dvh;
   overflow: hidden;
   position: fixed;
   top: 0;
@@ -224,19 +267,7 @@ body {
   outline: none;
 }
 
-/* 当有背景图片时添加半透明遮罩层提高内容可读性 */
-.ranking-app[style*="backgroundImage"]::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background-color: rgba(0, 0, 0, 0.3);
-  z-index: 0;
-}
-
-.leaderboard {
+.team-leaderboard {
   background-color: transparent;
   border-radius: 15px;
   width: 1200px;
@@ -244,17 +275,17 @@ body {
   position: absolute;
   top: 50%;
   left: 50%;
-  transform: translate(-50%, -50%);
+  transform: translate(-50%, -50%) scale(var(--team-board-scale, 1));
   overflow: hidden;
   z-index: 1;
 }
 
-.leaderboard-header {
+.team-leaderboard-header {
   background: transparent;
   color: #ffffff;
   padding: 20px;
   text-align: center;
-  font-size: 42px;
+  font-size: var(--team-title-font-size, 42px);
   font-weight: bold;
   height: 60px;
   display: flex;
@@ -263,7 +294,7 @@ body {
   text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
 }
 
-.leaderboard-header-row {
+.team-leaderboard-header-row {
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -277,17 +308,17 @@ body {
   font-size: 24px;
 }
 
-.ranking-app[style*="backgroundImage"] .leaderboard-header-row {
+.team-ranking-app[style*="background-image"] .team-leaderboard-header-row {
   background-color: rgba(255, 255, 255, 0.95);
 }
 
-.leaderboard-list {
+.team-leaderboard-list {
   list-style: none;
   padding: 0;
   margin: 0;
 }
 
-.leaderboard-item {
+.team-leaderboard-item {
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -300,114 +331,66 @@ body {
   font-size: 20px;
 }
 
-.leaderboard-item:hover {
+.team-leaderboard-item:hover {
   background-color: #f8f9fa;
   transform: translateY(-2px);
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
 
-.rank {
+.team-rank {
   font-weight: bold;
-  color: #000000;
+  color: inherit;
   min-width: 80px;
   margin: 0 20px;
   text-align: center;
-  font-size: 22px;
+  font-size: var(--team-row-font-size, 22px);
 }
 
-.name {
+.team-name {
   flex: 1;
   margin: 0 20px;
   font-weight: 700;
   text-align: center;
-  color: #000000;
-  font-size: 22px;
+  color: inherit;
+  font-size: var(--team-row-font-size, 22px);
 }
 
-.score {
-  color: #000000;
+.team-score {
+  color: inherit;
   font-weight: bold;
   min-width: 120px;
   margin: 0 20px;
   text-align: right;
-  font-size: 22px;
+  font-size: var(--team-row-font-size, 22px);
 }
 
-.rank-1 {
-  background-color: #ff0000 !important;
-  border: 2px solid #cc0000;
-}
-
-.rank-2 {
-  background-color: #0000ff !important;
-  border: 2px solid #0000cc;
-}
-
-.rank-3 {
-  background-color: #ffff00 !important;
-  border: 2px solid #cccc00;
-}
-
-.rank-1 .rank {
-  color: #ffffff;
-  font-size: 24px;
-  font-weight: 800;
-}
-
-.rank-2 .rank {
-  color: #ffffff;
-  font-size: 24px;
-  font-weight: 800;
-}
-
-.rank-3 .rank {
-  color: #000000;
-  font-size: 24px;
-  font-weight: 800;
-}
-
-.rank-1 .name,
-.rank-1 .score {
-  color: #ffffff !important;
-}
-
-.rank-2 .name,
-.rank-2 .score {
-  color: #ffffff !important;
-}
-
-.rank-3 .name,
-.rank-3 .score {
-  color: #000000 !important;
-}
-
-.header-rank {
+.team-header-rank {
   min-width: 80px;
   margin: 0 20px;
   text-align: center;
-  font-size: 22px;
+  font-size: var(--team-row-font-size, 22px);
 }
 
-.header-name {
+.team-header-name {
   flex: 1;
   margin: 0 20px;
   text-align: center;
-  font-size: 22px;
+  font-size: var(--team-row-font-size, 22px);
 }
 
-.header-score {
+.team-header-score {
   min-width: 120px;
   margin: 0 20px;
   text-align: right;
-  font-size: 22px;
+  font-size: var(--team-row-font-size, 22px);
 }
 
 /* 9字符名称的特殊样式 */
-.valid-name-length {
+.team-valid-name-length {
   position: relative;
 }
 
-.valid-name-length::after {
+.team-valid-name-length::after {
   content: '✓';
   position: absolute;
   top: 50%;
@@ -442,7 +425,7 @@ body {
 }
 
 /* 趋势图标样式 */
-.trend-icon {
+.team-trend-icon {
   font-size: 0.9em;
 }
 
@@ -485,5 +468,9 @@ body {
   100% {
     transform: scale(1);
   }
+}
+
+.team-header-rank, .team-header-name, .team-header-score {
+  font-size: var(--team-header-font-size, 22px);
 }
 </style>

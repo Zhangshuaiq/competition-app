@@ -44,3 +44,4 @@ export const model7BoardData = () => get('/rest/model7BoardData')
 export const selectStage = (data) => post(`/rest/selectStage`, data)
 
 export const queryStageSelection = (team) => get(`/rest/stageSelection?team=${encodeURIComponent(team)}`)
+export const teamRankStyle = () => get('/rest/teamRankStyle')

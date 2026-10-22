@@ -1,0 +1,9 @@
+[
+  {
+    "label": "启动竞赛系统",
+    "command": "mvn",
+    "args": ["spring-boot:run"],
+    "cwd": "$ZED_WORKTREE_ROOT/fx-server",
+    "use_new_terminal": true
+  }
+]
