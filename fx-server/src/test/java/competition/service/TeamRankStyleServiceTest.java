@@ -21,6 +21,10 @@ class TeamRankStyleServiceTest {
         TeamRankStyleService.Style style = service.load();
         assertEquals(java.util.Arrays.asList("#111111", "#222222", "#333333"), style.getRowColors());
         assertEquals("#abcdef", style.getRowBackground());
+        assertTrue(style.isAutoCenter());
+        assertFalse(style.isShowContainerBackground());
+        assertEquals(0, style.getContentX());
+        assertEquals(0, style.getContentY());
     }
 
     @Test
@@ -31,6 +35,11 @@ class TeamRankStyleServiceTest {
         TeamRankStyleService.Style style = service.load();
         assertEquals(22, style.getRowFontSize());
         assertTrue(style.isShowRowBackground());
+        style.setAutoCenter(false);
+        style.setContentX(125);
+        style.setContentY(-20);
+        style.setShowContainerBackground(true);
+        style.setContainerBackground("#456789");
         style.setRowFontSize(36);
         style.setShowRowBackground(false);
         style.setHeaderBackground("#123456");
@@ -42,6 +51,11 @@ class TeamRankStyleServiceTest {
         when(mapper.selectOne(any())).thenReturn(saved.getValue());
         TeamRankStyleService.Style loaded = service.load();
         assertEquals(36, loaded.getRowFontSize());
+        assertFalse(loaded.isAutoCenter());
+        assertEquals(125, loaded.getContentX());
+        assertEquals(-20, loaded.getContentY());
+        assertTrue(loaded.isShowContainerBackground());
+        assertEquals("#456789", loaded.getContainerBackground());
         assertFalse(loaded.isShowRowBackground());
         assertEquals("#123456", loaded.getHeaderBackground());
         assertEquals("#abcdef", loaded.getRowBackground());

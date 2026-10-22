@@ -22,6 +22,11 @@ public class TeamRankStyleService {
         private int titleFontSize = 42;
         private int headerFontSize = 22;
         private int rowFontSize = 22;
+        private boolean showContainerBackground = false;
+        private String containerBackground = "#ffffff";
+        private boolean autoCenter = true;
+        private int contentX = 0;
+        private int contentY = 0;
         private boolean showRowBackground = true;
         private String headerBackground = "#ffffff";
         private String headerColor = "#000000";

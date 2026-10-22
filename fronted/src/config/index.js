@@ -1,11 +1,5 @@
-let baseUrl;
-
-if (process.env.NODE_ENV === 'development') {
-    baseUrl = process.env.VUE_APP_BASE_URL;
-} else {
-    const host = window.location.hostname;
-    const port = window.location.port ? `:${window.location.port}` : ':8080';
-    baseUrl = `http://${host}${port}`;
-}
+// Use the address opened by the browser. In development, vue.config.js proxies
+// backend requests so LAN clients never send requests to their own localhost.
+const baseUrl = window.location.origin;
 
 export default baseUrl;

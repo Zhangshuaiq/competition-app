@@ -422,6 +422,25 @@ public class PaneConfig {
             rowPickers.add(picker);
             grid.addRow(7 + i, new javafx.scene.control.Label("第 " + (i + 1) + " 名背景颜色"), picker);
         }
+        CheckBox showContainerBackground = new CheckBox("显示内容整体背景");
+        showContainerBackground.setSelected(style.isShowContainerBackground());
+        ColorPicker containerBackground = new ColorPicker(Color.web(style.getContainerBackground()));
+        containerBackground.disableProperty().bind(showContainerBackground.selectedProperty().not());
+        CheckBox autoCenter = new CheckBox("内容自动居中");
+        autoCenter.setSelected(style.isAutoCenter());
+        TextField contentX = new TextField(String.valueOf(style.getContentX()));
+        TextField contentY = new TextField(String.valueOf(style.getContentY()));
+        contentX.disableProperty().bind(autoCenter.selectedProperty());
+        contentY.disableProperty().bind(autoCenter.selectedProperty());
+        grid.addRow(10, new javafx.scene.control.Label("整体背景显示"), showContainerBackground);
+        grid.addRow(11, new javafx.scene.control.Label("整体背景颜色"), containerBackground);
+        grid.addRow(12, new javafx.scene.control.Label("内容位置"), autoCenter);
+        grid.addRow(13, new javafx.scene.control.Label("左上角 X（网页像素）"), contentX);
+        grid.addRow(14, new javafx.scene.control.Label("左上角 Y（网页像素）"), contentY);
+        javafx.scene.control.Label positionHint = new javafx.scene.control.Label("取消自动居中后，X 向右、Y 向下，以网页左上角为原点。");
+        positionHint.setWrapText(true);
+        positionHint.setMaxWidth(420);
+        grid.add(positionHint, 0, 15, 2, 1);
         javafx.scene.control.ScrollPane scroll = new javafx.scene.control.ScrollPane(grid);
         scroll.setFitToWidth(true);
         scroll.setPrefViewportHeight(540);
@@ -438,6 +457,20 @@ public class PaneConfig {
         pane.setBottom(actions);
         panelStage.setScene(new Scene(pane, 480, 620));
         save.setOnAction(event -> {
+            int x;
+            int y;
+            try {
+                x = Integer.parseInt(contentX.getText().trim());
+                y = Integer.parseInt(contentY.getText().trim());
+            } catch (NumberFormatException ex) {
+                status.setText("X、Y 坐标请输入整数");
+                return;
+            }
+            style.setContentX(x);
+            style.setContentY(y);
+            style.setAutoCenter(autoCenter.isSelected());
+            style.setShowContainerBackground(showContainerBackground.isSelected());
+            style.setContainerBackground(webColor(containerBackground.getValue()));
             style.setTitleFontSize(titleSize.getValue());
             style.setHeaderFontSize(headerSize.getValue());
             style.setRowFontSize(rowSize.getValue());

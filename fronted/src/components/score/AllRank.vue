@@ -1,6 +1,6 @@
 <template>
   <div class="team-ranking-app" :style="boardStyle">
-    <div class="team-leaderboard">
+    <div class="team-leaderboard" :style="containerStyle">
       <div class="team-leaderboard-header">{{title}}</div>
 
       <div class="team-leaderboard-header-row" :style="headerStyle">
@@ -70,6 +70,16 @@ export default {
         '--team-title-font-size': `${this.styleConfig.titleFontSize || 42}px`,
         '--team-header-font-size': `${this.styleConfig.headerFontSize || 22}px`,
         '--team-row-font-size': `${this.styleConfig.rowFontSize || 22}px`
+      };
+    },
+    containerStyle() {
+      const config = this.styleConfig;
+      const scale = Math.min(this.viewportWidth / 1920, this.viewportHeight / 1080);
+      const autoCenter = config.autoCenter !== false;
+      return {
+        backgroundColor: config.showContainerBackground ? config.containerBackground || '#ffffff' : 'transparent',
+        left: `${autoCenter ? (this.viewportWidth - 1200 * scale) / 2 : Number(config.contentX) || 0}px`,
+        top: `${autoCenter ? (this.viewportHeight - 950 * scale) / 2 : Number(config.contentY) || 0}px`
       };
     },
     headerStyle() {
@@ -273,9 +283,10 @@ export default {
   width: 1200px;
   height: 950px;
   position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%) scale(var(--team-board-scale, 1));
+  top: 0;
+  left: 0;
+  transform-origin: top left;
+  transform: scale(var(--team-board-scale, 1));
   overflow: hidden;
   z-index: 1;
 }
