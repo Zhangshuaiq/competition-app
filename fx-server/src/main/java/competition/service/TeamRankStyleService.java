@@ -31,6 +31,8 @@ public class TeamRankStyleService {
         private String headerBackground = "#ffffff";
         private String headerColor = "#000000";
         private String rowBackground = "#ffffff";
+        private String rowTextColor = "#000000";
+        private List<String> rowTextColors = new ArrayList<>(Arrays.asList("#ffffff", "#ffffff", "#000000"));
         private List<String> rowColors = new ArrayList<>(Arrays.asList("#ff0000", "#0000ff", "#ffff00"));
     }
 
@@ -53,6 +55,14 @@ public class TeamRankStyleService {
                     && style.getRowColors().get(i) != null ? style.getRowColors().get(i) : defaults.get(i));
         }
         style.setRowColors(colors);
+        List<String> textDefaults = Arrays.asList("#ffffff", "#ffffff", "#000000");
+        List<String> textColors = new ArrayList<>();
+        for (int i = 0; i < 3; i++) {
+            textColors.add(style.getRowTextColors() != null && i < style.getRowTextColors().size()
+                    && style.getRowTextColors().get(i) != null ? style.getRowTextColors().get(i) : textDefaults.get(i));
+        }
+        style.setRowTextColors(textColors);
+        if (style.getRowTextColor() == null) style.setRowTextColor("#000000");
         return style;
     }
 

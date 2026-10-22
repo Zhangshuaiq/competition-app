@@ -25,6 +25,8 @@ class TeamRankStyleServiceTest {
         assertFalse(style.isShowContainerBackground());
         assertEquals(0, style.getContentX());
         assertEquals(0, style.getContentY());
+        assertEquals(java.util.Arrays.asList("#ffffff", "#ffffff", "#000000"), style.getRowTextColors());
+        assertEquals("#000000", style.getRowTextColor());
     }
 
     @Test
@@ -45,6 +47,8 @@ class TeamRankStyleServiceTest {
         style.setHeaderBackground("#123456");
         style.setRowBackground("#abcdef");
         style.getRowColors().set(0, "#123123");
+        style.setRowTextColors(new java.util.ArrayList<>(java.util.Arrays.asList("#123456", "#456789", "#abcdef")));
+        style.setRowTextColor("#654321");
         service.save(style);
         ArgumentCaptor<Configs> saved = ArgumentCaptor.forClass(Configs.class);
         verify(mapper).insert(saved.capture());
@@ -61,6 +65,8 @@ class TeamRankStyleServiceTest {
         assertEquals("#abcdef", loaded.getRowBackground());
         assertEquals("#123123", loaded.getRowColors().get(0));
         assertEquals(3, loaded.getRowColors().size());
+        assertEquals(java.util.Arrays.asList("#123456", "#456789", "#abcdef"), loaded.getRowTextColors());
+        assertEquals("#654321", loaded.getRowTextColor());
         service.save(loaded);
         verify(mapper).updateById(saved.getValue());
         verify(mapper, times(1)).insert(any());

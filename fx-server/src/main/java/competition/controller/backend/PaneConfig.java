@@ -441,6 +441,14 @@ public class PaneConfig {
         positionHint.setWrapText(true);
         positionHint.setMaxWidth(420);
         grid.add(positionHint, 0, 15, 2, 1);
+        java.util.List<ColorPicker> textPickers = new ArrayList<>();
+        for (int i = 0; i < 3; i++) {
+            ColorPicker picker = new ColorPicker(Color.web(style.getRowTextColors().get(i)));
+            textPickers.add(picker);
+            grid.addRow(16 + i, new javafx.scene.control.Label("第 " + (i + 1) + " 名文字颜色"), picker);
+        }
+        ColorPicker rowTextColor = new ColorPicker(Color.web(style.getRowTextColor()));
+        grid.addRow(19, new javafx.scene.control.Label("其余名次文字颜色"), rowTextColor);
         javafx.scene.control.ScrollPane scroll = new javafx.scene.control.ScrollPane(grid);
         scroll.setFitToWidth(true);
         scroll.setPrefViewportHeight(540);
@@ -481,6 +489,10 @@ public class PaneConfig {
             java.util.List<String> colors = new ArrayList<>();
             for (ColorPicker picker : rowPickers) colors.add(webColor(picker.getValue()));
             style.setRowColors(colors);
+            java.util.List<String> textColors = new ArrayList<>();
+            for (ColorPicker picker : textPickers) textColors.add(webColor(picker.getValue()));
+            style.setRowTextColors(textColors);
+            style.setRowTextColor(webColor(rowTextColor.getValue()));
             try {
                 teamRankStyleService.save(style);
                 status.setText("已保存，排行榜约 3 秒内更新");

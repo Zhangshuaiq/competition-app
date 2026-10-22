@@ -113,12 +113,11 @@ export default {
       const colors = config.rowColors || ['#ff0000', '#0000ff', '#ffff00'];
       const background = (item.currentRank >= 1 && item.currentRank <= 3 ? colors[item.currentRank - 1] : null) || config.rowBackground || '#ffffff';
       const visible = config.showRowBackground !== false;
-      const hex = background.replace('#', '');
-      const rgb = [0, 2, 4].map(offset => parseInt(hex.slice(offset, offset + 2), 16));
-      const brightness = (rgb[0] * 299 + rgb[1] * 587 + rgb[2] * 114) / 1000;
+      const textColors = config.rowTextColors || ['#ffffff', '#ffffff', '#000000'];
+      const textColor = (item.currentRank >= 1 && item.currentRank <= 3 ? textColors[item.currentRank - 1] : null) || config.rowTextColor || '#000000';
       return {
         backgroundColor: visible ? background : 'transparent',
-        color: visible && brightness < 128 ? '#ffffff' : '#000000'
+        color: textColor
       };
     },
     async loadStyle() {
