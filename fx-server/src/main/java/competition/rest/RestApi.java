@@ -322,6 +322,14 @@ public class RestApi {
         return JsonResp.success(titleMap);
     }
 
+    @Resource
+    private competition.service.TeamRankStyleService teamRankStyleService;
+
+    @GetMapping("/teamRankStyle")
+    public JsonResp getTeamRankStyle() {
+        return JsonResp.success(teamRankStyleService.load());
+    }
+
     @GetMapping("/rankTitle")
     public JsonResp getRankingTitle() {
         List<String> strings = FileUtil.readLines(TEAM_RANK_TITLE, "utf-8");

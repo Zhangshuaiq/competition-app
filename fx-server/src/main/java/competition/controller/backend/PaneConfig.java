@@ -375,6 +375,97 @@ public class PaneConfig {
         }
     }
 
+    @Resource
+    private competition.service.TeamRankStyleService teamRankStyleService;
+
+    private Stage teamRankStyleStage;
+
+    @FXML
+    public void configureTeamRankStyle() {
+        if (teamRankStyleStage != null && teamRankStyleStage.isShowing()) {
+            teamRankStyleStage.toFront();
+            teamRankStyleStage.requestFocus();
+            return;
+        }
+        competition.service.TeamRankStyleService.Style style = teamRankStyleService.load();
+        Stage panelStage = new Stage();
+        panelStage.initOwner(memberWebsite.getScene().getWindow());
+        panelStage.initModality(javafx.stage.Modality.NONE);
+        panelStage.setAlwaysOnTop(true);
+        panelStage.setTitle("团队排行榜样式设置");
+        javafx.scene.layout.GridPane grid = new javafx.scene.layout.GridPane();
+        grid.setHgap(16);
+        grid.setVgap(10);
+        grid.setPadding(new javafx.geometry.Insets(16));
+        javafx.scene.control.Spinner<Integer> titleSize = new javafx.scene.control.Spinner<>(8, 120, style.getTitleFontSize());
+        javafx.scene.control.Spinner<Integer> headerSize = new javafx.scene.control.Spinner<>(8, 120, style.getHeaderFontSize());
+        javafx.scene.control.Spinner<Integer> rowSize = new javafx.scene.control.Spinner<>(8, 120, style.getRowFontSize());
+        CheckBox showBackground = new CheckBox("显示表头和数据行背景颜色");
+        showBackground.setSelected(style.isShowRowBackground());
+        ColorPicker headerBackground = new ColorPicker(Color.web(style.getHeaderBackground()));
+        ColorPicker headerColor = new ColorPicker(Color.web(style.getHeaderColor()));
+        ColorPicker rowBackground = new ColorPicker(Color.web(style.getRowBackground()));
+        grid.addRow(0, new javafx.scene.control.Label("标题字号（px）"), titleSize);
+        grid.addRow(1, new javafx.scene.control.Label("表头字号（px）"), headerSize);
+        grid.addRow(2, new javafx.scene.control.Label("每行字号（px）"), rowSize);
+        grid.addRow(3, new javafx.scene.control.Label("背景显示"), showBackground);
+        grid.addRow(4, new javafx.scene.control.Label("表头背景颜色"), headerBackground);
+        grid.addRow(5, new javafx.scene.control.Label("表头文字颜色"), headerColor);
+        grid.addRow(6, new javafx.scene.control.Label("其余名次背景颜色"), rowBackground);
+        java.util.List<ColorPicker> rowPickers = new ArrayList<>();
+        headerBackground.disableProperty().bind(showBackground.selectedProperty().not());
+        rowBackground.disableProperty().bind(showBackground.selectedProperty().not());
+        for (int i = 0; i < 3; i++) {
+            String color = i < style.getRowColors().size() ? style.getRowColors().get(i) : style.getRowBackground();
+            ColorPicker picker = new ColorPicker(Color.web(color));
+            picker.disableProperty().bind(showBackground.selectedProperty().not());
+            rowPickers.add(picker);
+            grid.addRow(7 + i, new javafx.scene.control.Label("第 " + (i + 1) + " 名背景颜色"), picker);
+        }
+        javafx.scene.control.ScrollPane scroll = new javafx.scene.control.ScrollPane(grid);
+        scroll.setFitToWidth(true);
+        scroll.setPrefViewportHeight(540);
+        javafx.scene.control.Label status = new javafx.scene.control.Label();
+        status.setWrapText(true);
+        javafx.scene.control.Button save = new javafx.scene.control.Button("保存");
+        javafx.scene.control.Button close = new javafx.scene.control.Button("关闭");
+        close.setOnAction(event -> panelStage.close());
+        javafx.scene.layout.HBox actions = new javafx.scene.layout.HBox(12, status, save, close);
+        actions.setAlignment(javafx.geometry.Pos.CENTER_RIGHT);
+        actions.setPadding(new javafx.geometry.Insets(12, 16, 12, 16));
+        javafx.scene.layout.BorderPane pane = new javafx.scene.layout.BorderPane();
+        pane.setCenter(scroll);
+        pane.setBottom(actions);
+        panelStage.setScene(new Scene(pane, 480, 620));
+        save.setOnAction(event -> {
+            style.setTitleFontSize(titleSize.getValue());
+            style.setHeaderFontSize(headerSize.getValue());
+            style.setRowFontSize(rowSize.getValue());
+            style.setShowRowBackground(showBackground.isSelected());
+            style.setHeaderBackground(webColor(headerBackground.getValue()));
+            style.setHeaderColor(webColor(headerColor.getValue()));
+            style.setRowBackground(webColor(rowBackground.getValue()));
+            java.util.List<String> colors = new ArrayList<>();
+            for (ColorPicker picker : rowPickers) colors.add(webColor(picker.getValue()));
+            style.setRowColors(colors);
+            try {
+                teamRankStyleService.save(style);
+                status.setText("已保存，排行榜约 3 秒内更新");
+            } catch (Exception ex) {
+                status.setText("保存失败，请重试");
+            }
+        });
+        teamRankStyleStage = panelStage;
+        panelStage.setOnHidden(event -> teamRankStyleStage = null);
+        panelStage.show();
+        panelStage.toFront();
+    }
+
+    private String webColor(Color color) {
+        return String.format("#%02x%02x%02x", Math.round(color.getRed() * 255),
+                Math.round(color.getGreen() * 255), Math.round(color.getBlue() * 255));
+    }
+
     @FXML
     public void openRankPage(){
         try {
